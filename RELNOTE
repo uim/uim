@@ -1,13 +1,11 @@
-uim 1.7.0-alpha Release Note
-============================
+uim 1.7.0 Release Note
+======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.7.0-alpha is a preview release for testing
-purpose.  Since it may contain serious unknown problems, it should not
-be used for important work. For such situations, use our latest stable
-release uim 1.6.1.
+This distribution of uim 1.7.0 is the latest stable release of uim.
+The main feature of this release is support for GTK+3 and GNOME3.
 
 Please report us if you find a problem.
 
@@ -18,6 +16,10 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
+ - Fix regression in Wubi86 and ZhengMa tables in 1.7.0-alpha
+
+What's New in 1.7.0-alpha
+-------------------------
 
  - GTK+3 bridge
  - GTK+3 and GNOME3 tools
