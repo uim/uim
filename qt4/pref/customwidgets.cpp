@@ -40,6 +40,7 @@
 #include <QtCore/QPointer>
 #include <QtGui/QFileDialog>
 #include <QtGui/QLabel>
+#include <QtGui/QPushButton>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QVBoxLayout>
@@ -562,10 +563,8 @@ void CustomOrderedListEdit::updateText()
     m_lineEdit->setText( str );
 }
 
-OListEditForm::OListEditForm( QWidget *parent )
-    : QDialog( parent )
+OListEditForm::OListEditForm( QWidget *parent ) : OListEditFormBase( parent )
 {
-    setupUi( this );
     m_listView->setRootIsDecorated( false );
     connect( m_upButton, SIGNAL(clicked()),
                       this, SLOT(upItem()) );
@@ -787,11 +786,8 @@ void CustomKeyEdit::slotKeyButtonClicked()
     delete d;
 }
 
-KeyEditForm::KeyEditForm( QWidget *parent )
-    : QDialog( parent )
+KeyEditForm::KeyEditForm( QWidget *parent ) : KeyEditFormBase( parent )
 {
-    setupUi( this );
-
     m_listView->setRootIsDecorated( false );
     m_removeButton->setEnabled( false );
     m_editButton->setEnabled( false );

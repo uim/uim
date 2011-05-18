@@ -44,8 +44,8 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QSpinBox>
 
-#include "ui_olisteditformbase.h"
-#include "ui_keyeditformbase.h"
+#include "keyeditformbase.h"
+#include "olisteditformbase.h"
 
 class QPushButton;
 class QListViewItem;
@@ -222,7 +222,7 @@ signals:
     void customValueChanged();
 };
 
-class OListEditForm : public QDialog, public Ui_OListEditFormBase {
+class OListEditForm : public OListEditFormBase {
     Q_OBJECT
 
 public:
@@ -259,7 +259,7 @@ signals:
     void customValueChanged();
 };
 
-class KeyEditForm : public QDialog, public Ui_KeyEditFormBase  {
+class KeyEditForm : public KeyEditFormBase  {
     Q_OBJECT
 
 public:

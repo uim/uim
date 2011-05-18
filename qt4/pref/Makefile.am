@@ -18,5 +18,6 @@ FORCE:
 
 EXTRA_DIST =  uim-pref-qt4.pro.in \
 	     customwidgets.h qt4.h \
-	     keyeditformbase.ui olisteditformbase.ui \
+	     keyeditformbase.h keyeditformbase.cpp \
+	     olisteditformbase.h olisteditformbase.cpp \
 	     customwidgets.cpp qt4.cpp
