@@ -47,7 +47,6 @@
 #undef _
 #endif
 #define _(String) mygettext(String)
-#define UIC_(String, dummy) mygettext(String)
 /* undef original N_(String) macro for handling encoding */
 #ifdef N_
 #undef N_
@@ -66,7 +65,6 @@
 #undef _
 #endif
 #define _(String) mygettext(String)
-#define UIC_(String, dummy) (String)
 #endif /* ENABLE_NLS */
 
 #endif /* Not def: UIM_QT4_QTGETTEXT_H */

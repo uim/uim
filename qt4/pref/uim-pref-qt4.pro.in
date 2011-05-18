@@ -6,8 +6,6 @@ TEMPLATE = app
 INCLUDEPATH += @srcdir@/..
 LIBS += -luim-custom -luim-counted-init @LIBINTL@
 
-QMAKE_UIC = $$QMAKE_UIC -tr UIC_
-
 # Input
 HEADERS += @srcdir@/customwidgets.h @srcdir@/qt4.h \
            @srcdir@/keyeditformbase.h @srcdir@/olisteditformbase.h
