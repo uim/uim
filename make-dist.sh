@@ -20,22 +20,17 @@ CONF_DEFAULT="$CONF_COMMON"
 # --without-scim since it is broken
 # --without-qt
 
-EB_CONF="/etc/eb.conf"
-if test ! -f "$EB_CONF"; then
-   EB_CONF="/usr/lib64/eb.conf"
-fi
-if test ! -f "$EB_CONF"; then
-   EB_CONF="/usr/lib/eb.conf"
-fi
-if test ! -f "$EB_CONF"; then
-   EB_CONF="/usr/local/etc/eb.conf"
-fi
-if test ! -f "$EB_CONF"; then
-   EB_CONF="/usr/etc/eb.conf"
-fi
-if test ! -f "$EB_CONF"; then
-   echo eb.conf not found
-   exit 1
+for file in "/etc/eb.conf" "/usr/lib64/eb.conf" "/usr/lib/eb.conf" \
+            "/usr/local/etc/eb.conf" "/usr/etc/eb.conf"
+do
+    if test -f "$file"; then
+        EB_CONF="$file"
+        break
+    fi
+done
+if test -z "$EB_CONF"; then
+    echo eb.conf not found
+    exit 1
 fi
 
 CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-gnome3-applet --enable-kde-applet --enable-kde4-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gtk3 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=$EB_CONF --with-libedit --with-qt4 --with-qt4-immodule"
