@@ -81,6 +81,7 @@ main(int argc, char *argv[])
   gtk_init(&argc, &argv);
 
   tray = egg_tray_icon_new("uim");
+  gtk_window_set_wmclass(GTK_WINDOW(tray), "ibus-ui-gtk", "ibus-ui-gtk");
 
   icon = uim_toolbar_trayicon_new();
   g_signal_connect(G_OBJECT(tray), "embedded", G_CALLBACK(embedded_cb), icon);
