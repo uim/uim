@@ -31,30 +31,12 @@
  *  SUCH DAMAGE.
  */
 
-#ifndef UIM_DICT_ANTHY_H
-#define UIM_DICT_ANTHY_H
+#ifndef UIM_DICT_CCLASS_DIALOG_H
+#define UIM_DICT_CCLASS_DIALOG_H
 
-#include "dict-word.h"
-#include "dict-dict.h"
+#include <gtk/gtk.h>
+#include "canna-cclass.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+gchar *cclass_dialog(gint cclass_type, gint system);
 
-#if 0
-int    dict_anthy_init                    (void);
-int    dict_anthy_exit                    (void);
-int    dict_anthy_read_priv_dic_list      (uim_word **head);
-int    dict_anthy_add_priv_dic_with_flags (char  *phon,
-					   char  *desc,
-					   char  *cclass_code,
-					   int    freq);
-int    dict_anthy_delete_priv_dic         (char  *phon,
-					   char  *desc,
-					   char  *cclass_code);
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-#endif /* UIM_DICT_ANTHY_H */
+#endif /* UIM_DICT_CCLASS_DIALOG_H */

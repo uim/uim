@@ -37,8 +37,8 @@
 
 #include "gettext.h"
 
-#include "dict-word-list-view-gtk.h"
-#include "dict-util.h"
+#include "word-list-view-gtk.h"
+#include "util.h"
 
 #include <stdlib.h>
 #include <string.h>

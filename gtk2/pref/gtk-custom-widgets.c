@@ -33,7 +33,7 @@
 
 #include <config.h>
 
-#include "pref-gtk-custom-widgets.h"
+#include "gtk-custom-widgets.h"
 #include <gdk/gdkkeysyms.h>
 
 #include <string.h>
@@ -44,8 +44,8 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
-#include "../gtk2/immodule/key-util-gtk.h"
-#include "pref-gtk-keytab.h"
+#include "../immodule/key-util-gtk.h"
+#include "gtk-keytab.h"
 
 #define DEFAULT_OLIST_WINDOW_WIDTH    480
 #define DEFAULT_OLIST_WINDOW_HEIGHT   350

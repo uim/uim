@@ -44,8 +44,8 @@
 
 #include "gettext.h"
 
-#include "dict-canna.h"
-#include "dict-canna-cclass.h"
+#include "canna.h"
+#include "canna-cclass.h"
 
 extern int RkGetWordTextDic(int, unsigned char *, unsigned char *,
 			    unsigned char *, int);

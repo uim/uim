@@ -39,10 +39,10 @@
 
 #include "gettext.h"
 
-#include "dict-util.h"
-#include "dict-anthy.h"
-#include "dict-word-win-gtk.h"
-#include "dict-cclass-dialog.h"
+#include "util.h"
+#include "anthy.h"
+#include "word-win-gtk.h"
+#include "cclass-dialog.h"
 
 enum {
   WORD_ADDED_SIGNAL,

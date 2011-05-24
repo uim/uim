@@ -43,11 +43,11 @@
 
 #include "gettext.h"
 
-#include "dict-word.h"
-#include "dict-anthy.h"
-#include "dict-word-list-view-gtk.h"
-#include "dict-word-list-win-gtk.h"
-#include "dict-word-win-gtk.h"
+#include "word.h"
+#include "anthy.h"
+#include "word-list-view-gtk.h"
+#include "word-list-win-gtk.h"
+#include "word-win-gtk.h"
 
 static void word_list_window_class_init    (WordListWindowClass *window);
 static void word_list_window_init          (WordListWindow *window);

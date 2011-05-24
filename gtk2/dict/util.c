@@ -31,7 +31,7 @@
 
 */
 
-#include "dict-util.h"
+#include "util.h"
 
 gchar *charset_convert(const gchar *in,
 		       const gchar *incode,

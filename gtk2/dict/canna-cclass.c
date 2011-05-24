@@ -78,7 +78,7 @@
 #include <config.h>
 
 #include <string.h>
-#include "dict-canna-cclass.h"
+#include "canna-cclass.h"
 
 category_code substantive_code[]= {
   { "#T00", "名詞(な,さ,する,語幹,格助接続)"  , "共通,孝行", 31, 3 },

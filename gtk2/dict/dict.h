@@ -34,7 +34,7 @@
 #ifndef UIM_DICT_DICT_H
 #define UIM_DICT_DICT_H
 
-#include "dict-word.h"
+#include "word.h"
 
 typedef struct _uim_dict       uim_dict;
 typedef struct _uim_dict_class uim_dict_class;

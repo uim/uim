@@ -35,7 +35,7 @@
 
 #include <string.h>
 
-#include "dict-dict.h"
+#include "dict.h"
 
 /* FIXME! use function */
 #ifdef USE_ANTHY

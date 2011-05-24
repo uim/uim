@@ -36,9 +36,9 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
-#include "dict-cclass-dialog.h"
-#include "dict-canna-cclass.h"
-#include "dict-util.h"
+#include "cclass-dialog.h"
+#include "canna-cclass.h"
+#include "util.h"
 
 #include "gettext.h"
 

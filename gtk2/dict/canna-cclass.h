@@ -78,7 +78,7 @@
 #ifndef UIM_DICT_CANNA_CCLASS_H
 #define UIM_DICT_CANNA_CCLASS_H
 
-#include "dict-word.h"
+#include "word.h"
 
 #define SUPPORT_ANTHY (1 << 0)
 #define SUPPORT_CANNA (1 << 1)

@@ -40,7 +40,7 @@
 
 #include <gtk/gtk.h>
 
-#include "dict-dict.h"
+#include "dict.h"
 
 #ifdef __cplusplus
 extern "C" {

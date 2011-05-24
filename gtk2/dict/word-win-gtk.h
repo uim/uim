@@ -35,8 +35,8 @@
 #define UIM_DICT_ANTHY_WORD_GTK_H
 
 #include <gtk/gtk.h>
-#include "dict-dict.h"
-#include "dict-word.h"
+#include "dict.h"
+#include "word.h"
 
 G_BEGIN_DECLS
 

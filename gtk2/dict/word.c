@@ -38,8 +38,8 @@
 
 #include "gettext.h"
 
-#include "dict-word.h"
-#include "dict-canna-cclass.h"
+#include "word.h"
+#include "canna-cclass.h"
 
 void word_append(uim_word **head, uim_word_type type,
 		 char *charset,

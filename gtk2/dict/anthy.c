@@ -43,9 +43,9 @@
 #include <anthy/dicutil.h>
 
 #include "gettext.h"
-#include "dict-anthy.h"
-#include "dict-canna-cclass.h"
-#include "dict-util.h"
+#include "anthy.h"
+#include "canna-cclass.h"
+#include "util.h"
 
 static uim_dict *uim_dict_anthy_open        (const char *identifier);
 static void      uim_dict_anthy_close       (uim_dict *dict);

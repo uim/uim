@@ -32,8 +32,8 @@
 #ifndef UIM_DICT_CANNA_H
 #define UIM_DICT_CANNA_H
 
-#include "dict-word.h"
-#include "dict-dict.h"
+#include "word.h"
+#include "dict.h"
 
 #define CANNA_DEFAULT_PRIV_DICNAME	"user"
 #define CANNA_PRIV_DIC_BUFLEN	1024

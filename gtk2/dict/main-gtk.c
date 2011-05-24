@@ -45,9 +45,9 @@
 #include "uim-helper.h"
 #include "gettext.h"
 
-#include "dict-word-win-gtk.h"
-#include "dict-word-list-win-gtk.h"
-#include "dict-word-list-view-gtk.h"
+#include "word-win-gtk.h"
+#include "word-list-win-gtk.h"
+#include "word-list-view-gtk.h"
 
 static int ae_mode; /* add mode or edit mode */
 static int g_startup_dictionary;

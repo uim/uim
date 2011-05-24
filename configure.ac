@@ -1901,15 +1901,20 @@ AC_CONFIG_SUBDIRS([sigscheme])
 AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
 		 m4/Makefile
-		 helper/Makefile
-		 helper/uim-dict-ui.xml
 		 doc/Makefile
 		 uim/Makefile
 		 scm/Makefile
 		 gtk2/Makefile
+		 gtk2/candwin/Makefile
+		 gtk2/dict/Makefile
+		 gtk2/dict/uim-dict-ui.xml
 		 gtk2/immodule/Makefile
+		 gtk2/pad/Makefile
+		 gtk2/pref/Makefile
+		 gtk2/switcher/Makefile
 		 gtk2/test/Makefile
 		 gtk2/test/test.sh
+		 gtk2/toolbar/Makefile
 		 gtk3/Makefile
 		 gtk3/candwin/Makefile
 		 gtk3/dict/Makefile
