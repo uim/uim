@@ -1150,6 +1150,28 @@ if test "x$use_eb" = "xyes"; then
   AC_DEFINE(HAVE_EBLIB, 1, [Define to 1 if you have EB library and header file])
 fi
 
+dnl test for OS X
+AC_ARG_WITH(osx-dcs,
+  AS_HELP_STRING([--with-osx-dcs],
+		 [Build with OS X Dictionary Services @<:@default=no@:>@]),
+  [
+  if test "x$with_osx_dcs" = "xyes"; then
+    case $host_os in
+    darwin*)
+      use_osx_dcs="yes"
+      ;;
+    *)
+      use_osx_dcs="no"
+      ;;
+    esac
+  else
+    use_osx_dcs="no"
+  fi
+  ],
+   use_osx_dcs="no"
+)
+AM_CONDITIONAL(OSX_DCS, test x"$use_osx_dcs" = "xtrue")
+
 # Check whether user wants libedit support
 # This code was based on openssh-4.1p1
 
@@ -2020,6 +2042,7 @@ Configure Result :
    Pref            : ${use_pref}
    DICT            : ${use_dict}
    EB              : ${use_eb}
+   OSX dictionary  : ${use_osx_dcs}
    libedit         : ${use_libedit}
    notify          : ${use_notify}
    Default toolkit : ${default_toolkit}

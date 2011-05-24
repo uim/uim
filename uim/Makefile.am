@@ -195,6 +195,13 @@ libuim_eb_la_CPPFLAGS = -I$(top_srcdir) \
 libuim_eb_la_CFLAGS = @EBCONF_PTHREAD_CFLAGS@ -Wall
 endif
 
+if OSX_DCS
+uim_plugin_LTLIBRARIES += libuim-osx-dcs.la
+libuim_osx_dcs_la_SOURCES = osx-dcs.m
+libuim_osx_dcs_la_OBJCFLAGS = -x objective-c
+libuim_osx_dcs_la_LDFLAGS = -avoid-version -module -framework Cocoa
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@

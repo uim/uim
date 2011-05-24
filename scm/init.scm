@@ -132,6 +132,7 @@
     (uim-notify-load (symbol->string notify-agent)))
 
 ;; redefine annotation-related procedures to use an annotation agent
+(require-custom "annotation-custom.scm")
 (and enable-annotation?
   (annotation-load (symbol->string annotation-agent)))
 
