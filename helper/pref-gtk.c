@@ -51,7 +51,7 @@
 #include "uim/uim-scm.h"
 #include "uim/gettext.h"
 #include "pref-gtk-custom-widgets.h"
-#include "../gtk/key-util-gtk.h"
+#include "../gtk2/immodule/key-util-gtk.h"
 
 #define DEFAULT_WINDOW_WIDTH_MAX 800
 #define DEFAULT_WINDOW_HEIGHT_MAX 600

@@ -46,7 +46,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../gtk/caret-state-indicator.h"
+#include "../gtk2/immodule/caret-state-indicator.h"
 
 #define UIM_TYPE_CANDIDATE_WINDOW	(candidate_window_get_type())
 #define UIM_CANDIDATE_WINDOW(obj)	(G_TYPE_CHECK_INSTANCE_CAST ((obj), candidate_window_get_type(), UIMCandidateWindow))

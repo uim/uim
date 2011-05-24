@@ -44,7 +44,7 @@
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
-#include "../gtk/key-util-gtk.h"
+#include "../gtk2/immodule/key-util-gtk.h"
 #include "pref-gtk-keytab.h"
 
 #define DEFAULT_OLIST_WINDOW_WIDTH    480

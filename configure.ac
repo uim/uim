@@ -1906,9 +1906,10 @@ AC_CONFIG_FILES([Makefile
 		 doc/Makefile
 		 uim/Makefile
 		 scm/Makefile
-		 gtk/Makefile
-		 gtk/test/Makefile
-		 gtk/test/test.sh
+		 gtk2/Makefile
+		 gtk2/immodule/Makefile
+		 gtk2/test/Makefile
+		 gtk2/test/test.sh
 		 gtk3/Makefile
 		 gtk3/candwin/Makefile
 		 gtk3/dict/Makefile

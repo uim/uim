@@ -21,16 +21,20 @@ endif
 
 
 IM_UIM_SOURCES = \
-	../../gtk/gtk-im-uim.c ../../gtk/gtk-im-uim.h \
-	../../gtk/key-util-gtk.c ../../gtk/key-util-gtk.h \
-	../../gtk/uim-cand-win-gtk.c ../../gtk/uim-cand-win-gtk.h \
-	../../gtk/uim-cand-win-tbl-gtk.c ../../gtk/uim-cand-win-tbl-gtk.h \
-	../../gtk/caret-state-indicator.c ../../gtk/caret-state-indicator.h \
-	../../gtk/compose.c ../../gtk/compose.h \
-	../../gtk/text-util.c ../../gtk/text-util.h
+	../../gtk2/immodule/gtk-im-uim.c ../../gtk2/immodule/gtk-im-uim.h \
+	../../gtk2/immodule/key-util-gtk.c ../../gtk2/immodule/key-util-gtk.h \
+	../../gtk2/immodule/uim-cand-win-gtk.c \
+	../../gtk2/immodule/uim-cand-win-gtk.h \
+	../../gtk2/immodule/uim-cand-win-tbl-gtk.c \
+	../../gtk2/immodule/uim-cand-win-tbl-gtk.h \
+	../../gtk2/immodule/caret-state-indicator.c \
+	../../gtk2/immodule/caret-state-indicator.h \
+	../../gtk2/immodule/compose.c ../../gtk2/immodule/compose.h \
+	../../gtk2/immodule/text-util.c ../../gtk2/immodule/text-util.h
 
 noinst_PROGRAMS = gtk3-rc-get-immodule-file
-gtk3_rc_get_immodule_file_SOURCES = ../../gtk/gtk-rc-get-immodule-file.c
+gtk3_rc_get_immodule_file_SOURCES = \
+	../../gtk2/immodule/gtk-rc-get-immodule-file.c
 gtk3_rc_get_immodule_file_CFLAGS = @GTK3_CFLAGS@
 gtk3_rc_get_immodule_file_LDADD = @GTK3_LIBS@
 GTK3_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk3/immodule/gtk3-rc-get-immodule-file

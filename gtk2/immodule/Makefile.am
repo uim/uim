@@ -1,5 +1,3 @@
-SUBDIRS = test
-
 uim_gtk_im_module_path = $(libdir)/gtk-2.0
 uim_gtk_im_module_file = $(DESTDIR)$(sysconfdir)/gtk-2.0/gtk.immodules
 

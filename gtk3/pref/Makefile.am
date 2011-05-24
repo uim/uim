@@ -8,7 +8,8 @@ uim_pref_gtk3_SOURCES  = ../../helper/pref-gtk.c \
 			../../helper/pref-gtk-custom-widgets.c \
 			../../helper/pref-gtk-custom-widgets.h \
 			../../helper/pref-gtk-keytab.h \
-			../../gtk/key-util-gtk.c ../../gtk/key-util-gtk.h
+			../../gtk2/immodule/key-util-gtk.c \
+			../../gtk2/immodule/key-util-gtk.h
 uim_pref_gtk3_LDADD    = @GTK3_LIBS@ $(top_builddir)/uim/libuim-custom.la \
 			$(top_builddir)/uim/libuim-scm.la \
 			$(top_builddir)/uim/libuim.la

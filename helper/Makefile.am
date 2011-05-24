@@ -56,16 +56,16 @@ endif
 endif
 
 uim_candwin_gtk_SOURCES  = candwin-gtk.c \
-			   ../gtk/caret-state-indicator.c \
-			   ../gtk/caret-state-indicator.h
+			   ../gtk2/immodule/caret-state-indicator.c \
+			   ../gtk2/immodule/caret-state-indicator.h
 uim_candwin_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la
 uim_candwin_gtk_CPPFLAGS = -I$(top_srcdir)
 uim_candwin_gtk_CFLAGS   = @GTK2_CFLAGS@
 
 uim_candwin_tbl_gtk_SOURCES  = candwin-tbl-gtk.c \
-			   ../gtk/caret-state-indicator.c \
-			   ../gtk/caret-state-indicator.h
+			   ../gtk2/immodule/caret-state-indicator.c \
+			   ../gtk2/immodule/caret-state-indicator.h
 uim_candwin_tbl_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la
 uim_candwin_tbl_gtk_CPPFLAGS = -I$(top_srcdir)
@@ -107,7 +107,8 @@ if GTK2_4
 uim_pref_gtk_SOURCES  = pref-gtk.c \
 			pref-gtk-custom-widgets.c pref-gtk-custom-widgets.h \
 			pref-gtk-keytab.h \
-			../gtk/key-util-gtk.c ../gtk/key-util-gtk.h
+			../gtk2/immodule/key-util-gtk.c \
+			../gtk2/immodule/key-util-gtk.h
 uim_pref_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-custom.la \
 			$(top_builddir)/uim/libuim-scm.la \
 			$(top_builddir)/uim/libuim.la
