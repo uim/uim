@@ -53,7 +53,7 @@ aclocal -I m4 \
   && perl -i -pe 's/\bscm\b/scm-workaround/g' intltool-update.in \
   && perl -i -pe 's%"(POTFILES.(skip|ignore))"%"\$SRCDIR/$1"%g' intltool-update.in \
   && perl -i -pe 's%(-f "\$SRCDIR/../\$dummy")%$1 and ! -f "../\$dummy"%' intltool-update.in \
-  && generate_makefile_in_in qt/chardict/po \
+  && generate_makefile_in_in qt3/chardict/po \
   && generate_makefile_in_in qt4/chardict/po
 
 # Since intltool 0.32 and later does not include po/Makevars into Makefile by
@@ -66,5 +66,5 @@ aclocal -I m4 \
 # To fix the case intltool-update -m on (srcdir != builddir), the
 # $SRCDIR-related lines are patched here.  -- YamaKen 2006-12-29
 
-# qt/chardict/po has separated gettext package with a dirty workaround.
+# qt3/chardict/po has separated gettext package with a dirty workaround.
 #   -- YamaKen 2006-12-29

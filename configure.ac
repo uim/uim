@@ -1270,12 +1270,12 @@ AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 AM_CONDITIONAL(GCC, test x$ac_cv_c_compiler_gnu = xyes)
 AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
 
-# To get qt/chardict/po working, 0.35.2 is required. 0.35.[01] has a hard-coded
+# To get qt3/chardict/po working, 0.35.2 is required. 0.35.[01] has a hard-coded
 # $(top_builddir) bug.  -- YamaKen 2006-12-28
 #
 # 0.36.3 or later is required to resolve a 'make check' problem ([uim-ja 87]).
 IT_PROG_INTLTOOL([0.36.3], [no-xml])
-IT_PO_SUBDIR([qt/chardict/po])
+IT_PO_SUBDIR([qt3/chardict/po])
 IT_PO_SUBDIR([qt4/chardict/po])
 
 
@@ -1924,11 +1924,16 @@ AC_CONFIG_FILES([Makefile
 		 gtk3/switcher/Makefile
 		 gtk3/test/Makefile
 		 gtk3/toolbar/Makefile
-		 qt/Makefile
-		 qt/chardict/Makefile
-		 qt/chardict/po/Makefile.in
-		 qt/test/Makefile
-		 qt/uimapplet.desktop
+		 qt3/Makefile
+		 qt3/candwin/Makefile
+		 qt3/chardict/Makefile
+		 qt3/chardict/po/Makefile.in
+		 qt3/immodule/Makefile
+		 qt3/pref/Makefile
+		 qt3/switcher/Makefile
+		 qt3/test/Makefile
+		 qt3/toolbar/Makefile
+		 qt3/toolbar/uimapplet.desktop
 		 qt4/Makefile
 		 qt4/common.pro
 		 qt4/candwin/Makefile
