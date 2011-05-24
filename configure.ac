@@ -1170,7 +1170,7 @@ AC_ARG_WITH(osx-dcs,
   ],
    use_osx_dcs="no"
 )
-AM_CONDITIONAL(OSX_DCS, test x"$use_osx_dcs" = "xtrue")
+AM_CONDITIONAL(OSX_DCS, test x"$use_osx_dcs" = "xyes")
 
 # Check whether user wants libedit support
 # This code was based on openssh-4.1p1
