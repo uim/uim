@@ -31,11 +31,8 @@
 
 */
 
-/* FIXME! This is a ad-hoc solution to advance
-   annotation related discussion. */
-
-#ifndef UIM_GTK_UIM_EB_H
-#define UIM_GTK_UIM_EB_H
+#ifndef UIM_EB_H
+#define UIM_EB_H
 
 typedef struct _uim_eb uim_eb;
 

@@ -174,16 +174,9 @@ libuim_ffi_la_CPPFLAGS = -I$(top_srcdir) @FFI_CFLAGS@
 endif
 
 if EB
-noinst_LTLIBRARIES += lib-eb-static.la
-lib_eb_static_la_SOURCES = uim-eb.c uim-eb.h
-lib_eb_static_la_CPPFLAGS = -I$(top_srcdir) \
-			       @EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
-			       @EBCONF_PTHREAD_CPPFLAGS@ \
-			       @EBCONF_INTLINCS@
-
 uim_plugin_LTLIBRARIES += libuim-eb.la
-libuim_eb_la_SOURCES = eb.c
-libuim_eb_la_LIBADD = libuim-scm.la libuim.la lib-eb-static.la \
+libuim_eb_la_SOURCES = eb.c uim-eb.c uim-eb.h
+libuim_eb_la_LIBADD = libuim-scm.la libuim.la \
 		      @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
 		      @EBCONF_INTLLIBS@
 libuim_eb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module \

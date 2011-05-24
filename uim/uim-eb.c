@@ -31,9 +31,6 @@
 
 */
 
-/* FIXME! This is a ad-hoc solution to advance
-   annotation related discussion. */
-
 #include <config.h>
 
 #include <stdio.h>
