@@ -44,4 +44,4 @@ char   *uim_eb_search_text (uim_eb *ueb,
 			    const char *encoding);
 void    uim_eb_destroy     (uim_eb *ueb);
 
-#endif /* UIM_GTK_UIM_EB_H */
+#endif /* UIM_EB_H */
