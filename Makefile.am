@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
           gtk2 gtk3 qt3 notify
 SUBDIRS += qt4
-SUBDIRS += xim fep emacs po pixmaps examples tables
+SUBDIRS += xim fep emacs po pixmaps examples tables byeoru-data
 
 EXTRA_DIST = RELNOTE ChangeLog.old autogen.sh make-dist.sh \
 	uim.pc.in uim.desktop uim.spec.in uim.spec \

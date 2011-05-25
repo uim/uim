@@ -29,6 +29,9 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1 34))
+
+(require-dynlib "look")
 (require "util.scm")
 (require "ustr.scm")
 (require-custom "generic-key-custom.scm")
@@ -165,19 +168,19 @@
 	(jo3 '(jongseong . 3))
 	(jo4 '(jongseong . 4)))
     (list
-     (list sta . (ch1 ch2 ch3 ch4 ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4))
-     (list ch1 . (ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4))
-     (list ch2 . (ch4))
-     (list ch3 . (ch4 ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4))
-     (list ch4 . (ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4))
-     (list ju1 . (jo1 jo2 jo3 jo4))
-     (list ju2 . (ju4))
-     (list ju3 . (ju4 jo1 jo2 jo3 jo4))
-     (list ju4 . (jo1 jo2 jo3 jo4))
-     (list jo1 . ())
-     (list jo2 . (jo4))
-     (list jo3 . (jo4))
-     (list jo4 . ()))))
+     (list sta ch1 ch2 ch3 ch4 ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4)
+     (list ch1 ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4)
+     (list ch2 ch4)
+     (list ch3 ch4 ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4)
+     (list ch4 ju1 ju2 ju3 ju4 jo1 jo2 jo3 jo4)
+     (list ju1 jo1 jo2 jo3 jo4)
+     (list ju2 ju4)
+     (list ju3 ju4 jo1 jo2 jo3 jo4)
+     (list ju4 jo1 jo2 jo3 jo4)
+     (list jo1)
+     (list jo2 jo4)
+     (list jo3 jo4)
+     (list jo4))))
 
 ;; Expands a key choices list like
 ;; ((jongseong-bieub . (1 4)))
@@ -346,15 +349,15 @@
  ("m" (choseong-hieuh	     . 1))
  ("/" (jungseong-o	     . 2))
  ;; Shifted keys
- ("~" . 8251)		    ; U+203B, REFERENCE MARK
+ ("~" . #x203b)		    ; U+203B, REFERENCE MARK
  ("!" (jongseong-ssanggiyeog . 5))
  ("@" (jongseong-rieulgiyeog . 4))
  ("#" (jongseong-jieuj	     . 1))
  ("$" (jongseong-rieulpieup  . 4))
  ("%" (jongseong-rieultieut  . 4))
  ("^" . "=")
- ("&" . 8220)		    ; U+201C, LEFT DOUBLE QUOTATION MARK
- ("*" . 8221)		    ; U+201D, RIGHT DOUBLE QUOTATION MARK
+ ("&" . #x201c)		    ; U+201C, LEFT DOUBLE QUOTATION MARK
+ ("*" . #x201d)		    ; U+201D, RIGHT DOUBLE QUOTATION MARK
  ("(" . "'")
  (")" . "~")
  ("_" . ";")
@@ -371,7 +374,7 @@
  ("{" . "%")
  ("}" . "/")
  ("|" . "\\")
- ;;	("|" . 8361)		 ; U+20A9, WON SIGN
+ ;;	("|" . #x20a9)		 ; U+20A9, WON SIGN
  ("A" (jongseong-digeud	     . 1))
  ("S" (jongseong-nieunhieuh  . 4))
  ("D" (jongseong-rieulbieub  . 4))
@@ -382,7 +385,7 @@
  ("K" . "2")
  ("L" . "3")
  (":" . "4")
- ("\"" . 183)		    ; U+00B7, MIDDLE DOT
+ ("\"" . #x00b7)	    ; U+00B7, MIDDLE DOT
  ("Z" (jongseong-chieuch     . 1))
  ("X" (jongseong-bieubsios   . 4))
  ("C" (jongseong-kieuk	     . 1))
@@ -442,15 +445,15 @@
  ("m" (choseong-hieuh	     . 1))
  ("/" (jungseong-o	     . 3))
  ;; Shifted keys
- ("~" . 8251)		    ; U+203B, REFERENCE MARK
+ ("~" . #x203b)		    ; U+203B, REFERENCE MARK
  ("!" (jongseong-ssanggiyeog . 5))
  ("@" (jongseong-rieulgiyeog . 4))
  ("#" (jongseong-jieuj	     . (1 4)))
  ("$" (jongseong-rieulpieup  . 4))
  ("%" (jongseong-rieultieut  . 4))
  ("^" . "=")
- ("&" . 8220)		    ; U+201C, LEFT DOUBLE QUOTATION MARK
- ("*" . 8221)		    ; U+201D, RIGHT DOUBLE QUOTATION MARK
+ ("&" . #x201c)		    ; U+201C, LEFT DOUBLE QUOTATION MARK
+ ("*" . #x201d)		    ; U+201D, RIGHT DOUBLE QUOTATION MARK
  ("(" . "'")
  (")" . "~")
  ("_" . ";")
@@ -467,7 +470,7 @@
  ("{" . "%")
  ("}" . "/")
  ("|" . "\\")
- ;;	("|" . 8361)		 ; U+20A9, WON SIGN
+ ;;	("|" . #x20a9)	    ; U+20A9, WON SIGN
  ("A" (jongseong-digeud	     . 1))
  ("S" (jongseong-nieunhieuh  . 4))
  ("D" (jongseong-rieulbieub  . 4))
@@ -478,7 +481,7 @@
  ("K" . "2")
  ("L" . "3")
  (":" . "4")
- ("\"". 183)		    ; U+00B7, MIDDLE DOT
+ ("\"". #x00b7)		    ; U+00B7, MIDDLE DOT
  ("Z" (jongseong-chieuch     . 1))
  ("X" (jongseong-bieubsios   . 4))
  ("C" (jongseong-kieuk	     . 1))
@@ -636,7 +639,7 @@
 
 (byeoru-define-layout byeoru-layout-no-shift
  ;; Unshifted keys
- ("`" . 183)
+ ("`" . #x00b7)
  ("1" (jongseong-hieuh	   . (1 4)))
  ("2" (jongseong-ssangsios . 5))
  ("3" (jongseong-bieub	   . (3 4)))
@@ -1236,10 +1239,10 @@
     (list 'convr-ustr	   #f)
     (list 'preedit	   '())
     (list 'mode		   'hangul)
-    (list 'dic-entry	   #f)
     (list 'cands	   #f)
     (list 'cand-no	   0)
     (list 'menu-no	   0)
+    (list 'conv-hist	   '())
     (list 'cache	   '())
     )))
 (define-record 'byeoru-context byeoru-context-rec-spec)
@@ -1369,47 +1372,100 @@
 		    (ucs->utf8-string choices)
 		    choices))))))
 
-(define byeoru-dic-filename "byeoru-dic.scm")
-(define byeoru-load-dic-hook '())
+(define byeoru-dict-field-separator ":")
 
-(define (byeoru-add-hook hook-sym proc)
-  (set-symbol-value! hook-sym (cons proc (symbol-value hook-sym))))
+;; Conversion history is loaded on demand by (byeoru-lookup-word)
+;; since Chinese characters are rarely used
+(define byeoru-saved-conv-hist #f)
 
-(define (byeoru-call-hook-procs hook)
-  (for-each (lambda (proc) (proc)) hook))
+(define (byeoru-take lst n)
+  (if (> (length lst) n) (take lst n) lst))
 
-(define (byeoru-lookup-word word)
-  (if (not (symbol-bound? 'byeoru-dic))
-      (begin
-	(require byeoru-dic-filename)
-	(byeoru-call-hook-procs byeoru-load-dic-hook)))
-  (assoc word byeoru-dic))
+(define (byeoru-exclusive-cons . args)
+  (cons (car args) (apply delete args)))
 
-(define (byeoru-add-dic-entry kons)
-  (let* ((id (car kons))
-	 (found (assoc id byeoru-dic)))
+(define (byeoru-load-conv-hist)
+  (or (guard (err
+	      (else #f))
+	     (call-with-input-file byeoru-conversion-history-path read))
+      '()))
 
-    (define (update-cands cands new-cands)
-      (fold-right
-       (lambda (new lis)
-	 (let ((new-str (if (pair? new) (car new) new)))
-	   (cons new
-		 (remove
-		  (lambda (elm)
-		    (let ((elm-str (if (pair? elm) (car elm) elm)))
-		      (string=? elm-str new-str))) lis))))
-       cands new-cands))
+(define (byeoru-save-conv-hist bc)
+  (let ((conv-hist (byeoru-context-conv-hist bc)))
+    (or (null? conv-hist)
+	(begin
+	  (set! byeoru-saved-conv-hist
+		(byeoru-take (fold-right byeoru-exclusive-cons
+					 (byeoru-load-conv-hist) conv-hist)
+			     byeoru-conversion-history-size))
+	  (guard (err
+		  (else #f))
+		 (call-with-output-file byeoru-conversion-history-path
+		   (lambda (p) (write byeoru-saved-conv-hist p))))))))
 
-    (if found
-	(set-cdr! found (update-cands (cdr found) (cdr kons)))
-	(set! byeoru-dic (cons kons byeoru-dic)))))
+(define (byeoru-lookup-in-alist alist word)
+  (fold-right
+   (lambda (entry translations)
+     (if (string=? word (car entry))
+	 (cons (cdr entry) translations)
+	 translations))
+   '() alist))
+
+(define (byeoru-lookup-in-file file word)
+  (let* ((prefix (string-append word byeoru-dict-field-separator))
+	 (lines (or (look-lib-look #f #t 0 file prefix) '())))
+    (map (lambda (line)
+	   (let ((lst (string-split line byeoru-dict-field-separator)))
+	     (cons (car lst) (if (null? (cdr lst)) "" (cadr lst)))))
+	 lines)))
+
+(define (byeoru-reorder-cands trans-hist dict-cands)
+  (fold-right
+   (lambda (trans reordered)
+     (let* ((found #f)
+	    (rest (let loop ((list reordered))
+		    (cond
+		     ((null? list)
+		      '())
+		     ((string=? trans (caar list))
+		      (set! found (car list))
+		      (cdr list))
+		     (else
+		      (cons (car list) (loop (cdr list))))))))
+       (if found (cons found rest) rest)))
+   dict-cands trans-hist))
+
+(define (byeoru-lookup-word bc word)
+  (or byeoru-saved-conv-hist
+      (set! byeoru-saved-conv-hist (byeoru-load-conv-hist)))
+
+  (let ((cands
+	 (byeoru-reorder-cands
+
+	  ;; Merge translations from context and saved histories
+	  (fold-right
+	   (lambda (tr merged) (byeoru-exclusive-cons tr merged string=?))
+	   (byeoru-lookup-in-alist byeoru-saved-conv-hist word)
+	   (byeoru-lookup-in-alist (byeoru-context-conv-hist bc) word))
+
+	  ;; Merge candidates from personal and system dictionaries
+	  (fold-right
+	   (lambda (cand merged)
+	     (cons cand (alist-delete (car cand) merged string=?)))
+	   (byeoru-lookup-in-file byeoru-sys-dict-path word)
+	   ;; Absence of personal dictionary should not print a warning
+	   (if (file-readable? byeoru-personal-dict-path)
+	       (byeoru-lookup-in-file byeoru-personal-dict-path word)
+	       '())))))
+
+    (if (null? cands) #f cands)))
 
 (define (byeoru-begin-conv bc)
   (byeoru-flush-automata bc)
   (let* ((word  (byeoru-context-word-ustr  bc))
 	 (convl (byeoru-context-convl-ustr bc))
 	 (convr (byeoru-context-convr-ustr bc))
-	 (entry (begin
+	 (cands (begin
 		  (ustr-set-whole-seq! convl (ustr-former-seq word))
 		  (ustr-cursor-move-beginning! convl)
 		  (let loopl ()
@@ -1423,23 +1479,22 @@
 			   ((ustr-cursor-at-beginning? convr)
 			    #f)
 			   ((byeoru-lookup-word
-			     (apply string-append (ustr-former-seq convr))))
+			     bc (apply string-append (ustr-former-seq convr))))
 			   (else
 			    (ustr-cursor-move-backward! convr)
 			    (loopr))))))
 		     (else
 		      (ustr-cursor-move-forward! convl)
 		      (loopl)))))))
-    (and entry
-	 (let ((max (- (length entry) 1)))
-	   (byeoru-context-set-dic-entry! bc entry)
-	   (byeoru-context-set-cands! bc (cdr entry))
+    (and cands
+	 (let ((len (length cands)))
+	   (byeoru-context-set-cands! bc cands)
 	   (byeoru-context-set-mode! bc 'conv)
 	   (byeoru-update-preedit bc)
 	   ;; CHECK: is the following statement true?
 	   ;; We should update the preedit to place the candidate window
 	   ;; at a correct position.
-	   (im-activate-candidate-selector bc max byeoru-nr-candidate-max)
+	   (im-activate-candidate-selector bc len byeoru-nr-candidate-max)
 	   (byeoru-context-set-cand-no! bc 0)
 	   (im-select-candidate bc 0)
 	   #t))))
@@ -1636,7 +1691,7 @@
 (define (byeoru-show-menu bc)
   (let* ((cands (append (byeoru-context-cache bc)
 			byeoru-menu-symbols
-			'(commit-by-word-switch)))
+			'(toggle-commit-by-word save-conv-hist)))
 	 (max (length cands)))
     (byeoru-context-set-cands! bc cands)
     (byeoru-context-set-mode! bc 'menu)
@@ -1713,15 +1768,17 @@
 (define (byeoru-commit-converted-part bc)
   (let* ((cands (byeoru-context-cands bc))
 	 (cand (list-ref cands (byeoru-context-cand-no bc)))
-	 (entry (byeoru-context-dic-entry bc))
 	 (convl (byeoru-context-convl-ustr bc))
 	 (convr (byeoru-context-convr-ustr bc))
+	 (key (apply string-append (ustr-former-seq convr)))
 	 (word (byeoru-context-word-ustr bc)))
     (byeoru-commit bc
 		   (apply string-append
 			  (append (ustr-former-seq convl)
-				  (list (if (pair? cand) (car cand) cand)))))
-    (set-cdr! entry (cons cand (delete cand cands eq?)))
+				  (list (car cand)))))
+    (byeoru-context-set-conv-hist!
+     bc (byeoru-exclusive-cons (cons key (car cand))
+			       (byeoru-context-conv-hist bc)))
     (im-deactivate-candidate-selector bc)
     (byeoru-context-set-mode! bc 'hangul)
     (ustr-set-former-seq! word (ustr-latter-seq convr))))
@@ -1731,14 +1788,9 @@
 	 (cache (byeoru-context-cache bc)))
 
     (define (update-cache str)
-      (let ((cached (find (lambda (elm) (string=? elm str)) cache)))
-	(byeoru-context-set-cache!
-	 bc (if cached
-		(cons cached (delete cached cache eq?))
-		(let ((new-cache (cons str cache)))
-		  (if (> (length new-cache) byeoru-symbol-cache-size)
-		      (take new-cache byeoru-symbol-cache-size)
-		      new-cache))))))
+      (byeoru-context-set-cache!
+       bc (byeoru-take (byeoru-exclusive-cons str cache string=?)
+		       byeoru-symbol-cache-size)))
 
     (im-deactivate-candidate-selector bc)
     (case (byeoru-context-mode bc)
@@ -1758,9 +1810,13 @@
 	      bc max byeoru-nr-candidate-max)
 	     (byeoru-context-set-cand-no! bc 0)
 	     (im-select-candidate bc 0)))
-	  ((symbol? cand)
+	  ((eq? cand 'toggle-commit-by-word)
 	   (byeoru-context-set-commit-by-word?!
 	    bc (not (byeoru-context-commit-by-word? bc)))
+	   (byeoru-context-set-mode! bc 'hangul)
+	   (byeoru-context-set-menu-no! bc 0))
+	  ((eq? cand 'save-conv-hist)
+	   (byeoru-save-conv-hist bc)
 	   (byeoru-context-set-mode! bc 'hangul)
 	   (byeoru-context-set-menu-no! bc 0)))))
       ((symbol)
@@ -1930,21 +1986,26 @@
 (define (byeoru-get-candidate-handler bc idx accel-enum-hint)
   (let* ((cands (byeoru-context-cands bc))
 	 (cand (list-ref cands idx)))
-    (cond
-     ((symbol? cand)
-      (list (if (byeoru-context-commit-by-word? bc) "글자단위" "단어단위")
-	    (number->string (+ idx 1)) ""))
-     ((number? cand)
-      (list (ucs->utf8-string cand)
-	    (number->string (+ idx 1)) ""))
-     ((string? cand)
-      ;; What's the use of the last ""?
-      (list cand (number->string (+ idx 1)) ""))
-     ((list? cand)
-      (list (car cand) (number->string (+ idx 1)) ""))
-     ((pair? cand)
-      (list (string-append (car cand) "  " (cdr cand))
-	    (number->string (+ idx 1)) "")))))
+    (list
+
+     (cond
+      ((eq? cand 'toggle-commit-by-word)
+       (if (byeoru-context-commit-by-word? bc) "글자 단위" "단어 단위"))
+      ((eq? cand 'save-conv-hist)
+       "변환 이력 저장")
+      ((number? cand)
+       (ucs->utf8-string cand))
+      ((string? cand)
+       cand)
+      ((list? cand)
+       (car cand))
+      ((pair? cand)
+       (if (string=? "" (cdr cand))
+	   (car cand)
+	   (string-append (car cand) "  " (cdr cand)))))
+
+     ;; What's the use of the last ""?
+     (number->string (+ idx 1)) "")))
 
 (define (byeoru-set-candidate-index-handler bc idx)
   (case (byeoru-context-mode bc)
