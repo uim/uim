@@ -2150,9 +2150,8 @@ msgid "Properties"
 msgstr ""
 
 #: ../scm/byeoru-custom.scm:90
-#, fuzzy
 msgid "Byeoru dictionaries"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/byeoru-custom.scm:94
 msgid "Workarounds"
@@ -2203,9 +2202,8 @@ msgid "Length of conversion history to keep"
 msgstr ""
 
 #: ../scm/byeoru-custom.scm:178
-#, fuzzy
 msgid "Conversion history file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:413
 msgid "Personal dictionary file"

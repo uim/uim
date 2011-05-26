@@ -1912,9 +1912,8 @@ msgid "Custom filter"
 msgstr "カスタムフィルタ"
 
 #: ../scm/annotation-custom.scm:67 ../scm/annotation-custom.scm:68
-#, fuzzy
 msgid "OS X dictionary services"
-msgstr "SKK 辞書"
+msgstr "OS X 辞書サービス"
 
 #: ../scm/annotation-custom.scm:71
 msgid "Input method itself"
@@ -2275,9 +2274,8 @@ msgid "Properties"
 msgstr "プロパティ"
 
 #: ../scm/byeoru-custom.scm:90
-#, fuzzy
 msgid "Byeoru dictionaries"
-msgstr "SKK 辞書"
+msgstr "Byeoru 辞書"
 
 #: ../scm/byeoru-custom.scm:94
 msgid "Workarounds"
@@ -2325,12 +2323,11 @@ msgstr "記号のキャッシュサイズ"
 
 #: ../scm/byeoru-custom.scm:171
 msgid "Length of conversion history to keep"
-msgstr ""
+msgstr "履歴サイズ"
 
 #: ../scm/byeoru-custom.scm:178
-#, fuzzy
 msgid "Conversion history file"
-msgstr "個人辞書ファイル"
+msgstr "履歴ファイル"
 
 #: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:413
 msgid "Personal dictionary file"
