@@ -30,6 +30,7 @@ scm/action.scm
 scm/ajax-ime-custom.scm
 scm/ajax-ime-key-custom.scm
 scm/ajax-ime.scm
+scm/annotation-custom.scm
 scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy-utf8-custom.scm
