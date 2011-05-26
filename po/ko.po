@@ -2167,9 +2167,8 @@ msgid "Properties"
 msgstr "속성"
 
 #: ../scm/byeoru-custom.scm:90
-#, fuzzy
 msgid "Byeoru dictionaries"
-msgstr "[벼루] 한글모드로"
+msgstr "벼루용 사전"
 
 #: ../scm/byeoru-custom.scm:94
 msgid "Workarounds"
@@ -2217,19 +2216,19 @@ msgstr "기억하고 있을 기호 개수"
 
 #: ../scm/byeoru-custom.scm:171
 msgid "Length of conversion history to keep"
-msgstr ""
+msgstr "저장할 변환 이력의 길이"
 
 #: ../scm/byeoru-custom.scm:178
 msgid "Conversion history file"
-msgstr ""
+msgstr "변환 이력 파일"
 
 #: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:413
 msgid "Personal dictionary file"
-msgstr ""
+msgstr "개인용 사전 파일"
 
 #: ../scm/byeoru-custom.scm:192 ../scm/skk-custom.scm:406
 msgid "System dictionary file"
-msgstr ""
+msgstr "시스템 사전 파일"
 
 #: ../scm/byeoru-custom.scm:199
 msgid "Represent incomplete syllables using compatibility jamos"
