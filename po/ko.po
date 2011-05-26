@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-05-09 15:13+0900\n"
+"POT-Creation-Date: 2011-05-26 10:38+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -16,537 +16,396 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../gtk3/toolbar/applet-gnome3.c:61 ../helper/toolbar-common-gtk.c:87
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:90
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:167
-msgid "Switch input method"
-msgstr "입력기 전환"
-
-#: ../gtk3/toolbar/applet-gnome3.c:63 ../helper/toolbar-common-gtk.c:100
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:92
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:193
-msgid "Preference"
-msgstr "설정"
-
-#: ../gtk3/toolbar/applet-gnome3.c:65 ../helper/toolbar-common-gtk.c:113
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:94
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:218
-msgid "Japanese dictionary editor"
-msgstr "일본어 사전 도구"
-
-#: ../gtk3/toolbar/applet-gnome3.c:67 ../helper/toolbar-common-gtk.c:126
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:96
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:243
-msgid "Input pad"
-msgstr "입력 패드"
-
-#: ../gtk3/toolbar/applet-gnome3.c:69 ../helper/toolbar-common-gtk.c:139
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:98
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:268
-msgid "Handwriting input pad"
-msgstr "손글씨 입력 패드"
-
-#: ../gtk3/toolbar/applet-gnome3.c:71 ../helper/toolbar-common-gtk.c:152
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:100
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:292 ../scm/im-custom.scm:130
-msgid "Help"
-msgstr "도움말"
-
-#: ../gtk3/toolbar/applet-gnome3.c:73
-msgid "About"
-msgstr ""
-
-#. Feel free to put your names here translators
-#: ../gtk3/toolbar/applet-gnome3.c:128 ../helper/toolbar-applet-gnome.c:133
-msgid "TRANSLATORS"
-msgstr "Jae-hyeon Park <jhyeon@gmail.com>"
-
-#: ../gtk3/toolbar/applet-gnome3.c:132 ../helper/toolbar-applet-gnome.c:137
-msgid "uim Applet"
-msgstr "uim 애플릿"
-
-#: ../gtk3/toolbar/applet-gnome3.c:135 ../helper/toolbar-applet-gnome.c:140
-msgid "Applet for indicating uim's status"
-msgstr "uim 상태 표시 애플릿"
-
-#: ../helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicates and controls the state of input method (for uim)"
-msgstr "입력기(uim)의 상태를 표시 및 제어"
-
-#: ../helper/GNOME_UimApplet.server.in.in.h:2
-msgid "Input Method Indicator"
-msgstr "입력기 표시부"
-
-#: ../helper/GNOME_UimApplet.server.in.in.h:3
-msgid "Utilities"
-msgstr "유틸리티"
-
-#: ../helper/GNOME_UimApplet.server.in.in.h:4
-msgid "uim Applet Factory"
-msgstr ""
-
-#: ../helper/GNOME_UimApplet.server.in.in.h:5
-msgid "uim applet factory"
-msgstr ""
-
-#: ../helper/dict-anthy.c:84 ../helper/dict-main-gtk.c:127
-#: ../helper/dict-word-list-win-gtk.c:353 ../helper/dict-word.c:133
-#: ../helper/dict-word.c:148
+#: ../gtk2/dict/anthy.c:84 ../gtk2/dict/main-gtk.c:127
+#: ../gtk2/dict/word-list-win-gtk.c:353 ../gtk2/dict/word.c:133
+#: ../gtk2/dict/word.c:148
 msgid "Anthy private dictionary"
 msgstr ""
 
-#: ../helper/dict-canna.c:87 ../helper/dict-main-gtk.c:149
-#: ../helper/dict-word-list-win-gtk.c:357 ../helper/dict-word.c:135
-#: ../helper/dict-word.c:150
+#: ../gtk2/dict/canna.c:87 ../gtk2/dict/main-gtk.c:149
+#: ../gtk2/dict/word-list-win-gtk.c:357 ../gtk2/dict/word.c:135
+#: ../gtk2/dict/word.c:150
 msgid "Canna private dictionary"
 msgstr ""
 
 #. construct dialog
-#: ../helper/dict-cclass-dialog.c:69 ../helper/dict-cclass-dialog.c:106
-#: ../helper/dict-word-list-view-gtk.c:282
+#: ../gtk2/dict/cclass-dialog.c:69 ../gtk2/dict/cclass-dialog.c:106
+#: ../gtk2/dict/word-list-view-gtk.c:282
 msgid "Part of Speech"
 msgstr ""
 
-#: ../helper/dict-cclass-dialog.c:115
+#: ../gtk2/dict/cclass-dialog.c:115
 msgid "Example"
 msgstr ""
 
-#: ../helper/dict-main-gtk.c:234
+#: ../gtk2/dict/main-gtk.c:234
 #, c-format
 msgid "Error:%s\n"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:138
+#: ../gtk2/dict/word-list-view-gtk.c:138
 msgid "Show part of speech column"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:139
-#: ../helper/dict-word-list-view-gtk.c:148
-#: ../helper/dict-word-list-view-gtk.c:156
-#: ../helper/dict-word-list-view-gtk.c:163
-#: ../helper/dict-word-list-view-gtk.c:164
-#: ../helper/dict-word-list-view-gtk.c:171
-#: ../helper/dict-word-list-view-gtk.c:172
+#: ../gtk2/dict/word-list-view-gtk.c:139 ../gtk2/dict/word-list-view-gtk.c:148
+#: ../gtk2/dict/word-list-view-gtk.c:156 ../gtk2/dict/word-list-view-gtk.c:163
+#: ../gtk2/dict/word-list-view-gtk.c:164 ../gtk2/dict/word-list-view-gtk.c:171
+#: ../gtk2/dict/word-list-view-gtk.c:172
 msgid "to be written"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:147
+#: ../gtk2/dict/word-list-view-gtk.c:147
 msgid "Show freq column"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:155
+#: ../gtk2/dict/word-list-view-gtk.c:155
 msgid "Show okuri column"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:214
+#: ../gtk2/dict/word-list-view-gtk.c:214
 msgid "Word Type"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:232
+#: ../gtk2/dict/word-list-view-gtk.c:232
 msgid "Phonetic"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:264
+#: ../gtk2/dict/word-list-view-gtk.c:264
 msgid "Literal"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:300
+#: ../gtk2/dict/word-list-view-gtk.c:300
 msgid "Frequency"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:312
+#: ../gtk2/dict/word-list-view-gtk.c:312
 msgid "Okuri"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:103
+#: ../gtk2/dict/word-list-win-gtk.c:103
 msgid "_Dictionary"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:104
+#: ../gtk2/dict/word-list-win-gtk.c:104
 msgid "_Select"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:105
+#: ../gtk2/dict/word-list-win-gtk.c:105
 msgid "_Edit"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:106
+#: ../gtk2/dict/word-list-win-gtk.c:106
 msgid "_Option"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:107
+#: ../gtk2/dict/word-list-win-gtk.c:107
 msgid "_Help"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:108
+#: ../gtk2/dict/word-list-win-gtk.c:108
 msgid "_Quit"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:109
+#: ../gtk2/dict/word-list-win-gtk.c:109
 msgid "Quit uim-dict"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:110
+#: ../gtk2/dict/word-list-win-gtk.c:110
 msgid "A_dd..."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:111
+#: ../gtk2/dict/word-list-win-gtk.c:111
 msgid "Add a new word"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:112
+#: ../gtk2/dict/word-list-win-gtk.c:112
 msgid "_Remove..."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:113
+#: ../gtk2/dict/word-list-win-gtk.c:113
 msgid "Remove the selected word"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:114
+#: ../gtk2/dict/word-list-win-gtk.c:114
 msgid "_Edit..."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:115
+#: ../gtk2/dict/word-list-win-gtk.c:115
 msgid "Edit the selected word"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:116
+#: ../gtk2/dict/word-list-win-gtk.c:116
 msgid "_Popup Menu"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:117
+#: ../gtk2/dict/word-list-win-gtk.c:117
 msgid "Show popup menu"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:118
+#: ../gtk2/dict/word-list-win-gtk.c:118
 msgid "_About"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:119
-#: ../helper/dict-word-list-win-gtk.c:621
+#: ../gtk2/dict/word-list-win-gtk.c:119 ../gtk2/dict/word-list-win-gtk.c:621
 msgid "About uim-dict"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:208
-#: ../helper/dict-word-list-win-gtk.c:209
+#: ../gtk2/dict/word-list-win-gtk.c:208 ../gtk2/dict/word-list-win-gtk.c:209
 msgid "dictionary type"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:227
+#: ../gtk2/dict/word-list-win-gtk.c:227
 msgid "Couldn't open the dictionary.\n"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:246
+#: ../gtk2/dict/word-list-win-gtk.c:246
 msgid "Edit the dictionary"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:368
+#: ../gtk2/dict/word-list-win-gtk.c:368
 #, c-format
 msgid "%s"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:470
+#: ../gtk2/dict/word-list-win-gtk.c:470
 msgid "Are you sure to remove seleted words?"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:476
+#: ../gtk2/dict/word-list-win-gtk.c:476
 msgid "Are you sure to remove the selected word?"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:505
+#: ../gtk2/dict/word-list-win-gtk.c:505
 msgid "Word deletion succeded."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:511
+#: ../gtk2/dict/word-list-win-gtk.c:511
 msgid "Word deletion failed."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:578
+#: ../gtk2/dict/word-list-win-gtk.c:578
 msgid "uim-dict"
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:589
+#: ../gtk2/dict/word-list-win-gtk.c:589
 msgid ""
 "Copyright (C) 2003-2004 Masahito Omote\n"
 "Copyright (C) 2004-2011 uim Project\n"
 "All rights reserved."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:615
+#: ../gtk2/dict/word-list-win-gtk.c:615
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
 "Copyright 2004-2011 uim Project http://code.google.com/p/uim/\n"
 "All rights reserved."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:53
+#: ../gtk2/dict/word-win-gtk.c:53
 msgid "Substantive"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:54
+#: ../gtk2/dict/word-win-gtk.c:54
 msgid "Verb"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:55
+#: ../gtk2/dict/word-win-gtk.c:55
 msgid "Adjective"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:56
+#: ../gtk2/dict/word-win-gtk.c:56
 msgid "Adverb"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:57
+#: ../gtk2/dict/word-win-gtk.c:57
 msgid "Etc"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:147
+#: ../gtk2/dict/word-win-gtk.c:147
 msgid "Necessary infomation"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:167
+#: ../gtk2/dict/word-win-gtk.c:167
 msgid "Additional infomation"
 msgstr ""
 
 #. action area
-#: ../helper/dict-word-win-gtk.c:181
+#: ../gtk2/dict/word-win-gtk.c:181
 msgid "continuance"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:194 ../qt4/pref/ui_keyeditformbase.h:116
+#: ../gtk2/dict/word-win-gtk.c:194 ../qt4/pref/keyeditformbase.cpp:54
 msgid "Add"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:200
+#: ../gtk2/dict/word-win-gtk.c:200
 msgid "Clear"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:207
+#: ../gtk2/dict/word-win-gtk.c:207
 msgid "Add a word"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:248
+#: ../gtk2/dict/word-win-gtk.c:248
 #, c-format
 msgid "Edit the word (%s)"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:252
+#: ../gtk2/dict/word-win-gtk.c:252
 #, c-format
 msgid "Add a word (%s)"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:278
+#: ../gtk2/dict/word-win-gtk.c:278
 msgid "_Phonetic:"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:286
+#: ../gtk2/dict/word-win-gtk.c:286
 msgid "_Literal:"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:294
+#: ../gtk2/dict/word-win-gtk.c:294
 msgid "Part of _Speech:"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:332
+#: ../gtk2/dict/word-win-gtk.c:332
 msgid "_Frequency:"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:363
+#: ../gtk2/dict/word-win-gtk.c:363
 msgid "Part of Speech(_narrow):"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:374
+#: ../gtk2/dict/word-win-gtk.c:374
 msgid "_Browse..."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:509
+#: ../gtk2/dict/word-win-gtk.c:509
 msgid "Word registration failed."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:516
+#: ../gtk2/dict/word-win-gtk.c:516
 msgid "Word registration succeded."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:546
+#: ../gtk2/dict/word-win-gtk.c:546
 msgid "Phonetic is emtpy!"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:561
+#: ../gtk2/dict/word-win-gtk.c:561
 msgid "Literal is emtpy!"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:579
+#: ../gtk2/dict/word-win-gtk.c:579
 msgid "Part of speech is emtpy!"
 msgstr ""
 
-#: ../helper/eggtrayicon.c:154
-msgid "Orientation"
-msgstr "방향"
-
-#: ../helper/eggtrayicon.c:155
-msgid "The orientation of the tray."
-msgstr "트레이의 방향"
-
-#: ../helper/im-switcher-gtk.c:306 ../qt/switcher-qt.cpp:112
-#: ../qt4/switcher/qt4.cpp:117
-msgid "InputMethodName"
-msgstr "입력기 이름"
-
-#: ../helper/im-switcher-gtk.c:315 ../qt/switcher-qt.cpp:113
-#: ../qt4/switcher/qt4.cpp:117 ../scm/predict-custom.scm:188
-msgid "Language"
-msgstr "언어"
-
-#: ../helper/im-switcher-gtk.c:324 ../qt/switcher-qt.cpp:114
-#: ../qt4/switcher/qt4.cpp:117
-msgid "Description"
-msgstr "설명"
-
-#: ../helper/im-switcher-gtk.c:355 ../qt/switcher-qt.cpp:74
-#: ../qt4/switcher/qt4.cpp:77
-msgid "uim input method switcher"
-msgstr "uim 입력기 전환"
-
-#: ../helper/im-switcher-gtk.c:384 ../qt/switcher-qt.cpp:118
-#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:470
-msgid "Effective coverage"
-msgstr "적용범위"
-
-#. radio buttons for the switcher coverage
-#: ../helper/im-switcher-gtk.c:392 ../qt/switcher-qt.cpp:119
-#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:462
-msgid "whole desktop"
-msgstr "데스크탑 전체"
-
-#. default is "whole desktop"
-#: ../helper/im-switcher-gtk.c:393 ../qt/switcher-qt.cpp:122
-#: ../qt4/switcher/qt4.cpp:124
-msgid "current application only"
-msgstr "현재 응용프로그램만"
-
-#: ../helper/im-switcher-gtk.c:394 ../qt/switcher-qt.cpp:124
-#: ../qt4/switcher/qt4.cpp:125
-msgid "current text area only"
-msgstr "현재 텍스트영역만"
-
-#: ../helper/input-pad-ja.c:491
+#: ../gtk2/pad/ja.c:491
 msgid "ja-pad"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:514
+#: ../gtk2/pad/ja.c:514
 msgid "hiragana"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:517
+#: ../gtk2/pad/ja.c:517
 msgid "katakana"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:520
+#: ../gtk2/pad/ja.c:520
 msgid "eisu"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:523
+#: ../gtk2/pad/ja.c:523
 msgid "symbol"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:526
+#: ../gtk2/pad/ja.c:526
 msgid "omission"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:529
+#: ../gtk2/pad/ja.c:529
 msgid "unit"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:532
+#: ../gtk2/pad/ja.c:532
 msgid "number"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:535
+#: ../gtk2/pad/ja.c:535
 msgid "academic"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:538
+#: ../gtk2/pad/ja.c:538
 msgid "greek"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:541
+#: ../gtk2/pad/ja.c:541
 msgid "cyrillic"
 msgstr ""
 
-#: ../helper/input-pad-ja.c:544
+#: ../gtk2/pad/ja.c:544
 msgid "line"
 msgstr ""
 
-#: ../helper/pref-gtk-custom-widgets.c:451
+#: ../gtk2/pref/gtk-custom-widgets.c:451
 msgid "Specify file"
 msgstr "파일을 지정하십시오"
 
-#: ../helper/pref-gtk-custom-widgets.c:499
-#: ../helper/pref-gtk-custom-widgets.c:503 ../qt/pref-customwidgets.cpp:183
-#: ../qt/pref-customwidgets.cpp:187 ../qt4/pref/customwidgets.cpp:195
-#: ../qt4/pref/customwidgets.cpp:199
+#: ../gtk2/pref/gtk-custom-widgets.c:499 ../gtk2/pref/gtk-custom-widgets.c:503
+#: ../qt3/pref/customwidgets.cpp:183 ../qt3/pref/customwidgets.cpp:187
+#: ../qt4/pref/customwidgets.cpp:196 ../qt4/pref/customwidgets.cpp:200
 msgid "Select..."
 msgstr "선택..."
 
-#: ../helper/pref-gtk-custom-widgets.c:1209
+#: ../gtk2/pref/gtk-custom-widgets.c:1209
 msgid "Enabled"
 msgstr "유효"
 
-#: ../helper/pref-gtk-custom-widgets.c:1235
+#: ../gtk2/pref/gtk-custom-widgets.c:1235
 msgid "Enabled items"
 msgstr "유효한 항목"
 
-#: ../helper/pref-gtk-custom-widgets.c:1313
+#: ../gtk2/pref/gtk-custom-widgets.c:1313
 msgid "Disabled"
 msgstr "무효"
 
-#: ../helper/pref-gtk-custom-widgets.c:1339
+#: ../gtk2/pref/gtk-custom-widgets.c:1339
 msgid "Disabled items"
 msgstr "무효인 항목"
 
-#: ../helper/pref-gtk-custom-widgets.c:1377
-#: ../helper/pref-gtk-custom-widgets.c:1910
+#: ../gtk2/pref/gtk-custom-widgets.c:1377
+#: ../gtk2/pref/gtk-custom-widgets.c:1910
 msgid "Edit..."
 msgstr "편집..."
 
-#: ../helper/pref-gtk-custom-widgets.c:1530 ../qt/pref-customwidgets.cpp:878
-#: ../qt4/pref/customwidgets.cpp:892
+#: ../gtk2/pref/gtk-custom-widgets.c:1530 ../qt3/pref/customwidgets.cpp:878
+#: ../qt4/pref/customwidgets.cpp:888
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
-#: ../helper/pref-gtk-custom-widgets.c:1531
+#: ../gtk2/pref/gtk-custom-widgets.c:1531
 msgid "Grabbing keys"
 msgstr "키를 잡고 있는 중"
 
-#: ../helper/pref-gtk-custom-widgets.c:1752
+#: ../gtk2/pref/gtk-custom-widgets.c:1752
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - 키 설정"
 
-#: ../helper/pref-gtk-custom-widgets.c:1791
+#: ../gtk2/pref/gtk-custom-widgets.c:1791
 msgid "Key preference"
 msgstr "키 설정"
 
-#: ../helper/pref-gtk-custom-widgets.c:1838
+#: ../gtk2/pref/gtk-custom-widgets.c:1838
 msgid "Key:"
 msgstr "키:"
 
-#: ../helper/pref-gtk-custom-widgets.c:1855
+#: ../gtk2/pref/gtk-custom-widgets.c:1855
 msgid "Grab..."
 msgstr "잡기..."
 
-#: ../helper/pref-gtk.c:153
+#: ../gtk2/pref/gtk.c:153
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -554,7 +413,7 @@ msgstr ""
 "바뀐 내용이 있습니다.\n"
 "저장하시겠습니까?"
 
-#: ../helper/pref-gtk.c:232 ../qt/pref-qt.cpp:274 ../qt4/pref/qt4.cpp:278
+#: ../gtk2/pref/gtk.c:232 ../qt3/pref/qt.cpp:274 ../qt4/pref/qt4.cpp:278
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -562,32 +421,32 @@ msgstr ""
 "바뀐 내용이 있습니다.\n"
 "정말로 종료하시겠습니까?"
 
-#: ../helper/pref-gtk.c:284 ../qt/pref-qt.cpp:145 ../qt4/pref/qt4.cpp:142
+#: ../gtk2/pref/gtk.c:284 ../qt3/pref/qt.cpp:145 ../qt4/pref/qt4.cpp:142
 msgid "Group"
 msgstr "그룹"
 
 #. Defaults button
-#: ../helper/pref-gtk.c:385
+#: ../gtk2/pref/gtk.c:385
 msgid "_Defaults"
 msgstr "디폴트(_D)"
 
-#: ../helper/pref-gtk.c:389
+#: ../gtk2/pref/gtk.c:389
 msgid "Revert all changes to default"
 msgstr "모든 설정을 디폴트로"
 
-#: ../helper/pref-gtk.c:398
+#: ../gtk2/pref/gtk.c:398
 msgid "Apply all changes"
 msgstr "바뀐 설정을 모두 적용"
 
-#: ../helper/pref-gtk.c:405
+#: ../gtk2/pref/gtk.c:405
 msgid "Quit this application without applying changes"
 msgstr "바뀐 설정을 버리고 종료"
 
-#: ../helper/pref-gtk.c:415
+#: ../gtk2/pref/gtk.c:415
 msgid "Quit this application with applying changes"
 msgstr "바뀐 설정을 저장하고 종료"
 
-#: ../helper/pref-gtk.c:574
+#: ../gtk2/pref/gtk.c:574
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -604,33 +463,168 @@ msgstr ""
 "(To suppress this dialog, add following line to ~/.uim)\n"
 "(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 
-#: ../helper/toolbar-common-gtk.c:290 ../helper/toolbar-common-gtk.c:538
+#: ../gtk2/switcher/gtk.c:306 ../qt3/switcher/qt.cpp:112
+#: ../qt4/switcher/qt4.cpp:117
+msgid "InputMethodName"
+msgstr "입력기 이름"
+
+#: ../gtk2/switcher/gtk.c:315 ../qt3/switcher/qt.cpp:113
+#: ../qt4/switcher/qt4.cpp:117 ../scm/predict-custom.scm:188
+msgid "Language"
+msgstr "언어"
+
+#: ../gtk2/switcher/gtk.c:324 ../qt3/switcher/qt.cpp:114
+#: ../qt4/switcher/qt4.cpp:117
+msgid "Description"
+msgstr "설명"
+
+#: ../gtk2/switcher/gtk.c:355 ../qt3/switcher/qt.cpp:74
+#: ../qt4/switcher/qt4.cpp:77
+msgid "uim input method switcher"
+msgstr "uim 입력기 전환"
+
+#: ../gtk2/switcher/gtk.c:384 ../qt3/switcher/qt.cpp:118
+#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:470
+msgid "Effective coverage"
+msgstr "적용범위"
+
+#. radio buttons for the switcher coverage
+#: ../gtk2/switcher/gtk.c:392 ../qt3/switcher/qt.cpp:119
+#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:462
+msgid "whole desktop"
+msgstr "데스크탑 전체"
+
+#. default is "whole desktop"
+#: ../gtk2/switcher/gtk.c:393 ../qt3/switcher/qt.cpp:122
+#: ../qt4/switcher/qt4.cpp:124
+msgid "current application only"
+msgstr "현재 응용프로그램만"
+
+#: ../gtk2/switcher/gtk.c:394 ../qt3/switcher/qt.cpp:124
+#: ../qt4/switcher/qt4.cpp:125
+msgid "current text area only"
+msgstr "현재 텍스트영역만"
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:1
+msgid "Indicates and controls the state of input method (for uim)"
+msgstr "입력기(uim)의 상태를 표시 및 제어"
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:2
+msgid "Input Method Indicator"
+msgstr "입력기 표시부"
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:3
+msgid "Utilities"
+msgstr "유틸리티"
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:4
+msgid "uim Applet Factory"
+msgstr ""
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:5
+msgid "uim applet factory"
+msgstr ""
+
+#: ../gtk2/toolbar/eggtrayicon.c:154
+msgid "Orientation"
+msgstr "방향"
+
+#: ../gtk2/toolbar/eggtrayicon.c:155
+msgid "The orientation of the tray."
+msgstr "트레이의 방향"
+
+#. Feel free to put your names here translators
+#: ../gtk2/toolbar/applet-gnome.c:133 ../gtk3/toolbar/applet-gnome3.c:128
+msgid "TRANSLATORS"
+msgstr "Jae-hyeon Park <jhyeon@gmail.com>"
+
+#: ../gtk2/toolbar/applet-gnome.c:137 ../gtk3/toolbar/applet-gnome3.c:132
+msgid "uim Applet"
+msgstr "uim 애플릿"
+
+#: ../gtk2/toolbar/applet-gnome.c:140 ../gtk3/toolbar/applet-gnome3.c:135
+msgid "Applet for indicating uim's status"
+msgstr "uim 상태 표시 애플릿"
+
+#: ../gtk2/toolbar/common-gtk.c:87 ../gtk3/toolbar/applet-gnome3.c:61
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:78
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:140
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:90
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:167
+msgid "Switch input method"
+msgstr "입력기 전환"
+
+#: ../gtk2/toolbar/common-gtk.c:100 ../gtk3/toolbar/applet-gnome3.c:63
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:79
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:165
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:92
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:193
+msgid "Preference"
+msgstr "설정"
+
+#: ../gtk2/toolbar/common-gtk.c:113 ../gtk3/toolbar/applet-gnome3.c:65
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:80
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:189
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:94
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:218
+msgid "Japanese dictionary editor"
+msgstr "일본어 사전 도구"
+
+#: ../gtk2/toolbar/common-gtk.c:126 ../gtk3/toolbar/applet-gnome3.c:67
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:81
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:213
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:96
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:243
+msgid "Input pad"
+msgstr "입력 패드"
+
+#: ../gtk2/toolbar/common-gtk.c:139 ../gtk3/toolbar/applet-gnome3.c:69
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:82
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:237
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:98
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:268
+msgid "Handwriting input pad"
+msgstr "손글씨 입력 패드"
+
+#: ../gtk2/toolbar/common-gtk.c:152 ../gtk3/toolbar/applet-gnome3.c:71
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:83
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:260
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:100
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:292 ../scm/im-custom.scm:130
+msgid "Help"
+msgstr "도움말"
+
+#: ../gtk2/toolbar/common-gtk.c:290 ../gtk2/toolbar/common-gtk.c:538
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr ""
 
-#: ../helper/toolbar-common-gtk.c:921
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
+#: ../gtk2/toolbar/common-gtk.c:921
+#: ../qt3/toolbar/common-quimhelpertoolbar.cpp:85
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
 msgid "Quit this toolbar"
 msgstr "종료"
 
-#: ../helper/toolbar-standalone-gtk.c:332
+#: ../gtk2/toolbar/standalone-gtk.c:332
 #, c-format
 msgid "Unable to parse the geometry string '%s'"
 msgstr ""
 
-#: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
-#: ../qt4/pref/customwidgets.cpp:359 ../qt4/pref/customwidgets.cpp:639
-#: ../qt4/pref/ui_keyeditformbase.h:118
+#: ../gtk3/toolbar/applet-gnome3.c:73
+msgid "About"
+msgstr ""
+
+#: ../qt3/pref/customwidgets.cpp:349 ../qt3/pref/customwidgets.cpp:632
+#: ../qt4/pref/customwidgets.cpp:360 ../qt4/pref/customwidgets.cpp:638
+#: ../qt4/pref/keyeditformbase.cpp:60
 msgid "Edit"
 msgstr "편집"
 
-#: ../qt/pref-customwidgets.cpp:881 ../qt4/pref/customwidgets.cpp:897
+#: ../qt3/pref/customwidgets.cpp:881 ../qt4/pref/customwidgets.cpp:893
 msgid "Key Grab Dialog"
 msgstr "키 잡기 대화창"
 
-#: ../qt/pref-qt.cpp:113 ../qt4/pref/qt4.cpp:109
+#: ../qt3/pref/qt.cpp:113 ../qt4/pref/qt4.cpp:109
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -642,37 +636,37 @@ msgstr ""
 "(\"~/.uim.d/customs/*.scm\")보다 우선합니다.\n"
 "설정이 반영되지 않을 경우에는 \"~/.uim\"의 내용을 확인하십시오."
 
-#: ../qt/pref-qt.cpp:121 ../qt4/pref/qt4.cpp:117
+#: ../qt3/pref/qt.cpp:121 ../qt4/pref/qt4.cpp:117
 msgid "~/.uim exists!"
 msgstr "~/.uim 가 있습니다!"
 
-#: ../qt/pref-qt.cpp:163 ../qt4/pref/qt4.cpp:158
+#: ../qt3/pref/qt.cpp:163 ../qt4/pref/qt4.cpp:158
 msgid "Defaults"
 msgstr "디폴트"
 
-#: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
-#: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
-#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/ui_keyeditformbase.h:119
-#: ../qt4/pref/ui_olisteditformbase.h:113 ../qt4/switcher/qt4.cpp:138
+#: ../qt3/pref/qt.cpp:166 ../qt3/pref/qt.cpp:257 ../qt3/pref/qt.cpp:364
+#: ../qt3/switcher/qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
+#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/keyeditformbase.cpp:65
+#: ../qt4/pref/olisteditformbase.cpp:64 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "확인"
 
-#: ../qt/pref-qt.cpp:169 ../qt4/pref/qt4.cpp:164 ../qt4/switcher/qt4.cpp:143
+#: ../qt3/pref/qt.cpp:169 ../qt4/pref/qt4.cpp:164 ../qt4/switcher/qt4.cpp:143
 msgid "Apply"
 msgstr "적용"
 
-#: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:134
+#: ../qt3/pref/qt.cpp:173 ../qt3/pref/qt.cpp:258 ../qt3/switcher/qt.cpp:134
 #: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
-#: ../qt4/pref/ui_keyeditformbase.h:120 ../qt4/pref/ui_olisteditformbase.h:114
+#: ../qt4/pref/keyeditformbase.cpp:69 ../qt4/pref/olisteditformbase.cpp:68
 #: ../qt4/switcher/qt4.cpp:148
 msgid "Cancel"
 msgstr "취소"
 
-#: ../qt/pref-qt.cpp:255 ../qt4/pref/qt4.cpp:259
+#: ../qt3/pref/qt.cpp:255 ../qt4/pref/qt4.cpp:259
 msgid "Save Confirm"
 msgstr "저장 확인"
 
-#: ../qt/pref-qt.cpp:256 ../qt4/pref/qt4.cpp:260
+#: ../qt3/pref/qt.cpp:256 ../qt4/pref/qt4.cpp:260
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -680,47 +674,47 @@ msgstr ""
 "내용이 바뀌었습니다.\n"
 "저장하시겠습니까?"
 
-#: ../qt/pref-qt.cpp:273 ../qt4/pref/qt4.cpp:277
+#: ../qt3/pref/qt.cpp:273 ../qt4/pref/qt4.cpp:277
 msgid "Quit Confirm"
 msgstr "종료 확인"
 
-#: ../qt/pref-qt.cpp:276 ../qt4/pref/qt4.cpp:280
+#: ../qt3/pref/qt.cpp:276 ../qt4/pref/qt4.cpp:280
 msgid "Yes"
 msgstr "예"
 
-#: ../qt/pref-qt.cpp:277 ../qt4/pref/qt4.cpp:281
+#: ../qt3/pref/qt.cpp:277 ../qt4/pref/qt4.cpp:281
 msgid "No"
 msgstr "아니오"
 
-#: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:367
+#: ../qt3/pref/qt.cpp:360 ../qt4/pref/qt4.cpp:367
 msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
 
-#: ../qt4/pref/ui_keyeditformbase.h:113
+#: ../qt4/pref/keyeditformbase.cpp:47
 msgid "Edit Keys"
 msgstr ""
 
-#: ../qt4/pref/ui_keyeditformbase.h:115
+#: ../qt4/pref/keyeditformbase.cpp:51
 msgid "Key Combination"
 msgstr ""
 
-#: ../qt4/pref/ui_keyeditformbase.h:117
+#: ../qt4/pref/keyeditformbase.cpp:57
 msgid "Remove"
 msgstr ""
 
-#: ../qt4/pref/ui_olisteditformbase.h:108
+#: ../qt4/pref/olisteditformbase.cpp:47
 msgid "Edit Ordered List"
 msgstr ""
 
-#: ../qt4/pref/ui_olisteditformbase.h:110
+#: ../qt4/pref/olisteditformbase.cpp:53
 msgid "Available Items"
 msgstr ""
 
-#: ../qt4/pref/ui_olisteditformbase.h:111
+#: ../qt4/pref/olisteditformbase.cpp:56
 msgid "Up"
 msgstr ""
 
-#: ../qt4/pref/ui_olisteditformbase.h:112
+#: ../qt4/pref/olisteditformbase.cpp:59
 msgid "Down"
 msgstr ""
 
@@ -770,34 +764,45 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:372 ../scm/ajax-ime-custom.scm:378
 #: ../scm/ajax-ime-key-custom.scm:36 ../scm/ajax-ime-key-custom.scm:40
 #: ../scm/ajax-ime-key-custom.scm:44 ../scm/ajax-ime-key-custom.scm:48
-#: ../scm/anthy-custom.scm:48 ../scm/anthy-custom.scm:58
-#: ../scm/anthy-custom.scm:64 ../scm/anthy-custom.scm:79
-#: ../scm/anthy-custom.scm:85 ../scm/anthy-custom.scm:91
-#: ../scm/anthy-custom.scm:97 ../scm/anthy-custom.scm:195
-#: ../scm/anthy-custom.scm:214 ../scm/anthy-custom.scm:223
-#: ../scm/anthy-custom.scm:265 ../scm/anthy-custom.scm:274
-#: ../scm/anthy-custom.scm:312 ../scm/anthy-custom.scm:318
-#: ../scm/anthy-custom.scm:324 ../scm/anthy-custom.scm:330
-#: ../scm/anthy-custom.scm:362 ../scm/anthy-custom.scm:368
-#: ../scm/anthy-custom.scm:374 ../scm/anthy-key-custom.scm:37
-#: ../scm/anthy-key-custom.scm:41 ../scm/anthy-key-custom.scm:45
-#: ../scm/anthy-key-custom.scm:49 ../scm/anthy-utf8-custom.scm:55
-#: ../scm/anthy-utf8-custom.scm:65 ../scm/anthy-utf8-custom.scm:71
-#: ../scm/anthy-utf8-custom.scm:86 ../scm/anthy-utf8-custom.scm:92
-#: ../scm/anthy-utf8-custom.scm:98 ../scm/anthy-utf8-custom.scm:104
-#: ../scm/anthy-utf8-custom.scm:202 ../scm/anthy-utf8-custom.scm:221
-#: ../scm/anthy-utf8-custom.scm:230 ../scm/anthy-utf8-custom.scm:272
-#: ../scm/anthy-utf8-custom.scm:281 ../scm/anthy-utf8-custom.scm:319
-#: ../scm/anthy-utf8-custom.scm:325 ../scm/anthy-utf8-custom.scm:331
-#: ../scm/anthy-utf8-custom.scm:337 ../scm/anthy-utf8-custom.scm:369
-#: ../scm/anthy-utf8-custom.scm:375 ../scm/anthy-utf8-custom.scm:381
-#: ../scm/byeoru-custom.scm:83 ../scm/byeoru-custom.scm:87
-#: ../scm/byeoru-custom.scm:91 ../scm/byeoru-custom.scm:106
-#: ../scm/byeoru-custom.scm:113 ../scm/byeoru-custom.scm:116
-#: ../scm/byeoru-custom.scm:119 ../scm/byeoru-custom.scm:121
-#: ../scm/byeoru-custom.scm:133 ../scm/byeoru-custom.scm:139
-#: ../scm/byeoru-custom.scm:145 ../scm/byeoru-custom.scm:156
-#: ../scm/byeoru-custom.scm:162 ../scm/byeoru-custom.scm:169
+#: ../scm/annotation-custom.scm:42 ../scm/annotation-custom.scm:72
+#: ../scm/annotation-custom.scm:78 ../scm/annotation-custom.scm:97
+#: ../scm/annotation-custom.scm:105 ../scm/annotation-custom.scm:118
+#: ../scm/annotation-custom.scm:130 ../scm/annotation-custom.scm:137
+#: ../scm/annotation-custom.scm:144 ../scm/annotation-custom.scm:151
+#: ../scm/annotation-custom.scm:158 ../scm/annotation-custom.scm:186
+#: ../scm/annotation-custom.scm:201 ../scm/annotation-custom.scm:214
+#: ../scm/annotation-custom.scm:220 ../scm/annotation-custom.scm:226
+#: ../scm/annotation-custom.scm:232 ../scm/anthy-custom.scm:48
+#: ../scm/anthy-custom.scm:58 ../scm/anthy-custom.scm:64
+#: ../scm/anthy-custom.scm:79 ../scm/anthy-custom.scm:85
+#: ../scm/anthy-custom.scm:91 ../scm/anthy-custom.scm:97
+#: ../scm/anthy-custom.scm:195 ../scm/anthy-custom.scm:214
+#: ../scm/anthy-custom.scm:223 ../scm/anthy-custom.scm:265
+#: ../scm/anthy-custom.scm:274 ../scm/anthy-custom.scm:312
+#: ../scm/anthy-custom.scm:318 ../scm/anthy-custom.scm:324
+#: ../scm/anthy-custom.scm:330 ../scm/anthy-custom.scm:362
+#: ../scm/anthy-custom.scm:368 ../scm/anthy-custom.scm:374
+#: ../scm/anthy-key-custom.scm:37 ../scm/anthy-key-custom.scm:41
+#: ../scm/anthy-key-custom.scm:45 ../scm/anthy-key-custom.scm:49
+#: ../scm/anthy-utf8-custom.scm:55 ../scm/anthy-utf8-custom.scm:65
+#: ../scm/anthy-utf8-custom.scm:71 ../scm/anthy-utf8-custom.scm:86
+#: ../scm/anthy-utf8-custom.scm:92 ../scm/anthy-utf8-custom.scm:98
+#: ../scm/anthy-utf8-custom.scm:104 ../scm/anthy-utf8-custom.scm:202
+#: ../scm/anthy-utf8-custom.scm:221 ../scm/anthy-utf8-custom.scm:230
+#: ../scm/anthy-utf8-custom.scm:272 ../scm/anthy-utf8-custom.scm:281
+#: ../scm/anthy-utf8-custom.scm:319 ../scm/anthy-utf8-custom.scm:325
+#: ../scm/anthy-utf8-custom.scm:331 ../scm/anthy-utf8-custom.scm:337
+#: ../scm/anthy-utf8-custom.scm:369 ../scm/anthy-utf8-custom.scm:375
+#: ../scm/anthy-utf8-custom.scm:381 ../scm/byeoru-custom.scm:83
+#: ../scm/byeoru-custom.scm:87 ../scm/byeoru-custom.scm:91
+#: ../scm/byeoru-custom.scm:95 ../scm/byeoru-custom.scm:110
+#: ../scm/byeoru-custom.scm:117 ../scm/byeoru-custom.scm:120
+#: ../scm/byeoru-custom.scm:123 ../scm/byeoru-custom.scm:125
+#: ../scm/byeoru-custom.scm:137 ../scm/byeoru-custom.scm:143
+#: ../scm/byeoru-custom.scm:149 ../scm/byeoru-custom.scm:160
+#: ../scm/byeoru-custom.scm:166 ../scm/byeoru-custom.scm:172
+#: ../scm/byeoru-custom.scm:179 ../scm/byeoru-custom.scm:186
+#: ../scm/byeoru-custom.scm:193 ../scm/byeoru-custom.scm:200
 #: ../scm/byeoru-key-custom.scm:37 ../scm/byeoru-key-custom.scm:41
 #: ../scm/canna-custom.scm:44 ../scm/canna-custom.scm:48
 #: ../scm/canna-custom.scm:52 ../scm/canna-custom.scm:62
@@ -869,46 +874,41 @@ msgstr ""
 #: ../scm/im-custom.scm:513 ../scm/im-custom.scm:520 ../scm/im-custom.scm:523
 #: ../scm/im-custom.scm:525 ../scm/im-custom.scm:531 ../scm/im-custom.scm:542
 #: ../scm/im-custom.scm:548 ../scm/im-custom.scm:555 ../scm/im-custom.scm:558
-#: ../scm/im-custom.scm:560 ../scm/im-custom.scm:588 ../scm/im-custom.scm:604
-#: ../scm/im-custom.scm:606 ../scm/im-custom.scm:625 ../scm/im-custom.scm:633
-#: ../scm/im-custom.scm:646 ../scm/im-custom.scm:658 ../scm/im-custom.scm:665
-#: ../scm/im-custom.scm:672 ../scm/im-custom.scm:679 ../scm/im-custom.scm:686
-#: ../scm/im-custom.scm:714 ../scm/im-custom.scm:729 ../scm/im-custom.scm:735
-#: ../scm/im-custom.scm:741 ../scm/im-custom.scm:747 ../scm/im-custom.scm:753
-#: ../scm/im-custom.scm:795 ../scm/im-custom.scm:801 ../scm/im-custom.scm:816
-#: ../scm/im-custom.scm:836 ../scm/im-custom.scm:842 ../scm/im-custom.scm:854
-#: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
-#: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
-#: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
-#: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
-#: ../scm/look-custom.scm:77 ../scm/look-custom.scm:83
-#: ../scm/look-custom.scm:89 ../scm/mana-custom.scm:54
-#: ../scm/mana-custom.scm:60 ../scm/mana-custom.scm:75
-#: ../scm/mana-custom.scm:81 ../scm/mana-custom.scm:87
-#: ../scm/mana-custom.scm:93 ../scm/mana-custom.scm:191
-#: ../scm/mana-custom.scm:210 ../scm/mana-custom.scm:219
-#: ../scm/mana-custom.scm:261 ../scm/mana-custom.scm:270
-#: ../scm/mana-custom.scm:308 ../scm/mana-custom.scm:314
-#: ../scm/mana-custom.scm:320 ../scm/mana-key-custom.scm:37
-#: ../scm/mana-key-custom.scm:41 ../scm/mana-key-custom.scm:45
-#: ../scm/mana-key-custom.scm:49 ../scm/predict-custom.scm:39
-#: ../scm/predict-custom.scm:46 ../scm/predict-custom.scm:64
-#: ../scm/predict-custom.scm:76 ../scm/predict-custom.scm:111
-#: ../scm/predict-custom.scm:146 ../scm/predict-custom.scm:167
-#: ../scm/predict-custom.scm:189 ../scm/predict-custom.scm:195
-#: ../scm/prime-custom.scm:64 ../scm/prime-custom.scm:70
-#: ../scm/prime-custom.scm:76 ../scm/prime-custom.scm:84
-#: ../scm/prime-custom.scm:90 ../scm/prime-custom.scm:105
-#: ../scm/prime-custom.scm:111 ../scm/prime-custom.scm:117
-#: ../scm/prime-custom.scm:129 ../scm/prime-custom.scm:153
-#: ../scm/prime-custom.scm:159 ../scm/prime-custom.scm:166
-#: ../scm/prime-custom.scm:173 ../scm/prime-custom.scm:181
-#: ../scm/prime-custom.scm:202 ../scm/prime-custom.scm:208
-#: ../scm/prime-custom.scm:219 ../scm/prime-key-custom.scm:65
-#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
-#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52
-#: ../scm/sj3-custom.scm:62 ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83
-#: ../scm/sj3-custom.scm:89 ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
+#: ../scm/im-custom.scm:560 ../scm/im-custom.scm:588 ../scm/im-custom.scm:594
+#: ../scm/im-custom.scm:609 ../scm/im-custom.scm:629 ../scm/im-custom.scm:635
+#: ../scm/im-custom.scm:647 ../scm/japanese-custom.scm:33
+#: ../scm/japanese-custom.scm:37 ../scm/japanese-custom.scm:43
+#: ../scm/look-custom.scm:40 ../scm/look-custom.scm:47
+#: ../scm/look-custom.scm:54 ../scm/look-custom.scm:60
+#: ../scm/look-custom.scm:66 ../scm/look-custom.scm:77
+#: ../scm/look-custom.scm:83 ../scm/look-custom.scm:89
+#: ../scm/mana-custom.scm:54 ../scm/mana-custom.scm:60
+#: ../scm/mana-custom.scm:75 ../scm/mana-custom.scm:81
+#: ../scm/mana-custom.scm:87 ../scm/mana-custom.scm:93
+#: ../scm/mana-custom.scm:191 ../scm/mana-custom.scm:210
+#: ../scm/mana-custom.scm:219 ../scm/mana-custom.scm:261
+#: ../scm/mana-custom.scm:270 ../scm/mana-custom.scm:308
+#: ../scm/mana-custom.scm:314 ../scm/mana-custom.scm:320
+#: ../scm/mana-key-custom.scm:37 ../scm/mana-key-custom.scm:41
+#: ../scm/mana-key-custom.scm:45 ../scm/mana-key-custom.scm:49
+#: ../scm/predict-custom.scm:39 ../scm/predict-custom.scm:46
+#: ../scm/predict-custom.scm:64 ../scm/predict-custom.scm:76
+#: ../scm/predict-custom.scm:111 ../scm/predict-custom.scm:146
+#: ../scm/predict-custom.scm:167 ../scm/predict-custom.scm:189
+#: ../scm/predict-custom.scm:203 ../scm/prime-custom.scm:64
+#: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
+#: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
+#: ../scm/prime-custom.scm:105 ../scm/prime-custom.scm:111
+#: ../scm/prime-custom.scm:117 ../scm/prime-custom.scm:129
+#: ../scm/prime-custom.scm:153 ../scm/prime-custom.scm:159
+#: ../scm/prime-custom.scm:166 ../scm/prime-custom.scm:173
+#: ../scm/prime-custom.scm:181 ../scm/prime-custom.scm:202
+#: ../scm/prime-custom.scm:208 ../scm/prime-custom.scm:219
+#: ../scm/prime-key-custom.scm:65 ../scm/prime-key-custom.scm:69
+#: ../scm/prime-key-custom.scm:73 ../scm/sj3-custom.scm:44
+#: ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52 ../scm/sj3-custom.scm:62
+#: ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83 ../scm/sj3-custom.scm:89
+#: ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
 #: ../scm/sj3-custom.scm:200 ../scm/sj3-custom.scm:219
 #: ../scm/sj3-custom.scm:228 ../scm/sj3-custom.scm:270
 #: ../scm/sj3-custom.scm:279 ../scm/sj3-custom.scm:322
@@ -1791,6 +1791,107 @@ msgid ""
 "(advanced) setting."
 msgstr ""
 
+#: ../scm/annotation-custom.scm:41
+msgid "Enable annotation"
+msgstr "주석을 사용"
+
+#: ../scm/annotation-custom.scm:56 ../scm/annotation-custom.scm:57
+#: ../scm/annotation-custom.scm:96
+msgid "EB library"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:60 ../scm/annotation-custom.scm:61
+#: ../scm/annotation-custom.scm:129
+msgid "dict server"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:63 ../scm/annotation-custom.scm:64
+#: ../scm/annotation-custom.scm:185
+msgid "Custom filter"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:67 ../scm/annotation-custom.scm:68
+msgid "OS X dictionary services"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:71
+msgid "Input method itself"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:77
+msgid "Annotation agent name"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:104
+msgid "Use EB library to search annotations"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:117
+msgid "The directory which contains EB dictionary file"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:136
+msgid "Server address of dict"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:143
+msgid "Server port of dict"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:150
+msgid "Database name of dict"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:157
+msgid "Number of cache of annotation"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:192 ../scm/prime-custom.scm:96
+msgid "Unix domain"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:193
+msgid "Use UNIX domain socket to communicate with custom filter."
+msgstr ""
+
+#: ../scm/annotation-custom.scm:195 ../scm/prime-custom.scm:99
+msgid "TCP server"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:196
+msgid "Use tcp server to communicate with custom filter"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:198 ../scm/prime-custom.scm:102
+msgid "Pipe"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:199
+msgid ""
+"Use pipe. spawn new annotation-filter process to communicate with custom "
+"filter"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:200
+msgid "Custom filter connection setting"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:213
+msgid "Path of custom filter socket"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:219
+msgid "Custom filter server address"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:225
+msgid "Custom filter server port"
+msgstr ""
+
+#: ../scm/annotation-custom.scm:231
+msgid "Path of custom filter"
+msgstr ""
+
 #: ../scm/anthy-custom.scm:35 ../scm/anthy-utf8-custom.scm:35
 msgid "Anthy"
 msgstr ""
@@ -2066,50 +2167,71 @@ msgid "Properties"
 msgstr "속성"
 
 #: ../scm/byeoru-custom.scm:90
+#, fuzzy
+msgid "Byeoru dictionaries"
+msgstr "[벼루] 한글모드로"
+
+#: ../scm/byeoru-custom.scm:94
 msgid "Workarounds"
 msgstr "꼼수"
 
-#: ../scm/byeoru-custom.scm:105
+#: ../scm/byeoru-custom.scm:109
 msgid "Hangul keyboard layout"
 msgstr "한글 자판 배열"
 
-#: ../scm/byeoru-custom.scm:112
+#: ../scm/byeoru-custom.scm:116
 msgid "ordered"
 msgstr "순서대로"
 
-#: ../scm/byeoru-custom.scm:115
+#: ../scm/byeoru-custom.scm:119
 msgid "orderless"
 msgstr "순서 없음"
 
-#: ../scm/byeoru-custom.scm:118
+#: ../scm/byeoru-custom.scm:122
 msgid "more orderless"
 msgstr "순서 엉망"
 
-#: ../scm/byeoru-custom.scm:120
+#: ../scm/byeoru-custom.scm:124
 msgid "Jamo input is"
 msgstr "자모 입력은"
 
-#: ../scm/byeoru-custom.scm:132
+#: ../scm/byeoru-custom.scm:136
 msgid "ESC turns off Hangul mode (for vi users)"
 msgstr "ESC를 누르면 영문모드로 (vi 사용자용)"
 
-#: ../scm/byeoru-custom.scm:138
+#: ../scm/byeoru-custom.scm:142
 msgid "Default unit of commitment is word"
 msgstr "따로 지정하지 않으면 단어단위 입력"
 
-#: ../scm/byeoru-custom.scm:144
+#: ../scm/byeoru-custom.scm:148
 msgid "Shifted roman vowel inputs an isolated vowel"
 msgstr "쉬프트를 누른 채 로마자 모음 키를 누르면 한글 모음만 입력"
 
-#: ../scm/byeoru-custom.scm:155 ../scm/elatin-custom.scm:258
+#: ../scm/byeoru-custom.scm:159 ../scm/elatin-custom.scm:258
 msgid "Candidate window size"
 msgstr "후보창의 크기"
 
-#: ../scm/byeoru-custom.scm:161
+#: ../scm/byeoru-custom.scm:165
 msgid "Symbol cache size"
 msgstr "기억하고 있을 기호 개수"
 
-#: ../scm/byeoru-custom.scm:168
+#: ../scm/byeoru-custom.scm:171
+msgid "Length of conversion history to keep"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:178
+msgid "Conversion history file"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:413
+msgid "Personal dictionary file"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:192 ../scm/skk-custom.scm:406
+msgid "System dictionary file"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:199
 msgid "Represent incomplete syllables using compatibility jamos"
 msgstr "미완성 음절을 한글 호환성 자모로 표현"
 
@@ -3179,144 +3301,50 @@ msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
 #: ../scm/im-custom.scm:587
-msgid "Enable annotation"
-msgstr "주석을 사용"
-
-#: ../scm/im-custom.scm:594 ../scm/im-custom.scm:595 ../scm/im-custom.scm:624
-msgid "EB library"
-msgstr ""
-
-#: ../scm/im-custom.scm:597 ../scm/im-custom.scm:598 ../scm/im-custom.scm:657
-msgid "dict server"
-msgstr ""
-
-#: ../scm/im-custom.scm:600 ../scm/im-custom.scm:601 ../scm/im-custom.scm:713
-msgid "Custom filter"
-msgstr ""
-
-#: ../scm/im-custom.scm:603
-msgid "Input method itself"
-msgstr ""
-
-#: ../scm/im-custom.scm:605
-msgid "Annotation agent name"
-msgstr ""
-
-#: ../scm/im-custom.scm:632
-msgid "Use EB library to search annotations"
-msgstr ""
-
-#: ../scm/im-custom.scm:645
-msgid "The directory which contains EB dictionary file"
-msgstr ""
-
-#: ../scm/im-custom.scm:664
-msgid "Server address of dict"
-msgstr ""
-
-#: ../scm/im-custom.scm:671
-msgid "Server port of dict"
-msgstr ""
-
-#: ../scm/im-custom.scm:678
-msgid "Database name of dict"
-msgstr ""
-
-#: ../scm/im-custom.scm:685
-msgid "Number of cache of annotation"
-msgstr ""
-
-#: ../scm/im-custom.scm:720 ../scm/prime-custom.scm:96
-msgid "Unix domain"
-msgstr ""
-
-#: ../scm/im-custom.scm:721
-msgid "Use UNIX domain socket to communicate with custom filter."
-msgstr ""
-
-#: ../scm/im-custom.scm:723 ../scm/prime-custom.scm:99
-msgid "TCP server"
-msgstr ""
-
-#: ../scm/im-custom.scm:724
-msgid "Use tcp server to communicate with custom filter"
-msgstr ""
-
-#: ../scm/im-custom.scm:726 ../scm/prime-custom.scm:102
-msgid "Pipe"
-msgstr ""
-
-#: ../scm/im-custom.scm:727
-msgid ""
-"Use pipe. spawn new annotation-filter process to communicate with custom "
-"filter"
-msgstr ""
-
-#: ../scm/im-custom.scm:728
-msgid "Custom filter connection setting"
-msgstr ""
-
-#: ../scm/im-custom.scm:734
-msgid "Path of custom filter socket"
-msgstr ""
-
-#: ../scm/im-custom.scm:740
-msgid "Custom filter server address"
-msgstr ""
-
-#: ../scm/im-custom.scm:746
-msgid "Custom filter server port"
-msgstr ""
-
-#: ../scm/im-custom.scm:752
-msgid "Path of custom filter"
-msgstr ""
-
-#: ../scm/im-custom.scm:794
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: ../scm/im-custom.scm:800
+#: ../scm/im-custom.scm:593
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
-#: ../scm/im-custom.scm:815
+#: ../scm/im-custom.scm:608
 msgid "Notify agent name"
 msgstr ""
 
-#: ../scm/im-custom.scm:826
+#: ../scm/im-custom.scm:619
 msgid "Direct connection"
 msgstr ""
 
-#: ../scm/im-custom.scm:827
+#: ../scm/im-custom.scm:620
 msgid "Direct connection, no proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:829
+#: ../scm/im-custom.scm:622
 msgid "User"
 msgstr ""
 
-#: ../scm/im-custom.scm:830
+#: ../scm/im-custom.scm:623
 msgid "Use proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:835
+#: ../scm/im-custom.scm:628
 msgid "Proxy setting"
 msgstr ""
 
-#: ../scm/im-custom.scm:841
+#: ../scm/im-custom.scm:634
 msgid "Http proxy hostname"
 msgstr ""
 
-#: ../scm/im-custom.scm:853
+#: ../scm/im-custom.scm:646
 msgid "Http proxy port"
 msgstr ""
 
-#: ../scm/im-custom.scm:865
+#: ../scm/im-custom.scm:658
 msgid "Timeout (msec)"
 msgstr ""
 
-#: ../scm/im-custom.scm:866
+#: ../scm/im-custom.scm:659
 msgid "Timeout of http connection (msec)."
 msgstr ""
 
@@ -4302,7 +4330,7 @@ msgstr ""
 msgid "Max words of candidates for google suggest"
 msgstr ""
 
-#: ../scm/predict-custom.scm:194
+#: ../scm/predict-custom.scm:202
 msgid "Enable SSL with Google Suggest"
 msgstr ""
 
@@ -5177,14 +5205,6 @@ msgstr ""
 msgid "Address family of skkserv"
 msgstr ""
 
-#: ../scm/skk-custom.scm:406
-msgid "System dictionary file"
-msgstr ""
-
-#: ../scm/skk-custom.scm:413
-msgid "Personal dictionary file"
-msgstr ""
-
 #: ../scm/skk-custom.scm:420
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr ""
@@ -5985,7 +6005,7 @@ msgstr ""
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr ""
 
-#: ../scm/tutcode.scm:762
+#: ../scm/tutcode.scm:764
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr ""
 
@@ -6461,28 +6481,28 @@ msgstr ""
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
 
-#: ../uim/uim-eb.c:103
+#: ../uim/uim-eb.c:100
 #, c-format
 msgid "eb: failed to initialize EB library : error = %s\n"
 msgstr ""
 
-#: ../uim/uim-eb.c:125
+#: ../uim/uim-eb.c:122
 msgid "eb: wrong bookpath"
 msgstr ""
 
-#: ../uim/uim-eb.c:132
+#: ../uim/uim-eb.c:129
 msgid "eb: eb_subbook_list() failed\n"
 msgstr ""
 
-#: ../uim/uim-eb.c:175
+#: ../uim/uim-eb.c:172
 msgid "eb: eb_set_subbook() failed"
 msgstr ""
 
-#: ../uim/uim-eb.c:205
+#: ../uim/uim-eb.c:202
 msgid "eb: eb_seek_text error occurs"
 msgstr ""
 
-#: ../uim/uim-eb.c:217
+#: ../uim/uim-eb.c:214
 msgid "eb_read_text : an error occurs"
 msgstr ""
 
