@@ -446,6 +446,9 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
       if (register_icon(icon_list->data)) {
 	img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img); 
+#if GTK_CHECK_VERSION(2, 16, 0)
+	gtk_image_menu_item_set_always_show_image(GTK_IMAGE_MENU_ITEM(menu_item), TRUE);
+#endif
       }
     }
 
