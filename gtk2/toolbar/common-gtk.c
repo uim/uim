@@ -442,7 +442,11 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
       if (i == selected)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
     } else {
-      menu_item = gtk_menu_item_new_with_label(label_list->data);
+      menu_item = gtk_image_menu_item_new_with_label(label_list->data);
+      if (register_icon(icon_list->data)) {
+	img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img); 
+      }
     }
 
     /* tooltips */
