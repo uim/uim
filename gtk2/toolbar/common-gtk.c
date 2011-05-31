@@ -419,31 +419,27 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 
   i = 0;
   while (label_list) {
-    if (selected != -1) {
-      menu_item = gtk_check_menu_item_new();
-      label = gtk_label_new(label_list->data);
-      hbox = gtk_hbox_new(FALSE, 0);
+    menu_item = gtk_check_menu_item_new();
+    label = gtk_label_new(label_list->data);
+    hbox = gtk_hbox_new(FALSE, 0);
 #if GTK_CHECK_VERSION(2, 4, 0)
-      gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
-					    TRUE);
+    gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
+					  TRUE);
 #endif
-      if (register_icon(icon_list->data))
-	img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
-      else
-	img = gtk_image_new_from_stock("null", GTK_ICON_SIZE_MENU);
-      if (img) {
-	gtk_box_pack_start(GTK_BOX(hbox), img, FALSE, FALSE, 3);
-	gtk_widget_show(img);
-      }
-      gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 3);
-      gtk_container_add(GTK_CONTAINER(menu_item), hbox);
-      gtk_widget_show(label);
-      gtk_widget_show(hbox);
-      if (i == selected)
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
-    } else {
-      menu_item = gtk_menu_item_new_with_label(label_list->data);
+    if (register_icon(icon_list->data))
+      img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
+    else
+      img = gtk_image_new_from_stock("null", GTK_ICON_SIZE_MENU);
+    if (img) {
+      gtk_box_pack_start(GTK_BOX(hbox), img, FALSE, FALSE, 3);
+      gtk_widget_show(img);
     }
+    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 3);
+    gtk_container_add(GTK_CONTAINER(menu_item), hbox);
+    gtk_widget_show(label);
+    gtk_widget_show(hbox);
+    if (i == selected)
+      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
 
     /* tooltips */
     gtk_widget_set_tooltip_text(menu_item,
