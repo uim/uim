@@ -611,7 +611,7 @@
 (custom-add-hook 'notify-agent
                  'custom-set-hooks
                  (lambda ()
-		   (if (symbol-bound? 'uim-notify-load)
+                   (if (symbol-bound? 'uim-notify-load)
                      (uim-notify-load (symbol->string
                                         notify-agent)))))
 
