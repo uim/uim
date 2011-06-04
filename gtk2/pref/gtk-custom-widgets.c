@@ -1521,7 +1521,6 @@ static void
 choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 {
   GtkWidget *dialog;
-  gint rv;
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(widget)),
 				  GTK_DIALOG_MODAL,
@@ -1539,7 +1538,7 @@ choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 		    TRUE, GDK_CURRENT_TIME);
 
 
-  rv = gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_dialog_run(GTK_DIALOG(dialog));
 
   gtk_widget_destroy(dialog);
 }
