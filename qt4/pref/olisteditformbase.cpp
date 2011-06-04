@@ -58,7 +58,8 @@ OListEditFormBase::OListEditFormBase(QWidget *widget) : QDialog(widget)
     m_downButton = new QPushButton;
     m_downButton->setText(_("Down"));
 
-    QSpacerItem *spacer2 = new QSpacerItem(20, 140, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QSpacerItem *spacer = new QSpacerItem(0, 0,
+            QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     QPushButton *m_okButton = new QPushButton;
     m_okButton->setText(_("OK"));
@@ -71,7 +72,7 @@ OListEditFormBase::OListEditFormBase(QWidget *widget) : QDialog(widget)
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(m_upButton);
     vboxLayout->addWidget(m_downButton);
-    vboxLayout->addItem(spacer2);
+    vboxLayout->addItem(spacer);
     vboxLayout->addWidget(m_okButton);
     vboxLayout->addWidget(m_cancelButton);
 

@@ -59,7 +59,8 @@ KeyEditFormBase::KeyEditFormBase(QWidget *widget) : QDialog(widget)
     m_editButton = new QPushButton;
     m_editButton->setText(_("Edit"));
 
-    QSpacerItem *spacer1 = new QSpacerItem(77, 50, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QSpacerItem *spacer = new QSpacerItem(0, 0,
+            QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     QPushButton *m_okButton = new QPushButton;
     m_okButton->setText(_("OK"));
@@ -73,7 +74,7 @@ KeyEditFormBase::KeyEditFormBase(QWidget *widget) : QDialog(widget)
     vboxLayout->addWidget(m_addButton);
     vboxLayout->addWidget(m_removeButton);
     vboxLayout->addWidget(m_editButton);
-    vboxLayout->addItem(spacer1);
+    vboxLayout->addItem(spacer);
     vboxLayout->addWidget(m_okButton);
     vboxLayout->addWidget(m_cancelButton);
 
