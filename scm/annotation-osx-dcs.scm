@@ -28,13 +28,12 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
-(require-dynlib "osx-dcs")
 
 (define osx-dcs-ctx #f)
 
 (define annotation-osx-dcs-init
   (lambda ()
-    (if (provided? "osx-dcs")
+    (if (require-dynlib "osx-dcs")
       (begin
         (set! osx-dcs-ctx #t)
         #t)
@@ -51,5 +50,5 @@
     (if osx-dcs-ctx
       (begin
         (set! osx-dcs-ctx #f)
-        #t)
+        (dynlib-unload "osx-dcs"))
       #f)))
