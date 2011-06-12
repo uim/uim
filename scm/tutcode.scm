@@ -185,10 +185,17 @@
 ;;;   <Control>.打鍵時にのみ補完/予測入力候補を表示します。
 ;;; * 熟語ガイド(次に入力が予測される文字の打鍵ガイド)は
 ;;;   補完/予測入力候補から作っています。
-;;; * 熟語ガイドで表示されている+付き文字に対応するキーを入力した場合、
+;;; * 仮想鍵盤上での熟語ガイド表示
+;;;   熟語ガイドで表示されている+付き文字に対応するキーを入力した場合、
 ;;;   2打鍵目以降も仮想鍵盤上に+付きで表示するので、
 ;;;   ガイドに従って漢字の入力が可能です。
-;;;   (通常は仮想鍵盤非表示の場合でも、一時的に<Control>/で表示すれば確認可能)
+;;;   通常は仮想鍵盤非表示の場合でも、+付き文字に対応するキーを入力した場合、
+;;;   一時的に仮想鍵盤を表示するには、
+;;;   tutcode-stroke-help-with-kanji-combination-guideを'full(+付き以外の
+;;;   文字も表示)か'guide-only(+付きの文字のみ表示)に設定してください。
+;;;     例:「火蓋」を入力しようとして「火」の入力後「蓋」の打ち方を
+;;;        ど忘れした場合、<Control>.キーで補完。熟語ガイドで+付きの「蓋」の
+;;;        表示に従って1,2,3打鍵を入力。
 ;;;
 ;;; - (理想的には、次の打鍵がしばらく無い場合に補完/予測入力候補を表示したいの
 ;;;    ですが、現状のuimにはタイマが無いので、打鍵直後に表示されます。
@@ -1102,12 +1109,14 @@
 (define (tutcode-push-key! pc key)
   (let ((res (rk-push-key! (tutcode-context-rk-context pc) key)))
     (and res
-      (if
-        (and
-          (not (null? (cdr res)))
-          (tutcode-context-katakana-mode? pc))
-        (cadr res)
-        (car res)))))
+      (begin
+        (tutcode-context-set-guide-chars! pc ())
+        (if
+          (and
+            (not (null? (cdr res)))
+            (tutcode-context-katakana-mode? pc))
+          (cadr res)
+          (car res))))))
 
 ;;; 変換中状態をクリアする。
 ;;; @param pc コンテキストリスト
@@ -1127,6 +1136,7 @@
     (tutcode-context-set-mazegaki-suffix! pc ())
     (tutcode-reset-candidate-window pc)
     (tutcode-context-set-latin-conv! pc #f)
+    (tutcode-context-set-guide-chars! pc ())
     (tutcode-context-set-child-context! pc ())
     (tutcode-context-set-child-type! pc ())
     (if (not (null? cpc))
@@ -1702,53 +1712,65 @@
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
   (if (eq? (tutcode-context-candidate-window pc) 'tutcode-candidate-window-off)
-    (let* ((rkc (tutcode-context-rk-context pc))
-           (seq (rk-context-seq rkc))
-           (seqlen (length seq))
-           (rule (rk-context-rule rkc))
-           (ret (rk-lib-find-partial-seqs (reverse seq) rule))
-           (katakana? (tutcode-context-katakana-mode? pc))
-           ;; 例:(("k" "あ") ("i" "い") ("g" "*贈"))
-           (label-cand-alist
-            (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
-              (cond
-                ((tutcode-kigou2-mode? pc)
-                  tutcode-kigou-rule-stroke-help-top-page-alist)
-                (katakana?
-                  (if (null? tutcode-stroke-help-top-page-katakana-alist)
-                    (set! tutcode-stroke-help-top-page-katakana-alist
-                      (tutcode-stroke-help-update-alist
-                        () seqlen katakana? ret)))
-                  tutcode-stroke-help-top-page-katakana-alist)
-                (else
-                  (if (null? tutcode-stroke-help-top-page-alist)
-                    (set! tutcode-stroke-help-top-page-alist
-                      (tutcode-stroke-help-update-alist
-                        () seqlen katakana? ret)))
-                  tutcode-stroke-help-top-page-alist))
-              (tutcode-stroke-help-update-alist () seqlen katakana? ret))))
-      ;; 熟語ガイドや自動ヘルプからの続きで、入力候補文字にマークを付ける
-      (if (and (pair? seq)
-               (pair? (tutcode-context-guide-chars pc)))
-        (let*
-          ((guide-rule (tutcode-context-guide-chars pc))
-           (ret (rk-lib-find-partial-seqs (reverse seq) guide-rule))
-           (guide-alist (tutcode-stroke-help-guide-update-alist () seqlen ret))
-           ;; 例:(("," "石") ("u" "+池屋"))
-           (guide-candcombined
-            (map
+    (let*
+      ((rkc (tutcode-context-rk-context pc))
+       (seq (rk-context-seq rkc))
+       (seqlen (length seq))
+       (seq-rev (reverse seq))
+       (guide-seqs
+        (and
+          (pair? seq)
+          (pair? (tutcode-context-guide-chars pc))
+          (rk-lib-find-partial-seqs seq-rev (tutcode-context-guide-chars pc))))
+       (guide-alist (tutcode-stroke-help-guide-update-alist () seqlen
+                      (if (pair? guide-seqs) guide-seqs ())))
+       ;; 例:(("v" "玉+") ("a" "倉+") ("r" "石+"))
+       (guide-candcombined
+        (map
+          (lambda (elem)
+            (list (car elem) (string-list-concat (cdr elem))))
+          guide-alist))
+       ;; stroke-help. 例:(("k" "あ") ("i" "い") ("g" "*贈"))
+       (label-cand-alist
+        (if (or tutcode-use-stroke-help-window?
+                (and
+                  (pair? guide-seqs)
+                  (eq? tutcode-stroke-help-with-kanji-combination-guide 'full)))
+          (let*
+            ((rule (rk-context-rule rkc))
+             (ret (rk-lib-find-partial-seqs seq-rev rule))
+             (katakana? (tutcode-context-katakana-mode? pc))
+             (label-cand-alist
+              (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
+                (cond
+                  ((tutcode-kigou2-mode? pc)
+                    tutcode-kigou-rule-stroke-help-top-page-alist)
+                  (katakana?
+                    (if (null? tutcode-stroke-help-top-page-katakana-alist)
+                      (set! tutcode-stroke-help-top-page-katakana-alist
+                        (tutcode-stroke-help-update-alist
+                          () seqlen katakana? ret)))
+                    tutcode-stroke-help-top-page-katakana-alist)
+                  (else
+                    (if (null? tutcode-stroke-help-top-page-alist)
+                      (set! tutcode-stroke-help-top-page-alist
+                        (tutcode-stroke-help-update-alist
+                          () seqlen katakana? ret)))
+                    tutcode-stroke-help-top-page-alist))
+                (tutcode-stroke-help-update-alist () seqlen katakana? ret))))
+            ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
+            (for-each
               (lambda (elem)
-                (list (car elem) (string-list-concat (cdr elem))))
-              guide-alist)))
-          ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
-          (for-each
-            (lambda (elem)
-              (let*
-                ((label (car elem))
-                 (label-cand (assoc label label-cand-alist)))
-                (if label-cand
-                  (set-cdr! label-cand (cdr elem)))))
-            guide-candcombined)))
+                (let*
+                  ((label (car elem))
+                   (label-cand (assoc label label-cand-alist)))
+                  (if label-cand
+                    (set-cdr! label-cand (cdr elem)))))
+              guide-candcombined)
+            label-cand-alist)
+          (if (eq? tutcode-stroke-help-with-kanji-combination-guide 'guide-only)
+            guide-candcombined
+            ()))))
       (if (not (null? label-cand-alist))
         (let
           ((stroke-help
@@ -1859,8 +1881,8 @@
       (tutcode-context-set-guide-chars! pc (cons kanji-stroke chars)))))
 
 ;;; 仮想鍵盤上の熟語ガイドの表示に使うalistを更新する。
-;;; alistは以下のようにラベル文字と表示用文字列のリスト。
-;;; 例: (("," "石") ("u" "+池屋"))
+;;; alistは以下のようにラベル文字と表示用文字列のリスト(逆順)。
+;;; 例: (("v" "+" "玉") ("a" "+" "倉") ("r" "+" "石"))
 ;;; @param label-cands-alist 元のalist
 ;;; @param seqlen 何番目のストロークを対象とするか。
 ;;; @param rule-list rk-rule。
@@ -4129,7 +4151,9 @@
            (tutcode-proc-state-off pc key key-state)
            (if (tutcode-state-has-preedit? c) ; 再帰学習時
              (tutcode-update-preedit pc))))
-        (if tutcode-use-stroke-help-window?
+        (if (or tutcode-use-stroke-help-window?
+                (not (eq? tutcode-stroke-help-with-kanji-combination-guide
+                          'disable)))
           ;; editorの作成・削除の可能性があるのでdescendant-context取得し直し
           (let ((newpc (tutcode-find-descendant-context c)))
             (if
