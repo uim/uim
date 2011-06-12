@@ -37,6 +37,7 @@
 #include <sys/types.h>
 #include <sys/param.h>
 
+#define CANNA_NEW_WCHAR_AWARE
 #include <canna/RK.h>
 
 #include <stdlib.h>
