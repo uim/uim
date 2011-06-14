@@ -1034,15 +1034,14 @@ toolbar_new(gint type)
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
-#if 0
   /*
-   * Please enable this if you'd like to save default IM into
-   * ~/.uim.d/custom/custom-global.scm upon system global IM switch.  However,
-   * using uim-custom consumes quite amount of memory, and requires additional
-   * startup time.
+   * Set uim-toolbar-save-default-im? #t in ~/.uim enable this if you'd like to
+   * save default IM into ~/.uim.d/custom/custom-global.scm upon system global
+   * IM switch.  However, using uim-custom consumes quite amount of memory, and
+   * requires additional startup time.
    */
-  custom_enabled = (gboolean)uim_custom_enable();
-#endif
+  if (uim_scm_symbol_value_bool("uim-toolbar-save-default-im?"))
+    custom_enabled = (gboolean)uim_custom_enable();
 
   helper_toolbar_check_custom();
   init_icon();
