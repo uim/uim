@@ -602,7 +602,7 @@
       (if (or (not diff)
 	      (> diff 5))
 	(begin
-	  (uim-notify-info (N_ "Caveat: All the request to Ajax-IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting."))
+	  (uim-notify-info (N_ "Caveat: All requests to the Ajax-IME server go over the Internet unencrypted.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting."))
 	  (set! ajax-ime-prev-warn-connection-time (time))))))
   (if (not ajax-ime-init-lib-ok?)
       (begin

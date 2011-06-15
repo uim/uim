@@ -662,7 +662,7 @@
       (if (or (not diff)
 	      (> diff 5))
 	(begin
-	  (uim-notify-info (N_ "Caveat: All the request to Social IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting."))
+	  (uim-notify-info (N_ "Caveat: All requests to the Social IME server go over the Internet unencrypted.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting."))
 	  (set! social-ime-prev-warn-connection-time (time))))))
   (if (not social-ime-init-lib-ok?)
       (begin
