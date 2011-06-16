@@ -31,7 +31,7 @@ noinst_PROGRAMS = gtk-rc-get-immodule-file
 gtk_rc_get_immodule_file_SOURCES = gtk-rc-get-immodule-file.c
 gtk_rc_get_immodule_file_CFLAGS = @GTK2_CFLAGS@
 gtk_rc_get_immodule_file_LDADD = @GTK2_LIBS@
-GTK_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk/gtk-rc-get-immodule-file
+GTK_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk2/immodule/gtk-rc-get-immodule-file
 QUERY_COMMAND = gtk-query-immodules-2.0
 
 install-data-hook: gtk-rc-get-immodule-file
