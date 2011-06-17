@@ -236,7 +236,7 @@ uim_cand_win_horizontal_gtk_new (void)
 
 static GtkButton*
 assign_cellbutton(UIMCandWinHorizontalGtk *horizontal_cwin,
-    gchar *heading, gint cand_index, gint display_limit)
+		  gint cand_index, gint display_limit)
 {
   struct index_button *idxbutton;
   int len;
@@ -405,7 +405,7 @@ update_table_button(UIMCandWinHorizontalGtk *horizontal_cwin, guint new_page)
     gtk_tree_model_get(model, &ti, COLUMN_HEADING, &heading,
         COLUMN_CANDIDATE, &cand_str, TERMINATOR);
     if (cand_str != NULL) {
-      button = assign_cellbutton(horizontal_cwin, heading, cand_index, display_limit);
+      button = assign_cellbutton(horizontal_cwin, cand_index, display_limit);
       if (button != NULL) {
         gtk_button_set_relief(button, GTK_RELIEF_NONE);
         gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE);
