@@ -796,8 +796,10 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
   else
     new_page = cwin->page_index;
 
-  if (cwin->page_index != new_page)
+  if (cwin->page_index != new_page) {
     uim_cand_win_gtk_set_page(cwin, new_page);
+    uim_cand_win_gtk_show(cwin);
+  }
 
   if (cwin->candidate_index >= 0) {
     gint pos;
