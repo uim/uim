@@ -60,12 +60,12 @@ static void	uim_cand_win_gtk_class_init	(UIMCandWinGtkClass *klass);
 static void	uim_cand_win_gtk_dispose	(GObject *obj);
 static void	uim_cand_win_gtk_map		(GtkWidget *widget);
 static void	uim_cand_win_gtk_unmap		(GtkWidget *widget);
-static void	uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin);
-static void	uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin);
 static void	uim_cand_win_gtk_real_set_index		(UIMCandWinGtk *cwin,
 							 gint index);
 static void	uim_cand_win_gtk_real_set_page		(UIMCandWinGtk *cwin,
 							 gint page);
+static void	uim_cand_win_gtk_real_create_sub_window(UIMCandWinGtk *cwin);
+static void	uim_cand_win_gtk_real_layout_sub_window	(UIMCandWinGtk *cwin);
 
 static gboolean	tree_selection_change		(GtkTreeSelection *selection,
 						 GtkTreeModel *model,
@@ -138,6 +138,8 @@ uim_cand_win_gtk_class_init (UIMCandWinGtkClass *klass)
 
   klass->set_index = uim_cand_win_gtk_real_set_index;
   klass->set_page = uim_cand_win_gtk_real_set_page;
+  klass->create_sub_window = uim_cand_win_gtk_real_create_sub_window;
+  klass->layout_sub_window = uim_cand_win_gtk_real_layout_sub_window;
 }
 
 void
@@ -846,7 +848,8 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   cursor_y = cwin->cursor.y;
 
   if (sc_wi <  topwin_x + cursor_x + cw_wi) {
-    x = topwin_x + cursor_x - cw_wi;
+    /* x = topwin_x + cursor_x - cw_wi; */
+    x = sc_wi - cw_wi;
   } else {
     x = topwin_x + cursor_x;
   }
@@ -871,11 +874,17 @@ uim_cand_win_gtk_set_cursor_location(UIMCandWinGtk *cwin, GdkRectangle *area)
   cwin->cursor = *area;
 }
 
+void
+uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
+{
+  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->create_sub_window(cwin);
+}
+
 #define UIM_ANNOTATION_WIN_WIDTH 200
 #define UIM_ANNOTATION_WIN_HEIGHT 200
 
-static void
-uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
+void
+uim_cand_win_gtk_real_create_sub_window(UIMCandWinGtk *cwin)
 {
   GtkWidget *window, *scrwin, *text_view, *frame;
   GdkGeometry hints;
@@ -911,8 +920,15 @@ uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
   gtk_widget_show(text_view);
 }
 
-static void
+
+void
 uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
+{
+  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->layout_sub_window(cwin);
+}
+
+void
+uim_cand_win_gtk_real_layout_sub_window(UIMCandWinGtk *cwin)
 {
 #if GTK_CHECK_VERSION(2, 90, 0)
   gint x, y, w, h, sw, sh, x2, y2, w2, h2;

@@ -27,6 +27,8 @@ IM_UIM_SOURCES = \
 	../../gtk2/immodule/uim-cand-win-gtk.h \
 	../../gtk2/immodule/uim-cand-win-tbl-gtk.c \
 	../../gtk2/immodule/uim-cand-win-tbl-gtk.h \
+	../../gtk2/immodule/uim-cand-win-horizontal-gtk.c \
+	../../gtk2/immodule/uim-cand-win-horizontal-gtk.h \
 	../../gtk2/immodule/caret-state-indicator.c \
 	../../gtk2/immodule/caret-state-indicator.h \
 	../../gtk2/immodule/compose.c ../../gtk2/immodule/compose.h \

@@ -90,6 +90,8 @@ struct _UIMCandWinGtkClass {
   /* member functions */
   void (*set_index)		(UIMCandWinGtk *cwin, gint index);
   void (*set_page)		(UIMCandWinGtk *cwin, gint page);
+  void (*create_sub_window)	(UIMCandWinGtk *cwin);
+  void (*layout_sub_window)	(UIMCandWinGtk *cwin);
 };
 
 
@@ -138,6 +140,9 @@ void		uim_cand_win_gtk_set_cursor_location	(UIMCandWinGtk *cwin,
 void		uim_cand_win_gtk_get_window_pos_type	(UIMCandWinGtk *cwin);
 
 void		uim_cand_win_gtk_update_label		(UIMCandWinGtk *cwin);
+
+void		uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin);
+void		uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin);
 
 G_END_DECLS
 
