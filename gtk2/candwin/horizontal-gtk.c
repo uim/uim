@@ -984,7 +984,7 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
   if (new_index >= (gint) cwin->nr_candidates)
     new_index = cwin->nr_candidates - 1;
 
- /* shrink the window */
+  /* shrink the window */
   gtk_window_resize(GTK_WINDOW(cwin), CANDWIN_DEFAULT_WIDTH, 1);
 
   uim_cand_win_gtk_set_index(cwin, new_index);
