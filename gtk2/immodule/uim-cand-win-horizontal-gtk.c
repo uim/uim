@@ -318,16 +318,16 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
       if (annotation && *annotation) {
 	if (!cwin->sub_window.window)
           uim_cand_win_gtk_create_sub_window(cwin);
-          gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(cwin->sub_window.text_view)), annotation, -1);
-          uim_cand_win_gtk_layout_sub_window(cwin);
-          gtk_widget_show(cwin->sub_window.window);
-          cwin->sub_window.active = TRUE;
-        } else {
-          if (cwin->sub_window.window) {
-            gtk_widget_hide(cwin->sub_window.window);
-            cwin->sub_window.active = FALSE;
-          }
-        }
+	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(cwin->sub_window.text_view)), annotation, -1);
+	uim_cand_win_gtk_layout_sub_window(cwin);
+	gtk_widget_show(cwin->sub_window.window);
+	cwin->sub_window.active = TRUE;
+      } else {
+        if (cwin->sub_window.window) {
+          gtk_widget_hide(cwin->sub_window.window);
+          cwin->sub_window.active = FALSE;
+	}
+      }
       free(annotation);
     }
   }
