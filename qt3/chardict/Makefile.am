@@ -28,7 +28,7 @@ uim_chardict_qt_SOURCES = \
 	chargridview.cpp chargridview.h \
 	kseparator.cpp kseparator.h \
 	unicodeviewwidget.cpp unicodeviewwidget.h \
-	../qtgettext.h
+	qtgettext.h
 uim_chardict_qt_CXXFLAGS = @UIM_QT_CXXFLAGS@ -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 
 uim_chardict_qt_LDFLAGS  = @UIM_QT_LDFLAGS@
