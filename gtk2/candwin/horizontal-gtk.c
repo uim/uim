@@ -190,7 +190,7 @@ candidate_window_get_type(void)
 {
   if (!candidate_window_type)
     candidate_window_type = g_type_register_static(GTK_TYPE_WINDOW,
-		    "UIMCanWinHorizontalGtk", &object_info, (GTypeFlags)0);
+		    "UIMCandWinHorizontalGtk", &object_info, (GTypeFlags)0);
   return candidate_window_type;
 }
 
