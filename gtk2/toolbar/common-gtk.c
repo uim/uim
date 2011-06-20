@@ -313,15 +313,20 @@ right_button_pressed(GtkButton *button, GdkEventButton *event, gpointer data)
 }
 
 static void
+save_default_im_internal(const char *im)
+{
+  uim_scm_callf("custom-set-value!",
+		"yy",
+		"custom-preserved-default-im-name",
+		im);
+  uim_custom_save_custom("custom-preserved-default-im-name");
+}
+
+static void
 save_default_im(const char *im)
 {
-  if (custom_enabled) {
-    uim_scm_callf("custom-set-value!",
-		  "yy",
-		  "custom-preserved-default-im-name",
-		  im);
-    uim_custom_save_custom("custom-preserved-default-im-name");
-  }
+  if (custom_enabled)
+    uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)save_default_im_internal, (void *)im);
 }
 
 static gboolean
