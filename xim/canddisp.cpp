@@ -40,6 +40,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/param.h>
 
 #include "uim/uim.h"
 #include "uim/uim-util.h"
@@ -51,16 +52,17 @@
 #include "canddisp.h"
 #include "util.h"
 
+#define CANDWIN_PROG_PREFIX	(UIM_LIBEXECDIR "/uim-candwin")
 #if defined(USE_QT_CANDWIN)
-  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-qt")
+  #define CANDWIN_PROG_SUFFIX	"-qt"
 #elif defined(USE_QT4_CANDWIN)
-  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-qt4")
+  #define CANDWIN_PROG_SUFFIX	"-qt4"
 #elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
-  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-gtk")
+  #define CANDWIN_PROG_SUFFIX	"-gtk"
 #elif defined(USE_GTK3_CANDWIN)
-  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-gtk3")
+  #define CANDWIN_PROG_SUFFIX	"-gtk3"
 #else
-  #define DEFAULT_CANDWIN_PROG	NULL
+  #define NO_TOOLKIT
 #endif
 
 static FILE *candwin_r, *candwin_w;
@@ -73,30 +75,55 @@ static void candwin_read_cb(int fd, int ev);
 
 static const char *candwin_command(void)
 {
-    char *candwin_prog;
+    static char candwin_prog[MAXPATHLEN];
     const char *user_config;
+    char *str, *style;
 
+#ifdef NO_TOOLKIT
+    return NULL;
+#endif
     /*
       Search order of candwin_command be summarized as follows
 	 1. UIM_CANDWIN_PROG -- mainly for debugging purpose
-	 2. value in 'uim-candwin-prog' symbol
+	 2. value in 'uim-candwin-prog' symbol (deprecated)
 	 3. default toolkit's candwin program determined by ./configure
+	    and the style is selected from 'candidate-window-style' symbol
      */
 
     user_config = getenv("UIM_CANDWIN_PROG");
-    if (!user_config)
-	user_config = uim_scm_symbol_value_str("uim-candwin-prog");
+    str = user_config ?  strdup(user_config) :
+	    uim_scm_symbol_value_str("uim-candwin-prog");
 
-    if (user_config && *user_config) {
-	asprintf(&candwin_prog, UIM_LIBEXECDIR "/%s", user_config);
+    if (str && *str) {
+	snprintf(candwin_prog, MAXPATHLEN, UIM_LIBEXECDIR "/%s", str);
+	free(str);
+
 	return candwin_prog;
     }
+    free(str);
 
-    return DEFAULT_CANDWIN_PROG;
+#define TYPELEN	20
+    style = uim_scm_symbol_value_str("candidate-window-style");
+    char type[TYPELEN] = "";
+    if (style) {
+	if (!strcmp(style, "table"))
+	    strlcpy(type, "-tbl", TYPELEN);
+	else if (!strcmp(style, "horizontal"))
+	    strlcpy(type, "-horizontal", TYPELEN);
+    }
+    snprintf(candwin_prog, MAXPATHLEN, "%s%s%s", CANDWIN_PROG_PREFIX, type, CANDWIN_PROG_SUFFIX);
+
+    return candwin_prog;
 }
 
 Canddisp *canddisp_singleton()
 {
+    if (XimServer::gCandWinStyleUpdated) {
+	terminate_canddisp_connection();
+	command = NULL;
+	XimServer::gCandWinStyleUpdated = false;
+    }
+
     if (!command)
 	command = candwin_command();
 
@@ -133,7 +160,7 @@ int Canddisp::adjust_display_limit(uim_context uc, int display_limit)
     const char *s;
     int ret = display_limit;
 
-    if (strstr(command, "/uim-candwin-tbl-") == NULL)
+    if (!command || strstr(command, "/uim-candwin-tbl-") == NULL)
         return display_limit;
 
     cand = uim_get_candidate(uc, 0, 9999);

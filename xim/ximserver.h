@@ -67,6 +67,12 @@ typedef enum {
     Right
 } CandWinPosType;
 
+typedef enum {
+    Vertical,
+    Horizontal,
+    Table 
+} CandWinStyle;
+
 // state of preedit.
 // created in the constructor of InputContext, and deleted in the
 // destructor of it.
@@ -94,6 +100,7 @@ void init_default_xftfont();
 void update_default_xftfont();
 #endif
 void reload_uim(int x);
+void check_candwin_style();
 void check_candwin_pos_type();
 
 
@@ -278,6 +285,8 @@ public:
     static Display *gDpy;
     static std::map<Window, XimServer *> gServerMap;
     static CandWinPosType gCandWinPosType;
+    static CandWinStyle gCandWinStyle;
+    static bool gCandWinStyleUpdated;
 private:
     Window mSelectionWin;
     Atom mServerAtom;

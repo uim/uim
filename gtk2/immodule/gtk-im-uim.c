@@ -123,6 +123,7 @@ static gboolean key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer dat
 static gboolean handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data);
 #endif
 static void send_im_list(void);
+static UIMCandWinGtk *im_uim_create_cand_win_gtk(void);
 
 static const GTypeInfo class_info = {
   sizeof(IMContextUIMClass),
@@ -1116,6 +1117,37 @@ update_candwin_pos_type()
 }
 
 static void
+update_candwin_style()
+{
+  IMUIMContext *cc;
+  char *candwinprog; /* deprecated */
+
+  candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+  /* don't update window style if deprecated uim-candwin-prog is set */
+  if (candwinprog) {
+    free(candwinprog);
+    return;
+  }
+
+  for (cc = context_list.next; cc != &context_list; cc = cc->next) {
+    if (cc->cwin) {
+      g_signal_handlers_disconnect_by_func(cc->cwin,
+		      (gpointer)(uintptr_t)index_changed_cb, cc);
+      gtk_widget_destroy(GTK_WIDGET(cc->cwin));
+#if IM_UIM_USE_TOPLEVEL
+      cwin_list = g_list_remove(cwin_list, cc->cwin);
+#endif
+      cc->cwin = im_uim_create_cand_win_gtk();
+#if IM_UIM_USE_TOPLEVEL
+      cwin_list = g_list_append(cwin_list, cc->cwin);
+#endif
+      g_signal_connect(G_OBJECT(cc->cwin), "index-changed",
+		       G_CALLBACK(index_changed_cb), cc);
+    }
+  }
+}
+
+static void
 parse_helper_str(const char *str)
 {
   gchar **lines;
@@ -1131,6 +1163,8 @@ parse_helper_str(const char *str)
 	uim_prop_update_custom(cc->uc, lines[1], lines[2]);
 	if (!strcmp(lines[1], "candidate-window-position"))
 	  update_candwin_pos_type();
+	if (!strcmp(lines[1], "candidate-window-style"))
+	  update_candwin_style();
 	break;  /* all custom variables are global */
       }
       g_strfreev(lines);
@@ -1138,6 +1172,7 @@ parse_helper_str(const char *str)
   } else if (g_str_has_prefix(str, "custom_reload_notify") == TRUE) {
     uim_prop_reload_configs();
     update_candwin_pos_type();
+    update_candwin_style();
   } else if (focused_context && !disable_focused_context) {
     if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);
@@ -1418,19 +1453,30 @@ static UIMCandWinGtk *
 im_uim_create_cand_win_gtk()
 {
   UIMCandWinGtk *cwin = NULL;
-  char *candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+  char *candwinprog; /* deprecated */
+  char *style;
+
+  candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+  style= uim_scm_symbol_value_str("candidate-window-style");
 
   if (candwinprog) {
     if (!strncmp(candwinprog, "uim-candwin-tbl", 15))
       cwin = UIM_CAND_WIN_GTK(uim_cand_win_tbl_gtk_new());
     else if (!strncmp(candwinprog, "uim-candwin-horizontal", 22))
       cwin = UIM_CAND_WIN_GTK(uim_cand_win_horizontal_gtk_new());
+  } else {
+    if (style) {
+      if (!strcmp(style, "table"))
+        cwin = UIM_CAND_WIN_GTK(uim_cand_win_tbl_gtk_new());
+      else if (!strcmp(style, "horizontal"))
+        cwin = UIM_CAND_WIN_GTK(uim_cand_win_horizontal_gtk_new());
+    }
   }
+  free(candwinprog);
+  free(style);
 
   if (!cwin)
-    cwin = uim_cand_win_gtk_new();
-
-  free(candwinprog);
+    cwin = uim_cand_win_gtk_new(); /* vertical */
 
   return cwin;
 }

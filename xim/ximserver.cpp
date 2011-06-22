@@ -84,6 +84,9 @@ static int check_modifier(std::list<KeySym> list);
 static int gMod1Mask, gMod2Mask, gMod3Mask, gMod4Mask, gMod5Mask;
 static int gXNumLockMask;
 
+CandWinPosType XimServer::gCandWinPosType;
+CandWinStyle XimServer::gCandWinStyle;
+bool XimServer::gCandWinStyleUpdated;
 
 void print_ustring(uString *s)
 {
@@ -175,6 +178,9 @@ void XimServer::customContext(const char *custom, const char *val) {
 
     if (!strcmp(custom, "candidate-window-position"))
 	check_candwin_pos_type();
+
+    if (!strcmp(custom, "candidate-window-style"))
+	check_candwin_style();
 }
 
 void XimServer::reloadConfigs() {
@@ -200,6 +206,7 @@ void XimServer::reloadConfigs() {
 	disp->hide_caret_state();
     }
 
+    check_candwin_style();
     check_candwin_pos_type();
 }
 
@@ -1448,6 +1455,23 @@ void init_modifier_keys() {
 #endif
 }
 
+void
+check_candwin_style()
+{
+    char *style = uim_scm_symbol_value_str("candidate-window-style");
+    CandWinStyle PrevStyle = XimServer::gCandWinStyle;
+
+    if (style && !strcmp(style, "table"))
+	XimServer::gCandWinStyle = Table;
+    else if (style && !strcmp(style, "horizontal"))
+	XimServer::gCandWinStyle = Horizontal;
+    else
+	XimServer::gCandWinStyle = Vertical;
+
+    XimServer::gCandWinStyleUpdated =
+	    (PrevStyle != XimServer::gCandWinStyle) ? true : false;
+    free(style);
+}
 
 void
 check_candwin_pos_type()

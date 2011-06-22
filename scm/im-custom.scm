@@ -399,6 +399,21 @@
 		 (lambda ()
 		   (update-style uim-color-spec (symbol-value uim-color))))
 
+(define-custom 'candidate-window-style 'vertical
+  '(global visual-preference)
+  (list 'choice
+	(list 'vertical
+	      (N_ "Vertical")
+	      (N_ "long description will be here"))
+	(list 'horizontal
+	      (N_ "Horizontal")
+	      (N_ "long description will be here"))
+	(list 'table
+	      (N_ "Table style")
+	      (N_ "long description will be here")))
+  (N_ "Candidate window type")
+  (N_ "long description will be here."))
+
 ;; referred by some bridges
 (define-custom 'candidate-window-position 'caret
   '(global visual-preference)
