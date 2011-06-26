@@ -154,12 +154,12 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
                 QFontMetrics( cList->font() ).height() + 2 );
         } else {
             QTableWidgetItem *candItem = new QTableWidgetItem;
-            candItem->setText( headString + ": " + candString );
             candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 
             QString candText = headString + ": " + candString;
             if ( hasAnnotation && !annotationString.isEmpty() )
                 candText += "...";
+            candItem->setText( candText );
 
             cList->setItem( 0, i, candItem );
         }
