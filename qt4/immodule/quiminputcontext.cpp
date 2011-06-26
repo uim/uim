@@ -189,8 +189,10 @@ void QUimInputContext::createCandidateWindow()
             cwin = new CandidateTableWindow( 0 );
         else if ( !strncmp( candwinprog, "uim-candwin-horizontal", 22 ) )
             cwin = new CandidateWindow( 0, false );
+        else
+            cwin = new CandidateWindow( 0 );
     }
-    if ( !cwin )
+    else
         cwin = new CandidateWindow( 0 );
     free( candwinprog );
     cwin->setQUimInputContext( this );
