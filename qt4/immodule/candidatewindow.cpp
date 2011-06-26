@@ -63,11 +63,14 @@ CandidateWindow::CandidateWindow( QWidget *parent, bool vertical )
         // the last column is dummy for adjusting size.
         cList->setColumnCount( hasAnnotation ? 4 : 3 );
     else
-        cList->setRowCount( 1 );
-    QHeaderView *header = isVertical
-        ? cList->horizontalHeader() : cList->verticalHeader();
-    header->setResizeMode( QHeaderView::ResizeToContents );
-    header->setStretchLastSection( true );
+        cList->setRowCount( 2 );
+    cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
+    cList->horizontalHeader()->setStretchLastSection( true );
+    if ( !isVertical ) {
+        cList->verticalHeader()
+            ->setResizeMode( QHeaderView::ResizeToContents );
+        cList->verticalHeader()->setStretchLastSection( true );
+    }
     cList->horizontalHeader()->hide();
     cList->verticalHeader()->hide();
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
@@ -113,7 +116,8 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
     if ( isVertical )
         cList->setRowCount( ncandidates );
     else 
-        cList->setColumnCount( ncandidates );
+        // the last column is dummy for adjusting size.
+        cList->setColumnCount( ncandidates + 1 );
     for ( int i = 0; i < ncandidates ; i++ )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
@@ -301,18 +305,15 @@ QSize CandidateListView::sizeHint() const
     // frame width
     int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
-    const int rowNum = rowCount();
+    // the size of the dummy row should be 0.
+    const int rowNum = isVertical ? rowCount() : rowCount() - 1;
     if ( rowNum == 0 ) {
         return QSize( MIN_CAND_WIDTH, frame );
     }
     int width = frame;
     // the size of the dummy column should be 0.
-    int last = isVertical ? columnCount() - 1 : columnCount();
-    for ( int i = 0; i < last; i++ )
+    for ( int i = 0; i < columnCount() - 1; i++ )
         width += columnWidth( i );
 
-    if ( isVertical )
-        return QSize( width, rowHeight( 0 ) * rowNum + frame );
-    else
-        return QSize( width, QFontMetrics( font() ).height() + 2 + frame);
+    return QSize( width, rowHeight( 0 ) * rowNum + frame );
 }
