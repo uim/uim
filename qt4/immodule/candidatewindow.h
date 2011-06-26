@@ -45,12 +45,12 @@ class CandidateWindow : public AbstractCandidateWindow
     Q_OBJECT
 
 public:
-    explicit CandidateWindow( QWidget *parent );
+    explicit CandidateWindow( QWidget *parent, bool vertical = true );
 
     QSize sizeHint() const;
 
 private slots:
-    void slotCandidateSelected( int row );
+    void slotCandidateSelected( int row, int column );
     void slotHookSubwindow();
 
 private:
@@ -72,12 +72,12 @@ private:
     CandidateListView *cList;
     SubWindow *subWin;
 
-
     // candidate data
     QList<QString> annotations;
 
     // config
     const bool hasAnnotation;
+    const bool isVertical;
 };
 
 
@@ -86,10 +86,13 @@ class CandidateListView : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit CandidateListView( QWidget *parent = 0 )
-        : QTableWidget( parent ) {}
+    explicit CandidateListView( QWidget *parent = 0, bool vertical = true )
+        : QTableWidget( parent ), isVertical( vertical ) {}
     ~CandidateListView() {}
 
     QSize sizeHint() const;
+
+private:
+    const bool isVertical;
 };
 #endif /* Not def: UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H */

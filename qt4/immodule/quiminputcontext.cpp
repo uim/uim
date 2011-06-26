@@ -184,9 +184,13 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 void QUimInputContext::createCandidateWindow()
 {
     char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
-    if ( candwinprog && !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
-        cwin = new CandidateTableWindow( 0 );
-    else
+    if ( candwinprog ) {
+        if ( !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
+            cwin = new CandidateTableWindow( 0 );
+        else if ( !strncmp( candwinprog, "uim-candwin-horizontal", 22 ) )
+            cwin = new CandidateWindow( 0, false );
+    }
+    if ( !cwin )
         cwin = new CandidateWindow( 0 );
     free( candwinprog );
     cwin->setQUimInputContext( this );

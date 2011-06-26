@@ -33,6 +33,7 @@ SUCH DAMAGE.
 #include "candidatewindow.h"
 
 #include <QtGui/QFontMetrics>
+#include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
@@ -43,36 +44,54 @@ SUCH DAMAGE.
 #include "subwindow.h"
 
 static const int MIN_CAND_WIDTH = 80;
+static const int MIN_CAND_HEIGHT = 80;
 
 static const int HEADING_COLUMN = 0;
 static const int CANDIDATE_COLUMN = 1;
 static const int ANNOTATION_COLUMN = 2;
 
-CandidateWindow::CandidateWindow( QWidget *parent )
+static const int HEADING_ROW = 0;
+static const int CANDIDATE_ROW = 1;
+static const int ANNOTATION_ROW = 2;
+
+CandidateWindow::CandidateWindow( QWidget *parent, bool vertical )
 : AbstractCandidateWindow( parent ), subWin( 0 ),
-    hasAnnotation( uim_scm_symbol_value_bool( "enable-annotation?" ) )
+    hasAnnotation( uim_scm_symbol_value_bool( "enable-annotation?" ) ),
+    isVertical( vertical )
 {
     //setup CandidateList
-    cList = new CandidateListView;
+    cList = new CandidateListView( 0, isVertical );
     cList->setSelectionMode( QAbstractItemView::SingleSelection );
-    cList->setSelectionBehavior( QAbstractItemView::SelectRows );
-    // the last column is dummy for adjusting size.
-    cList->setColumnCount( hasAnnotation ? 4 : 3 );
-    cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
-    cList->horizontalHeader()->setStretchLastSection( true );
+    cList->setSelectionBehavior( isVertical
+        ? QAbstractItemView::SelectRows : QAbstractItemView::SelectColumns );
+    // the last column/row is dummy for adjusting size.
+    if ( isVertical ) {
+        cList->setColumnCount( hasAnnotation ? 4 : 3 );
+        cList->setMinimumWidth( MIN_CAND_WIDTH );
+    } else {
+        cList->setRowCount( hasAnnotation ? 4 : 3 );
+        cList->setMinimumHeight( MIN_CAND_HEIGHT );
+    }
+    QHeaderView *header = isVertical
+        ? cList->horizontalHeader() : cList->verticalHeader();
+    header->setResizeMode( QHeaderView::ResizeToContents );
+    header->setStretchLastSection( true );
     cList->horizontalHeader()->hide();
     cList->verticalHeader()->hide();
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setAutoScroll( false );
     cList->setShowGrid( false );
-    cList->setMinimumWidth( MIN_CAND_WIDTH );
     connect( cList, SIGNAL( cellClicked( int, int ) ),
-          this , SLOT( slotCandidateSelected( int ) ) );
+          this , SLOT( slotCandidateSelected( int, int ) ) );
     connect( cList, SIGNAL( itemSelectionChanged() ),
           this , SLOT( slotHookSubwindow() ) );
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QBoxLayout *layout;
+    if ( isVertical )
+        layout = new QVBoxLayout;
+    else
+        layout = new QHBoxLayout;
     layout->setMargin( 0 );
     layout->setSpacing( 0 );
     layout->addWidget( cList );
@@ -103,7 +122,10 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
     cList->clearContents();
     annotations.clear();
 
-    cList->setRowCount( ncandidates );
+    if ( isVertical )
+        cList->setRowCount( ncandidates );
+    else 
+        cList->setColumnCount( ncandidates );
     for ( int i = 0; i < ncandidates ; i++ )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
@@ -127,8 +149,13 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
         candItem->setText( candString );
         candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 
-        cList->setItem( i, HEADING_COLUMN, headItem );
-        cList->setItem( i, CANDIDATE_COLUMN, candItem );
+        if ( isVertical ) {
+            cList->setItem( i, HEADING_COLUMN, headItem );
+            cList->setItem( i, CANDIDATE_COLUMN, candItem );
+        } else {
+            cList->setItem( HEADING_ROW, i, headItem );
+            cList->setItem( CANDIDATE_ROW, i, candItem );
+        }
 
         if ( hasAnnotation ) {
             QTableWidgetItem *annotationItem = new QTableWidgetItem;
@@ -137,10 +164,15 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
             if ( !annotationString.isEmpty() )
                 annotationItem->setText( "..." );
 
-            cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
+            if ( isVertical )
+                cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
+            else
+                cList->setItem( ANNOTATION_ROW, i, annotationItem );
         }
 
-        cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
+        if ( isVertical )
+            cList->setRowHeight( i,
+                QFontMetrics( cList->font() ).height() + 2 );
     }
 }
 
@@ -162,10 +194,23 @@ void CandidateWindow::setIndex( int totalindex )
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
 
-        if ( cList->item( pos, 0 ) && !cList->item( pos, 0 )->isSelected() )
+        int row;
+        int column;
+        if ( isVertical ) {
+            row = pos;
+            column = 0;
+        } else {
+            row = 0;
+            column = pos;
+        }
+        if ( cList->item( row, column )
+            && !cList->item( row, column )->isSelected() )
         {
             cList->clearSelection();
-            cList->selectRow( pos );
+            if ( isVertical )
+                cList->selectRow( pos );
+            else
+                cList->selectColumn( pos );
         }
     }
     else
@@ -176,9 +221,10 @@ void CandidateWindow::setIndex( int totalindex )
     updateLabel();
 }
 
-void CandidateWindow::slotCandidateSelected( int row )
+void CandidateWindow::slotCandidateSelected( int row, int column )
 {
-    candidateIndex = ( pageIndex * displayLimit ) + row;
+    candidateIndex = ( pageIndex * displayLimit )
+        + ( isVertical ? row : column);
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
     updateLabel();
@@ -190,7 +236,10 @@ void CandidateWindow::shiftPage( bool forward )
     if ( candidateIndex != -1 ) {
         cList->clearSelection();
         int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
-        cList->selectRow( idx );
+        if ( isVertical )
+            cList->selectRow( idx );
+        else
+            cList->selectColumn( idx );
     }
 }
 
@@ -211,7 +260,8 @@ void CandidateWindow::slotHookSubwindow()
     subWin->cancelHook();
 
     // hook annotation
-    QString annotationString = annotations.at( list[0]->row() );
+    QString annotationString
+        = annotations.at( isVertical ? list[0]->row() : list[0]->column() );
     if ( !annotationString.isEmpty() )
     {
         subWin->layoutWindow( frameGeometry() );
@@ -259,14 +309,26 @@ QSize CandidateListView::sizeHint() const
     // frame width
     int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
-    const int rowNum = rowCount();
-    if ( rowNum == 0 ) {
-        return QSize( MIN_CAND_WIDTH, frame );
-    }
-    int width = frame;
-    // the size of the dummy column should be 0.
-    for ( int i = 0; i < columnCount() - 1; i++ )
-        width += columnWidth( i );
+    if ( isVertical ) {
+        const int rowNum = rowCount();
+        if ( rowNum == 0 ) {
+            return QSize( MIN_CAND_WIDTH, frame );
+        }
+        int width = frame;
+        // the size of the dummy column should be 0.
+        for ( int i = 0; i < columnCount() - 1; i++ )
+            width += columnWidth( i );
 
-    return QSize( width, rowHeight( 0 ) * rowNum + frame );
+        return QSize( width, rowHeight( 0 ) * rowNum + frame );
+    }
+    const int columnNum = columnCount();
+    if ( columnNum == 0 ) {
+        return QSize( frame, MIN_CAND_HEIGHT );
+    }
+    int height = frame;
+    // the size of the dummy row should be 0.
+    for ( int i = 0; i < rowCount() - 1; i++ )
+        height += rowHeight( i );
+
+    return QSize( columnWidth( 0 ) * columnNum + frame, height );
 }
