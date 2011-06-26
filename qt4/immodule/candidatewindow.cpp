@@ -33,7 +33,6 @@ SUCH DAMAGE.
 #include "candidatewindow.h"
 
 #include <QtGui/QFontMetrics>
-#include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
@@ -44,15 +43,10 @@ SUCH DAMAGE.
 #include "subwindow.h"
 
 static const int MIN_CAND_WIDTH = 80;
-static const int MIN_CAND_HEIGHT = 80;
 
 static const int HEADING_COLUMN = 0;
 static const int CANDIDATE_COLUMN = 1;
 static const int ANNOTATION_COLUMN = 2;
-
-static const int HEADING_ROW = 0;
-static const int CANDIDATE_ROW = 1;
-static const int ANNOTATION_ROW = 2;
 
 CandidateWindow::CandidateWindow( QWidget *parent, bool vertical )
 : AbstractCandidateWindow( parent ), subWin( 0 ),
@@ -64,14 +58,12 @@ CandidateWindow::CandidateWindow( QWidget *parent, bool vertical )
     cList->setSelectionMode( QAbstractItemView::SingleSelection );
     cList->setSelectionBehavior( isVertical
         ? QAbstractItemView::SelectRows : QAbstractItemView::SelectColumns );
-    // the last column/row is dummy for adjusting size.
-    if ( isVertical ) {
+    cList->setMinimumWidth( MIN_CAND_WIDTH );
+    if ( isVertical )
+        // the last column is dummy for adjusting size.
         cList->setColumnCount( hasAnnotation ? 4 : 3 );
-        cList->setMinimumWidth( MIN_CAND_WIDTH );
-    } else {
-        cList->setRowCount( hasAnnotation ? 4 : 3 );
-        cList->setMinimumHeight( MIN_CAND_HEIGHT );
-    }
+    else
+        cList->setRowCount( 1 );
     QHeaderView *header = isVertical
         ? cList->horizontalHeader() : cList->verticalHeader();
     header->setResizeMode( QHeaderView::ResizeToContents );
@@ -87,11 +79,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, bool vertical )
     connect( cList, SIGNAL( itemSelectionChanged() ),
           this , SLOT( slotHookSubwindow() ) );
 
-    QBoxLayout *layout;
-    if ( isVertical )
-        layout = new QVBoxLayout;
-    else
-        layout = new QHBoxLayout;
+    QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin( 0 );
     layout->setSpacing( 0 );
     layout->addWidget( cList );
@@ -141,39 +129,43 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
         }
 
         // insert new item to the candidate list
-        QTableWidgetItem *headItem = new QTableWidgetItem;
-        headItem->setText( headString );
-        headItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-
-        QTableWidgetItem *candItem = new QTableWidgetItem;
-        candItem->setText( candString );
-        candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-
         if ( isVertical ) {
+            QTableWidgetItem *headItem = new QTableWidgetItem;
+            headItem->setText( headString );
+            headItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
+            QTableWidgetItem *candItem = new QTableWidgetItem;
+            candItem->setText( candString );
+            candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
             cList->setItem( i, HEADING_COLUMN, headItem );
             cList->setItem( i, CANDIDATE_COLUMN, candItem );
-        } else {
-            cList->setItem( HEADING_ROW, i, headItem );
-            cList->setItem( CANDIDATE_ROW, i, candItem );
-        }
 
-        if ( hasAnnotation ) {
-            QTableWidgetItem *annotationItem = new QTableWidgetItem;
-            annotationItem->setFlags(
-                Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-            if ( !annotationString.isEmpty() )
-                annotationItem->setText( "..." );
+            if ( hasAnnotation ) {
+                QTableWidgetItem *annotationItem = new QTableWidgetItem;
+                annotationItem->setFlags(
+                    Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+                if ( !annotationString.isEmpty() )
+                    annotationItem->setText( "..." );
 
-            if ( isVertical )
                 cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
-            else
-                cList->setItem( ANNOTATION_ROW, i, annotationItem );
-        }
-
-        if ( isVertical )
+            }
             cList->setRowHeight( i,
                 QFontMetrics( cList->font() ).height() + 2 );
+        } else {
+            QTableWidgetItem *candItem = new QTableWidgetItem;
+            candItem->setText( headString + ": " + candString );
+            candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
+            QString candText = headString + ": " + candString;
+            if ( hasAnnotation && !annotationString.isEmpty() )
+                candText += "...";
+
+            cList->setItem( 0, i, candItem );
+        }
     }
+    if ( !isVertical )
+        cList->setRowHeight( 0, QFontMetrics( cList->font() ).height() + 2 );
 }
 
 void CandidateWindow::updateSize()
@@ -224,7 +216,7 @@ void CandidateWindow::setIndex( int totalindex )
 void CandidateWindow::slotCandidateSelected( int row, int column )
 {
     candidateIndex = ( pageIndex * displayLimit )
-        + ( isVertical ? row : column);
+        + ( isVertical ? row : column );
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
     updateLabel();
@@ -309,26 +301,18 @@ QSize CandidateListView::sizeHint() const
     // frame width
     int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
-    if ( isVertical ) {
-        const int rowNum = rowCount();
-        if ( rowNum == 0 ) {
-            return QSize( MIN_CAND_WIDTH, frame );
-        }
-        int width = frame;
-        // the size of the dummy column should be 0.
-        for ( int i = 0; i < columnCount() - 1; i++ )
-            width += columnWidth( i );
+    const int rowNum = rowCount();
+    if ( rowNum == 0 ) {
+        return QSize( MIN_CAND_WIDTH, frame );
+    }
+    int width = frame;
+    // the size of the dummy column should be 0.
+    int last = isVertical ? columnCount() - 1 : columnCount();
+    for ( int i = 0; i < last; i++ )
+        width += columnWidth( i );
 
+    if ( isVertical )
         return QSize( width, rowHeight( 0 ) * rowNum + frame );
-    }
-    const int columnNum = columnCount();
-    if ( columnNum == 0 ) {
-        return QSize( frame, MIN_CAND_HEIGHT );
-    }
-    int height = frame;
-    // the size of the dummy row should be 0.
-    for ( int i = 0; i < rowCount() - 1; i++ )
-        height += rowHeight( i );
-
-    return QSize( columnWidth( 0 ) * columnNum + frame, height );
+    else
+        return QSize( width, QFontMetrics( font() ).height() + 2 + frame);
 }
