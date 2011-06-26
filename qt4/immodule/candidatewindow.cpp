@@ -118,8 +118,7 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
     else 
         // the last column is dummy for adjusting size.
         cList->setColumnCount( ncandidates + 1 );
-    for ( int i = 0; i < ncandidates ; i++ )
-    {
+    for ( int i = 0; i < ncandidates ; i++ ) {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
         QString headString
             = QString::fromUtf8( uim_candidate_get_heading_label( cand ) );
@@ -184,8 +183,7 @@ void CandidateWindow::setIndex( int totalindex )
     AbstractCandidateWindow::setIndex( totalindex );
 
     // select item
-    if ( candidateIndex >= 0 )
-    {
+    if ( candidateIndex >= 0 ) {
         int pos = totalindex;
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
@@ -200,17 +198,14 @@ void CandidateWindow::setIndex( int totalindex )
             column = pos;
         }
         if ( cList->item( row, column )
-            && !cList->item( row, column )->isSelected() )
-        {
+            && !cList->item( row, column )->isSelected() ) {
             cList->clearSelection();
             if ( isVertical )
                 cList->selectRow( pos );
             else
                 cList->selectColumn( pos );
         }
-    }
-    else
-    {
+    } else {
         cList->clearSelection();
     }
 
@@ -258,8 +253,7 @@ void CandidateWindow::slotHookSubwindow()
     // hook annotation
     QString annotationString
         = annotations.at( isVertical ? list[0]->row() : list[0]->column() );
-    if ( !annotationString.isEmpty() )
-    {
+    if ( !annotationString.isEmpty() ) {
         subWin->layoutWindow( frameGeometry() );
         subWin->hookPopup( annotationString );
     }
