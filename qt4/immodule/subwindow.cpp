@@ -101,21 +101,37 @@ void SubWindow::timerDone()
     popup();
 }
 
-void SubWindow::layoutWindow( const QRect &rect )
+void SubWindow::layoutWindow( const QRect &rect, bool isVertical )
 {
     const QRect screenRect = QApplication::desktop()->screenGeometry();
 
     const int w = width();
     const int candX = rect.x();
-    int destX = candX + rect.width();
-    if ( destX + w > screenRect.width() )
-        destX = candX - w;
+    const int screenW = screenRect.width();
+    int destX;
+    if ( isVertical ) {
+        destX = candX + rect.width();
+        if ( destX + w > screenW )
+            destX = candX - w;
+    } else {
+        destX = candX;
+        if ( destX + w > screenW )
+            destX = screenW - w;
+    }
 
     const int h = height();
+    const int candY = rect.y();
     const int screenH = screenRect.height();
-    int destY = rect.y();
-    if ( destY + h > screenH )
-        destY = screenH - h;
+    int destY;
+    if ( isVertical ) {
+        destY = candY;
+        if ( destY + h > screenH )
+            destY = screenH - h;
+    } else {
+        destY = candY + rect.height();
+        if ( destY + h > screenH )
+            destY = candY - h;
+    }
 
     move( destX, destY );
 }

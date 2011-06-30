@@ -46,7 +46,7 @@ public:
     explicit SubWindow( QWidget *parent = 0 );
     ~SubWindow();
 
-    void layoutWindow( const QRect &rect );
+    void layoutWindow( const QRect &rect, bool isVertical );
 
     bool isHooked()
     {

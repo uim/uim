@@ -254,7 +254,7 @@ void CandidateWindow::slotHookSubwindow()
     QString annotationString
         = annotations.at( isVertical ? list[0]->row() : list[0]->column() );
     if ( !annotationString.isEmpty() ) {
-        subWin->layoutWindow( frameGeometry() );
+        subWin->layoutWindow( frameGeometry(), isVertical );
         subWin->hookPopup( annotationString );
     }
 }
@@ -264,14 +264,14 @@ void CandidateWindow::moveEvent( QMoveEvent *e )
 {
     // move subwindow
     if ( subWin )
-        subWin->layoutWindow( QRect( e->pos(), size() ) );
+        subWin->layoutWindow( QRect( e->pos(), size() ), isVertical );
 }
 
 void CandidateWindow::resizeEvent( QResizeEvent *e )
 {
     // move subwindow
     if ( subWin )
-        subWin->layoutWindow( QRect( pos(), e->size() ) );
+        subWin->layoutWindow( QRect( pos(), e->size() ), isVertical );
 }
 
 void CandidateWindow::hideEvent( QHideEvent *event )
