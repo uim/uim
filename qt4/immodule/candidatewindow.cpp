@@ -175,7 +175,7 @@ void CandidateWindow::updateSize()
 {
     // size adjustment
     cList->updateGeometry();
-    resize(sizeHint());
+    setFixedSize(sizeHint());
 }
 
 void CandidateWindow::setIndex( int totalindex )
