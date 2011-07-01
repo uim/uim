@@ -36,6 +36,8 @@
 #include "uim-cand-win-horizontal-gtk.h"
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
+
 #include <uim/uim.h>
 #include <uim/uim-scm.h>
 
@@ -167,6 +169,38 @@ uim_cand_win_horizontal_gtk_init (UIMCandWinHorizontalGtk *horizontal_cwin)
   gtk_window_set_resizable(GTK_WINDOW(cwin), FALSE);
 }
 
+#if !GTK_CHECK_VERSION(2, 90, 0)
+static void
+get_layout_x(GtkLabel *label, gint *xp)
+{
+  GtkMisc *misc;
+  GtkWidget *widget; 
+  gfloat xalign;
+  gint req_width, x;
+  
+  misc = GTK_MISC(label);
+  widget = GTK_WIDGET(label);
+
+  if (gtk_widget_get_direction(widget) == GTK_TEXT_DIR_LTR)
+    xalign = misc->xalign;
+  else
+    xalign = 1.0 - misc->xalign;
+
+  req_width = widget->requisition.width;
+
+  x = floor(widget->allocation.x + (gint)misc->xpad +
+	     xalign * (widget->allocation.width - req_width));
+
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
+    x = MAX(x, widget->allocation.x + misc->xpad);
+  else
+    x = MIN(x, widget->allocation.x + widget->allocation.width - misc->xpad);
+
+  if (xp)
+    *xp = x;
+}
+#endif
+
 static gboolean
 label_exposed(GtkWidget *label, GdkEventExpose *event, gpointer data)
 {
@@ -183,8 +217,10 @@ label_exposed(GtkWidget *label, GdkEventExpose *event, gpointer data)
     /* FIXME */
     ;
 #else
+    gint x;
+    get_layout_x(GTK_LABEL(label), &x);
     gdk_draw_layout_with_colors(label->window,
-		      label->style->black_gc, 0, 0,
+		      label->style->black_gc, x, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_SELECTED],
 		      &label->style->bg[GTK_STATE_SELECTED]);
@@ -228,13 +264,15 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
     p = idxbutton->button;
     if (p == button) {
       GtkWidget *label = gtk_bin_get_child(GTK_BIN(button));
+      gint x;
       idx = idxbutton->cand_index_in_page;
 #if GTK_CHECK_VERSION(2, 90, 0)
       /* FIXME */
 #else
+      get_layout_x(GTK_LABEL(label), &x);
       if (GTK_LABEL(label)->layout) {
         gdk_draw_layout_with_colors(label->window,
-		      label->style->black_gc, 0, 0,
+		      label->style->black_gc, x, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_SELECTED],
 		      &label->style->bg[GTK_STATE_SELECTED]);
@@ -358,7 +396,7 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
     uim_cand_win_gtk_set_page(cwin, new_page);
 
   if (cwin->candidate_index >= 0) {
-    gint pos;
+    gint pos, x;
     struct index_button *idxbutton, *prev_selected;
     GtkWidget *label;
 
@@ -388,9 +426,10 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
 #if GTK_CHECK_VERSION(2, 90, 0)
     /* FIXME */
 #else
+    get_layout_x(GTK_LABEL(label), &x);
     if (GTK_LABEL(label)->layout) {
       gdk_draw_layout_with_colors(label->window,
-		      label->style->black_gc, 0, 0,
+		      label->style->black_gc, x, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_SELECTED],
 		      &label->style->bg[GTK_STATE_SELECTED]);
