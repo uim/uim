@@ -145,7 +145,11 @@ uim_cand_win_horizontal_gtk_init (UIMCandWinHorizontalGtk *horizontal_cwin)
     gtk_container_add(GTK_CONTAINER(button), label);
     scale_label(GTK_EVENT_BOX(button), PANGO_SCALE_LARGE);
     g_signal_connect(button, "button-press-event", G_CALLBACK(button_clicked), horizontal_cwin);
+#if GTK_CHECK_VERSION(2, 90, 0)
+    g_signal_connect_after(label, "draw", G_CALLBACK(label_exposed), horizontal_cwin);
+#else
     g_signal_connect_after(label, "expose-event", G_CALLBACK(label_exposed), horizontal_cwin);
+#endif
     gtk_table_attach_defaults(GTK_TABLE(cwin->view), button, col, col + 1, 0, 1);
     idxbutton = g_malloc(sizeof(struct index_button));
     if (idxbutton) {
@@ -175,11 +179,16 @@ label_exposed(GtkWidget *label, GdkEventExpose *event, gpointer data)
     selected_label = gtk_bin_get_child(GTK_BIN(selected->button));
 
   if (label == selected_label) {
+#if GTK_CHECK_VERSION(2, 90, 0)
+    /* FIXME */
+    ;
+#else
     gdk_draw_layout_with_colors(label->window,
 		      label->style->black_gc, 0, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_SELECTED],
 		      &label->style->bg[GTK_STATE_SELECTED]);
+#endif
   }
 
   return FALSE;
@@ -197,11 +206,16 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
   prev_selected = horizontal_cwin->selected;
   if (prev_selected) {
     GtkWidget *label = gtk_bin_get_child(GTK_BIN(prev_selected->button));
+#if GTK_CHECK_VERSION(2, 90, 0)
+    /* FIXME */
+    ;
+#else
     gdk_draw_layout_with_colors(label->window,
 		      label->style->black_gc, 0, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_NORMAL],
 		      &label->style->bg[GTK_STATE_NORMAL]);
+#endif
   }
 
   for (i = 0; i < (gint)horizontal_cwin->buttons->len; i++) {
@@ -215,6 +229,9 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
     if (p == button) {
       GtkWidget *label = gtk_bin_get_child(GTK_BIN(button));
       idx = idxbutton->cand_index_in_page;
+#if GTK_CHECK_VERSION(2, 90, 0)
+      /* FIXME */
+#else
       if (GTK_LABEL(label)->layout) {
         gdk_draw_layout_with_colors(label->window,
 		      label->style->black_gc, 0, 0,
@@ -222,6 +239,7 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
 		      &label->style->text[GTK_STATE_SELECTED],
 		      &label->style->bg[GTK_STATE_SELECTED]);
       }
+#endif
       horizontal_cwin->selected = idxbutton;
       break;
     }
@@ -296,7 +314,11 @@ assign_cellbutton(UIMCandWinHorizontalGtk *horizontal_cwin,
     gtk_container_add(GTK_CONTAINER(button), label);
     scale_label(GTK_EVENT_BOX(button), PANGO_SCALE_LARGE);
     g_signal_connect(button, "button-press-event", G_CALLBACK(button_clicked), horizontal_cwin);
+#if GTK_CHECK_VERSION(2, 90, 0)
+    g_signal_connect_after(label, "draw", G_CALLBACK(label_exposed), horizontal_cwin);
+#else
     g_signal_connect_after(label, "expose-event", G_CALLBACK(label_exposed), horizontal_cwin);
+#endif
     gtk_table_attach_defaults(GTK_TABLE(UIM_CAND_WIN_GTK(horizontal_cwin)->view), button, cand_index, cand_index + 1, 0, 1);
     idxbutton = g_malloc(sizeof(struct index_button));
     if (idxbutton) {
@@ -350,6 +372,9 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
     if (prev_selected) {
       label = gtk_bin_get_child(GTK_BIN(prev_selected->button));
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+      /* FIXME */
+#else
       if (GTK_LABEL(label)->layout) {
         gdk_draw_layout_with_colors(label->window,
 		      label->style->black_gc, 0, 0,
@@ -357,8 +382,12 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
 		      &label->style->text[GTK_STATE_NORMAL],
 		      &label->style->bg[GTK_STATE_NORMAL]);
       }
+#endif
     }
     label = gtk_bin_get_child(GTK_BIN(idxbutton->button));
+#if GTK_CHECK_VERSION(2, 90, 0)
+    /* FIXME */
+#else
     if (GTK_LABEL(label)->layout) {
       gdk_draw_layout_with_colors(label->window,
 		      label->style->black_gc, 0, 0,
@@ -366,6 +395,7 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
 		      &label->style->text[GTK_STATE_SELECTED],
 		      &label->style->bg[GTK_STATE_SELECTED]);
     }
+#endif
     horizontal_cwin->selected = idxbutton;
 
     /* show subwin */
