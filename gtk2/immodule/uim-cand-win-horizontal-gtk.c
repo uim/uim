@@ -246,8 +246,10 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
     /* FIXME */
     ;
 #else
+    gint x;
+    get_layout_x(GTK_LABEL(label), &x);
     gdk_draw_layout_with_colors(label->window,
-		      label->style->black_gc, 0, 0,
+		      label->style->black_gc, x, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_NORMAL],
 		      &label->style->bg[GTK_STATE_NORMAL]);
@@ -376,12 +378,13 @@ assign_cellbutton(UIMCandWinHorizontalGtk *horizontal_cwin,
 void
 uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, gint index)
 {
-  gint new_page;
+  gint new_page, prev_index;
   UIMCandWinGtk *cwin;
 
   g_return_if_fail(UIM_IS_CAND_WIN_HORIZONTAL_GTK(horizontal_cwin));
   cwin = UIM_CAND_WIN_GTK(horizontal_cwin);
 
+  prev_index = cwin->candidate_index;
   if (index >= (gint) cwin->nr_candidates)
     cwin->candidate_index = 0;
   else
@@ -407,15 +410,16 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
 
     idxbutton = g_ptr_array_index(horizontal_cwin->buttons, pos);
     prev_selected = (gpointer)horizontal_cwin->selected;
-    if (prev_selected) {
+    if (prev_selected && prev_index != cwin->candidate_index) {
       label = gtk_bin_get_child(GTK_BIN(prev_selected->button));
 
 #if GTK_CHECK_VERSION(2, 90, 0)
       /* FIXME */
 #else
       if (GTK_LABEL(label)->layout) {
+        get_layout_x(GTK_LABEL(label), &x);
         gdk_draw_layout_with_colors(label->window,
-		      label->style->black_gc, 0, 0,
+		      label->style->black_gc, x, 0,
 		      GTK_LABEL(label)->layout,
 		      &label->style->text[GTK_STATE_NORMAL],
 		      &label->style->bg[GTK_STATE_NORMAL]);
