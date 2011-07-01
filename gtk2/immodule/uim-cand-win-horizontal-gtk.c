@@ -422,6 +422,8 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
       }
       free(annotation);
     }
+  } else {
+    horizontal_cwin->selected = NULL;
   }
 
   uim_cand_win_gtk_update_label(cwin);
