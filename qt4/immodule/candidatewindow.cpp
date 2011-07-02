@@ -246,15 +246,16 @@ void CandidateWindow::slotHookSubwindow()
     QList<QTableWidgetItem *> list = cList->selectedItems();
     if ( list.isEmpty() )
         return;
+    QTableWidgetItem *item = list[0];
 
     // cancel previous hook
     subWin->cancelHook();
 
     // hook annotation
     QString annotationString
-        = annotations.at( isVertical ? list[0]->row() : list[0]->column() );
+        = annotations.at( isVertical ? item->row() : item->column() );
     if ( !annotationString.isEmpty() ) {
-        subWin->layoutWindow( subWindowRect( frameGeometry() ),
+        subWin->layoutWindow( subWindowRect( frameGeometry(), item ),
             isVertical );
         subWin->hookPopup( annotationString );
     }
