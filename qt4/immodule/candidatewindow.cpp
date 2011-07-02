@@ -115,7 +115,7 @@ void CandidateWindow::updateView( int newpage, int ncandidates )
 
     if ( isVertical )
         cList->setRowCount( ncandidates );
-    else 
+    else
         // the last column is dummy for adjusting size.
         cList->setColumnCount( ncandidates + 1 );
     for ( int i = 0; i < ncandidates ; i++ ) {
