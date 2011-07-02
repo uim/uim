@@ -254,7 +254,8 @@ void CandidateWindow::slotHookSubwindow()
     QString annotationString
         = annotations.at( isVertical ? list[0]->row() : list[0]->column() );
     if ( !annotationString.isEmpty() ) {
-        subWin->layoutWindow( frameGeometry(), isVertical );
+        subWin->layoutWindow( subWindowRect( frameGeometry() ),
+            isVertical );
         subWin->hookPopup( annotationString );
     }
 }
@@ -264,14 +265,16 @@ void CandidateWindow::moveEvent( QMoveEvent *e )
 {
     // move subwindow
     if ( subWin )
-        subWin->layoutWindow( QRect( e->pos(), size() ), isVertical );
+        subWin->layoutWindow( subWindowRect( QRect( e->pos(), size() ) ),
+            isVertical );
 }
 
 void CandidateWindow::resizeEvent( QResizeEvent *e )
 {
     // move subwindow
     if ( subWin )
-        subWin->layoutWindow( QRect( pos(), e->size() ), isVertical );
+        subWin->layoutWindow( subWindowRect( QRect( pos(), e->size() ) ),
+            isVertical );
 }
 
 void CandidateWindow::hideEvent( QHideEvent *event )
@@ -279,6 +282,28 @@ void CandidateWindow::hideEvent( QHideEvent *event )
     QFrame::hideEvent( event );
     if ( subWin )
         subWin->cancelHook();
+}
+
+QRect CandidateWindow::subWindowRect( const QRect &rect,
+    QTableWidgetItem *item )
+{
+    if ( !item ) {
+        QList<QTableWidgetItem *> list = cList->selectedItems();
+        if ( list.isEmpty() )
+            return rect;
+        item = list[0];
+    }
+    QRect r = rect;
+    if ( isVertical ) {
+        r.setY( rect.y() + cList->rowHeight( 0 ) * item->row() );
+    } else {
+        int xdiff = 0;
+        for ( int i = 0, j = item->column(); i < j; i++ ) {
+            xdiff += cList->columnWidth( i );
+        }
+        r.setX( rect.x() + xdiff );
+    }
+    return r;
 }
 
 QSize CandidateWindow::sizeHint() const

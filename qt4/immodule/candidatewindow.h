@@ -68,6 +68,8 @@ private:
     virtual void resizeEvent( QResizeEvent * );
     virtual void hideEvent( QHideEvent *event );
 
+    QRect subWindowRect( const QRect &rect, QTableWidgetItem *item = 0 );
+
     // widgets
     CandidateListView *cList;
     SubWindow *subWin;
