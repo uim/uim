@@ -467,6 +467,10 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
     }
   } else {
     horizontal_cwin->selected = NULL;
+    if (cwin->sub_window.window) {
+      gtk_widget_hide(cwin->sub_window.window);
+      cwin->sub_window.active = FALSE;
+    }
   }
 
   uim_cand_win_gtk_update_label(cwin);
