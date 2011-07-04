@@ -177,6 +177,7 @@ static void candwin_set_page_candidates(gchar **str);
 static void candwin_show_page(gchar **str);
 static void str_parse(char *str);
 static void clear_button(struct index_button *idxbutton, gint cell_index);
+static void show_table(GtkTable *view, GPtrArray *buttons);
 static void scale_label(GtkEventBox *button, double factor);
 
 static void index_changed_cb(UIMCandidateWindow *cwin)
@@ -1101,6 +1102,7 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
 
   update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
                       cwin->buttons, cwin->display_limit);
+  show_table(GTK_TABLE(cwin->view), cwin->buttons);
 
   cwin->page_index = new_page;
 
@@ -1305,7 +1307,6 @@ show_table(GtkTable *view, GPtrArray *buttons)
 static void
 uim_cand_win_gtk_show(UIMCandidateWindow *cwin)
 {
-  show_table(GTK_TABLE(cwin->view), cwin->buttons);
   gtk_widget_show(GTK_WIDGET(cwin->viewport));
   gtk_widget_show(GTK_WIDGET(cwin->scrolled_window));
   gtk_widget_show(GTK_WIDGET(cwin->num_label));
