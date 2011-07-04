@@ -1047,7 +1047,7 @@ update_table_button(GtkTreeModel *model, GPtrArray *buttons, gint display_limit)
         GtkWidget *label;
 	label = gtk_bin_get_child(GTK_BIN(button));
 	if (heading && heading[0] != '\0') {
-	  gchar *text = g_strdup_printf("%s %s", heading, cand_str);
+	  gchar *text = g_strdup_printf("%s: %s", heading, cand_str);
 	  gtk_label_set_text(GTK_LABEL(label), text);
 	  g_free(text);
 	} else {
