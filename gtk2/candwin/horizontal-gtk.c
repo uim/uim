@@ -287,8 +287,7 @@ label_draw(GtkWidget *label, cairo_t *cr, gpointer data)
     context = gtk_widget_get_style_context(label);
 
     state = GTK_STATE_FLAG_SELECTED;
-    gtk_style_context_get (context, state, "background-color", &bg_color, "color
-", &fg_color, NULL);
+    gtk_style_context_get (context, state, "background-color", &bg_color, "color", &fg_color, NULL);
 
     cairo_save(cr);
     gdk_cairo_set_source_rgba(cr, bg_color);
