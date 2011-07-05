@@ -50,6 +50,8 @@
 #include "uim-scm-abbrev.h"
 #if UIM_USE_NOTIFY_PLUGINS
 #include "uim-notify.h"
+#else
+#include "gettext.h"
 #endif
 
 
