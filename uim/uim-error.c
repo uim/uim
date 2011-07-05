@@ -44,7 +44,7 @@
 
 #include "uim.h"
 #include "uim-internal.h"
-#if UIM_USE_NOTIFY && !UIM_NON_LIBUIM_PROG
+#if UIM_USE_NOTIFY_PLUGINS && !UIM_NON_LIBUIM_PROG
 #include "uim-notify.h"
 #endif
 #include "gettext.h"
@@ -95,7 +95,7 @@ print_caught_error(void)
     }
 
     /* And notify user of it via uim-notify in addition to the stderr msg. */
-#if UIM_USE_NOTIFY && !UIM_NON_LIBUIM_PROG
+#if UIM_USE_NOTIFY_PLUGINS && !UIM_NON_LIBUIM_PROG
     /* Since this function will also be called on hard situations such
      * as memory exhaustion, these uim_notify_*() calls may be failed
      * to notify user of the error, due to the memory shortage.
@@ -108,7 +108,7 @@ print_caught_error(void)
     } else {
       uim_notify_info(err_msg);
     }
-#endif  /* UIM_USE_NOTIFY */
+#endif  /* UIM_USE_NOTIFY_PLUGINS */
   }
 }
 
