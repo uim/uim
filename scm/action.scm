@@ -332,7 +332,11 @@
 ;; returns action-id list that can be passed to context-update-widget-states!
 ;; TODO: write test
 (define context-current-widget-states
-  (let ((widget-act-id (compose action-id widget-activity)))
+  (let ((widget-act-id (compose
+                         (lambda (activity) (if activity
+                                              (action-id activity)
+                                              #f))
+                         widget-activity)))
     (lambda (context)
       (map widget-act-id (context-widgets context)))))
 
