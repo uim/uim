@@ -156,14 +156,12 @@ void uim_quit_dynlib(void);
 void uim_init_im_subrs(void);
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
-#if UIM_USE_NOTIFY
 void uim_init_notify_subrs(void);
-#endif
 
 void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);
 
-#if UIM_USE_NOTIFY
+#if UIM_USE_NOTIFY_PLUGINS
 uim_bool uim_notify_fatal_raw(const char *msg);
 #else
 uim_bool uim_notify_info(const char *msg_fmt, ...);

@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#if !UIM_USE_NOTIFY
+#if !UIM_USE_NOTIFY_PLUGINS
 #include <stdarg.h>
 #endif
 
@@ -48,7 +48,7 @@
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
-#if UIM_USE_NOTIFY
+#if UIM_USE_NOTIFY_PLUGINS
 #include "uim-notify.h"
 #endif
 
@@ -136,10 +136,10 @@ uim_init_internal(void *dummy)
   uim_init_iconv_subrs();
   uim_init_posix_subrs();
   uim_init_util_subrs();
-#if UIM_USE_NOTIFY
+#if UIM_USE_NOTIFY_PLUGINS
   uim_notify_init();  /* init uim-notify facility */
-  uim_init_notify_subrs();  /* init Scheme interface of uim-notify */
 #endif
+  uim_init_notify_subrs();  /* init Scheme interface of uim-notify */
   uim_init_key_subrs();
   uim_init_rk_subrs();
   uim_init_dynlib();
@@ -182,7 +182,7 @@ uim_quit(void)
 #ifdef ENABLE_ANTHY_UTF8_STATIC
   uim_anthy_utf8_plugin_instance_quit();
 #endif
-#if UIM_USE_NOTIFY
+#if UIM_USE_NOTIFY_PLUGINS
   uim_notify_quit();
 #endif
   uim_scm_callf("annotation-unload", "");
@@ -723,7 +723,7 @@ uim_get_im_name_for_locale(const char *localename)
   return name;
 }
 
-#if !UIM_USE_NOTIFY
+#if !UIM_USE_NOTIFY_PLUGINS
 uim_bool
 uim_notify_info(const char *msg_fmt, ...)
 {
@@ -753,7 +753,37 @@ uim_notify_fatal(const char *msg_fmt, ...)
 
   return (ret >= 0);
 }
-#endif  /* !UIM_USE_NOTIFY */
+
+static uim_lisp
+notify_get_plugins(void)
+{
+   return CONS(LIST3(MAKE_SYM("builtin"), MAKE_STR(N_("builtin")), MAKE_STR(N_("libuim builtin"))), uim_scm_null());
+}
+
+static uim_lisp
+notify_info(uim_lisp msg_)
+{
+  const char *msg = REFER_C_STR(msg_);
+
+  return MAKE_BOOL(uim_notify_info("%s", msg));
+}
+
+static uim_lisp
+notify_fatal(uim_lisp msg_)
+{
+  const char *msg = REFER_C_STR(msg_);
+
+  return MAKE_BOOL(uim_notify_fatal("%s", msg));
+}
+
+void
+uim_init_notify_subrs(void)
+{
+  uim_scm_init_proc0("uim-notify-get-plugins", notify_get_plugins);
+  uim_scm_init_proc1("uim-notify-info", notify_info);
+  uim_scm_init_proc1("uim-notify-fatal", notify_fatal);
+}
+#endif  /* !UIM_USE_NOTIFY_PLUGINS */
 
 /****************************************************************
  * Legacy 'mode' API                                            *

@@ -42,7 +42,7 @@
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
-#if UIM_USE_NOTIFY
+#if UIM_USE_NOTIFY_PLUGINS
 #include "uim-notify.h"
 #endif
 #include "gettext.h"
