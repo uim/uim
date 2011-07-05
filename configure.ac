@@ -1660,7 +1660,7 @@ AC_ARG_ENABLE(notify,
     have_notify_opt=no ])
 
 if test "x$enable_notify" != xno; then
-  AC_DEFINE(UIM_USE_NOTIFY, 1, [Define to 1 if you want to use uim-notify])
+  AC_DEFINE(UIM_USE_NOTIFY_PLUGINS, 1, [Define to 1 if you want to use uim-notify plugins])
   use_notify="${use_notify}stderr "
 
   for i in `echo $enable_notify | ${SED} 's/,/ /g'`; do
