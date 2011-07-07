@@ -36,12 +36,11 @@
 
 */
 
-/* TODO: Add a new API to get the locale for the currently activated
- * notification agent to gettext message strings contain format string
- * such as "uim-canna: Failed to mount dictionary %s." in client
- * side. The locale of the process is not appropriate since it may be
- * ja_JP.eucJP and so on and ordinary notification agents expect
- * UTF-8.  -- YamaKen 2008-02-11 */
+/*
+ * It is notification plugin's responsibility to convert messages into
+ * encoding suitable for the notification agents. Messages are assumed to
+ * be tranlated by gettext into the encoding of working locale of the process.
+ */
 
 #ifndef UIM_NOTIFY_H
 #define UIM_NOTIFY_H

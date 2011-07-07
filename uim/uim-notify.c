@@ -50,7 +50,7 @@
 #include "uim-scm-abbrev.h"
 #include "uim-internal.h"
 #include "uim-notify.h"
-
+#include "gettext.h"
 
 #define NOTIFY_PLUGIN_PATH PKGLIBDIR "/notify"
 #define NOTIFY_PLUGIN_PREFIX "libuimnotify-"
@@ -367,7 +367,7 @@ static uim_bool
 uim_notify_stderr_info(const char *msg)
 {
   fputs("libuim: [info] ", stderr);
-  fputs(msg, stderr);
+  fputs(dgettext(GETTEXT_PACKAGE, msg), stderr);
   fputs("\n", stderr);
 
   return UIM_TRUE;
@@ -380,7 +380,7 @@ uim_notify_stderr_fatal(const char *msg)
    * exhaustion, printf()s with indirect directives are intentionally
    * avoided here.  -- YamaKen 2008-02-11 */
   fputs("libuim: [fatal] ", stderr);
-  fputs(msg, stderr);
+  fputs(dgettext(GETTEXT_PACKAGE, msg), stderr);
   fputs("\n", stderr);
 
   return UIM_TRUE;

@@ -767,7 +767,7 @@ notify_info(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
-  return MAKE_BOOL(uim_notify_info("%s", msg));
+  return MAKE_BOOL(uim_notify_info("%s", dgettext(GETTEXT_PACKAGE, msg)));
 }
 
 static uim_lisp
@@ -775,7 +775,7 @@ notify_fatal(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
-  return MAKE_BOOL(uim_notify_fatal("%s", msg));
+  return MAKE_BOOL(uim_notify_fatal("%s", dgettext(GETTEXT_PACKAGE, msg)));
 }
 
 void

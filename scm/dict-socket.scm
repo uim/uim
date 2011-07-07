@@ -74,7 +74,7 @@
     (receive (responce message)
         (dict-server-parse-responce line)
       (cond ((dict-server-error-responce? responce)
-             (uim-notify-fatal (format "dict (~a): ~a" (N_ "Error Response") message)))
+             (uim-notify-fatal (format "dict (~a): ~a" (_ "Error Response") message)))
             ((string=? "151" responce)
              (dict-server-get-1yz port))
             ((string=? "150" responce)
@@ -83,7 +83,7 @@
                      (dict-server-parse-responce responce-line)
                    (if (string=? "151" (substring responce-line 0 3))
                        (dict-server-get-1yz port)
-                       (uim-notify-fatal (format "dict (~a): ~a" (N_ "Error Response") message))))))
+                       (uim-notify-fatal (format "dict (~a): ~a" (_ "Error Response") message))))))
             ((string=? "2" (substring responce 0 1))
              '())
             ((string=? "4" (substring responce 0 1))
@@ -91,7 +91,7 @@
             ((string=? "5" (substring responce 0 1))
              '())
             (else
-             (uim-notify-fatal (format "~a ~a" (N_ "dict: Protocol error") message)))))))
+             (uim-notify-fatal (format "~a ~a" (_ "dict: Protocol error") message)))))))
 
 
 (define (dict-server-parse-banner port)

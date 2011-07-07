@@ -82,7 +82,7 @@
                (file-close pout-out)
 
                (if (= (process-execute file argv) -1)
-                 (uim-notify-fatal (format (N_ "cannot execute ~a") file)))
+                 (uim-notify-fatal (format (_ "cannot execute ~a") file)))
                (set! ret (bitwise-ior ret process-exec-failed))
                (file-write-string 1 (number->string ret))
                (_exit 1)
@@ -111,7 +111,7 @@
             ((= 0 pid) ;; child
              (daemon 0 1)
              (if (= (process-execute file argv) -1)
-               (uim-notify-fatal (format (N_ "cannot execute ~a") file)))
+               (uim-notify-fatal (format (_ "cannot execute ~a") file)))
              (_exit 1))
             (else
              pid)))))
