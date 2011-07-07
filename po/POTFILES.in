@@ -45,6 +45,7 @@ scm/dict-socket.scm
 scm/direct.scm
 scm/elatin-custom.scm
 scm/elatin.scm
+scm/fileio.scm
 scm/generic-custom.scm
 scm/generic-key-custom.scm
 scm/generic.scm

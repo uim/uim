@@ -146,7 +146,7 @@ dynlib_bind_internal(uim_lisp name)
   library = dlopen(REFER_C_STR(name), RTLD_NOW);
 
   if (library == NULL) {
-    uim_notify_fatal(N_("dynlib: %s: Load failed."), dlerror());
+    uim_notify_fatal(_("dynlib: %s: Load failed."), dlerror());
     return uim_scm_f();
   }
 
@@ -155,7 +155,7 @@ dynlib_bind_internal(uim_lisp name)
   dynlib_instance_quit
     = (void (*)(void))dlfunc(library, "uim_dynlib_instance_quit");
   if (!dynlib_instance_init) {
-    uim_notify_fatal(N_("dynlib: %s: Initialization failed."), REFER_C_STR(name));
+    uim_notify_fatal(_("dynlib: %s: Initialization failed."), REFER_C_STR(name));
     return uim_scm_f();
   }
 	

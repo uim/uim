@@ -235,7 +235,7 @@
                    fd-list))
          (ret (file-poll fds timeout)))
     (cond ((not ret)
-           (uim-notify-fatal (format "~a: '~a'" (N_ "poll error") (posix-error-string)))
+           (uim-notify-fatal (format "~a: '~a'" (_ "poll error") (posix-error-string)))
            #f)
           ((null? ret)
            ;;(uim-notify-info (N_ "timeout"))

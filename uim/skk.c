@@ -3693,10 +3693,7 @@ open_skkserv(const char *hostname, int portnum, int family)
   freeaddrinfo(aitop);
 
   if (sock == -1) {
-    /* FIXME: gettext here to expand %s in accordance with the
-     * locale for the selected notification agent. See also the TODO
-     * comment of uim-notify.h  -- YamaKen 2008-02-11 */
-    uim_notify_fatal(N_("uim-skk: connect to %s port %s failed"), hostname, port);
+    uim_notify_fatal(_("uim-skk: connect to %s port %s failed"), hostname, port);
     return 0;
   }
 
