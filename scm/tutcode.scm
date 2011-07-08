@@ -2483,6 +2483,9 @@
            (rk-flush rkc)
            (tutcode-context-set-commit-strs! pc ())
            (tutcode-context-set-state! pc 'tutcode-state-off))
+          ((tutcode-on-key? key key-state) ; off-keyとon-keyが別キーの場合
+           ;; 現在onでもoffでも、on-keyでonにしたいだけなのでcommit-rawを回避
+           (rk-flush rkc))
           ((tutcode-kigou-toggle-key? key key-state)
            (rk-flush rkc)
            (tutcode-begin-kigou-mode pc))
@@ -2984,9 +2987,13 @@
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-proc-state-off c key key-state)
   (let ((pc (tutcode-find-descendant-context c)))
-    (if (tutcode-on-key? key key-state)
-      (tutcode-context-set-state! pc 'tutcode-state-on)
-      (tutcode-commit-raw pc key key-state))))
+    (cond
+      ((tutcode-on-key? key key-state)
+        (tutcode-context-set-state! pc 'tutcode-state-on))
+      ((tutcode-off-key? key key-state) ; on-keyとoff-keyが別キーの場合
+        ) ; 現在onでもoffでも、off-keyでoffにしたいだけなのでcommit-rawを回避
+      (else
+        (tutcode-commit-raw pc key key-state)))))
 
 ;;; 記号入力モード時のキー入力を処理する。
 ;;; @param c コンテキストリスト
