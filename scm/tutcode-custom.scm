@@ -245,6 +245,12 @@
   (N_ "Show real keys on auto help window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-bushu-help-filename ""
+  '(tutcode candwin)
+  '(pathname regular-file)
+  (N_ "bushu.help file for auto help")
+  (N_ "long description will be here."))
+
 ;; prediction/completion
 (define-custom 'tutcode-use-completion? #f
   '(tutcode tutcode-prediction)

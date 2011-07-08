@@ -134,7 +134,9 @@
 ;;;  - 「+」後付き文字:熟語ガイドの最終打鍵であることを表します。
 ;;; * 自動ヘルプ表示機能(表形式の候補ウィンドウを流用)
 ;;;   交ぜ書き変換や部首合成変換で入力した文字の打ち方を表示します。
-;;;   部首合成方法も、簡単な合成に関しては表示可能です。
+;;;   部首合成方法のヘルプは、bushu.helpファイルが設定されていれば
+;;;   二分探索して表示します。bushu.help内に見つからない場合でも、
+;;;   簡単な部首合成に関しては表示可能です。
 ;;;   例:交ぜ書き変換で「憂鬱」を確定した場合
 ;;;    ┌─┬─┬─┬─┬─┬─┬──────┬─┬─┬───┬─┐
 ;;;    │  │  │  │  │  │  │            │  │  │      │  │
@@ -276,6 +278,7 @@
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
 (require "tutcode-dialog.scm"); 交ぜ書き変換辞書からの削除確認ダイアログ
+(require "tutcode-bushu.scm")
 (require "japanese.scm") ; for ja-wide or ja-make-kana-str{,-list}
 (require "ustr.scm")
 
@@ -834,8 +837,6 @@
     (if tutcode-use-recursive-learning?
       (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
     (tutcode-context-set-dialog! tc (tutcode-dialog-new tc))
-    (if tutcode-use-interactive-bushu-conversion?
-      (require "tutcode-bushu.scm"))
     (if (or tutcode-use-completion? tutcode-use-prediction?)
       (begin
         (tutcode-context-set-prediction-ctx! tc (predict-make-meta-search))
@@ -3839,6 +3840,18 @@
     (and res
       (cdr res))))
 
+;;; 自動ヘルプ:bushu.helpファイルを検索して対象文字のヘルプ(2つの部首)を取得する
+;;; @param c 対象文字
+;;; @return ヘルプに表示する情報(2つの部首のリスト)。見つからなかった場合は#f
+(define (tutcode-bushu-help-lookup c)
+  (and (not (string=? tutcode-bushu-help-filename "")) ; デフォルトは""
+    (let*
+      ((looked (tutcode-bushu-search c tutcode-bushu-help-filename))
+       (lst (and looked (tutcode-bushu-parse-entry looked))))
+      (and lst
+        (>= (length lst) 2)
+        (take lst 2)))))
+
 ;;; 自動ヘルプ:対象文字を部首合成するのに必要となる、
 ;;; 外字でない2つの文字のリストを返す
 ;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
@@ -3848,7 +3861,8 @@
 ;;;  見つからなかった場合は#f
 (define (tutcode-auto-help-bushu-decompose c rule)
   (let*
-    ((bushu (tutcode-bushu-decompose c))
+    ((bushu (or (tutcode-bushu-help-lookup c)
+                (tutcode-bushu-decompose c)))
      (b1 (and bushu (car bushu)))
      (b2 (and bushu (cadr bushu)))
      (seq1 (and b1 (tutcode-auto-help-get-stroke b1 rule)))
