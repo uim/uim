@@ -282,6 +282,15 @@
   (N_ "Enable Kanji combination guide")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-stroke-help-with-kanji-combination-guide 'disable
+  '(tutcode tutcode-prediction)
+  (list 'choice
+    (list 'full (N_ "Full stroke help") (N_ "Full stroke help"))
+    (list 'guide-only (N_ "Guide only") (N_ "Guide only"))
+    (list 'disable (N_ "Disable") (N_ "Disable")))
+  (N_ "Show stroke help temporarily by keys in kanji combination guide")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-bushu-prediction? #f
   '(tutcode tutcode-prediction)
   '(boolean)
