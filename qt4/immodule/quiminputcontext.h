@@ -95,6 +95,8 @@ public:
 
     void commitString( const QString& str );
 
+    void updatePosition();
+    void updateStyle();
     void readIMConf();
 
     QUimTextUtil *textUtil() { return mTextUtil; }

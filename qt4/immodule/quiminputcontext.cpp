@@ -902,11 +902,29 @@ void QUimInputContext::switch_system_global_im( const char *name )
     QUimHelperManager::send_im_change_whole_desktop( name );
 }
 
-void QUimInputContext::readIMConf()
+void QUimInputContext::updatePosition()
 {
     char * leftp = uim_scm_symbol_value_str( "candidate-window-position" );
     cwin->setAlwaysLeftPosition( leftp && !strcmp( leftp, "left" ) );
     free( leftp );
+}
+
+void QUimInputContext::updateStyle()
+{
+    // don't update window style if deprecated uim-candwin-prog is set
+    char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
+    if ( candwinprog ) {
+        free( candwinprog );
+        return;
+    }
+    delete cwin;
+    createCandidateWindow();
+}
+
+void QUimInputContext::readIMConf()
+{
+    updatePosition();
+    updateStyle();
 }
 
 void QUimInputContext::updateIndicator( const QString &str )

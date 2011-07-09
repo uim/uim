@@ -159,6 +159,12 @@ void QUimHelperManager::parseHelperStr( const QString &str )
                 uim_prop_update_custom( ( *it )->uimContext(),
                                         list[ 1 ].toUtf8().data(),
                                         list[ 2 ].toUtf8().data() );
+                if ( list[ 1 ]
+                        == QLatin1String( "candidate-window-position" ) )
+                    ( *it )->updatePosition();
+                if ( list[ 1 ]
+                        == QLatin1String( "candidate-window-style" ) )
+                    ( *it )->updateStyle();
                 break;  /* all custom variables are global */
             }
         }
@@ -170,6 +176,10 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         QUimInfoManager *infoManager =
             UimInputContextPlugin::getQUimInfoManager();
         infoManager->initUimInfo();
+
+        QList<QUimInputContext *>::iterator it;
+        for ( it = contextList.begin(); it != contextList.end(); ++it )
+            ( *it )->readIMConf();
     }
 }
 
