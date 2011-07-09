@@ -82,7 +82,7 @@ static int unicodeToUKey(ushort c);
 QUimInputContext::QUimInputContext( const char *imname )
         : candwinIsActive( false ), m_isComposing( false ), m_uc( 0 )
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
-        , focusedWidget( 0 )
+        , focusedWidget( 0 ), isStyleUpdated( false )
 #endif
 {
 #ifdef ENABLE_DEBUG
@@ -691,14 +691,27 @@ void QUimInputContext::savePreedit()
 
 void QUimInputContext::restorePreedit()
 {
-    if ( m_uc )
-        uim_release_context( m_uc );
-    delete cwin;
-    m_uc = m_ucHash.take( focusedWidget );
-    psegs = psegsHash.take( focusedWidget );
-    cwin = cwinHash.take( focusedWidget );
-    if ( visibleHash.take( focusedWidget ) )
-        cwin->popup();
+    if ( isStyleUpdated ) {
+        psegs = psegsHash.take( focusedWidget );
+        QString preedit;
+        while ( !psegs.isEmpty() ) {
+            preedit += psegs.takeFirst().str;
+        }
+        commitString( preedit );
+        isStyleUpdated = false;
+
+        m_ucHash.remove( focusedWidget );
+        cwinHash.remove( focusedWidget );
+    } else {
+        if ( m_uc )
+            uim_release_context( m_uc );
+        delete cwin;
+        m_uc = m_ucHash.take( focusedWidget );
+        psegs = psegsHash.take( focusedWidget );
+        cwin = cwinHash.take( focusedWidget );
+        if ( visibleHash.take( focusedWidget ) )
+            cwin->popup();
+    }
 }
 #endif
 
@@ -919,6 +932,9 @@ void QUimInputContext::updateStyle()
     }
     delete cwin;
     createCandidateWindow();
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+    isStyleUpdated = true;
+#endif
 }
 
 void QUimInputContext::readIMConf()

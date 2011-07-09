@@ -181,6 +181,7 @@ protected:
     QHash<QWidget*, bool> visibleHash;
 
     QWidget *focusedWidget;
+    bool isStyleUpdated;
 #endif
 
     static QUimHelperManager *m_HelperManager;
