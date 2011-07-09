@@ -108,7 +108,7 @@ QUimInputContext::QUimInputContext( const char *imname )
     mTextUtil = new QUimTextUtil( this );
 
     // read configuration
-    readIMConf();
+    updatePosition();
 
     m_indicator = new CaretStateIndicator;
 }
