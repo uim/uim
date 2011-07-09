@@ -704,7 +704,7 @@ void QUimInputContext::restorePreedit()
 
 void QUimInputContext::saveContext()
 {
-    // just send IMEnd and keep preedit string
+    // just send QInputMethodEvent and keep preedit string
     if ( isComposing() )
         commitString( "" );
 }
