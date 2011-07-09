@@ -286,7 +286,7 @@ void CandidateWindow::hideEvent( QHideEvent *event )
 }
 
 QRect CandidateWindow::subWindowRect( const QRect &rect,
-    QTableWidgetItem *item )
+    const QTableWidgetItem *item )
 {
     if ( !item ) {
         QList<QTableWidgetItem *> list = cList->selectedItems();
