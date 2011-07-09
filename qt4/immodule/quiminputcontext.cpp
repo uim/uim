@@ -184,7 +184,7 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 void QUimInputContext::createCandidateWindow()
 {
     cwin = 0;
-    // deprecated
+    // uim-candwin-prog is deprecated
     char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
     if ( candwinprog ) {
         if ( !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
