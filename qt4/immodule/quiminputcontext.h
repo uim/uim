@@ -97,7 +97,6 @@ public:
 
     void updatePosition();
     void updateStyle();
-    void readIMConf();
 
     QUimTextUtil *textUtil() { return mTextUtil; }
 

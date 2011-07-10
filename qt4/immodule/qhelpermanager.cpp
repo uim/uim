@@ -178,8 +178,10 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         infoManager->initUimInfo();
 
         QList<QUimInputContext *>::iterator it;
-        for ( it = contextList.begin(); it != contextList.end(); ++it )
-            ( *it )->readIMConf();
+        for ( it = contextList.begin(); it != contextList.end(); ++it ) {
+            ( *it )->updatePosition();
+            ( *it )->updateStyle();
+        }
     }
 }
 
@@ -196,7 +198,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             uim_switch_im( focusedInputContext->uimContext(),
                            im_name.toUtf8().data() );
             uim_prop_list_update( focusedInputContext->uimContext() );
-            focusedInputContext->readIMConf();
+            focusedInputContext->updatePosition();
         }
     }
     else if ( str.startsWith( QLatin1String( "im_change_whole_desktop" ) ) )
@@ -205,7 +207,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         for ( it = contextList.begin(); it != contextList.end(); ++it )
         {
             uim_switch_im( ( *it )->uimContext(), im_name.toUtf8().data() );
-            ( *it )->readIMConf();
+            ( *it )->updatePosition();
             uim_prop_update_custom( ( *it )->uimContext(),
                                     "custom-preserved-default-im-name",
                                     im_name_sym.toUtf8().data() );
@@ -220,7 +222,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
                 uim_switch_im( ( *it )->uimContext(), im_name.toUtf8().data() );
-                ( *it )->readIMConf();
+                ( *it )->updatePosition();
                 uim_prop_update_custom( ( *it )->uimContext(),
                                         "custom-preserved-default-im-name",
                                         im_name_sym.toUtf8().data() );

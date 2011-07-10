@@ -906,7 +906,7 @@ void QUimInputContext::switch_app_global_im( const char *name )
     {
         if ( ( *it ) != this) {
             uim_switch_im( ( *it )->uimContext(), name );
-            ( *it )->readIMConf();
+            ( *it )->updatePosition();
         }
     }
     uim_prop_update_custom(this->uimContext(), "custom-preserved-default-im-name", im_name_sym.toUtf8().data() );
@@ -945,12 +945,6 @@ void QUimInputContext::updateStyle()
         cwinHash[ widget ] = 0;
     }
 #endif
-}
-
-void QUimInputContext::readIMConf()
-{
-    updatePosition();
-    updateStyle();
 }
 
 void QUimInputContext::updateIndicator( const QString &str )
