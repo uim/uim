@@ -3192,9 +3192,8 @@ msgid "Table style"
 msgstr ""
 
 #: ../scm/im-custom.scm:414
-#, fuzzy
 msgid "Candidate window type"
-msgstr "후보창"
+msgstr ""
 
 #: ../scm/im-custom.scm:422 ../scm/im-custom.scm:423
 msgid "Adjacent to cursor"
@@ -5832,9 +5831,8 @@ msgid "Guide only"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:296
-#, fuzzy
 msgid "Disable"
-msgstr "무효"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:297
 msgid "Show stroke help temporarily by keys in kanji combination guide"

@@ -1884,7 +1884,6 @@ msgid "[Ajax-IME] Previous prediction candidate"
 msgstr "[Ajax-IME] 前予測候補"
 
 #: ../scm/ajax-ime.scm:605
-#, fuzzy
 msgid ""
 "Caveat: All requests to the Ajax-IME server go over the Internet "
 "unencrypted.\n"
@@ -3006,9 +3005,8 @@ msgid "unexpected terminate string."
 msgstr ""
 
 #: ../scm/fileio.scm:238
-#, fuzzy
 msgid "poll error"
-msgstr "エラーなし。"
+msgstr "pollエラー"
 
 #: ../scm/generic-custom.scm:36
 msgid "Other input methods"
@@ -3301,14 +3299,12 @@ msgid "Horizontal"
 msgstr ""
 
 #: ../scm/im-custom.scm:412
-#, fuzzy
 msgid "Table style"
-msgstr "ビジュアルスタイル"
+msgstr "表形式"
 
 #: ../scm/im-custom.scm:414
-#, fuzzy
 msgid "Candidate window type"
-msgstr "候補ウィンドウ"
+msgstr "候補ウィンドウのタイプ"
 
 #: ../scm/im-custom.scm:422 ../scm/im-custom.scm:423
 msgid "Adjacent to cursor"
@@ -5747,7 +5743,6 @@ msgid "[Social-IME] Previous prediction candidate"
 msgstr "[Social-IME] 前予測候補"
 
 #: ../scm/social-ime.scm:665
-#, fuzzy
 msgid ""
 "Caveat: All requests to the Social IME server go over the Internet "
 "unencrypted.\n"
@@ -5953,16 +5948,14 @@ msgid "Enable Kanji combination guide"
 msgstr "熟語ガイドを有効にする"
 
 #: ../scm/tutcode-custom.scm:294
-#, fuzzy
 msgid "Full stroke help"
-msgstr "仮想鍵盤ウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:295
 msgid "Guide only"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:296
-#, fuzzy
 msgid "Disable"
 msgstr "無効"
 

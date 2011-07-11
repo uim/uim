@@ -3171,14 +3171,12 @@ msgid "Horizontal"
 msgstr ""
 
 #: ../scm/im-custom.scm:412
-#, fuzzy
 msgid "Table style"
-msgstr "Style visuel"
+msgstr ""
 
 #: ../scm/im-custom.scm:414
-#, fuzzy
 msgid "Candidate window type"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/im-custom.scm:422 ../scm/im-custom.scm:423
 msgid "Adjacent to cursor"
