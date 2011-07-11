@@ -5795,9 +5795,8 @@ msgid "Guide only"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:296
-#, fuzzy
 msgid "Disable"
-msgstr "무효"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:297
 msgid "Show stroke help temporarily by keys in kanji combination guide"
