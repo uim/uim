@@ -5889,7 +5889,7 @@ msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
 #: ../scm/tutcode-custom.scm:251
 msgid "bushu.help file for auto help"
-msgstr ""
+msgstr "自動ヘルプ用bushu.helpファイル"
 
 #: ../scm/tutcode-custom.scm:258
 msgid "Enable completion"
@@ -5913,11 +5913,11 @@ msgstr "熟語ガイドを有効にする"
 
 #: ../scm/tutcode-custom.scm:294
 msgid "Full stroke help"
-msgstr ""
+msgstr "仮想鍵盤"
 
 #: ../scm/tutcode-custom.scm:295
 msgid "Guide only"
-msgstr ""
+msgstr "熟語ガイドのみ"
 
 #: ../scm/tutcode-custom.scm:296
 msgid "Disable"
@@ -5925,7 +5925,7 @@ msgstr "無効"
 
 #: ../scm/tutcode-custom.scm:297
 msgid "Show stroke help temporarily by keys in kanji combination guide"
-msgstr ""
+msgstr "熟語ガイドに従って入力する際に一時的に仮想鍵盤を表示する"
 
 #: ../scm/tutcode-custom.scm:303
 msgid "Enable input prediction for bushu conversion"
