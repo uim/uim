@@ -470,12 +470,15 @@
 ;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
 (define tutcode-auto-help-cand-str-list
   ;; 第1,2,3打鍵を示す文字(部首1用, 部首2用)
-  '((("1" "2" "3") ("4" "5" "6")) ; 1文字目用
-    (("a" "b" "c") ("d" "e" "f")) ; 2文字目用
-    (("A" "B" "C") ("D" "E" "F"))
-    (("一" "二" "三") ("四" "五" "六"))
-    (("あ" "い" "う") ("か" "き" "く"))
-    (("ア" "イ" "ウ") ("カ" "キ" "ク"))))
+  '((("1" "2" "3") ("4" "5" "6") ("7" "8" "9")) ; 1文字目用
+    (("a" "b" "c") ("d" "e" "f") ("g" "h" "i")) ; 2文字目用
+    (("A" "B" "C") ("D" "E" "F") ("G" "H" "I"))
+    (("一" "二" "三") ("四" "五" "六") ("七" "八" "九"))
+    (("あ" "い" "う") ("か" "き" "く") ("さ" "し" "す"))
+    (("ア" "イ" "ウ") ("カ" "キ" "ク") ("サ" "シ" "ス"))))
+
+;;; 自動ヘルプ作成時間上限[s]
+(define tutcode-auto-help-time-limit 3)
 
 ;;; 熟語ガイド用マーク
 (define tutcode-guide-mark "+")
@@ -1943,7 +1946,8 @@
 ;;;    │  │  │d │  │e │  │2a(鬱▲林缶)│  │  │      │  │
 ;;;    └─┴─┴─┴─┴─┴─┴──────┴─┴─┴───┴─┘
 ;;;
-;;; 通常の候補ウィンドウの場合は、以下のように表示する。
+;;; tutcode-auto-help-with-real-keys?が#tの場合(通常の候補ウィンドウ用)は、
+;;; 以下のように表示する。
 ;;;   憂 lns
 ;;;   鬱 ▲林缶 nt cbo
 ;;;
@@ -2023,7 +2027,8 @@
 (define (tutcode-auto-help-update-stroke-alist-with-kanji pc label-cands-alist
          cand-list kanji)
   (let*
-    ((rule (rk-context-rule (tutcode-context-rk-context pc)))
+    ((stime (time))
+     (rule (rk-context-rule (tutcode-context-rk-context pc)))
      (stroke (tutcode-reverse-find-seq kanji rule)))
     (if stroke
       (begin
@@ -2033,22 +2038,90 @@
           label-cands-alist
           (cons (string-append (caar cand-list) "(" kanji ")") (cdar cand-list))
           stroke))
-      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji rule)))
+      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji rule stime)))
         ;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
         (if (not decomposed)
           label-cands-alist
-          (begin
-            (tutcode-stroke-help-guide-add-kanji pc (car decomposed))
-            (tutcode-stroke-help-guide-add-kanji pc (cadr decomposed))
-            (tutcode-auto-help-update-stroke-alist-with-stroke
-              (tutcode-auto-help-update-stroke-alist-with-stroke
-                label-cands-alist
-                (cons
-                  (string-append (caar cand-list) "(" kanji "▲"
-                    (caar (cdar decomposed)) (caar (cdadr decomposed)) ")")
-                  (cdar cand-list))
-                (caaar decomposed)) ; 部首1
-              (cadr cand-list) (caaadr decomposed)))))))) ; 部首2
+          (let*
+            ((bushu-strs (tutcode-auto-help-bushu-combination-strs decomposed))
+             (helpstrlist (append (list "(" kanji "▲") bushu-strs '(")")))
+             (helpstr (apply string-append helpstrlist))
+             (alist
+              (letrec
+                ((update-stroke
+                  (lambda (lst alist cand-list)
+                    (if (or (null? lst) (null? cand-list))
+                      (list alist cand-list)
+                      (let
+                        ((res
+                          (if (tutcode-rule-element? (car lst))
+                            (list
+                              (tutcode-auto-help-update-stroke-alist-with-stroke
+                                alist (car cand-list) (caar (car lst)))
+                              (cdr cand-list))
+                            (update-stroke (car lst) alist cand-list))))
+                        (update-stroke (cdr lst) (car res) (cadr res)))))))
+                (update-stroke decomposed label-cands-alist
+                  (cons
+                    (cons
+                      (string-append (caar cand-list) helpstr)
+                      (cdar cand-list))
+                    (cdr cand-list))))))
+            (tutcode-auto-help-bushu-combination-add-guide pc decomposed)
+            (car alist)))))))
+
+;;; tutcode-ruleの要素の形式((("," "o"))("撃"))かどうかを返す
+(define (tutcode-rule-element? x)
+  (and
+    (pair? x)
+    (pair? (car x))
+    (pair? (caar x))
+    (pair? (cdr x))
+    (pair? (cadr x))
+    (every string? (caar x))
+    (every string? (cadr x))))
+
+;;; 自動ヘルプ:tutcode-auto-help-bushu-decomposeで検索した、
+;;; 部首合成方法で使う部首を、ガイド対象文字に追加する。
+;;; @param decomposed tutcode-auto-help-bushu-decompose結果
+(define (tutcode-auto-help-bushu-combination-add-guide pc decomposed)
+  (if (not (null? decomposed))
+    (begin
+      (if (tutcode-rule-element? (car decomposed))
+        (tutcode-stroke-help-guide-add-kanji pc (car decomposed))
+        (tutcode-auto-help-bushu-combination-add-guide pc (car decomposed)))
+      (tutcode-auto-help-bushu-combination-add-guide pc (cdr decomposed)))))
+
+;;; 自動ヘルプ:tutcode-auto-help-bushu-decomposeで検索した、
+;;; ストロークを含む部首合成方法から、
+;;; 部首文字列のみを抜き出した部首合成方法を作る
+;;; @param decomposed tutcode-auto-help-bushu-decompose結果
+;;; @return 作成後の部首合成方法文字列リスト
+(define (tutcode-auto-help-bushu-combination-strs decomposed)
+  (tutcode-auto-help-bushu-combination-traverse decomposed ()
+    (lambda (ele) (list (caadr ele))) "▲" ""))
+
+;;; 自動ヘルプ:tutcode-auto-help-bushu-decomposeの検索結果のツリー構造から、
+;;; 一部を抜き出したフラットなリストを作る
+;;; @param decomposed tutcode-auto-help-bushu-decompose結果
+;;; @param lst 作成中のリスト
+;;; @param picker decomposedの要素(tutcode-rule-element)から
+;;;   対象要素を抜き出すための関数
+;;; @param branch-str 枝わかれを示すために結果リストに追加する文字列
+;;; @param delim-str 各部首の区切りを示すために結果リストに追加する文字列
+;;; @return 作成後のリスト
+(define (tutcode-auto-help-bushu-combination-traverse decomposed lst picker
+          branch-str delim-str)
+  (if (null? decomposed)
+    lst
+    (let
+      ((add
+        (if (tutcode-rule-element? (car decomposed))
+          (cons delim-str (picker (car decomposed)))
+          (tutcode-auto-help-bushu-combination-traverse (car decomposed)
+            (list branch-str) picker branch-str delim-str))))
+      (tutcode-auto-help-bushu-combination-traverse (cdr decomposed)
+        (append lst add) picker branch-str delim-str))))
 
 ;;; 自動ヘルプ:対象の1文字を入力するストロークをヘルプ用alistに追加する。
 ;;; @param label-cands-alist 元のalist
@@ -2057,7 +2130,8 @@
 (define (tutcode-auto-help-update-stroke-alist-normal-with-kanji
           pc label-cands-alist kanji)
   (let*
-    ((rule (rk-context-rule (tutcode-context-rk-context pc)))
+    ((stime (time))
+     (rule (rk-context-rule (tutcode-context-rk-context pc)))
      (stroke (tutcode-reverse-find-seq kanji rule)))
     (if stroke
       (begin
@@ -2067,22 +2141,21 @@
           label-cands-alist
           (cons (string-append kanji " ") stroke)
           kanji))
-      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji rule)))
+      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji rule stime)))
         ;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
         (if (not decomposed)
           label-cands-alist
-          (begin
-            (tutcode-stroke-help-guide-add-kanji pc (car decomposed))
-            (tutcode-stroke-help-guide-add-kanji pc (cadr decomposed))
+          (let*
+            ((bushu-strs (tutcode-auto-help-bushu-combination-strs decomposed))
+             (helpstrlist (append (list kanji "▲") bushu-strs))
+             (helpstr (apply string-append helpstrlist))
+             (bushu-stroke
+              (tutcode-auto-help-bushu-combination-traverse decomposed ()
+                caar "" " ")))
+            (tutcode-auto-help-bushu-combination-add-guide pc decomposed)
             (tutcode-auto-help-update-stroke-alist-normal-with-stroke
               label-cands-alist
-              (cons
-                (string-append kanji "▲"
-                  (caar (cdar decomposed)) (caar (cdadr decomposed)) " ")
-                (append
-                  (caaar decomposed)    ; 部首1
-                  (list " ")
-                  (caaadr decomposed))) ; 部首2
+              (cons helpstr bushu-stroke)
               kanji)))))))
 
 ;;; 自動ヘルプ:対象のストローク(キーのリスト)をヘルプ用alistに追加する。
@@ -3857,42 +3930,65 @@
 ;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
 ;;; @param c 対象文字
 ;;; @param rule tutcode-rule
+;;; @param stime 開始日時
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  見つからなかった場合は#f
-(define (tutcode-auto-help-bushu-decompose c rule)
-  (let*
-    ((bushu (or (tutcode-bushu-help-lookup c)
-                (tutcode-bushu-decompose c)))
-     (b1 (and bushu (car bushu)))
-     (b2 (and bushu (cadr bushu)))
-     (seq1 (and b1 (tutcode-auto-help-get-stroke b1 rule)))
-     (seq2 (and b2 (tutcode-auto-help-get-stroke b2 rule))))
-    (or
-      ;; 足し算による合成
-      (and seq1 seq2
-        (list seq1 seq2))
-      ;; 単純な引き算による合成
-      (tutcode-auto-help-bushu-decompose-by-subtraction c rule)
-      ;; 部品による合成
+(define (tutcode-auto-help-bushu-decompose c rule stime)
+  (if (> (string->number (difftime (time) stime)) tutcode-auto-help-time-limit)
+    #f
+    (let*
+      ((bushu (or (tutcode-bushu-help-lookup c)
+                  (tutcode-bushu-decompose c)))
+       (b1 (and bushu (car bushu)))
+       (b2 (and bushu (cadr bushu)))
+       (seq1 (and b1 (tutcode-auto-help-get-stroke b1 rule)))
+       (seq2 (and b2 (tutcode-auto-help-get-stroke b2 rule))))
       (or
-        ;; 部首1が直接入力可能
-        ;; →(部首1)と(部首2を部品として持つ漢字)による合成が可能か?
-        (and seq1 b2
-          (tutcode-auto-help-bushu-decompose-looking-bushudic tutcode-bushudic
-            () 99
-            (lambda (elem)
-              (tutcode-auto-help-get-stroke-list-with-right-part
-                c b1 b2 seq1 rule elem))))
-        ;; 部首2が直接入力可能
-        ;; →(部首2)と(部首1を部品として持つ漢字)による合成が可能か?
-        (and seq2 b1
-          (tutcode-auto-help-bushu-decompose-looking-bushudic tutcode-bushudic
-            () 99
-            (lambda (elem)
-              (tutcode-auto-help-get-stroke-list-with-left-part
-                c b1 b2 seq2 rule elem))))
-        ;; XXX: 部品どうしの合成や、3文字以上での合成は未対応
-        ))))
+        ;; 足し算による合成
+        (and seq1 seq2
+          (list seq1 seq2))
+        ;; 単純な引き算による合成
+        (tutcode-auto-help-bushu-decompose-by-subtraction c rule)
+        ;; 部品による合成
+        (or
+          ;; 部首1が直接入力可能
+          ;; →(部首1)と(部首2を部品として持つ漢字)による合成が可能か?
+          (and seq1 b2
+            (or
+              (tutcode-auto-help-bushu-decompose-looking-bushudic
+                tutcode-bushudic () 99
+                (lambda (elem)
+                  (tutcode-auto-help-get-stroke-list-with-right-part
+                    c b1 b2 seq1 rule elem)))
+              ;; 部首2では合成不能→部首2をさらに分解
+              (let ((b2dec (tutcode-auto-help-bushu-decompose b2 rule stime)))
+                (if b2dec
+                  (list seq1 b2dec)
+                  #f))))
+          ;; 部首2が直接入力可能
+          ;; →(部首2)と(部首1を部品として持つ漢字)による合成が可能か?
+          (and seq2 b1
+            (or
+              (tutcode-auto-help-bushu-decompose-looking-bushudic
+                tutcode-bushudic () 99
+                (lambda (elem)
+                  (tutcode-auto-help-get-stroke-list-with-left-part
+                    c b1 b2 seq2 rule elem)))
+              ;; 部首1では合成不能→部首1をさらに分解
+              (let ((b1dec (tutcode-auto-help-bushu-decompose b1 rule stime)))
+                (if b1dec
+                  (list b1dec seq2)
+                  #f))))
+          ;; 部首1も部首2も直接入力不可→さらに分解
+          (and b1 b2
+            (let
+              ((b1dec (tutcode-auto-help-bushu-decompose b1 rule stime))
+               (b2dec (tutcode-auto-help-bushu-decompose b2 rule stime)))
+              (if (and b1dec b2dec)
+                (list b1dec b2dec)
+                #f)))
+          ;; XXX: 部品どうしの合成は未対応
+          )))))
 
 ;;; 自動ヘルプ:対象文字を入力する際の打鍵のリストを取得する。
 ;;; 例: "撃" => ((("," "o")) ("撃"))
