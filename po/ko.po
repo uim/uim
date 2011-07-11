@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-05-26 10:38+0900\n"
+"POT-Creation-Date: 2011-07-11 13:03+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Anthy private dictionary"
 msgstr ""
 
-#: ../gtk2/dict/canna.c:87 ../gtk2/dict/main-gtk.c:149
+#: ../gtk2/dict/canna.c:88 ../gtk2/dict/main-gtk.c:149
 #: ../gtk2/dict/word-list-win-gtk.c:357 ../gtk2/dict/word.c:135
 #: ../gtk2/dict/word.c:150
 msgid "Canna private dictionary"
@@ -375,33 +375,33 @@ msgid "Disabled items"
 msgstr "무효인 항목"
 
 #: ../gtk2/pref/gtk-custom-widgets.c:1377
-#: ../gtk2/pref/gtk-custom-widgets.c:1910
+#: ../gtk2/pref/gtk-custom-widgets.c:1909
 msgid "Edit..."
 msgstr "편집..."
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1530 ../qt3/pref/customwidgets.cpp:878
+#: ../gtk2/pref/gtk-custom-widgets.c:1529 ../qt3/pref/customwidgets.cpp:878
 #: ../qt4/pref/customwidgets.cpp:888
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1531
+#: ../gtk2/pref/gtk-custom-widgets.c:1530
 msgid "Grabbing keys"
 msgstr "키를 잡고 있는 중"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1752
+#: ../gtk2/pref/gtk-custom-widgets.c:1751
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - 키 설정"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1791
+#: ../gtk2/pref/gtk-custom-widgets.c:1790
 msgid "Key preference"
 msgstr "키 설정"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1838
+#: ../gtk2/pref/gtk-custom-widgets.c:1837
 msgid "Key:"
 msgstr "키:"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1855
+#: ../gtk2/pref/gtk-custom-widgets.c:1854
 msgid "Grab..."
 msgstr "잡기..."
 
@@ -484,13 +484,13 @@ msgid "uim input method switcher"
 msgstr "uim 입력기 전환"
 
 #: ../gtk2/switcher/gtk.c:384 ../qt3/switcher/qt.cpp:118
-#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:470
+#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:485
 msgid "Effective coverage"
 msgstr "적용범위"
 
 #. radio buttons for the switcher coverage
 #: ../gtk2/switcher/gtk.c:392 ../qt3/switcher/qt.cpp:119
-#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:462
+#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:477
 msgid "whole desktop"
 msgstr "데스크탑 전체"
 
@@ -594,12 +594,12 @@ msgstr "손글씨 입력 패드"
 msgid "Help"
 msgstr "도움말"
 
-#: ../gtk2/toolbar/common-gtk.c:290 ../gtk2/toolbar/common-gtk.c:538
+#: ../gtk2/toolbar/common-gtk.c:290 ../gtk2/toolbar/common-gtk.c:550
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr ""
 
-#: ../gtk2/toolbar/common-gtk.c:921
+#: ../gtk2/toolbar/common-gtk.c:933
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:85
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
 msgid "Quit this toolbar"
@@ -646,8 +646,8 @@ msgstr "디폴트"
 
 #: ../qt3/pref/qt.cpp:166 ../qt3/pref/qt.cpp:257 ../qt3/pref/qt.cpp:364
 #: ../qt3/switcher/qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
-#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/keyeditformbase.cpp:65
-#: ../qt4/pref/olisteditformbase.cpp:64 ../qt4/switcher/qt4.cpp:138
+#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/keyeditformbase.cpp:66
+#: ../qt4/pref/olisteditformbase.cpp:65 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "확인"
 
@@ -657,7 +657,7 @@ msgstr "적용"
 
 #: ../qt3/pref/qt.cpp:173 ../qt3/pref/qt.cpp:258 ../qt3/switcher/qt.cpp:134
 #: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
-#: ../qt4/pref/keyeditformbase.cpp:69 ../qt4/pref/olisteditformbase.cpp:68
+#: ../qt4/pref/keyeditformbase.cpp:70 ../qt4/pref/olisteditformbase.cpp:69
 #: ../qt4/switcher/qt4.cpp:148
 msgid "Cancel"
 msgstr "취소"
@@ -722,15 +722,15 @@ msgstr ""
 msgid "Cannot launch '%1'."
 msgstr ""
 
-#: ../scm/action.scm:498 ../scm/action.scm:499
+#: ../scm/action.scm:502 ../scm/action.scm:503
 msgid "unknown"
 msgstr "모름"
 
-#: ../scm/action.scm:538
+#: ../scm/action.scm:542
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
-#: ../scm/action.scm:543 ../scm/action.scm:544
+#: ../scm/action.scm:547 ../scm/action.scm:548
 msgid "exec im-switcher"
 msgstr "입력기 전환"
 
@@ -869,46 +869,46 @@ msgstr ""
 #: ../scm/im-custom.scm:311 ../scm/im-custom.scm:317 ../scm/im-custom.scm:323
 #: ../scm/im-custom.scm:329 ../scm/im-custom.scm:345 ../scm/im-custom.scm:351
 #: ../scm/im-custom.scm:357 ../scm/im-custom.scm:367 ../scm/im-custom.scm:395
-#: ../scm/im-custom.scm:416 ../scm/im-custom.scm:422 ../scm/im-custom.scm:489
-#: ../scm/im-custom.scm:495 ../scm/im-custom.scm:501 ../scm/im-custom.scm:507
-#: ../scm/im-custom.scm:513 ../scm/im-custom.scm:520 ../scm/im-custom.scm:523
-#: ../scm/im-custom.scm:525 ../scm/im-custom.scm:531 ../scm/im-custom.scm:542
-#: ../scm/im-custom.scm:548 ../scm/im-custom.scm:555 ../scm/im-custom.scm:558
-#: ../scm/im-custom.scm:560 ../scm/im-custom.scm:588 ../scm/im-custom.scm:594
-#: ../scm/im-custom.scm:609 ../scm/im-custom.scm:629 ../scm/im-custom.scm:635
-#: ../scm/im-custom.scm:647 ../scm/japanese-custom.scm:33
-#: ../scm/japanese-custom.scm:37 ../scm/japanese-custom.scm:43
-#: ../scm/look-custom.scm:40 ../scm/look-custom.scm:47
-#: ../scm/look-custom.scm:54 ../scm/look-custom.scm:60
-#: ../scm/look-custom.scm:66 ../scm/look-custom.scm:77
-#: ../scm/look-custom.scm:83 ../scm/look-custom.scm:89
-#: ../scm/mana-custom.scm:54 ../scm/mana-custom.scm:60
-#: ../scm/mana-custom.scm:75 ../scm/mana-custom.scm:81
-#: ../scm/mana-custom.scm:87 ../scm/mana-custom.scm:93
-#: ../scm/mana-custom.scm:191 ../scm/mana-custom.scm:210
-#: ../scm/mana-custom.scm:219 ../scm/mana-custom.scm:261
-#: ../scm/mana-custom.scm:270 ../scm/mana-custom.scm:308
-#: ../scm/mana-custom.scm:314 ../scm/mana-custom.scm:320
-#: ../scm/mana-key-custom.scm:37 ../scm/mana-key-custom.scm:41
-#: ../scm/mana-key-custom.scm:45 ../scm/mana-key-custom.scm:49
-#: ../scm/predict-custom.scm:39 ../scm/predict-custom.scm:46
-#: ../scm/predict-custom.scm:64 ../scm/predict-custom.scm:76
-#: ../scm/predict-custom.scm:111 ../scm/predict-custom.scm:146
-#: ../scm/predict-custom.scm:167 ../scm/predict-custom.scm:189
-#: ../scm/predict-custom.scm:203 ../scm/prime-custom.scm:64
-#: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
-#: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
-#: ../scm/prime-custom.scm:105 ../scm/prime-custom.scm:111
-#: ../scm/prime-custom.scm:117 ../scm/prime-custom.scm:129
-#: ../scm/prime-custom.scm:153 ../scm/prime-custom.scm:159
-#: ../scm/prime-custom.scm:166 ../scm/prime-custom.scm:173
-#: ../scm/prime-custom.scm:181 ../scm/prime-custom.scm:202
-#: ../scm/prime-custom.scm:208 ../scm/prime-custom.scm:219
-#: ../scm/prime-key-custom.scm:65 ../scm/prime-key-custom.scm:69
-#: ../scm/prime-key-custom.scm:73 ../scm/sj3-custom.scm:44
-#: ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52 ../scm/sj3-custom.scm:62
-#: ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83 ../scm/sj3-custom.scm:89
-#: ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
+#: ../scm/im-custom.scm:415 ../scm/im-custom.scm:431 ../scm/im-custom.scm:437
+#: ../scm/im-custom.scm:504 ../scm/im-custom.scm:510 ../scm/im-custom.scm:516
+#: ../scm/im-custom.scm:522 ../scm/im-custom.scm:528 ../scm/im-custom.scm:535
+#: ../scm/im-custom.scm:538 ../scm/im-custom.scm:540 ../scm/im-custom.scm:546
+#: ../scm/im-custom.scm:557 ../scm/im-custom.scm:563 ../scm/im-custom.scm:570
+#: ../scm/im-custom.scm:573 ../scm/im-custom.scm:575 ../scm/im-custom.scm:603
+#: ../scm/im-custom.scm:609 ../scm/im-custom.scm:624 ../scm/im-custom.scm:651
+#: ../scm/im-custom.scm:657 ../scm/im-custom.scm:669
+#: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
+#: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
+#: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
+#: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
+#: ../scm/look-custom.scm:77 ../scm/look-custom.scm:83
+#: ../scm/look-custom.scm:89 ../scm/mana-custom.scm:54
+#: ../scm/mana-custom.scm:60 ../scm/mana-custom.scm:75
+#: ../scm/mana-custom.scm:81 ../scm/mana-custom.scm:87
+#: ../scm/mana-custom.scm:93 ../scm/mana-custom.scm:191
+#: ../scm/mana-custom.scm:210 ../scm/mana-custom.scm:219
+#: ../scm/mana-custom.scm:261 ../scm/mana-custom.scm:270
+#: ../scm/mana-custom.scm:308 ../scm/mana-custom.scm:314
+#: ../scm/mana-custom.scm:320 ../scm/mana-key-custom.scm:37
+#: ../scm/mana-key-custom.scm:41 ../scm/mana-key-custom.scm:45
+#: ../scm/mana-key-custom.scm:49 ../scm/predict-custom.scm:39
+#: ../scm/predict-custom.scm:46 ../scm/predict-custom.scm:64
+#: ../scm/predict-custom.scm:76 ../scm/predict-custom.scm:111
+#: ../scm/predict-custom.scm:146 ../scm/predict-custom.scm:167
+#: ../scm/predict-custom.scm:189 ../scm/predict-custom.scm:203
+#: ../scm/prime-custom.scm:64 ../scm/prime-custom.scm:70
+#: ../scm/prime-custom.scm:76 ../scm/prime-custom.scm:84
+#: ../scm/prime-custom.scm:90 ../scm/prime-custom.scm:105
+#: ../scm/prime-custom.scm:111 ../scm/prime-custom.scm:117
+#: ../scm/prime-custom.scm:129 ../scm/prime-custom.scm:153
+#: ../scm/prime-custom.scm:159 ../scm/prime-custom.scm:166
+#: ../scm/prime-custom.scm:173 ../scm/prime-custom.scm:181
+#: ../scm/prime-custom.scm:202 ../scm/prime-custom.scm:208
+#: ../scm/prime-custom.scm:219 ../scm/prime-key-custom.scm:65
+#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
+#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52
+#: ../scm/sj3-custom.scm:62 ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83
+#: ../scm/sj3-custom.scm:89 ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
 #: ../scm/sj3-custom.scm:200 ../scm/sj3-custom.scm:219
 #: ../scm/sj3-custom.scm:228 ../scm/sj3-custom.scm:270
 #: ../scm/sj3-custom.scm:279 ../scm/sj3-custom.scm:322
@@ -968,10 +968,11 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:210 ../scm/tutcode-custom.scm:216
 #: ../scm/tutcode-custom.scm:222 ../scm/tutcode-custom.scm:228
 #: ../scm/tutcode-custom.scm:234 ../scm/tutcode-custom.scm:240
-#: ../scm/tutcode-custom.scm:246 ../scm/tutcode-custom.scm:253
+#: ../scm/tutcode-custom.scm:246 ../scm/tutcode-custom.scm:252
 #: ../scm/tutcode-custom.scm:259 ../scm/tutcode-custom.scm:265
 #: ../scm/tutcode-custom.scm:271 ../scm/tutcode-custom.scm:277
 #: ../scm/tutcode-custom.scm:283 ../scm/tutcode-custom.scm:289
+#: ../scm/tutcode-custom.scm:298 ../scm/tutcode-custom.scm:304
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
 #: ../scm/wnn-custom.scm:44 ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52
 #: ../scm/wnn-custom.scm:62 ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83
@@ -1381,7 +1382,7 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:377 ../scm/anthy-custom.scm:329
 #: ../scm/anthy-utf8-custom.scm:336 ../scm/canna-custom.scm:444
 #: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
-#: ../scm/tutcode-custom.scm:276 ../scm/wnn-custom.scm:382
+#: ../scm/tutcode-custom.scm:282 ../scm/wnn-custom.scm:382
 #: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr ""
@@ -1483,6 +1484,7 @@ msgstr ""
 #: ../scm/generic-key-custom.scm:124 ../scm/generic-key-custom.scm:130
 #: ../scm/generic-key-custom.scm:136 ../scm/generic-key-custom.scm:142
 #: ../scm/generic-key-custom.scm:148 ../scm/generic-key-custom.scm:154
+#: ../scm/im-custom.scm:407 ../scm/im-custom.scm:410 ../scm/im-custom.scm:413
 #: ../scm/look-custom.scm:95 ../scm/look-custom.scm:101
 #: ../scm/look-custom.scm:107 ../scm/look-custom.scm:113
 #: ../scm/look-custom.scm:119 ../scm/look-custom.scm:125
@@ -1785,8 +1787,8 @@ msgstr ""
 
 #: ../scm/ajax-ime.scm:605
 msgid ""
-"Caveat: All the request to Ajax-IME server is not encrypted through the "
-"internet.\n"
+"Caveat: All requests to the Ajax-IME server go over the Internet "
+"unencrypted.\n"
 "If you want to disable this message, turn off the option in Ajax-IME "
 "(advanced) setting."
 msgstr ""
@@ -2887,6 +2889,14 @@ msgstr ""
 msgid "ELatin composition on"
 msgstr ""
 
+#: ../scm/fileio.scm:74 ../scm/fileio.scm:84 ../scm/fileio.scm:92
+msgid "unexpected terminate string."
+msgstr ""
+
+#: ../scm/fileio.scm:238
+msgid "poll error"
+msgstr ""
+
 #: ../scm/generic-custom.scm:36
 msgid "Other input methods"
 msgstr "기타 입력기"
@@ -3169,181 +3179,198 @@ msgstr "ATOK와 비슷하게"
 msgid "Preedit color"
 msgstr "편집영역 색상"
 
-#: ../scm/im-custom.scm:407 ../scm/im-custom.scm:408
+#: ../scm/im-custom.scm:406
+msgid "Vertical"
+msgstr ""
+
+#: ../scm/im-custom.scm:409
+msgid "Horizontal"
+msgstr ""
+
+#: ../scm/im-custom.scm:412
+msgid "Table style"
+msgstr ""
+
+#: ../scm/im-custom.scm:414
+#, fuzzy
+msgid "Candidate window type"
+msgstr "후보창"
+
+#: ../scm/im-custom.scm:422 ../scm/im-custom.scm:423
 msgid "Adjacent to cursor"
 msgstr "커서 옆"
 
-#: ../scm/im-custom.scm:410 ../scm/im-custom.scm:411
+#: ../scm/im-custom.scm:425 ../scm/im-custom.scm:426
 msgid "Left end of preedit area"
 msgstr "편집영역의 왼쪽 끝"
 
-#: ../scm/im-custom.scm:413 ../scm/im-custom.scm:414
+#: ../scm/im-custom.scm:428 ../scm/im-custom.scm:429
 msgid "Right end of preedit area"
 msgstr "편집영역의 오른쪽 끝"
 
-#: ../scm/im-custom.scm:415
+#: ../scm/im-custom.scm:430
 msgid "Candidate window position"
 msgstr "후보창의 위치"
 
-#: ../scm/im-custom.scm:421
+#: ../scm/im-custom.scm:436
 msgid "Enable lazy input method loading for fast startup"
 msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
-#: ../scm/im-custom.scm:455
+#: ../scm/im-custom.scm:470
 msgid "Enable menu-based input method switcher"
 msgstr "uim 입력기 전환 메뉴를 사용"
 
-#: ../scm/im-custom.scm:456
+#: ../scm/im-custom.scm:471
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "툴바에 입력기 전환 메뉴를 표시"
 
-#: ../scm/im-custom.scm:463
+#: ../scm/im-custom.scm:478
 msgid "All input method of text areas on the system are changed."
 msgstr "모든 텍스트 영역의 입력기가 변경됨"
 
-#: ../scm/im-custom.scm:465
+#: ../scm/im-custom.scm:480
 msgid "focused application only"
 msgstr "포커스된 응용프로그램만"
 
-#: ../scm/im-custom.scm:466
+#: ../scm/im-custom.scm:481
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
 msgstr "포커스된 애플리케이션의 입력기만 변경됨"
 
-#: ../scm/im-custom.scm:468
+#: ../scm/im-custom.scm:483
 msgid "focused text area only"
 msgstr "포커스된 텍스트영역만"
 
-#: ../scm/im-custom.scm:469
+#: ../scm/im-custom.scm:484
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
 msgstr "포커스된 텍스트 영역의 입력기만 변경됨"
 
-#: ../scm/im-custom.scm:471
+#: ../scm/im-custom.scm:486
 msgid "Specify where the IM switching takes effect."
 msgstr "입력기 전환이 유효한 범위를 지정"
 
-#: ../scm/im-custom.scm:482
+#: ../scm/im-custom.scm:497
 msgid "full-featured input method switcher"
 msgstr "기능이 완비된 uim 입력기 전환 프로그램"
 
-#: ../scm/im-custom.scm:483
+#: ../scm/im-custom.scm:498
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr "툴바에 uim 입력기 전환 프로그램의 시작 버튼을 표시"
 
-#: ../scm/im-custom.scm:488
+#: ../scm/im-custom.scm:503
 msgid "preference tool"
 msgstr "설정"
 
-#: ../scm/im-custom.scm:494
+#: ../scm/im-custom.scm:509
 msgid "Japanese dictionary tool"
 msgstr "일본어 사전 도구"
 
-#: ../scm/im-custom.scm:500
+#: ../scm/im-custom.scm:515
 msgid "input pad"
 msgstr "입력 패드"
 
-#: ../scm/im-custom.scm:506
+#: ../scm/im-custom.scm:521
 msgid "handwriting-input pad"
 msgstr "손글씨 입력 패드"
 
-#: ../scm/im-custom.scm:512
+#: ../scm/im-custom.scm:527
 msgid "help"
 msgstr "도움말"
 
-#: ../scm/im-custom.scm:519
+#: ../scm/im-custom.scm:534
 msgid "System"
 msgstr "시스템"
 
-#: ../scm/im-custom.scm:522
+#: ../scm/im-custom.scm:537
 msgid "Manual"
 msgstr "수동"
 
-#: ../scm/im-custom.scm:524
+#: ../scm/im-custom.scm:539
 msgid "Document browser"
 msgstr "문서 브라우저"
 
-#: ../scm/im-custom.scm:530
+#: ../scm/im-custom.scm:545
 msgid "Browser name"
 msgstr "브라우저 이름"
 
-#: ../scm/im-custom.scm:541
+#: ../scm/im-custom.scm:556
 msgid "Use icon for dark background"
 msgstr ""
 
-#: ../scm/im-custom.scm:547
+#: ../scm/im-custom.scm:562
 msgid "Show input mode nearby cursor"
 msgstr "입력 모드를 커서 근처에 표시"
 
-#: ../scm/im-custom.scm:554
+#: ../scm/im-custom.scm:569
 msgid "With mode"
 msgstr "모드에 따라"
 
-#: ../scm/im-custom.scm:557
+#: ../scm/im-custom.scm:572
 msgid "With time"
 msgstr "시간에 따라"
 
-#: ../scm/im-custom.scm:559
+#: ../scm/im-custom.scm:574
 msgid "Show input mode"
 msgstr "입력 모드 표시"
 
-#: ../scm/im-custom.scm:570
+#: ../scm/im-custom.scm:585
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "커서 근처에 입력 모드를 표시하는 시간"
 
-#: ../scm/im-custom.scm:571
+#: ../scm/im-custom.scm:586
 msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
-#: ../scm/im-custom.scm:587
+#: ../scm/im-custom.scm:602
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: ../scm/im-custom.scm:593
+#: ../scm/im-custom.scm:608
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
-#: ../scm/im-custom.scm:608
+#: ../scm/im-custom.scm:623
 msgid "Notify agent name"
 msgstr ""
 
-#: ../scm/im-custom.scm:619
+#: ../scm/im-custom.scm:641
 msgid "Direct connection"
 msgstr ""
 
-#: ../scm/im-custom.scm:620
+#: ../scm/im-custom.scm:642
 msgid "Direct connection, no proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:622
+#: ../scm/im-custom.scm:644
 msgid "User"
 msgstr ""
 
-#: ../scm/im-custom.scm:623
+#: ../scm/im-custom.scm:645
 msgid "Use proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:628
+#: ../scm/im-custom.scm:650
 msgid "Proxy setting"
 msgstr ""
 
-#: ../scm/im-custom.scm:634
+#: ../scm/im-custom.scm:656
 msgid "Http proxy hostname"
 msgstr ""
 
-#: ../scm/im-custom.scm:646
+#: ../scm/im-custom.scm:668
 msgid "Http proxy port"
 msgstr ""
 
-#: ../scm/im-custom.scm:658
+#: ../scm/im-custom.scm:680
 msgid "Timeout (msec)"
 msgstr ""
 
-#: ../scm/im-custom.scm:659
+#: ../scm/im-custom.scm:681
 msgid "Timeout of http connection (msec)."
 msgstr ""
 
@@ -5598,8 +5625,8 @@ msgstr ""
 
 #: ../scm/social-ime.scm:665
 msgid ""
-"Caveat: All the request to Social IME server is not encrypted through the "
-"internet.\n"
+"Caveat: All requests to the Social IME server go over the Internet "
+"unencrypted.\n"
 "If you want to disable this message, turn off the option in Social-IME "
 "(advanced) setting."
 msgstr ""
@@ -5772,27 +5799,48 @@ msgstr ""
 msgid "Show real keys on auto help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:252
-msgid "Enable completion"
+#: ../scm/tutcode-custom.scm:251
+msgid "bushu.help file for auto help"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:258
-msgid "Minimum character length for completion"
+msgid "Enable completion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:264
-msgid "Maximum character length for completion"
+msgid "Minimum character length for completion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:270
+msgid "Maximum character length for completion"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:276
 msgid "Enable input prediction for mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:282
+#: ../scm/tutcode-custom.scm:288
 msgid "Enable Kanji combination guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:288
+#: ../scm/tutcode-custom.scm:294
+msgid "Full stroke help"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:295
+msgid "Guide only"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:296
+#, fuzzy
+msgid "Disable"
+msgstr "무효"
+
+#: ../scm/tutcode-custom.scm:297
+msgid "Show stroke help temporarily by keys in kanji combination guide"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:303
 msgid "Enable input prediction for bushu conversion"
 msgstr ""
 
@@ -6004,7 +6052,7 @@ msgstr ""
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr ""
 
-#: ../scm/tutcode.scm:764
+#: ../scm/tutcode.scm:774
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr ""
 
@@ -6472,10 +6520,7 @@ msgstr ""
 msgid "uim-skk: too long word"
 msgstr ""
 
-#. FIXME: gettext here to expand %s in accordance with the
-#. * locale for the selected notification agent. See also the TODO
-#. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/skk.c:3699
+#: ../uim/skk.c:3696
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
