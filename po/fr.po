@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-05-09 15:13+0900\n"
+"POT-Creation-Date: 2011-07-11 13:14+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -106,7 +106,7 @@ msgstr ""
 msgid "Anthy private dictionary"
 msgstr ""
 
-#: ../helper/dict-canna.c:87 ../helper/dict-main-gtk.c:149
+#: ../helper/dict-canna.c:88 ../helper/dict-main-gtk.c:149
 #: ../helper/dict-word-list-win-gtk.c:357 ../helper/dict-word.c:135
 #: ../helper/dict-word.c:150
 msgid "Canna private dictionary"
@@ -593,12 +593,12 @@ msgid ""
 "(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 msgstr ""
 
-#: ../helper/toolbar-common-gtk.c:290 ../helper/toolbar-common-gtk.c:538
+#: ../helper/toolbar-common-gtk.c:290 ../helper/toolbar-common-gtk.c:545
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr ""
 
-#: ../helper/toolbar-common-gtk.c:921
+#: ../helper/toolbar-common-gtk.c:928
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
 msgid "Quit this toolbar"
@@ -711,15 +711,15 @@ msgstr ""
 msgid "Cannot launch '%1'."
 msgstr ""
 
-#: ../scm/action.scm:498 ../scm/action.scm:499
+#: ../scm/action.scm:502 ../scm/action.scm:503
 msgid "unknown"
 msgstr "inconnu"
 
-#: ../scm/action.scm:538
+#: ../scm/action.scm:542
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
-#: ../scm/action.scm:543 ../scm/action.scm:544
+#: ../scm/action.scm:547 ../scm/action.scm:548
 msgid "exec im-switcher"
 msgstr ""
 
@@ -856,10 +856,10 @@ msgstr ""
 #: ../scm/im-custom.scm:606 ../scm/im-custom.scm:625 ../scm/im-custom.scm:633
 #: ../scm/im-custom.scm:646 ../scm/im-custom.scm:658 ../scm/im-custom.scm:665
 #: ../scm/im-custom.scm:672 ../scm/im-custom.scm:679 ../scm/im-custom.scm:686
-#: ../scm/im-custom.scm:714 ../scm/im-custom.scm:729 ../scm/im-custom.scm:735
-#: ../scm/im-custom.scm:741 ../scm/im-custom.scm:747 ../scm/im-custom.scm:753
-#: ../scm/im-custom.scm:795 ../scm/im-custom.scm:801 ../scm/im-custom.scm:816
-#: ../scm/im-custom.scm:836 ../scm/im-custom.scm:842 ../scm/im-custom.scm:854
+#: ../scm/im-custom.scm:714 ../scm/im-custom.scm:729 ../scm/im-custom.scm:742
+#: ../scm/im-custom.scm:748 ../scm/im-custom.scm:754 ../scm/im-custom.scm:760
+#: ../scm/im-custom.scm:802 ../scm/im-custom.scm:808 ../scm/im-custom.scm:823
+#: ../scm/im-custom.scm:850 ../scm/im-custom.scm:856 ../scm/im-custom.scm:868
 #: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
 #: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
@@ -878,7 +878,7 @@ msgstr ""
 #: ../scm/predict-custom.scm:46 ../scm/predict-custom.scm:64
 #: ../scm/predict-custom.scm:76 ../scm/predict-custom.scm:111
 #: ../scm/predict-custom.scm:146 ../scm/predict-custom.scm:167
-#: ../scm/predict-custom.scm:189 ../scm/predict-custom.scm:195
+#: ../scm/predict-custom.scm:189 ../scm/predict-custom.scm:203
 #: ../scm/prime-custom.scm:64 ../scm/prime-custom.scm:70
 #: ../scm/prime-custom.scm:76 ../scm/prime-custom.scm:84
 #: ../scm/prime-custom.scm:90 ../scm/prime-custom.scm:105
@@ -951,10 +951,11 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:210 ../scm/tutcode-custom.scm:216
 #: ../scm/tutcode-custom.scm:222 ../scm/tutcode-custom.scm:228
 #: ../scm/tutcode-custom.scm:234 ../scm/tutcode-custom.scm:240
-#: ../scm/tutcode-custom.scm:246 ../scm/tutcode-custom.scm:253
+#: ../scm/tutcode-custom.scm:246 ../scm/tutcode-custom.scm:252
 #: ../scm/tutcode-custom.scm:259 ../scm/tutcode-custom.scm:265
 #: ../scm/tutcode-custom.scm:271 ../scm/tutcode-custom.scm:277
 #: ../scm/tutcode-custom.scm:283 ../scm/tutcode-custom.scm:289
+#: ../scm/tutcode-custom.scm:298 ../scm/tutcode-custom.scm:304
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
 #: ../scm/wnn-custom.scm:44 ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52
 #: ../scm/wnn-custom.scm:62 ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83
@@ -1364,7 +1365,7 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:377 ../scm/anthy-custom.scm:329
 #: ../scm/anthy-utf8-custom.scm:336 ../scm/canna-custom.scm:444
 #: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
-#: ../scm/tutcode-custom.scm:276 ../scm/wnn-custom.scm:382
+#: ../scm/tutcode-custom.scm:282 ../scm/wnn-custom.scm:382
 #: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr ""
@@ -1768,8 +1769,8 @@ msgstr ""
 
 #: ../scm/ajax-ime.scm:605
 msgid ""
-"Caveat: All the request to Ajax-IME server is not encrypted through the "
-"internet.\n"
+"Caveat: All requests to the Ajax-IME server go over the Internet "
+"unencrypted.\n"
 "If you want to disable this message, turn off the option in Ajax-IME "
 "(advanced) setting."
 msgstr ""
@@ -2749,6 +2750,14 @@ msgstr ""
 msgid "ELatin composition on"
 msgstr ""
 
+#: ../scm/fileio.scm:74 ../scm/fileio.scm:84 ../scm/fileio.scm:92
+msgid "unexpected terminate string."
+msgstr ""
+
+#: ../scm/fileio.scm:238
+msgid "poll error"
+msgstr ""
+
 #: ../scm/generic-custom.scm:36
 msgid "Other input methods"
 msgstr "Autres méthodes d'entrée"
@@ -3239,67 +3248,67 @@ msgstr ""
 msgid "Custom filter connection setting"
 msgstr ""
 
-#: ../scm/im-custom.scm:734
+#: ../scm/im-custom.scm:741
 msgid "Path of custom filter socket"
 msgstr ""
 
-#: ../scm/im-custom.scm:740
+#: ../scm/im-custom.scm:747
 msgid "Custom filter server address"
 msgstr ""
 
-#: ../scm/im-custom.scm:746
+#: ../scm/im-custom.scm:753
 msgid "Custom filter server port"
 msgstr ""
 
-#: ../scm/im-custom.scm:752
+#: ../scm/im-custom.scm:759
 msgid "Path of custom filter"
 msgstr ""
 
-#: ../scm/im-custom.scm:794
+#: ../scm/im-custom.scm:801
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: ../scm/im-custom.scm:800
+#: ../scm/im-custom.scm:807
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
-#: ../scm/im-custom.scm:815
+#: ../scm/im-custom.scm:822
 msgid "Notify agent name"
 msgstr ""
 
-#: ../scm/im-custom.scm:826
+#: ../scm/im-custom.scm:840
 msgid "Direct connection"
 msgstr ""
 
-#: ../scm/im-custom.scm:827
+#: ../scm/im-custom.scm:841
 msgid "Direct connection, no proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:829
+#: ../scm/im-custom.scm:843
 msgid "User"
 msgstr ""
 
-#: ../scm/im-custom.scm:830
+#: ../scm/im-custom.scm:844
 msgid "Use proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:835
+#: ../scm/im-custom.scm:849
 msgid "Proxy setting"
 msgstr ""
 
-#: ../scm/im-custom.scm:841
+#: ../scm/im-custom.scm:855
 msgid "Http proxy hostname"
 msgstr ""
 
-#: ../scm/im-custom.scm:853
+#: ../scm/im-custom.scm:867
 msgid "Http proxy port"
 msgstr ""
 
-#: ../scm/im-custom.scm:865
+#: ../scm/im-custom.scm:879
 msgid "Timeout (msec)"
 msgstr ""
 
-#: ../scm/im-custom.scm:866
+#: ../scm/im-custom.scm:880
 msgid "Timeout of http connection (msec)."
 msgstr ""
 
@@ -4285,7 +4294,7 @@ msgstr ""
 msgid "Max words of candidates for google suggest"
 msgstr ""
 
-#: ../scm/predict-custom.scm:194
+#: ../scm/predict-custom.scm:202
 msgid "Enable SSL with Google Suggest"
 msgstr ""
 
@@ -5562,8 +5571,8 @@ msgstr ""
 
 #: ../scm/social-ime.scm:665
 msgid ""
-"Caveat: All the request to Social IME server is not encrypted through the "
-"internet.\n"
+"Caveat: All requests to the Social IME server go over the Internet "
+"unencrypted.\n"
 "If you want to disable this message, turn off the option in Social-IME "
 "(advanced) setting."
 msgstr ""
@@ -5736,27 +5745,47 @@ msgstr ""
 msgid "Show real keys on auto help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:252
-msgid "Enable completion"
+#: ../scm/tutcode-custom.scm:251
+msgid "bushu.help file for auto help"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:258
-msgid "Minimum character length for completion"
+msgid "Enable completion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:264
-msgid "Maximum character length for completion"
+msgid "Minimum character length for completion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:270
+msgid "Maximum character length for completion"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:276
 msgid "Enable input prediction for mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:282
+#: ../scm/tutcode-custom.scm:288
 msgid "Enable Kanji combination guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:288
+#: ../scm/tutcode-custom.scm:294
+msgid "Full stroke help"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:295
+msgid "Guide only"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:296
+msgid "Disable"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:297
+msgid "Show stroke help temporarily by keys in kanji combination guide"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:303
 msgid "Enable input prediction for bushu conversion"
 msgstr ""
 
@@ -5968,7 +5997,7 @@ msgstr ""
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr ""
 
-#: ../scm/tutcode.scm:762
+#: ../scm/tutcode.scm:774
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr ""
 
@@ -6436,10 +6465,7 @@ msgstr ""
 msgid "uim-skk: too long word"
 msgstr ""
 
-#. FIXME: gettext here to expand %s in accordance with the
-#. * locale for the selected notification agent. See also the TODO
-#. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/skk.c:3699
+#: ../uim/skk.c:3696
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
