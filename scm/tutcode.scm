@@ -2043,7 +2043,7 @@
         (if (not decomposed)
           label-cands-alist
           (let*
-            ((bushu-strs (tutcode-auto-help-bushu-combination-strs decomposed))
+            ((bushu-strs (tutcode-auto-help-bushu-composition-strs decomposed))
              (helpstrlist (append (list "(" kanji "▲") bushu-strs '(")")))
              (helpstr (apply string-append helpstrlist))
              (alist
@@ -2067,7 +2067,7 @@
                       (string-append (caar cand-list) helpstr)
                       (cdar cand-list))
                     (cdr cand-list))))))
-            (tutcode-auto-help-bushu-combination-add-guide pc decomposed)
+            (tutcode-auto-help-bushu-composition-add-guide pc decomposed)
             (car alist)))))))
 
 ;;; tutcode-ruleの要素の形式((("," "o"))("撃"))かどうかを返す
@@ -2084,21 +2084,21 @@
 ;;; 自動ヘルプ:tutcode-auto-help-bushu-decomposeで検索した、
 ;;; 部首合成方法で使う部首を、ガイド対象文字に追加する。
 ;;; @param decomposed tutcode-auto-help-bushu-decompose結果
-(define (tutcode-auto-help-bushu-combination-add-guide pc decomposed)
+(define (tutcode-auto-help-bushu-composition-add-guide pc decomposed)
   (if (not (null? decomposed))
     (begin
       (if (tutcode-rule-element? (car decomposed))
         (tutcode-stroke-help-guide-add-kanji pc (car decomposed))
-        (tutcode-auto-help-bushu-combination-add-guide pc (car decomposed)))
-      (tutcode-auto-help-bushu-combination-add-guide pc (cdr decomposed)))))
+        (tutcode-auto-help-bushu-composition-add-guide pc (car decomposed)))
+      (tutcode-auto-help-bushu-composition-add-guide pc (cdr decomposed)))))
 
 ;;; 自動ヘルプ:tutcode-auto-help-bushu-decomposeで検索した、
 ;;; ストロークを含む部首合成方法から、
 ;;; 部首文字列のみを抜き出した部首合成方法を作る
 ;;; @param decomposed tutcode-auto-help-bushu-decompose結果
 ;;; @return 作成後の部首合成方法文字列リスト
-(define (tutcode-auto-help-bushu-combination-strs decomposed)
-  (tutcode-auto-help-bushu-combination-traverse decomposed ()
+(define (tutcode-auto-help-bushu-composition-strs decomposed)
+  (tutcode-auto-help-bushu-composition-traverse decomposed ()
     (lambda (ele) (list (caadr ele))) "▲" ""))
 
 ;;; 自動ヘルプ:tutcode-auto-help-bushu-decomposeの検索結果のツリー構造から、
@@ -2110,7 +2110,7 @@
 ;;; @param branch-str 枝わかれを示すために結果リストに追加する文字列
 ;;; @param delim-str 各部首の区切りを示すために結果リストに追加する文字列
 ;;; @return 作成後のリスト
-(define (tutcode-auto-help-bushu-combination-traverse decomposed lst picker
+(define (tutcode-auto-help-bushu-composition-traverse decomposed lst picker
           branch-str delim-str)
   (if (null? decomposed)
     lst
@@ -2118,9 +2118,9 @@
       ((add
         (if (tutcode-rule-element? (car decomposed))
           (cons delim-str (picker (car decomposed)))
-          (tutcode-auto-help-bushu-combination-traverse (car decomposed)
+          (tutcode-auto-help-bushu-composition-traverse (car decomposed)
             (list branch-str) picker branch-str delim-str))))
-      (tutcode-auto-help-bushu-combination-traverse (cdr decomposed)
+      (tutcode-auto-help-bushu-composition-traverse (cdr decomposed)
         (append lst add) picker branch-str delim-str))))
 
 ;;; 自動ヘルプ:対象の1文字を入力するストロークをヘルプ用alistに追加する。
@@ -2146,13 +2146,13 @@
         (if (not decomposed)
           label-cands-alist
           (let*
-            ((bushu-strs (tutcode-auto-help-bushu-combination-strs decomposed))
+            ((bushu-strs (tutcode-auto-help-bushu-composition-strs decomposed))
              (helpstrlist (append (list kanji "▲") bushu-strs))
              (helpstr (apply string-append helpstrlist))
              (bushu-stroke
-              (tutcode-auto-help-bushu-combination-traverse decomposed ()
+              (tutcode-auto-help-bushu-composition-traverse decomposed ()
                 caar "" " ")))
-            (tutcode-auto-help-bushu-combination-add-guide pc decomposed)
+            (tutcode-auto-help-bushu-composition-add-guide pc decomposed)
             (tutcode-auto-help-update-stroke-alist-normal-with-stroke
               label-cands-alist
               (cons helpstr bushu-stroke)
