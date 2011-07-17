@@ -7,7 +7,7 @@ Overview of changes from 1.7.0 to 1.7.1
 
 * Enhancements
   - uim-byeoru
-    * Speedup in conversion by chang of system dictionary format
+    * Speedup in conversion by change of system dictionary format
     * Introduce a new way to define a personal dictionary
 
 * Others
