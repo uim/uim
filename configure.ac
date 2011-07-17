@@ -1923,6 +1923,7 @@ AC_CONFIG_FILES([Makefile
 		 emacs/Makefile
 		 emacs/uim-version.el
 		 tables/Makefile
+		 byeoru-data/Makefile
 		 test/Makefile
 		 test2/Makefile
 		 test2/run-singletest.sh

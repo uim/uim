@@ -86,6 +86,10 @@
   (N_ "Properties")
   (N_ "long description will be here."))
 
+(define-custom-group 'byeoru-dict
+  (N_ "Byeoru dictionaries")
+  (N_ "long description will be here."))
+
 (define-custom-group 'byeoru-workarounds
   (N_ "Workarounds")
   (N_ "long description will be here."))
@@ -157,8 +161,35 @@
 
 (define-custom 'byeoru-symbol-cache-size 5
   '(byeoru candwin)
-  '(integer 1 20)
+  '(integer 0 20)
   (N_ "Symbol cache size")
+  (N_ "long description will be here."))
+
+(define-custom 'byeoru-conversion-history-size 1000
+  '(byeoru byeoru-dict)
+  '(integer 0 99999)
+  (N_ "Length of conversion history to keep")
+  (N_ "long description will be here."))
+
+(define-custom 'byeoru-conversion-history-path
+  (string-append (or (home-directory (user-name)) "") "/.byeoru-uim-history")
+  '(byeoru byeoru-dict)
+  '(pathname regular-file)
+  (N_ "Conversion history file")
+  (N_ "long description will be here."))
+
+(define-custom 'byeoru-personal-dict-path
+  (string-append (or (home-directory (user-name)) "") "/.byeoru-uim-dict")
+  '(byeoru byeoru-dict)
+  '(pathname regular-file)
+  (N_ "Personal dictionary file")
+  (N_ "long description will be here."))
+
+(define-custom 'byeoru-sys-dict-path
+  (string-append (sys-pkgdatadir) "/byeoru-data/byeoru-dict")
+  '(byeoru byeoru-dict)
+  '(pathname regular-file)
+  (N_ "System dictionary file")
   (N_ "long description will be here."))
 
 ;; Encoding of the composing character should be changed accordingly.
