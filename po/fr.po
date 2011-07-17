@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-07-11 13:14+0900\n"
+"POT-Creation-Date: 2011-07-17 16:02+0200\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -323,7 +324,7 @@ msgstr ""
 msgid "continuance"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:194 ../qt4/pref/ui_keyeditformbase.h:116
+#: ../helper/dict-word-win-gtk.c:194
 msgid "Add"
 msgstr "Ajouter"
 
@@ -611,7 +612,6 @@ msgstr ""
 
 #: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
 #: ../qt4/pref/customwidgets.cpp:359 ../qt4/pref/customwidgets.cpp:639
-#: ../qt4/pref/ui_keyeditformbase.h:118
 msgid "Edit"
 msgstr "Édition"
 
@@ -637,8 +637,7 @@ msgstr "Options par défaut"
 
 #: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
 #: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
-#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/ui_keyeditformbase.h:119
-#: ../qt4/pref/ui_olisteditformbase.h:113 ../qt4/switcher/qt4.cpp:138
+#: ../qt4/pref/qt4.cpp:371 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "OK"
 
@@ -647,9 +646,7 @@ msgid "Apply"
 msgstr ""
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:134
-#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
-#: ../qt4/pref/ui_keyeditformbase.h:120 ../qt4/pref/ui_olisteditformbase.h:114
-#: ../qt4/switcher/qt4.cpp:148
+#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262 ../qt4/switcher/qt4.cpp:148
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -677,34 +674,6 @@ msgstr ""
 
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:367
 msgid "Show this dialog on startup"
-msgstr ""
-
-#: ../qt4/pref/ui_keyeditformbase.h:113
-msgid "Edit Keys"
-msgstr ""
-
-#: ../qt4/pref/ui_keyeditformbase.h:115
-msgid "Key Combination"
-msgstr ""
-
-#: ../qt4/pref/ui_keyeditformbase.h:117
-msgid "Remove"
-msgstr ""
-
-#: ../qt4/pref/ui_olisteditformbase.h:108
-msgid "Edit Ordered List"
-msgstr ""
-
-#: ../qt4/pref/ui_olisteditformbase.h:110
-msgid "Available Items"
-msgstr ""
-
-#: ../qt4/pref/ui_olisteditformbase.h:111
-msgid "Up"
-msgstr ""
-
-#: ../qt4/pref/ui_olisteditformbase.h:112
-msgid "Down"
 msgstr ""
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
@@ -775,91 +744,94 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:337 ../scm/anthy-utf8-custom.scm:369
 #: ../scm/anthy-utf8-custom.scm:375 ../scm/anthy-utf8-custom.scm:381
 #: ../scm/byeoru-custom.scm:83 ../scm/byeoru-custom.scm:87
-#: ../scm/byeoru-custom.scm:91 ../scm/byeoru-custom.scm:106
-#: ../scm/byeoru-custom.scm:113 ../scm/byeoru-custom.scm:116
-#: ../scm/byeoru-custom.scm:119 ../scm/byeoru-custom.scm:121
-#: ../scm/byeoru-custom.scm:133 ../scm/byeoru-custom.scm:139
-#: ../scm/byeoru-custom.scm:145 ../scm/byeoru-custom.scm:156
-#: ../scm/byeoru-custom.scm:162 ../scm/byeoru-custom.scm:169
-#: ../scm/byeoru-key-custom.scm:37 ../scm/byeoru-key-custom.scm:41
-#: ../scm/canna-custom.scm:44 ../scm/canna-custom.scm:48
-#: ../scm/canna-custom.scm:52 ../scm/canna-custom.scm:62
-#: ../scm/canna-custom.scm:68 ../scm/canna-custom.scm:83
-#: ../scm/canna-custom.scm:89 ../scm/canna-custom.scm:95
-#: ../scm/canna-custom.scm:101 ../scm/canna-custom.scm:200
-#: ../scm/canna-custom.scm:219 ../scm/canna-custom.scm:228
-#: ../scm/canna-custom.scm:270 ../scm/canna-custom.scm:279
-#: ../scm/canna-custom.scm:328 ../scm/canna-custom.scm:334
-#: ../scm/canna-custom.scm:340 ../scm/canna-custom.scm:402
-#: ../scm/canna-custom.scm:408 ../scm/canna-custom.scm:414
-#: ../scm/canna-custom.scm:421 ../scm/canna-custom.scm:427
-#: ../scm/canna-custom.scm:433 ../scm/canna-custom.scm:439
-#: ../scm/canna-custom.scm:445 ../scm/canna-key-custom.scm:37
-#: ../scm/canna-key-custom.scm:41 ../scm/canna-key-custom.scm:45
-#: ../scm/canna-key-custom.scm:49 ../scm/elatin-custom.scm:44
-#: ../scm/elatin-custom.scm:53 ../scm/elatin-custom.scm:56
-#: ../scm/elatin-custom.scm:59 ../scm/elatin-custom.scm:62
-#: ../scm/elatin-custom.scm:65 ../scm/elatin-custom.scm:68
-#: ../scm/elatin-custom.scm:71 ../scm/elatin-custom.scm:74
-#: ../scm/elatin-custom.scm:77 ../scm/elatin-custom.scm:80
-#: ../scm/elatin-custom.scm:83 ../scm/elatin-custom.scm:86
-#: ../scm/elatin-custom.scm:89 ../scm/elatin-custom.scm:92
-#: ../scm/elatin-custom.scm:95 ../scm/elatin-custom.scm:98
-#: ../scm/elatin-custom.scm:101 ../scm/elatin-custom.scm:104
-#: ../scm/elatin-custom.scm:107 ../scm/elatin-custom.scm:110
-#: ../scm/elatin-custom.scm:113 ../scm/elatin-custom.scm:116
-#: ../scm/elatin-custom.scm:119 ../scm/elatin-custom.scm:122
-#: ../scm/elatin-custom.scm:125 ../scm/elatin-custom.scm:128
-#: ../scm/elatin-custom.scm:131 ../scm/elatin-custom.scm:134
-#: ../scm/elatin-custom.scm:137 ../scm/elatin-custom.scm:140
-#: ../scm/elatin-custom.scm:143 ../scm/elatin-custom.scm:146
-#: ../scm/elatin-custom.scm:149 ../scm/elatin-custom.scm:152
-#: ../scm/elatin-custom.scm:155 ../scm/elatin-custom.scm:158
-#: ../scm/elatin-custom.scm:161 ../scm/elatin-custom.scm:164
-#: ../scm/elatin-custom.scm:167 ../scm/elatin-custom.scm:170
-#: ../scm/elatin-custom.scm:173 ../scm/elatin-custom.scm:176
-#: ../scm/elatin-custom.scm:179 ../scm/elatin-custom.scm:182
-#: ../scm/elatin-custom.scm:185 ../scm/elatin-custom.scm:188
-#: ../scm/elatin-custom.scm:191 ../scm/elatin-custom.scm:194
-#: ../scm/elatin-custom.scm:197 ../scm/elatin-custom.scm:200
-#: ../scm/elatin-custom.scm:203 ../scm/elatin-custom.scm:206
-#: ../scm/elatin-custom.scm:209 ../scm/elatin-custom.scm:212
-#: ../scm/elatin-custom.scm:215 ../scm/elatin-custom.scm:218
-#: ../scm/elatin-custom.scm:221 ../scm/elatin-custom.scm:224
-#: ../scm/elatin-custom.scm:227 ../scm/elatin-custom.scm:230
-#: ../scm/elatin-custom.scm:233 ../scm/elatin-custom.scm:235
-#: ../scm/elatin-custom.scm:253 ../scm/elatin-custom.scm:259
-#: ../scm/elatin-custom.scm:265 ../scm/elatin-custom.scm:269
-#: ../scm/elatin-custom.scm:275 ../scm/elatin-custom.scm:281
-#: ../scm/elatin-custom.scm:286 ../scm/generic-custom.scm:37
-#: ../scm/generic-custom.scm:43 ../scm/generic-custom.scm:49
-#: ../scm/generic-custom.scm:55 ../scm/generic-custom.scm:61
-#: ../scm/generic-custom.scm:67 ../scm/generic-custom.scm:73
-#: ../scm/generic-key-custom.scm:37 ../scm/generic-key-custom.scm:41
-#: ../scm/im-custom.scm:46 ../scm/im-custom.scm:50 ../scm/im-custom.scm:54
-#: ../scm/im-custom.scm:58 ../scm/im-custom.scm:62 ../scm/im-custom.scm:66
-#: ../scm/im-custom.scm:71 ../scm/im-custom.scm:76 ../scm/im-custom.scm:81
-#: ../scm/im-custom.scm:86 ../scm/im-custom.scm:91 ../scm/im-custom.scm:96
-#: ../scm/im-custom.scm:101 ../scm/im-custom.scm:106 ../scm/im-custom.scm:111
-#: ../scm/im-custom.scm:116 ../scm/im-custom.scm:121 ../scm/im-custom.scm:126
-#: ../scm/im-custom.scm:131 ../scm/im-custom.scm:136 ../scm/im-custom.scm:141
-#: ../scm/im-custom.scm:153 ../scm/im-custom.scm:163 ../scm/im-custom.scm:237
-#: ../scm/im-custom.scm:311 ../scm/im-custom.scm:317 ../scm/im-custom.scm:323
-#: ../scm/im-custom.scm:329 ../scm/im-custom.scm:345 ../scm/im-custom.scm:351
-#: ../scm/im-custom.scm:357 ../scm/im-custom.scm:367 ../scm/im-custom.scm:395
-#: ../scm/im-custom.scm:416 ../scm/im-custom.scm:422 ../scm/im-custom.scm:489
-#: ../scm/im-custom.scm:495 ../scm/im-custom.scm:501 ../scm/im-custom.scm:507
-#: ../scm/im-custom.scm:513 ../scm/im-custom.scm:520 ../scm/im-custom.scm:523
-#: ../scm/im-custom.scm:525 ../scm/im-custom.scm:531 ../scm/im-custom.scm:542
-#: ../scm/im-custom.scm:548 ../scm/im-custom.scm:555 ../scm/im-custom.scm:558
-#: ../scm/im-custom.scm:560 ../scm/im-custom.scm:588 ../scm/im-custom.scm:604
-#: ../scm/im-custom.scm:606 ../scm/im-custom.scm:625 ../scm/im-custom.scm:633
-#: ../scm/im-custom.scm:646 ../scm/im-custom.scm:658 ../scm/im-custom.scm:665
-#: ../scm/im-custom.scm:672 ../scm/im-custom.scm:679 ../scm/im-custom.scm:686
-#: ../scm/im-custom.scm:714 ../scm/im-custom.scm:729 ../scm/im-custom.scm:742
-#: ../scm/im-custom.scm:748 ../scm/im-custom.scm:754 ../scm/im-custom.scm:760
-#: ../scm/im-custom.scm:802 ../scm/im-custom.scm:808 ../scm/im-custom.scm:823
-#: ../scm/im-custom.scm:850 ../scm/im-custom.scm:856 ../scm/im-custom.scm:868
+#: ../scm/byeoru-custom.scm:91 ../scm/byeoru-custom.scm:95
+#: ../scm/byeoru-custom.scm:110 ../scm/byeoru-custom.scm:117
+#: ../scm/byeoru-custom.scm:120 ../scm/byeoru-custom.scm:123
+#: ../scm/byeoru-custom.scm:125 ../scm/byeoru-custom.scm:137
+#: ../scm/byeoru-custom.scm:143 ../scm/byeoru-custom.scm:149
+#: ../scm/byeoru-custom.scm:160 ../scm/byeoru-custom.scm:166
+#: ../scm/byeoru-custom.scm:172 ../scm/byeoru-custom.scm:179
+#: ../scm/byeoru-custom.scm:186 ../scm/byeoru-custom.scm:193
+#: ../scm/byeoru-custom.scm:200 ../scm/byeoru-key-custom.scm:37
+#: ../scm/byeoru-key-custom.scm:41 ../scm/canna-custom.scm:44
+#: ../scm/canna-custom.scm:48 ../scm/canna-custom.scm:52
+#: ../scm/canna-custom.scm:62 ../scm/canna-custom.scm:68
+#: ../scm/canna-custom.scm:83 ../scm/canna-custom.scm:89
+#: ../scm/canna-custom.scm:95 ../scm/canna-custom.scm:101
+#: ../scm/canna-custom.scm:200 ../scm/canna-custom.scm:219
+#: ../scm/canna-custom.scm:228 ../scm/canna-custom.scm:270
+#: ../scm/canna-custom.scm:279 ../scm/canna-custom.scm:328
+#: ../scm/canna-custom.scm:334 ../scm/canna-custom.scm:340
+#: ../scm/canna-custom.scm:402 ../scm/canna-custom.scm:408
+#: ../scm/canna-custom.scm:414 ../scm/canna-custom.scm:421
+#: ../scm/canna-custom.scm:427 ../scm/canna-custom.scm:433
+#: ../scm/canna-custom.scm:439 ../scm/canna-custom.scm:445
+#: ../scm/canna-key-custom.scm:37 ../scm/canna-key-custom.scm:41
+#: ../scm/canna-key-custom.scm:45 ../scm/canna-key-custom.scm:49
+#: ../scm/elatin-custom.scm:44 ../scm/elatin-custom.scm:53
+#: ../scm/elatin-custom.scm:56 ../scm/elatin-custom.scm:59
+#: ../scm/elatin-custom.scm:62 ../scm/elatin-custom.scm:65
+#: ../scm/elatin-custom.scm:68 ../scm/elatin-custom.scm:71
+#: ../scm/elatin-custom.scm:74 ../scm/elatin-custom.scm:77
+#: ../scm/elatin-custom.scm:80 ../scm/elatin-custom.scm:83
+#: ../scm/elatin-custom.scm:86 ../scm/elatin-custom.scm:89
+#: ../scm/elatin-custom.scm:92 ../scm/elatin-custom.scm:95
+#: ../scm/elatin-custom.scm:98 ../scm/elatin-custom.scm:101
+#: ../scm/elatin-custom.scm:104 ../scm/elatin-custom.scm:107
+#: ../scm/elatin-custom.scm:110 ../scm/elatin-custom.scm:113
+#: ../scm/elatin-custom.scm:116 ../scm/elatin-custom.scm:119
+#: ../scm/elatin-custom.scm:122 ../scm/elatin-custom.scm:125
+#: ../scm/elatin-custom.scm:128 ../scm/elatin-custom.scm:131
+#: ../scm/elatin-custom.scm:134 ../scm/elatin-custom.scm:137
+#: ../scm/elatin-custom.scm:140 ../scm/elatin-custom.scm:143
+#: ../scm/elatin-custom.scm:146 ../scm/elatin-custom.scm:149
+#: ../scm/elatin-custom.scm:152 ../scm/elatin-custom.scm:155
+#: ../scm/elatin-custom.scm:158 ../scm/elatin-custom.scm:161
+#: ../scm/elatin-custom.scm:164 ../scm/elatin-custom.scm:167
+#: ../scm/elatin-custom.scm:170 ../scm/elatin-custom.scm:173
+#: ../scm/elatin-custom.scm:176 ../scm/elatin-custom.scm:179
+#: ../scm/elatin-custom.scm:182 ../scm/elatin-custom.scm:185
+#: ../scm/elatin-custom.scm:188 ../scm/elatin-custom.scm:191
+#: ../scm/elatin-custom.scm:194 ../scm/elatin-custom.scm:197
+#: ../scm/elatin-custom.scm:200 ../scm/elatin-custom.scm:203
+#: ../scm/elatin-custom.scm:206 ../scm/elatin-custom.scm:209
+#: ../scm/elatin-custom.scm:212 ../scm/elatin-custom.scm:215
+#: ../scm/elatin-custom.scm:218 ../scm/elatin-custom.scm:221
+#: ../scm/elatin-custom.scm:224 ../scm/elatin-custom.scm:227
+#: ../scm/elatin-custom.scm:230 ../scm/elatin-custom.scm:233
+#: ../scm/elatin-custom.scm:235 ../scm/elatin-custom.scm:253
+#: ../scm/elatin-custom.scm:259 ../scm/elatin-custom.scm:265
+#: ../scm/elatin-custom.scm:269 ../scm/elatin-custom.scm:275
+#: ../scm/elatin-custom.scm:281 ../scm/elatin-custom.scm:286
+#: ../scm/generic-custom.scm:37 ../scm/generic-custom.scm:43
+#: ../scm/generic-custom.scm:49 ../scm/generic-custom.scm:55
+#: ../scm/generic-custom.scm:61 ../scm/generic-custom.scm:67
+#: ../scm/generic-custom.scm:73 ../scm/generic-key-custom.scm:37
+#: ../scm/generic-key-custom.scm:41 ../scm/im-custom.scm:46
+#: ../scm/im-custom.scm:50 ../scm/im-custom.scm:54 ../scm/im-custom.scm:58
+#: ../scm/im-custom.scm:62 ../scm/im-custom.scm:66 ../scm/im-custom.scm:71
+#: ../scm/im-custom.scm:76 ../scm/im-custom.scm:81 ../scm/im-custom.scm:86
+#: ../scm/im-custom.scm:91 ../scm/im-custom.scm:96 ../scm/im-custom.scm:101
+#: ../scm/im-custom.scm:106 ../scm/im-custom.scm:111 ../scm/im-custom.scm:116
+#: ../scm/im-custom.scm:121 ../scm/im-custom.scm:126 ../scm/im-custom.scm:131
+#: ../scm/im-custom.scm:136 ../scm/im-custom.scm:141 ../scm/im-custom.scm:153
+#: ../scm/im-custom.scm:163 ../scm/im-custom.scm:237 ../scm/im-custom.scm:311
+#: ../scm/im-custom.scm:317 ../scm/im-custom.scm:323 ../scm/im-custom.scm:329
+#: ../scm/im-custom.scm:345 ../scm/im-custom.scm:351 ../scm/im-custom.scm:357
+#: ../scm/im-custom.scm:367 ../scm/im-custom.scm:395 ../scm/im-custom.scm:416
+#: ../scm/im-custom.scm:422 ../scm/im-custom.scm:489 ../scm/im-custom.scm:495
+#: ../scm/im-custom.scm:501 ../scm/im-custom.scm:507 ../scm/im-custom.scm:513
+#: ../scm/im-custom.scm:520 ../scm/im-custom.scm:523 ../scm/im-custom.scm:525
+#: ../scm/im-custom.scm:531 ../scm/im-custom.scm:542 ../scm/im-custom.scm:548
+#: ../scm/im-custom.scm:555 ../scm/im-custom.scm:558 ../scm/im-custom.scm:560
+#: ../scm/im-custom.scm:588 ../scm/im-custom.scm:604 ../scm/im-custom.scm:606
+#: ../scm/im-custom.scm:625 ../scm/im-custom.scm:633 ../scm/im-custom.scm:646
+#: ../scm/im-custom.scm:658 ../scm/im-custom.scm:665 ../scm/im-custom.scm:672
+#: ../scm/im-custom.scm:679 ../scm/im-custom.scm:686 ../scm/im-custom.scm:714
+#: ../scm/im-custom.scm:729 ../scm/im-custom.scm:742 ../scm/im-custom.scm:748
+#: ../scm/im-custom.scm:754 ../scm/im-custom.scm:760 ../scm/im-custom.scm:802
+#: ../scm/im-custom.scm:808 ../scm/im-custom.scm:823 ../scm/im-custom.scm:850
+#: ../scm/im-custom.scm:856 ../scm/im-custom.scm:868
 #: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
 #: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
@@ -2050,50 +2022,70 @@ msgid "Properties"
 msgstr ""
 
 #: ../scm/byeoru-custom.scm:90
+msgid "Byeoru dictionaries"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:94
 msgid "Workarounds"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:105
+#: ../scm/byeoru-custom.scm:109
 msgid "Hangul keyboard layout"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:112
+#: ../scm/byeoru-custom.scm:116
 msgid "ordered"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:115
+#: ../scm/byeoru-custom.scm:119
 msgid "orderless"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:118
+#: ../scm/byeoru-custom.scm:122
 msgid "more orderless"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:120
+#: ../scm/byeoru-custom.scm:124
 msgid "Jamo input is"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:132
+#: ../scm/byeoru-custom.scm:136
 msgid "ESC turns off Hangul mode (for vi users)"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:138
+#: ../scm/byeoru-custom.scm:142
 msgid "Default unit of commitment is word"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:144
+#: ../scm/byeoru-custom.scm:148
 msgid "Shifted roman vowel inputs an isolated vowel"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:155 ../scm/elatin-custom.scm:258
+#: ../scm/byeoru-custom.scm:159 ../scm/elatin-custom.scm:258
 msgid "Candidate window size"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:161
+#: ../scm/byeoru-custom.scm:165
 msgid "Symbol cache size"
 msgstr ""
 
-#: ../scm/byeoru-custom.scm:168
+#: ../scm/byeoru-custom.scm:171
+msgid "Length of conversion history to keep"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:178
+msgid "Conversion history file"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:413
+msgid "Personal dictionary file"
+msgstr "Fichier du dictionnaire personnel"
+
+#: ../scm/byeoru-custom.scm:192 ../scm/skk-custom.scm:406
+msgid "System dictionary file"
+msgstr ""
+
+#: ../scm/byeoru-custom.scm:199
 msgid "Represent incomplete syllables using compatibility jamos"
 msgstr ""
 
@@ -5169,14 +5161,6 @@ msgstr ""
 msgid "Address family of skkserv"
 msgstr ""
 
-#: ../scm/skk-custom.scm:406
-msgid "System dictionary file"
-msgstr ""
-
-#: ../scm/skk-custom.scm:413
-msgid "Personal dictionary file"
-msgstr "Fichier du dictionnaire personnel"
-
 #: ../scm/skk-custom.scm:420
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr ""
@@ -5997,7 +5981,7 @@ msgstr ""
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr ""
 
-#: ../scm/tutcode.scm:774
+#: ../scm/tutcode.scm:777
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr ""
 
