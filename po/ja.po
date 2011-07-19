@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-07-19 15:36+0900\n"
+"POT-Creation-Date: 2011-07-19 20:34+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -1062,8 +1062,8 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/tutcode-custom.scm:129 ../scm/tutcode-custom.scm:135
 #: ../scm/tutcode-custom.scm:141 ../scm/tutcode-custom.scm:147
 #: ../scm/tutcode-custom.scm:154 ../scm/tutcode-custom.scm:161
-#: ../scm/tutcode-custom.scm:171 ../scm/tutcode-custom.scm:177
-#: ../scm/tutcode-custom.scm:186 ../scm/tutcode-custom.scm:192
+#: ../scm/tutcode-custom.scm:167 ../scm/tutcode-custom.scm:177
+#: ../scm/tutcode-custom.scm:183 ../scm/tutcode-custom.scm:192
 #: ../scm/tutcode-custom.scm:198 ../scm/tutcode-custom.scm:204
 #: ../scm/tutcode-custom.scm:210 ../scm/tutcode-custom.scm:216
 #: ../scm/tutcode-custom.scm:222 ../scm/tutcode-custom.scm:228
@@ -1137,7 +1137,7 @@ msgstr "文節区切り"
 #: ../scm/anthy-utf8-custom.scm:85 ../scm/canna-custom.scm:82
 #: ../scm/generic-custom.scm:42 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:170
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:176
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
@@ -1146,7 +1146,7 @@ msgstr "候補ウィンドウを使用する"
 #: ../scm/anthy-utf8-custom.scm:91 ../scm/canna-custom.scm:88
 #: ../scm/generic-custom.scm:48 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:197
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:203
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
@@ -1156,7 +1156,7 @@ msgstr "候補ウィンドウを表示するために変換キーを押す回数
 #: ../scm/generic-custom.scm:54 ../scm/mana-custom.scm:86
 #: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
-#: ../scm/tutcode-custom.scm:203 ../scm/wnn-custom.scm:94
+#: ../scm/tutcode-custom.scm:209 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
@@ -5272,7 +5272,7 @@ msgstr "SKK サーバ"
 msgid "Dictionary files"
 msgstr "辞書ファイル"
 
-#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:191
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:197
 msgid "Commit candidate by heading label keys"
 msgstr "見出し表示のキーで候補を確定する"
 
@@ -5843,71 +5843,71 @@ msgstr "bushu.index2ファイル"
 msgid "bushu.expand file"
 msgstr "bushu.expandファイル"
 
-#: ../scm/tutcode-custom.scm:176
+#: ../scm/tutcode-custom.scm:166
+msgid "bushu.help file"
+msgstr "bushu.helpファイル"
+
+#: ../scm/tutcode-custom.scm:182
 msgid "Use table style candidate window"
 msgstr "表形式の候補ウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:182
+#: ../scm/tutcode-custom.scm:188
 msgid "qwerty-jis"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:182
+#: ../scm/tutcode-custom.scm:188
 msgid "Qwerty JIS"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:183
+#: ../scm/tutcode-custom.scm:189
 msgid "qwerty-us"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:183
+#: ../scm/tutcode-custom.scm:189
 msgid "Qwerty US"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:184
+#: ../scm/tutcode-custom.scm:190
 msgid "dvorak"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:184
+#: ../scm/tutcode-custom.scm:190
 msgid "Dvorak"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:185
+#: ../scm/tutcode-custom.scm:191
 msgid "Key layout of table style candidate window"
 msgstr "表形式の候補ウィンドウのキー配列"
 
-#: ../scm/tutcode-custom.scm:209
+#: ../scm/tutcode-custom.scm:215
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:215
+#: ../scm/tutcode-custom.scm:221
 msgid "Number of candidates in candidate window at a time for prediction"
 msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:221
+#: ../scm/tutcode-custom.scm:227
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
 msgstr "熟語ガイドにおいて候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:227
+#: ../scm/tutcode-custom.scm:233
 msgid "Number of candidates in candidate window at a time for history"
 msgstr "ヒストリ入力において候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:233
+#: ../scm/tutcode-custom.scm:239
 msgid "Use stroke help window"
 msgstr "仮想鍵盤ウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:239
+#: ../scm/tutcode-custom.scm:245
 msgid "Use auto help window"
 msgstr "自動ヘルプウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:245
+#: ../scm/tutcode-custom.scm:251
 msgid "Show real keys on auto help window"
 msgstr "自動ヘルプウィンドウにキーストロークを表示する"
-
-#: ../scm/tutcode-custom.scm:251
-msgid "bushu.help file for auto help"
-msgstr "自動ヘルプ用bushu.helpファイル"
 
 #: ../scm/tutcode-custom.scm:258
 msgid "Enable completion"
