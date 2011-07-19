@@ -5,10 +5,19 @@ Overview of changes from 1.7.0 to 1.7.1
   - uim-dict-gtk3
     * Fix compilation with Canna >= 3.7
 
+  - uim-tutcode
+    * Fix behavior when on-key and off-key are different.
+
 * Enhancements
   - uim-byeoru
     * Speedup in conversion by change of system dictionary format
     * Introduce a new way to define a personal dictionary
+
+  - uim-tutcode
+    * Show stroke help temporarily by keys in kanji combination guide
+    * Support bushu composition which consists of three or more bushu
+      on auto help
+    * Use bushu.help file on auto help and bushu conversion
 
 * Others
 
