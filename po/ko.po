@@ -698,9 +698,8 @@ msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
 
 #: ../qt4/pref/ui_keyeditformbase.h:113
-#, fuzzy
 msgid "Edit Keys"
-msgstr "편집"
+msgstr ""
 
 #: ../qt4/pref/ui_keyeditformbase.h:115
 msgid "Key Combination"
@@ -715,18 +714,16 @@ msgid "Edit Ordered List"
 msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:110
-#, fuzzy
 msgid "Available Items"
-msgstr "무효인 항목"
+msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:111
 msgid "Up"
 msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:112
-#, fuzzy
 msgid "Down"
-msgstr "켜기"
+msgstr ""
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
 msgid "Cannot launch '%1'."

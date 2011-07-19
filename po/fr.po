@@ -681,18 +681,16 @@ msgid "Show this dialog on startup"
 msgstr ""
 
 #: ../qt4/pref/ui_keyeditformbase.h:113
-#, fuzzy
 msgid "Edit Keys"
-msgstr "Édition"
+msgstr ""
 
 #: ../qt4/pref/ui_keyeditformbase.h:115
 msgid "Key Combination"
 msgstr ""
 
 #: ../qt4/pref/ui_keyeditformbase.h:117
-#, fuzzy
 msgid "Remove"
-msgstr "_Enlever ..."
+msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:108
 msgid "Edit Ordered List"
@@ -707,9 +705,8 @@ msgid "Up"
 msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:112
-#, fuzzy
 msgid "Down"
-msgstr "Activée"
+msgstr ""
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
 msgid "Cannot launch '%1'."
