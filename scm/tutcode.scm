@@ -3801,9 +3801,12 @@
 ;;; @param c2 2番目の部首
 ;;; @return 合成後の文字。合成できなかったときは#f
 (define (tutcode-bushu-convert c1 c2)
+  (if (null? tutcode-bushu-help)
+    (set! tutcode-bushu-help (tutcode-bushu-help-load)))
   ;; tc-2.1+[tcode-ml:1925]の部首合成アルゴリズムを使用
   (and c1 c2
     (or
+      (and tutcode-bushu-help (tutcode-bushu-compose c1 c2 tutcode-bushu-help))
       (tutcode-bushu-compose-sub c1 c2)
       (let ((a1 (tutcode-bushu-alternative c1))
             (a2 (tutcode-bushu-alternative c2)))
@@ -3878,15 +3881,15 @@
 (define (tutcode-bushu-compose-sub c1 c2)
   (and c1 c2
     (or
-      (tutcode-bushu-compose c1 c2)
-      (tutcode-bushu-compose c2 c1))))
+      (tutcode-bushu-compose c1 c2 tutcode-bushudic)
+      (tutcode-bushu-compose c2 c1 tutcode-bushudic))))
 
 ;;; 部首合成変換:c1とc2を合成してできる文字を探して返す。
 ;;; @param c1 1番目の部首
 ;;; @param c2 2番目の部首
 ;;; @return 合成後の文字。合成できなかったときは#f
-(define (tutcode-bushu-compose c1 c2)
-  (let ((seq (rk-lib-find-seq (list c1 c2) tutcode-bushudic)))
+(define (tutcode-bushu-compose c1 c2 bushudic)
+  (let ((seq (rk-lib-find-seq (list c1 c2) bushudic)))
     (and seq
       (car (cadr seq)))))
 

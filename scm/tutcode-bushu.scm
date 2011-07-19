@@ -30,11 +30,15 @@
 
 ;;; tutcode-bushu.scm: 対話的な部首合成変換
 ;;;
-;;; tc-2.3.1のtc-bushu.elを移植(bushu.helpファイルやsortには未対応)。
+;;; tc-2.3.1のtc-bushu.elを移植(sortには未対応)。
 ;;; (参考:部首合成アルゴリズムは[tcode-ml:1942]あたり)
 
 (require-extension (srfi 1 8))
+(require "fileio.scm")
 (require-dynlib "look")
+
+;;; bushu.helpファイルを読んで生成したtutcode-bushudic形式のリスト
+(define tutcode-bushu-help ())
 
 ;;; 文字のリストとして返す。
 (define (tutcode-bushu-parse-entry str)
@@ -428,13 +432,72 @@
         (append! true-diff-set rest-diff-set))))
     (delete-duplicates! res)))
 
+;;; bushu.helpファイルを読んでtutcode-bushudic形式のリストを生成する
+;;; @return tutcode-bushudic形式のリスト。読み込めなかった場合は#f
+(define (tutcode-bushu-help-load)
+  (let*
+    ((fd (file-open tutcode-bushu-help-filename
+          (file-open-flags-number '($O_RDONLY)) 0))
+     (parse
+      (lambda (line)
+        ;; 例: "諍言争*"→(((("言" "争"))("諍"))((("争" "言"))("諍")))
+        (let*
+          ((lst (tutcode-bushu-parse-entry line))
+           (len (length lst)))
+          (if (< len 3)
+            ()
+            (let*
+              ((kanji (list-ref lst 0))
+               (bushu1 (list-ref lst 1))
+               (bushu2 (list-ref lst 2))
+               (rule (list (list (list bushu1 bushu2)) (list kanji)))
+               (rev
+                (and
+                  (and (> len 3) (string=? (list-ref lst 3) "*"))
+                  (list (list (list bushu2 bushu1)) (list kanji)))))
+              (if rev
+                (list rule rev)
+                (list rule)))))))
+       (res
+        (call-with-open-file-port fd
+          (lambda (port)
+            (let loop ((line (file-read-line port))
+                       (rules ()))
+              (if (or (not line)
+                      (eof-object? line))
+                  rules
+                  (loop (file-read-line port)
+                    (append! rules (parse line)))))))))
+    res))
+
+;;; bushu.helpファイルに基づく部首合成を行う
+(define (tutcode-bushu-compose-explicitly char-list)
+  (if (or (null? char-list)
+          (null? (cdr char-list)) ; 1文字
+          (pair? (cddr char-list))) ; 3文字以上
+    ()
+    ;; 2文字の合成のみ対応
+    (let*
+      ((c1 (car char-list))
+       (c2 (cadr char-list)))
+      (if (null? tutcode-bushu-help)
+        (set! tutcode-bushu-help (tutcode-bushu-help-load)))
+      (let
+        ((kanji
+          (and tutcode-bushu-help
+               (tutcode-bushu-compose c1 c2 tutcode-bushu-help))))
+        (if kanji
+          (list kanji)
+          ())))))
+
 ;;; 対話的な部首合成変換用に、指定された部首のリストから部首合成可能な
 ;;; 漢字のリストを返す。
 ;;; @param char-list 入力された部首のリスト
 ;;; @return 合成可能な漢字のリスト
 (define (tutcode-bushu-compose-interactively char-list)
   (let*
-    ((complete-compose-set (tutcode-bushu-complete-compose-set char-list))
+    ((explicit (tutcode-bushu-compose-explicitly char-list))
+     (complete-compose-set (tutcode-bushu-complete-compose-set char-list))
      (complete-diff-set (tutcode-bushu-complete-diff-set char-list))
      (strong-compose-set (tutcode-bushu-strong-compose-set char-list))
      (strong-diff-set (tutcode-bushu-strong-diff-set char-list))
@@ -443,6 +506,7 @@
                         strong-compose-set)))
   (delete-duplicates!
     (append!
+      explicit
       complete-compose-set
       complete-diff-set
       strong-compose-set
