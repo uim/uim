@@ -22,6 +22,8 @@ qt/switcher-qt.cpp
 qt/toolbar-common-quimhelpertoolbar.cpp
 qt4/pref/customwidgets.cpp
 qt4/pref/qt4.cpp
+qt4/pref/ui_keyeditformbase.h
+qt4/pref/ui_olisteditformbase.h
 qt4/switcher/qt4.cpp
 qt4/toolbar/common-quimhelpertoolbar.cpp
 scm/action.scm

@@ -1,4 +1,2 @@
 helper/GNOME_UimApplet.server.in
 uim.desktop.in
-qt4/pref/ui_keyeditformbase.h
-qt4/pref/ui_olisteditformbase.h
