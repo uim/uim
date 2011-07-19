@@ -3962,9 +3962,8 @@
                     c b1 b2 seq1 rule elem)))
               ;; 部首2では合成不能→部首2をさらに分解
               (let ((b2dec (tutcode-auto-help-bushu-decompose b2 rule stime)))
-                (if b2dec
-                  (list seq1 b2dec)
-                  #f))))
+                (and b2dec
+                  (list seq1 b2dec)))))
           ;; 部首2が直接入力可能
           ;; →(部首2)と(部首1を部品として持つ漢字)による合成が可能か?
           (and seq2 b1
@@ -3976,17 +3975,15 @@
                     c b1 b2 seq2 rule elem)))
               ;; 部首1では合成不能→部首1をさらに分解
               (let ((b1dec (tutcode-auto-help-bushu-decompose b1 rule stime)))
-                (if b1dec
-                  (list b1dec seq2)
-                  #f))))
+                (and b1dec
+                  (list b1dec seq2)))))
           ;; 部首1も部首2も直接入力不可→さらに分解
           (and b1 b2
             (let
               ((b1dec (tutcode-auto-help-bushu-decompose b1 rule stime))
                (b2dec (tutcode-auto-help-bushu-decompose b2 rule stime)))
-              (if (and b1dec b2dec)
-                (list b1dec b2dec)
-                #f)))
+              (and b1dec b2dec
+                (list b1dec b2dec))))
           ;; XXX: 部品どうしの合成は未対応
           )))))
 
