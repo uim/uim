@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-07-17 16:02+0200\n"
+"POT-Creation-Date: 2011-07-19 15:36+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 
 #: ../gtk3/toolbar/applet-gnome3.c:61 ../helper/toolbar-common-gtk.c:87
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
@@ -324,7 +324,7 @@ msgstr ""
 msgid "continuance"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:194
+#: ../helper/dict-word-win-gtk.c:194 ../qt4/pref/ui_keyeditformbase.h:116
 msgid "Add"
 msgstr "Ajouter"
 
@@ -612,6 +612,7 @@ msgstr ""
 
 #: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
 #: ../qt4/pref/customwidgets.cpp:359 ../qt4/pref/customwidgets.cpp:639
+#: ../qt4/pref/ui_keyeditformbase.h:118
 msgid "Edit"
 msgstr "Édition"
 
@@ -637,7 +638,8 @@ msgstr "Options par défaut"
 
 #: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
 #: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
-#: ../qt4/pref/qt4.cpp:371 ../qt4/switcher/qt4.cpp:138
+#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/ui_keyeditformbase.h:119
+#: ../qt4/pref/ui_olisteditformbase.h:113 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "OK"
 
@@ -646,7 +648,9 @@ msgid "Apply"
 msgstr ""
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:134
-#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262 ../qt4/switcher/qt4.cpp:148
+#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
+#: ../qt4/pref/ui_keyeditformbase.h:120 ../qt4/pref/ui_olisteditformbase.h:114
+#: ../qt4/switcher/qt4.cpp:148
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -675,6 +679,37 @@ msgstr ""
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:367
 msgid "Show this dialog on startup"
 msgstr ""
+
+#: ../qt4/pref/ui_keyeditformbase.h:113
+#, fuzzy
+msgid "Edit Keys"
+msgstr "Édition"
+
+#: ../qt4/pref/ui_keyeditformbase.h:115
+msgid "Key Combination"
+msgstr ""
+
+#: ../qt4/pref/ui_keyeditformbase.h:117
+#, fuzzy
+msgid "Remove"
+msgstr "_Enlever ..."
+
+#: ../qt4/pref/ui_olisteditformbase.h:108
+msgid "Edit Ordered List"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:110
+msgid "Available Items"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:111
+msgid "Up"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:112
+#, fuzzy
+msgid "Down"
+msgstr "Activée"
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
 msgid "Cannot launch '%1'."

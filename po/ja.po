@@ -99,14 +99,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-07-17 16:02+0200\n"
+"POT-Creation-Date: 2011-07-19 15:36+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
 
 #: ../gtk3/toolbar/applet-gnome3.c:61 ../helper/toolbar-common-gtk.c:87
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
@@ -420,7 +420,7 @@ msgstr "追加項目"
 msgid "continuance"
 msgstr "連続"
 
-#: ../helper/dict-word-win-gtk.c:194
+#: ../helper/dict-word-win-gtk.c:194 ../qt4/pref/ui_keyeditformbase.h:116
 msgid "Add"
 msgstr "追加"
 
@@ -718,6 +718,7 @@ msgstr "ジオメトリ文字列 '%s' を解析できません"
 
 #: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
 #: ../qt4/pref/customwidgets.cpp:359 ../qt4/pref/customwidgets.cpp:639
+#: ../qt4/pref/ui_keyeditformbase.h:118
 msgid "Edit"
 msgstr "編集"
 
@@ -747,7 +748,8 @@ msgstr "標準"
 
 #: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
 #: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
-#: ../qt4/pref/qt4.cpp:371 ../qt4/switcher/qt4.cpp:138
+#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/ui_keyeditformbase.h:119
+#: ../qt4/pref/ui_olisteditformbase.h:113 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "OK"
 
@@ -756,7 +758,9 @@ msgid "Apply"
 msgstr "適用"
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:134
-#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262 ../qt4/switcher/qt4.cpp:148
+#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
+#: ../qt4/pref/ui_keyeditformbase.h:120 ../qt4/pref/ui_olisteditformbase.h:114
+#: ../qt4/switcher/qt4.cpp:148
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -787,6 +791,34 @@ msgstr "いいえ"
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:367
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
+
+#: ../qt4/pref/ui_keyeditformbase.h:113
+msgid "Edit Keys"
+msgstr "キーを編集"
+
+#: ../qt4/pref/ui_keyeditformbase.h:115
+msgid "Key Combination"
+msgstr "キー"
+
+#: ../qt4/pref/ui_keyeditformbase.h:117
+msgid "Remove"
+msgstr "削除"
+
+#: ../qt4/pref/ui_olisteditformbase.h:108
+msgid "Edit Ordered List"
+msgstr "順序付きリストを編集"
+
+#: ../qt4/pref/ui_olisteditformbase.h:110
+msgid "Available Items"
+msgstr "利用可能なアイテム"
+
+#: ../qt4/pref/ui_olisteditformbase.h:111
+msgid "Up"
+msgstr "上げる"
+
+#: ../qt4/pref/ui_olisteditformbase.h:112
+msgid "Down"
+msgstr "下げる"
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
 msgid "Cannot launch '%1'."
@@ -6640,27 +6672,6 @@ msgid ""
 msgstr ""
 "uim-wnn: \"%s\"は存在しません。uim-prefを起動して、\"Wnn設定ファイル\"を設定"
 "してください(おそらくファイル名は\"wnnenvrc\"です)。"
-
-#~ msgid "Edit Keys"
-#~ msgstr "キーを編集"
-
-#~ msgid "Key Combination"
-#~ msgstr "キー"
-
-#~ msgid "Remove"
-#~ msgstr "削除"
-
-#~ msgid "Edit Ordered List"
-#~ msgstr "順序付きリストを編集"
-
-#~ msgid "Available Items"
-#~ msgstr "利用可能なアイテム"
-
-#~ msgid "Up"
-#~ msgstr "上げる"
-
-#~ msgid "Down"
-#~ msgstr "下げる"
 
 #~ msgid "Danish alternative postfix"
 #~ msgstr "デンマーク語 (亜流後置修飾)"
