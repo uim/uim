@@ -160,6 +160,12 @@
   (N_ "bushu.expand file")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-bushu-help-filename ""
+  '(tutcode tutcode-bushu)
+  '(pathname regular-file)
+  (N_ "bushu.help file")
+  (N_ "long description will be here."))
+
 ;;
 ;; candidate window
 ;;
@@ -243,12 +249,6 @@
   '(tutcode candwin)
   '(boolean)
   (N_ "Show real keys on auto help window")
-  (N_ "long description will be here."))
-
-(define-custom 'tutcode-bushu-help-filename ""
-  '(tutcode candwin)
-  '(pathname regular-file)
-  (N_ "bushu.help file for auto help")
   (N_ "long description will be here."))
 
 ;; prediction/completion
