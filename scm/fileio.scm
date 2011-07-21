@@ -165,7 +165,9 @@
            (list->string (reverse rest)))
           ((or (eof-object? c) ;; disconnect?
                (not c))
-           c)
+           (if (null? rest)
+             c
+             (list->string (reverse rest))))
           (else
            (loop (file-read-char port) (cons c rest))))))
 
