@@ -4146,8 +4146,15 @@
 ;;; @param bushudic 部首合成リスト
 ;;; @return (<部首2> <合成文字>)のリスト
 (define (tutcode-bushu-predict str bushudic)
+  (if (null? tutcode-bushu-help)
+    (set! tutcode-bushu-help (tutcode-bushu-help-load)))
   (let*
-    ((rules (rk-lib-find-partial-seqs (list str) bushudic))
+    ((rules-help
+      (if tutcode-bushu-help
+        (rk-lib-find-partial-seqs (list str) tutcode-bushu-help)
+        ()))
+     (rules-dic (rk-lib-find-partial-seqs (list str) bushudic))
+     (rules (append rules-help rules-dic)) ; 重複回避はbushu.help側で可能
      (words1 (map (lambda (elem) (cadaar elem)) rules))
      (more-cands
       (filter
