@@ -313,15 +313,20 @@ right_button_pressed(GtkButton *button, GdkEventButton *event, gpointer data)
 }
 
 static void
+save_default_im_internal(const char *im)
+{
+  uim_scm_callf("custom-set-value!",
+		"yy",
+		"custom-preserved-default-im-name",
+		im);
+  uim_custom_save_custom("custom-preserved-default-im-name");
+}
+
+static void
 save_default_im(const char *im)
 {
-  if (custom_enabled) {
-    uim_scm_callf("custom-set-value!",
-		  "yy",
-		  "custom-preserved-default-im-name",
-		  im);
-    uim_custom_save_custom("custom-preserved-default-im-name");
-  }
+  if (custom_enabled)
+    uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)save_default_im_internal, (void *)im);
 }
 
 static gboolean
@@ -1034,15 +1039,14 @@ toolbar_new(gint type)
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
-#if 0
   /*
-   * Please enable this if you'd like to save default IM into
-   * ~/.uim.d/custom/custom-global.scm upon system global IM switch.  However,
-   * using uim-custom consumes quite amount of memory, and requires additional
-   * startup time.
+   * Set uim-toolbar-save-default-im? #t in ~/.uim enable this if you'd like to
+   * save default IM into ~/.uim.d/custom/custom-global.scm upon system global
+   * IM switch.  However, using uim-custom consumes quite amount of memory, and
+   * requires additional startup time.
    */
-  custom_enabled = (gboolean)uim_custom_enable();
-#endif
+  if (uim_scm_symbol_value_bool("uim-toolbar-save-default-im?"))
+    custom_enabled = (gboolean)uim_custom_enable();
 
   helper_toolbar_check_custom();
   init_icon();
