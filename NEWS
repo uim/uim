@@ -2,7 +2,7 @@ Overview of changes from 1.7.0 to 1.7.1
 =======================================
 * Fixes
   - uim-tutcode
-    * Fix behavior when on-key and off-key are different.
+    * Fix behavior when on-key and off-key are different
 
   - uim-dict-gtk
   - uim-dict-gtk3
@@ -30,8 +30,7 @@ Overview of changes from 1.7.0 to 1.7.1
     * Support dynamic reconfiguration of the agent selection
 
 * Others
-  - Make uim functional even when --disable-notify is set at
-    configure
+  - Make uim functional when --disable-notify is set at configure
 
 
 Overview of changes from 1.7.0-alpha to 1.7.0
