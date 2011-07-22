@@ -340,13 +340,11 @@ im_uim_init_modifier_keys()
       if (map->modifiermap[k]) {
 	KeySym ks;
 	int index = 0;
-	char *nm;
 	do {
 	  ks = XKeycodeToKeysym(display, map->modifiermap[k], index);
 	  index++;
 	} while (!ks && index < keysyms_per_keycode);
 
-	nm = XKeysymToString(ks);
 	switch (i) {
 	case ShiftMapIndex:
 	  break;
