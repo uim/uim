@@ -458,16 +458,16 @@
               (if rev
                 (list rule rev)
                 (list rule)))))))
-       (res
-        (call-with-open-file-port fd
-          (lambda (port)
-            (let loop ((line (file-read-line port))
-                       (rules ()))
-              (if (or (not line)
-                      (eof-object? line))
-                  rules
-                  (loop (file-read-line port)
-                    (append! rules (parse line)))))))))
+     (res
+      (call-with-open-file-port fd
+        (lambda (port)
+          (let loop ((line (file-read-line port))
+                     (rules ()))
+            (if (or (not line)
+                    (eof-object? line))
+                rules
+                (loop (file-read-line port)
+                  (append! rules (parse line)))))))))
     res))
 
 ;;; bushu.helpファイルに基づく部首合成を行う
