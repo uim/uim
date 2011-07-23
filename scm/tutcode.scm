@@ -4156,8 +4156,10 @@
      (rules-dic (rk-lib-find-partial-seqs (list str) bushudic))
      (rules (append rules-help rules-dic)) ; 重複回避はbushu.help側で可能
      (words1 (map (lambda (elem) (cadaar elem)) rules))
+     ;; (((str 部首2))(合成文字)) -> (部首2 合成文字)
+     (word/cand1 (map (lambda (elem) (list (cadaar elem) (caadr elem))) rules))
      (more-cands
-      (filter
+      (filter-map
         (lambda (elem)
           (let
             ;; (((部首1 部首2))(合成文字))
@@ -4171,28 +4173,14 @@
                     ;; 既に上で出現済の場合は除外。
                     ;; 例: ((("門" "才"))("閉"))で"才"が出現済の場合、
                     ;;     ((("才" "門"))("捫"))の"才"は除外。
-                   (not (member bushu1 words1)))
-              (string=? str gosei)))) ; (((部首1 部首2))(str))
-              ;; XXX:この場合、strとbushu1でbushu2が合成できることを
-              ;;     確認すべきだが、tutcode-bushu-convertは遅いので省略。
-          bushudic))
-     (res (append rules more-cands))
-     (word/cand
-      (map
-       (lambda (elem)
-        (let
-         ((bushu1 (caaar elem))
-          (bushu2 (cadaar elem))
-          (gosei (caadr elem)))
-         (cond
-          ((string=? str bushu1) ; (((str 部首2))(合成文字))
-           (list bushu2 gosei))
-          ((string=? str bushu2) ; (((部首1 str))(合成文字))
-           (list bushu1 gosei))
-          ((string=? str gosei) ; (((部首1 部首2))(str))
-           (list bushu1 bushu2)))))
-       res)))
-    word/cand))
+                   (not (member bushu1 words1))
+                   (list bushu1 gosei))
+              (and (string=? str gosei) ; (((部首1 部首2))(str))
+                   ;; XXX:この場合、strとbushu1でbushu2が合成できることを
+                   ;;     確認すべきだが、tutcode-bushu-convertは遅いので省略
+                   (list bushu1 bushu2)))))
+          bushudic)))
+    (append word/cand1 more-cands)))
 
 ;;; tutcode-ruleを逆引きして、変換後の文字から、入力キー列を取得する。
 ;;; 例: (tutcode-reverse-find-seq "あ" tutcode-rule) => ("r" "k")
