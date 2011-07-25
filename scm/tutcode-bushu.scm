@@ -440,24 +440,34 @@
           (file-open-flags-number '($O_RDONLY)) 0))
      (parse
       (lambda (line)
-        ;; Œ„: "Î⁄∏¿¡Ë*"¢™(((("∏¿" "¡Ë"))("Î⁄"))((("¡Ë" "∏¿"))("Î⁄")))
+        ;; Œ„: "—£•§¿Ï* ≈¡°¶"
+        ;; ¢™(((("•§" "¿Ï"))("—£"))((("¿Ï" "•§"))("—£"))((("≈¡" "°¶"))("—£")))
         (let*
-          ((lst (tutcode-bushu-parse-entry line))
-           (len (length lst)))
-          (if (< len 3)
-            ()
-            (let*
-              ((kanji (list-ref lst 0))
-               (bushu1 (list-ref lst 1))
-               (bushu2 (list-ref lst 2))
-               (rule (list (list (list bushu1 bushu2)) (list kanji)))
-               (rev
-                (and
-                  (and (> len 3) (string=? (list-ref lst 3) "*"))
-                  (list (list (list bushu2 bushu1)) (list kanji)))))
-              (if rev
-                (list rule rev)
-                (list rule)))))))
+          ((comps (string-split line " "))
+           (kanji-lcomps (map tutcode-bushu-parse-entry comps))
+           (kanji (and (pair? (car kanji-lcomps)) (caar kanji-lcomps)))
+           ;; π‘∆¨§ŒπÁ¿Æ∏Â§Œ¥¡ª˙§ÚΩ¸§§§ø•Í•π•»°£Œ„:(("•§" "¿Ï" "*")("≈¡" "°¶"))
+           (lcomps
+            (if kanji
+              (cons (cdar kanji-lcomps) (cdr kanji-lcomps))
+              ())))
+          (append-map!
+            (lambda (elem)
+              (let ((len (length elem)))
+                (if (< len 2)
+                  ()
+                  (let*
+                    ((bushu1 (list-ref elem 0))
+                     (bushu2 (list-ref elem 1))
+                     (rule (list (list (list bushu1 bushu2)) (list kanji)))
+                     (rev
+                      (and
+                        (and (>= len 3) (string=? (list-ref elem 2) "*"))
+                        (list (list (list bushu2 bushu1)) (list kanji)))))
+                    (if rev
+                      (list rule rev)
+                      (list rule))))))
+            lcomps))))
      (res
       (call-with-open-file-port fd
         (lambda (port)
