@@ -440,24 +440,34 @@
           (file-open-flags-number '($O_RDONLY)) 0))
      (parse
       (lambda (line)
-        ;; 例: "諍言争*"→(((("言" "争"))("諍"))((("争" "言"))("諍")))
+        ;; 例: "傳イ専* 伝・"
+        ;; →(((("イ" "専"))("傳"))((("専" "イ"))("傳"))((("伝" "・"))("傳")))
         (let*
-          ((lst (tutcode-bushu-parse-entry line))
-           (len (length lst)))
-          (if (< len 3)
-            ()
-            (let*
-              ((kanji (list-ref lst 0))
-               (bushu1 (list-ref lst 1))
-               (bushu2 (list-ref lst 2))
-               (rule (list (list (list bushu1 bushu2)) (list kanji)))
-               (rev
-                (and
-                  (and (> len 3) (string=? (list-ref lst 3) "*"))
-                  (list (list (list bushu2 bushu1)) (list kanji)))))
-              (if rev
-                (list rule rev)
-                (list rule)))))))
+          ((comps (string-split line " "))
+           (kanji-lcomps (map tutcode-bushu-parse-entry comps))
+           (kanji (and (pair? (car kanji-lcomps)) (caar kanji-lcomps)))
+           ;; 行頭の合成後の漢字を除いたリスト。例:(("イ" "専" "*")("伝" "・"))
+           (lcomps
+            (if kanji
+              (cons (cdar kanji-lcomps) (cdr kanji-lcomps))
+              ())))
+          (append-map!
+            (lambda (elem)
+              (let ((len (length elem)))
+                (if (< len 2)
+                  ()
+                  (let*
+                    ((bushu1 (list-ref elem 0))
+                     (bushu2 (list-ref elem 1))
+                     (rule (list (list (list bushu1 bushu2)) (list kanji)))
+                     (rev
+                      (and
+                        (and (>= len 3) (string=? (list-ref elem 2) "*"))
+                        (list (list (list bushu2 bushu1)) (list kanji)))))
+                    (if rev
+                      (list rule rev)
+                      (list rule))))))
+            lcomps))))
      (res
       (call-with-open-file-port fd
         (lambda (port)
@@ -472,23 +482,23 @@
 
 ;;; bushu.helpファイルに基づく部首合成を行う
 (define (tutcode-bushu-compose-explicitly char-list)
-  (if (or (null? char-list)
-          (null? (cdr char-list)) ; 1文字
-          (pair? (cddr char-list))) ; 3文字以上
+  (if (null? tutcode-bushu-help)
+    (set! tutcode-bushu-help (tutcode-bushu-help-load)))
+  (if (not tutcode-bushu-help)
     ()
-    ;; 2文字の合成のみ対応
-    (let*
-      ((c1 (car char-list))
-       (c2 (cadr char-list)))
-      (if (null? tutcode-bushu-help)
-        (set! tutcode-bushu-help (tutcode-bushu-help-load)))
-      (let
-        ((kanji
-          (and tutcode-bushu-help
-               (tutcode-bushu-compose c1 c2 tutcode-bushu-help))))
-        (if kanji
-          (list kanji)
-          ())))))
+    (cond
+      ((null? char-list)
+        ())
+      ((null? (cdr char-list)) ; 1文字
+        (map (lambda (elem) (caadr elem))
+          (rk-lib-find-partial-seqs char-list tutcode-bushu-help)))
+      ((pair? (cddr char-list)) ; 3文字以上
+        ())
+      (else ; 2文字
+        (let ((seq (rk-lib-find-seq char-list tutcode-bushu-help)))
+          (if seq
+            (cadr seq)
+            ()))))))
 
 ;;; 対話的な部首合成変換用に、指定された部首のリストから部首合成可能な
 ;;; 漢字のリストを返す。
