@@ -472,23 +472,23 @@
 
 ;;; bushu.helpファイルに基づく部首合成を行う
 (define (tutcode-bushu-compose-explicitly char-list)
-  (if (or (null? char-list)
-          (null? (cdr char-list)) ; 1文字
-          (pair? (cddr char-list))) ; 3文字以上
+  (if (null? tutcode-bushu-help)
+    (set! tutcode-bushu-help (tutcode-bushu-help-load)))
+  (if (not tutcode-bushu-help)
     ()
-    ;; 2文字の合成のみ対応
-    (let*
-      ((c1 (car char-list))
-       (c2 (cadr char-list)))
-      (if (null? tutcode-bushu-help)
-        (set! tutcode-bushu-help (tutcode-bushu-help-load)))
-      (let
-        ((kanji
-          (and tutcode-bushu-help
-               (tutcode-bushu-compose c1 c2 tutcode-bushu-help))))
-        (if kanji
-          (list kanji)
-          ())))))
+    (cond
+      ((null? char-list)
+        ())
+      ((null? (cdr char-list)) ; 1文字
+        (map (lambda (elem) (caadr elem))
+          (rk-lib-find-partial-seqs char-list tutcode-bushu-help)))
+      ((pair? (cddr char-list)) ; 3文字以上
+        ())
+      (else ; 2文字
+        (let ((seq (rk-lib-find-seq char-list tutcode-bushu-help)))
+          (if seq
+            (cadr seq)
+            ()))))))
 
 ;;; 対話的な部首合成変換用に、指定された部首のリストから部首合成可能な
 ;;; 漢字のリストを返す。
