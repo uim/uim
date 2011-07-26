@@ -98,6 +98,7 @@ uim/mana.c
 uim/dynlib.c
 uim/openssl.c
 uim/skk.c
+uim/uim.c
 uim/uim-eb.c
 uim/uim-error.c
 uim/wnnlib.c
