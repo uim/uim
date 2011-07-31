@@ -30,12 +30,24 @@
 
 ;;; tutcode-bushu.scm: 対話的な部首合成変換
 ;;;
-;;; tc-2.3.1のtc-bushu.elを移植(sortには未対応)。
+;;; tc-2.3.1のtc-bushu.elを移植(sortでの打ちやすさの考慮は未対応)。
 ;;; (参考:部首合成アルゴリズムは[tcode-ml:1942]あたり)
 
-(require-extension (srfi 1 8))
+(require-extension (srfi 1 8 95))
 (require "fileio.scm")
 (require-dynlib "look")
+
+;;; #tの場合、部首の並べ方によって合成される文字の優先度が変わる
+(define tutcode-bushu-sequence-sensitive? #t)
+
+;;; 優先度が同じ場合に優先される文字のリスト
+(define tutcode-bushu-prioritized-chars ())
+
+;;; 部首合成出力には入れない文字のリスト (tc-2.3.1-22.6より)
+(define tutcode-bushu-inhibited-output-chars
+  '("え" "し" "へ" "ア" "イ" "ウ" "エ" "オ" "カ" "ク" "ケ" "サ" "シ"
+    "タ" "チ" "テ" "ト" "ニ" "ヌ" "ネ" "ノ" "ハ" "ヒ" "ホ" "ム" "メ"
+    "ヨ" "リ" "ル" "レ" "ロ" "ワ" "ン"))
 
 ;;; bushu.helpファイルを読んで生成したtutcode-bushudic形式のリスト
 (define tutcode-bushu-help ())
@@ -76,7 +88,7 @@
 ;;; CHARとCHAR2を部首として持つ文字のリストを返す。
 (define (tutcode-bushu-lookup-index2-entry-2 char char2)
   (let
-    ((str (if (string<=? char char2)
+    ((str (if (string<? char char2)
               (string-append char char2)
               (string-append char2 char))))
     (tutcode-bushu-lookup-index2-entry-internal str)))
@@ -266,15 +278,124 @@
             included)))
         ret))))
 
-(define (tutcode-bushu-complete-compose-set char-list)
-  (let ((bushu-list (append-map! tutcode-bushu-for-char char-list)))
-    (tutcode-bushu-subtract-set
-      (tutcode-bushu-char-list-for-bushu bushu-list) char-list)))
+;;; CHARが変数`tutcode-bushu-prioritized-chars'の何番目にあるかを返す。
+;;; なければ #f を返す。
+(define (tutcode-bushu-priority-level char)
+  (and (pair? tutcode-bushu-prioritized-chars)
+    (let ((char-list (member char tutcode-bushu-prioritized-chars)))
+      (and char-list
+        (- (length tutcode-bushu-prioritized-chars) (length char-list) -1)))))
 
-(define (tutcode-bushu-strong-compose-set char-list)
+;;; REFを基準として、BUSHU1の方がBUSHU2よりも並び方が基準に近いかどうか。
+;;; 判断できなかったり、する必要がない場合はDEFAULTを返す。
+(define (tutcode-bushu-higher-priority? bushu1 bushu2 ref default)
+  (if tutcode-bushu-sequence-sensitive?
+    (let loop
+      ((bushu1 bushu1)
+       (bushu2 bushu2)
+       (ref ref))
+      (if (or (null? ref) (null? bushu1) (null? bushu2))
+        default
+        (let*
+          ((b1 (car bushu1))
+           (b2 (car bushu2))
+           (r (car ref))
+           (r=b1? (string=? r b1))
+           (r=b2? (string=? r b2)))
+          (if (and r=b1? r=b2?)
+            (loop (cdr bushu1) (cdr bushu2) (cdr ref))
+            (cond
+              ((and r=b1? (not r=b2?))
+                #t)
+              ((and (not r=b1?) r=b2?)
+                #f)
+              ((and (not r=b1?) (not r=b2?))
+                default))))))
+    default))
+
+;;; CHAR1がCHAR2より優先度が高いか?
+;;; BUSHU-LISTで指定された部首リストを基準とする。
+;;; OPT-MANY?が#fの場合、同じ優先度では、BUSHU-LISTに含まれない
+;;; 部首の数が少ない方が優先される。
+;;; #tの場合は多い方が優先される。
+(define (tutcode-bushu-less? char1 char2 bushu-list . opt-many?)
   (let*
-    ((bushu-list (append-map! tutcode-bushu-for-char char-list))
-     (r (tutcode-bushu-superset bushu-list))
+    ((many? (:optional opt-many? #f))
+     (bushu1 (tutcode-bushu-for-char char1))
+     (bushu2 (tutcode-bushu-for-char char2))
+     (i1 (tutcode-bushu-intersection bushu1 bushu-list))
+     (i2 (tutcode-bushu-intersection bushu2 bushu-list))
+     (il1 (length i1))
+     (il2 (length i2))
+     (l1 (length bushu1))
+     (l2 (length bushu2)))
+    (if (= il1 il2)
+      (if (= l1 l2)
+        (let ((p1 (tutcode-bushu-priority-level char1))
+              (p2 (tutcode-bushu-priority-level char2)))
+          (cond
+            (p1
+              (if p2
+                (< p1 p2)
+                #t))
+            (p2
+              #f)
+            (else
+              (let
+                ((val (tutcode-bushu-higher-priority? i1 i2
+                        (tutcode-bushu-intersection bushu-list
+                          (append bushu1 bushu2)) 'default)))
+                (if (not (eq? val 'default))
+                  val
+                  (let*
+                    ((s1 (tutcode-reverse-find-seq char1 tutcode-rule))
+                     (s2 (tutcode-reverse-find-seq char2 tutcode-rule))
+                     (sl1 (if s1 (length s1) 99))
+                     (sl2 (if s2 (length s2) 99)))
+                    (cond 
+                      ((and s1 s2)
+                        (if (= sl1 sl2)
+                          ;;XXX:打ちやすさでの比較は省略
+                          (string<? char1 char2)
+                          (< sl1 sl2)))
+                      (s1
+                        #t)
+                      (s2
+                        #f)
+                      (else
+                        (string<? char1 char2)))))))))
+        (if many?
+          (> l1 l2)
+          (< l1 l2)))
+      (> il1 il2))))
+
+(define (tutcode-bushu-less-against-sequence? char1 char2 bushu-list)
+  (let ((p1 (tutcode-bushu-priority-level char1))
+        (p2 (tutcode-bushu-priority-level char2)))
+    (cond
+      (p1
+        (if p2
+          (< p1 p2)
+          #t))
+      (p2
+        #f)
+      (else
+        (tutcode-bushu-higher-priority?
+          (tutcode-bushu-for-char char1)
+          (tutcode-bushu-for-char char2)
+          bushu-list
+          (string<? char1 char2))))))
+
+(define (tutcode-bushu-complete-compose-set char-list bushu-list)
+  (sort!
+    (tutcode-bushu-subtract-set
+      (tutcode-bushu-char-list-for-bushu bushu-list) char-list)
+    (lambda (a b)
+      (tutcode-bushu-less-against-sequence? a b bushu-list))))
+
+(define (tutcode-bushu-strong-compose-set char-list bushu-list)
+  (let*
+    ((r (tutcode-bushu-superset bushu-list))
      (r2
       (let loop
         ((lis char-list)
@@ -282,7 +403,7 @@
         (if (null? lis)
           r
           (loop (cdr lis) (delete! (car lis) r))))))
-    r2))
+    (sort! r2 (lambda (a b) (tutcode-bushu-less? a b bushu-list)))))
 
 (define (tutcode-bushu-include-all-chars-bushu? char char-list)
   (let*
@@ -332,12 +453,15 @@
         (tutcode-bushu-include-all-chars-bushu? char char-list))
       all-list)))
 
-(define (tutcode-bushu-weak-compose-set char-list strong-compose-set)
+(define (tutcode-bushu-weak-compose-set char-list bushu-list strong-compose-set)
   (if (null? (cdr char-list)) ; char-list が一文字だけの時は何もしない
     ()
-    (tutcode-bushu-subtract-set
-      (tutcode-bushu-all-compose-set char-list ())
-      strong-compose-set)))
+    (sort!
+      (tutcode-bushu-subtract-set
+        (tutcode-bushu-all-compose-set char-list ())
+        strong-compose-set)
+      (lambda (a b)
+        (tutcode-bushu-less? a b bushu-list)))))
 
 (define (tutcode-bushu-subset bushu-list)
   ;;XXX:長いリストに対するdelete-duplicates!は遅いので、filter後に行う
@@ -372,12 +496,16 @@
             (or (and (pair? d1) (pair? d2))
                 (and (null? d1) (null? d2)))
             ()
-            (delete! char
-              (if (pair? rest)
-                (tutcode-bushu-strong-diff-set rest d1-or-d2 complete?)
-                (if complete?
-                  (tutcode-bushu-char-list-for-bushu d1-or-d2)
-                  (tutcode-bushu-subset d1-or-d2))))))))))
+            (if (pair? rest)
+              (delete! char
+                (tutcode-bushu-strong-diff-set rest d1-or-d2 complete?))
+              (sort!
+                (delete! char
+                  (if complete?
+                    (tutcode-bushu-char-list-for-bushu d1-or-d2)
+                    (tutcode-bushu-subset d1-or-d2)))
+                (lambda (a b)
+                  (tutcode-bushu-less? a b bushu-list #t))))))))))
 
 (define (tutcode-bushu-complete-diff-set char-list)
   (tutcode-bushu-strong-diff-set char-list () #t))
@@ -420,6 +548,7 @@
       (tutcode-bushu-subtract-set
         (tutcode-bushu-all-diff-set char-list () ())
         strong-diff-set))
+     (less-or-many? (lambda (a b) (tutcode-bushu-less? a b bushu-list #t)))
      (res
        (receive
         (true-diff-set rest-diff-set)
@@ -429,7 +558,8 @@
               (tutcode-bushu-subtract-set
                 (tutcode-bushu-for-char char) bushu-list)))
           diff-set)
-        (append! true-diff-set rest-diff-set))))
+        (append! (sort! true-diff-set less-or-many?)
+                 (sort! rest-diff-set less-or-many?)))))
     (delete-duplicates! res)))
 
 ;;; bushu.helpファイルを読んでtutcode-bushudic形式のリストを生成する
@@ -506,20 +636,26 @@
 ;;; @return 合成可能な漢字のリスト
 (define (tutcode-bushu-compose-interactively char-list)
   (let*
-    ((explicit (tutcode-bushu-compose-explicitly char-list))
-     (complete-compose-set (tutcode-bushu-complete-compose-set char-list))
+    ((bushu-list (append-map! tutcode-bushu-for-char char-list))
+     (explicit (tutcode-bushu-compose-explicitly char-list))
+     (complete-compose-set
+      (tutcode-bushu-complete-compose-set char-list bushu-list))
      (complete-diff-set (tutcode-bushu-complete-diff-set char-list))
-     (strong-compose-set (tutcode-bushu-strong-compose-set char-list))
+     (strong-compose-set
+      (tutcode-bushu-strong-compose-set char-list bushu-list))
      (strong-diff-set (tutcode-bushu-strong-diff-set char-list))
      (weak-diff-set (tutcode-bushu-weak-diff-set char-list strong-diff-set))
-     (weak-compose-set (tutcode-bushu-weak-compose-set char-list
+     (weak-compose-set (tutcode-bushu-weak-compose-set char-list bushu-list
                         strong-compose-set)))
   (delete-duplicates!
-    (append!
-      explicit
-      complete-compose-set
-      complete-diff-set
-      strong-compose-set
-      strong-diff-set
-      weak-diff-set
-      weak-compose-set))))
+    (filter!
+      (lambda (elem)
+        (not (member elem tutcode-bushu-inhibited-output-chars)))
+      (append!
+        explicit
+        complete-compose-set
+        complete-diff-set
+        strong-compose-set
+        strong-diff-set
+        weak-diff-set
+        weak-compose-set)))))
