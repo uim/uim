@@ -140,6 +140,15 @@
   (N_ "Maximum length of yomi suffix for mazegaki conversion")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-bushu-conversion-algorithm 'tc-2.1+ml1925
+  '(tutcode tutcode-bushu)
+  (list 'choice
+    (list 'tc-2.1+ml1925
+          (N_ "tc-2.1+[tcode-ml:1925]") (N_ "tc-2.1+[tcode-ml:1925]"))
+    (list 'tc-2.3.1-22.6 (N_ "tc-2.3.1-22.6") (N_ "tc-2.3.1-22.6")))
+  (N_ "Bushu conversion algorithm")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-interactive-bushu-conversion? #f
   '(tutcode tutcode-bushu)
   '(boolean)
@@ -365,9 +374,13 @@
 (custom-add-hook 'tutcode-bushu-index2-filename
 		 'custom-activity-hooks
 		 (lambda ()
-		   tutcode-use-interactive-bushu-conversion?))
+                   (or
+                     tutcode-use-interactive-bushu-conversion?
+                     (eq? tutcode-bushu-conversion-algorithm 'tc-2.3.1-22.6))))
 
 (custom-add-hook 'tutcode-bushu-expand-filename
 		 'custom-activity-hooks
 		 (lambda ()
-		   tutcode-use-interactive-bushu-conversion?))
+                   (or
+                     tutcode-use-interactive-bushu-conversion?
+                     (eq? tutcode-bushu-conversion-algorithm 'tc-2.3.1-22.6))))

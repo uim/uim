@@ -2406,6 +2406,15 @@
 ;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
 ;;; @param char 入力された部首1
 (define (tutcode-check-bushu-prediction pc char)
+  (case tutcode-bushu-conversion-algorithm
+    ((tc-2.3.1-22.6)
+      (tutcode-check-bushu-prediction-tc23 pc char))
+    (else ; 'tc-2.1+ml1925
+      (tutcode-check-bushu-prediction-tc21 pc char))))
+
+;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
+;;; @param char 入力された部首1
+(define (tutcode-check-bushu-prediction-tc21 pc char)
   (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
     (let* ((res (tutcode-bushu-predict char tutcode-bushudic))
            (alt (assoc char tutcode-bushudic-altchar))
@@ -2415,6 +2424,20 @@
               ()))
            (resall (append res altres)))
       (tutcode-context-set-prediction-bushu! pc resall)
+      (tutcode-bushu-prediction-show-page pc 0))))
+
+;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
+;;; @param char 入力された部首1
+(define (tutcode-check-bushu-prediction-tc23 pc char)
+  (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
+    (let*
+      ((gosei (tutcode-bushu-compose-tc23 (list char) #f))
+       (res
+        (map
+          (lambda (elem)
+            (list #f elem))
+          gosei)))
+      (tutcode-context-set-prediction-bushu! pc res)
       (tutcode-bushu-prediction-show-page pc 0))))
 
 ;;; 部首合成変換の予測入力候補のうち、指定された番号から始まる候補を表示する。
@@ -3801,9 +3824,20 @@
 ;;; @param c2 2番目の部首
 ;;; @return 合成後の文字。合成できなかったときは#f
 (define (tutcode-bushu-convert c1 c2)
+  (case tutcode-bushu-conversion-algorithm
+    ((tc-2.3.1-22.6)
+      (tutcode-bushu-convert-tc23 c1 c2))
+    (else ; 'tc-2.1+ml1925
+      (tutcode-bushu-convert-tc21 c1 c2))))
+
+;;; 部首合成変換を行う。
+;;; tc-2.1+[tcode-ml:1925]の部首合成アルゴリズムを使用。
+;;; @param c1 1番目の部首
+;;; @param c2 2番目の部首
+;;; @return 合成後の文字。合成できなかったときは#f
+(define (tutcode-bushu-convert-tc21 c1 c2)
   (if (null? tutcode-bushu-help)
     (set! tutcode-bushu-help (tutcode-bushu-help-load)))
-  ;; tc-2.1+[tcode-ml:1925]の部首合成アルゴリズムを使用
   (and c1 c2
     (or
       (and tutcode-bushu-help (tutcode-bushu-compose c1 c2 tutcode-bushu-help))
@@ -3937,6 +3971,21 @@
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  見つからなかった場合は#f
 (define (tutcode-auto-help-bushu-decompose c rule stime)
+  (case tutcode-bushu-conversion-algorithm
+    ((tc-2.3.1-22.6)
+      (tutcode-auto-help-bushu-decompose-tc23 c rule stime))
+    (else ; 'tc-2.1+ml1925
+      (tutcode-auto-help-bushu-decompose-tc21 c rule stime))))
+
+;;; 自動ヘルプ:対象文字を部首合成するのに必要となる、
+;;; 外字でない2つの文字のリストを返す
+;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
+;;; @param c 対象文字
+;;; @param rule tutcode-rule
+;;; @param stime 開始日時
+;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
+;;;  見つからなかった場合は#f
+(define (tutcode-auto-help-bushu-decompose-tc21 c rule stime)
   (if (> (string->number (difftime (time) stime)) tutcode-auto-help-time-limit)
     #f
     (let*
@@ -3964,7 +4013,9 @@
                   (tutcode-auto-help-get-stroke-list-with-right-part
                     c b1 b2 seq1 rule elem)))
               ;; 部首2では合成不能→部首2をさらに分解
-              (let ((b2dec (tutcode-auto-help-bushu-decompose b2 rule stime)))
+              (let
+                ((b2dec
+                  (tutcode-auto-help-bushu-decompose-tc21 b2 rule stime)))
                 (and b2dec
                   (list seq1 b2dec)))))
           ;; 部首2が直接入力可能
@@ -3977,14 +4028,16 @@
                   (tutcode-auto-help-get-stroke-list-with-left-part
                     c b1 b2 seq2 rule elem)))
               ;; 部首1では合成不能→部首1をさらに分解
-              (let ((b1dec (tutcode-auto-help-bushu-decompose b1 rule stime)))
+              (let
+                ((b1dec
+                  (tutcode-auto-help-bushu-decompose-tc21 b1 rule stime)))
                 (and b1dec
                   (list b1dec seq2)))))
           ;; 部首1も部首2も直接入力不可→さらに分解
           (and b1 b2
             (let
-              ((b1dec (tutcode-auto-help-bushu-decompose b1 rule stime))
-               (b2dec (tutcode-auto-help-bushu-decompose b2 rule stime)))
+              ((b1dec (tutcode-auto-help-bushu-decompose-tc21 b1 rule stime))
+               (b2dec (tutcode-auto-help-bushu-decompose-tc21 b2 rule stime)))
               (and b1dec b2dec
                 (list b1dec b2dec))))
           ;; XXX: 部品どうしの合成は未対応
@@ -4374,11 +4427,12 @@
                (p-idx (+ idx-in-page (* pages nr-in-page)))
                (i (remainder p-idx nr-predictions))
                (cand (tutcode-lib-get-nth-prediction tc i))
+               (word (and (eq? (tutcode-context-predicting tc)
+                               'tutcode-predicting-bushu)
+                          (tutcode-lib-get-nth-word tc i)))
                (cand-guide
-                (if (eq? (tutcode-context-predicting tc)
-                          'tutcode-predicting-bushu)
-                  (string-append
-                    cand "(" (tutcode-lib-get-nth-word tc i) ")")
+                (if word
+                  (string-append cand "(" word ")")
                   cand))
                (n (remainder p-idx
                     (length tutcode-heading-label-char-list-for-prediction)))

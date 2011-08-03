@@ -33,7 +33,7 @@
 ;;; tc-2.3.1のtc-bushu.elを移植(sortでの打ちやすさの考慮は未対応)。
 ;;; (参考:部首合成アルゴリズムは[tcode-ml:1942]あたり)
 
-(require-extension (srfi 1 8 95))
+(require-extension (srfi 1 2 8 95))
 (require "fileio.scm")
 (require-dynlib "look")
 
@@ -633,29 +633,267 @@
 ;;; 対話的な部首合成変換用に、指定された部首のリストから部首合成可能な
 ;;; 漢字のリストを返す。
 ;;; @param char-list 入力された部首のリスト
+;;; @param exit-on-found? 漢字が1文字でも合成できたらそれ以上の合成は中止する
 ;;; @return 合成可能な漢字のリスト
-(define (tutcode-bushu-compose-interactively char-list)
+(define (tutcode-bushu-compose-tc23 char-list exit-on-found?)
   (let*
     ((bushu-list (append-map! tutcode-bushu-for-char char-list))
-     (explicit (tutcode-bushu-compose-explicitly char-list))
-     (complete-compose-set
-      (tutcode-bushu-complete-compose-set char-list bushu-list))
-     (complete-diff-set (tutcode-bushu-complete-diff-set char-list))
-     (strong-compose-set
-      (tutcode-bushu-strong-compose-set char-list bushu-list))
-     (strong-diff-set (tutcode-bushu-strong-diff-set char-list))
-     (weak-diff-set (tutcode-bushu-weak-diff-set char-list strong-diff-set))
-     (weak-compose-set (tutcode-bushu-weak-compose-set char-list bushu-list
-                        strong-compose-set)))
-  (delete-duplicates!
-    (filter!
-      (lambda (elem)
-        (not (member elem tutcode-bushu-inhibited-output-chars)))
-      (append!
-        explicit
-        complete-compose-set
-        complete-diff-set
-        strong-compose-set
-        strong-diff-set
-        weak-diff-set
-        weak-compose-set)))))
+     (update-res!
+      (lambda (res lst)
+        (append! res
+          (filter!
+            (lambda (elem)
+              (not (member elem tutcode-bushu-inhibited-output-chars)))
+            lst))))
+     (resall
+      (let
+        ((r0 (update-res! () (tutcode-bushu-compose-explicitly char-list))))
+        (if (and exit-on-found? (pair? r0))
+          r0
+          (let
+            ((r1 (update-res! r0
+                  (tutcode-bushu-complete-compose-set char-list bushu-list))))
+            (if (and exit-on-found? (pair? r1))
+              r1
+              (let
+                ((r2 (update-res! r1
+                      (tutcode-bushu-complete-diff-set char-list))))
+                (if (and exit-on-found? (pair? r2))
+                  r2
+                  (let*
+                    ((strong-compose-set
+                      (tutcode-bushu-strong-compose-set char-list bushu-list))
+                     (r3 (update-res! r2 strong-compose-set)))
+                    (if (and exit-on-found? (pair? r3))
+                      r3
+                      (let*
+                        ((strong-diff-set
+                          (tutcode-bushu-strong-diff-set char-list))
+                         (r4 (update-res! r3 strong-diff-set)))
+                        (if (and exit-on-found? (pair? r4))
+                          r4
+                          (let
+                            ((r5 (update-res! r4
+                                  (tutcode-bushu-weak-diff-set char-list
+                                    strong-diff-set))))
+                            (if (and exit-on-found? (pair? r5))
+                              r5
+                              (let
+                                ((r6 (update-res! r5
+                                      (tutcode-bushu-weak-compose-set char-list
+                                        bushu-list strong-compose-set))))
+                                r6)))))))))))))))
+    (delete-duplicates! resall)))
+
+;;; 対話的な部首合成変換用に、指定された部首のリストから部首合成可能な
+;;; 漢字のリストを返す。
+;;; @param char-list 入力された部首のリスト
+;;; @return 合成可能な漢字のリスト
+(define (tutcode-bushu-compose-interactively char-list)
+  (tutcode-bushu-compose-tc23 char-list #f))
+
+;;; 部首合成変換を行う。
+;;; tc-2.3.1-22.6の部首合成アルゴリズムを使用。
+;;; @param c1 1番目の部首
+;;; @param c2 2番目の部首
+;;; @return 合成後の文字。合成できなかったときは#f
+(define (tutcode-bushu-convert-tc23 c1 c2)
+  (let ((res (tutcode-bushu-compose-tc23 (list c1 c2) #t)))
+    (if (null? res)
+      #f
+      (car res))))
+
+;; tc-2.3.1のtc-help.elからの移植
+(define (tutcode-bushu-decompose-to-two-char char)
+  (let ((b1 (tutcode-bushu-for-char char)))
+    (let loop
+      ((b1 (cdr b1))
+       (b2 (list (car b1))))
+      (if (null? b1)
+        #f
+        (let*
+          ((cl1t (tutcode-bushu-char-list-for-bushu b2))
+           (cl1
+            (if (pair? cl1t)
+              cl1t
+              (if (= (length b2) 1)
+                b2
+                ())))
+           (cl2t (tutcode-bushu-char-list-for-bushu b1))
+           (cl2
+            (if (pair? cl2t)
+              cl2t
+              (if (= (length b1) 1)
+                b1
+                ()))))
+          (let c1loop
+            ((cl1 cl1))
+            (if (null? cl1)
+              (loop (cdr b1) (append b2 (list (car b1))))
+              (let c2loop
+                ((cl2 cl2))
+                (if (null? cl2)
+                  (c1loop (cdr cl1))
+                  (if
+                    (equal?
+                      (tutcode-bushu-convert-tc23 (car cl1) (car cl2))
+                      char)
+                    (cons (car cl1) (car cl2))
+                    (c2loop (cdr cl2))))))))))))
+
+;;; CHARが直接入力可能なBUSHU1とBUSHU2で合成できる場合、
+;;; BUSHU1とBUSHU2のストロークを含むリストを返す。
+;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
+;;; @param char 合成後の文字
+;;; @param bushu1 部首1
+;;; @param bushu2 部首2
+;;; @param rule tutcode-rule
+;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
+;;;  合成できない場合は#f
+(define (tutcode-bushu-composed char bushu1 bushu2 rule)
+  (and-let*
+    ((seq1 (tutcode-auto-help-get-stroke bushu1 rule))
+     (seq2 (tutcode-auto-help-get-stroke bushu2 rule))
+     (composed (tutcode-bushu-convert-tc23 bushu1 bushu2)))
+    (and
+      (string=? composed char)
+      (list seq1 seq2))))
+
+;;; 自動ヘルプ:対象文字を部首合成するのに必要となる、
+;;; 外字でない2つの文字のリストを返す
+;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
+;;; @param kanji 対象文字
+;;; @param rule tutcode-rule
+;;; @param stime 開始日時
+;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
+;;;  見つからなかった場合は#f
+(define (tutcode-auto-help-bushu-decompose-tc23 kanji rule stime)
+  (if (> (string->number (difftime (time) stime)) tutcode-auto-help-time-limit)
+    #f
+    (let ((decomposed (tutcode-bushu-decompose-to-two-char kanji)))
+      (if decomposed
+        (let*
+          ((char1 (car decomposed))
+           (char2 (cdr decomposed))
+           (seq1 (tutcode-auto-help-get-stroke char1 rule))
+           (seq2 (tutcode-auto-help-get-stroke char2 rule)))
+          (cond
+            (seq1
+              (if seq2
+                (list seq1 seq2)
+                (let*
+                  ((bushu-list (tutcode-bushu-for-char char2))
+                   (find-loop
+                    (lambda (set)
+                      (let loop
+                        ((lis
+                          (sort! set
+                            (lambda (a b)
+                              (tutcode-bushu-less? a b bushu-list)))))
+                        (if (null? lis)
+                          #f
+                          (let
+                            ((res (tutcode-bushu-composed
+                                    kanji char1 (car lis) rule)))
+                            (or res
+                              (loop (cdr lis)))))))))
+                  (or
+                    ;; 強合成集合を探す
+                    (find-loop (tutcode-bushu-subset bushu-list))
+                    ;; 弱合成集合を探す
+                    (find-loop (tutcode-bushu-superset bushu-list))
+                    ;; 再帰的に探す
+                    (let
+                      ((dec2
+                        (tutcode-auto-help-bushu-decompose-tc23 char2
+                          rule stime)))
+                      (and dec2
+                        (list seq1 dec2)))))))
+            (seq2
+              (let*
+                ((bushu-list (tutcode-bushu-for-char char1))
+                 (find-loop
+                  (lambda (set)
+                    (let loop
+                      ((lis
+                        (sort! set
+                          (lambda (a b)
+                            (tutcode-bushu-less? a b bushu-list)))))
+                      (if (null? lis)
+                        #f
+                        (let
+                          ((res (tutcode-bushu-composed
+                                  kanji (car lis) char2 rule)))
+                          (or res
+                            (loop (cdr lis)))))))))
+                (or
+                  ;; 強合成集合を探す
+                  (find-loop (tutcode-bushu-subset bushu-list))
+                  ;; 弱合成集合を探す
+                  (find-loop (tutcode-bushu-superset bushu-list))
+                  ;; 再帰的に探す
+                  (let
+                    ((dec1
+                      (tutcode-auto-help-bushu-decompose-tc23 char1
+                        rule stime)))
+                    (and dec1
+                      (list dec1 seq2))))))
+            (else
+              (let*
+                ((bushu1 (tutcode-bushu-for-char char1))
+                 (bushu2 (tutcode-bushu-for-char char2))
+                 (bushu-list (append bushu1 bushu2))
+                 (mkcl
+                  (lambda (bushu)
+                    (sort!
+                      (delete-duplicates!
+                        (append!
+                          (tutcode-bushu-subset bushu)
+                          (tutcode-bushu-superset bushu)))
+                      (lambda (a b)
+                        (tutcode-bushu-less? a b bushu-list)))))
+                 (cl1 (mkcl bushu1))
+                 (cl2 (mkcl bushu2)))
+                (let loop1
+                  ((cl1 cl1))
+                  (if (null? cl1)
+                    #f
+                    (let loop2
+                      ((cl2 cl2))
+                      (if (null? cl2)
+                        (loop1 (cdr cl1))
+                        (let
+                          ((res (tutcode-bushu-composed
+                                  kanji (car cl1) (car cl2) rule)))
+                          (or res
+                            (loop2 (cdr cl2))))))))))))
+        ;; 二つに分割できない場合
+        ;; 強差合成集合を探す
+        (let*
+          ((bushu-list (tutcode-bushu-for-char kanji))
+           (superset
+            (sort!
+              (tutcode-bushu-superset bushu-list)
+              (lambda (a b)
+                (tutcode-bushu-less? a b bushu-list)))))
+          (let loop1
+            ((lis superset))
+            (if (null? lis)
+              #f
+              (let*
+                ((seq1 (tutcode-auto-help-get-stroke (car lis) rule))
+                 (diff (if seq1
+                        (tutcode-bushu-subtract-set
+                          (tutcode-bushu-for-char (car lis) bushu-list))
+                        ())))
+                (if seq1
+                  (let loop2
+                    ((lis2 (tutcode-bushu-subset diff)))
+                    (if (null? lis2)
+                      (loop1 (cdr lis))
+                      (let
+                        ((res (tutcode-bushu-composed
+                                kanji (car lis) (car lis2) rule)))
+                        (or res
+                          (loop2 (cdr lis2))))))
+                  (loop1 (cdr lis)))))))))))
