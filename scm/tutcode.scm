@@ -3827,6 +3827,8 @@
   (case tutcode-bushu-conversion-algorithm
     ((tc-2.3.1-22.6)
       (tutcode-bushu-convert-tc23 c1 c2))
+    ((kw-yamanobe)
+      (tutcode-bushu-convert-kwyamanobe c1 c2))
     (else ; 'tc-2.1+ml1925
       (tutcode-bushu-convert-tc21 c1 c2))))
 
@@ -3906,6 +3908,161 @@
           (and tc12
             (equal? tc12 tc22)
             (newchar tc11)))))))
+
+;;; 部首合成変換を行う。
+;;; 漢直Win+YAMANOBE部首合成アルゴリズムを使用。
+;;; @param ca 1番目の部首
+;;; @param cb 2番目の部首
+;;; @return 合成後の文字。合成できなかったときは#f
+(define (tutcode-bushu-convert-kwyamanobe ca cb)
+  (if (null? tutcode-bushu-help)
+    (set! tutcode-bushu-help (tutcode-bushu-help-load)))
+  (and ca cb
+    (or
+      (and tutcode-bushu-help (tutcode-bushu-compose ca cb tutcode-bushu-help))
+      (let
+        ;; 合成後の文字が、合成前の2つの部首とは異なる
+        ;; 新しい文字であることを確認する。
+        ;; (string=?だと#fがあったときにエラーになるのでequal?を使用)
+        ((newchar
+          (lambda (new)
+            (and new
+              (not (equal? new ca))
+              (not (equal? new cb))
+              new)))
+         (bushu-compose-sub
+          (lambda (x y)
+            (and x y
+              (tutcode-bushu-compose x y tutcode-bushudic))))) ; no swap
+        (or
+          (newchar (bushu-compose-sub ca cb))
+          (let
+            ((a (tutcode-bushu-alternative ca))
+             (b (tutcode-bushu-alternative cb))
+             (compose-alt
+              (lambda (cx cy x y)
+                (and
+                  (or
+                    (not (string=? x cx))
+                    (not (string=? y cy)))
+                  (newchar (bushu-compose-sub x y))))))
+            (or
+              (compose-alt ca cb a b)
+              (let*
+                ((ad (tutcode-bushu-decompose a))
+                 (bd (tutcode-bushu-decompose b))
+                 (a1 (and ad (car ad)))
+                 (a2 (and ad (cadr ad)))
+                 (b1 (and bd (car bd)))
+                 (b2 (and bd (cadr bd)))
+                 (compose-newchar
+                  (lambda (i1 i2)
+                    (newchar (bushu-compose-sub i1 i2))))
+                 (compose-l2r
+                  (lambda (x y z)
+                    (newchar (bushu-compose-sub (bushu-compose-sub x y) z))))
+                 (compose-r2l
+                  (lambda (x y z)
+                    (newchar (bushu-compose-sub x (bushu-compose-sub y z)))))
+                 (compose-lr
+                  (lambda (a a1 a2 b b1 b2)
+                    (or
+                      (and a1 a2
+                        (or
+                          (compose-l2r a1 b a2)
+                          (compose-r2l a1 a2 b)))
+                      (and b1 b2
+                        (or
+                          (compose-l2r a b1 b2)
+                          (compose-r2l b1 a b2))))))
+                 (subtract
+                  (lambda (a1 a2 b)
+                    (or
+                      (and (equal? a2 b) (newchar a1))
+                      (and (equal? a1 b) (newchar a2))))))
+                (or
+                  (compose-lr a a1 a2 b b1 b2)
+                  ;; 引き算
+                  (subtract a1 a2 b)
+                  (let*
+                    ((ad1 (and a1 (tutcode-bushu-decompose a1)))
+                     (ad2 (and a2 (tutcode-bushu-decompose a2)))
+                     (a11 (and ad1 (car ad1)))
+                     (a12 (and ad1 (cadr ad1)))
+                     (a21 (and ad2 (car ad2)))
+                     (a22 (and ad2 (cadr ad2)))
+                     (bushu-convert-sub
+                      (lambda (a a1 a11 a12 a2 a21 a22 b b1 b2)
+                        (or
+                          (and a2 a11 a12
+                            (or
+                              (and (equal? a12 b) (compose-newchar a11 a2))
+                              (and (equal? a11 b) (compose-newchar a12 a2))))
+                          (and a1 a21 a22
+                            (or
+                              (and (equal? a22 b) (compose-newchar a1 a21))
+                              (and (equal? a21 b) (compose-newchar a1 a22))))
+                          ;; 一方が部品による足し算
+                          (compose-newchar a b1)
+                          (compose-newchar a b2)
+                          (compose-newchar a1 b)
+                          (compose-newchar a2 b)
+                          (and a1 a2 b1
+                            (or
+                              (compose-l2r a1 b1 a2)
+                              (compose-r2l a1 a2 b1)))
+                          (and a1 a2 b2
+                            (or
+                              (compose-l2r a1 b2 a2)
+                              (compose-r2l a1 a2 b2)))
+                          (and a1 b1 b2
+                            (or
+                              (compose-l2r a1 b1 b2)
+                              (compose-r2l b1 a1 b2)))
+                          (and a2 b1 b2
+                            (or
+                              (compose-l2r a2 b1 b2)
+                              (compose-r2l b1 a2 b2)))
+                          ;; 両方が部品による足し算
+                          (compose-newchar a1 b1)
+                          (compose-newchar a1 b2)
+                          (compose-newchar a2 b1)
+                          (compose-newchar a2 b2)
+                          ;; 部品による引き算
+                          (and a2 b1 (equal? a2 b1) (newchar a1))
+                          (and a2 b2 (equal? a2 b2) (newchar a1))
+                          (and a1 b1 (equal? a1 b1) (newchar a2))
+                          (and a1 b2 (equal? a1 b2) (newchar a2))
+                          (and a2 a11 a12
+                            (or
+                              (and (or (equal? a12 b1) (equal? a12 b2))
+                                (compose-newchar a11 a2))
+                              (and (or (equal? a11 b1) (equal? a11 b2))
+                                (compose-newchar a12 a2))))
+                          (and a1 a21 a22
+                            (or
+                              (and (or (equal? a22 b1) (equal? a22 b2))
+                                (compose-newchar a1 a21))
+                              (and (or (equal? a21 b1) (equal? a21 b2))
+                                (compose-newchar a1 a22))))))))
+                    (or
+                      (bushu-convert-sub a a1 a11 a12 a2 a21 a22 b b1 b2)
+                      ;; 文字の順序を逆にしてみる
+                      (and (not (equal? ca cb))
+                        (or
+                          (newchar (bushu-compose-sub cb ca))
+                          (compose-alt cb ca b a)
+                          (compose-lr b b1 b2 a a1 a2)
+                          (subtract b1 b2 a)
+                          (let*
+                            ((bd1 (and b1 (tutcode-bushu-decompose b1)))
+                             (bd2 (and b2 (tutcode-bushu-decompose b2)))
+                             (b11 (and bd1 (car bd1)))
+                             (b12 (and bd1 (cadr bd1)))
+                             (b21 (and bd2 (car bd2)))
+                             (b22 (and bd2 (cadr bd2))))
+                            (bushu-convert-sub b b1 b11 b12 b2 b21 b22 a a1 a2)
+                            ))))))))))))))
 
 ;;; 部首合成変換:c1とc2を合成してできる文字を探して返す。
 ;;; 指定された順番で見つからなかった場合は、順番を入れかえて探す。

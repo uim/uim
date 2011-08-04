@@ -145,6 +145,8 @@
   (list 'choice
     (list 'tc-2.1+ml1925
           (N_ "tc-2.1+[tcode-ml:1925]") (N_ "tc-2.1+[tcode-ml:1925]"))
+    (list 'kw-yamanobe
+          (N_ "Kanchoku Win YAMANOBE") (N_ "Kanchoku Win YAMANOBE"))
     (list 'tc-2.3.1-22.6 (N_ "tc-2.3.1-22.6") (N_ "tc-2.3.1-22.6")))
   (N_ "Bushu conversion algorithm")
   (N_ "long description will be here."))
