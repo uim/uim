@@ -1002,6 +1002,16 @@
       (iconv-release ic)
       eucj-str)))
 
+;;; Convert reverse string list to one EUC-JP kanji string
+(define (ja-kanji-code-input str-list)
+  (cond
+    ((string-ci=? (last str-list) "u")
+      (ja-kanji-code-input-ucs str-list))
+    ((member "-" str-list)
+      (ja-kanji-code-input-kuten str-list))
+    (else
+      (ja-kanji-code-input-jis str-list))))
+
 ;;
 (require "rk.scm")
 

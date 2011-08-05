@@ -1548,15 +1548,7 @@
 ;;; 入力された漢字コードに対応する漢字を確定する
 ;;; @param str-list 漢字コード。入力された文字列のリスト(逆順)
 (define (tutcode-begin-kanji-code-input pc str-list)
-  (let
-    ((kanji
-      (cond
-        ((string-ci=? (last str-list) "u")
-          (ja-kanji-code-input-ucs str-list))
-        ((member "-" str-list)
-          (ja-kanji-code-input-kuten str-list))
-        (else
-          (ja-kanji-code-input-jis str-list)))))
+  (let ((kanji (ja-kanji-code-input str-list)))
     (if (and kanji (> (string-length kanji) 0))
       (begin
         (tutcode-commit pc kanji)

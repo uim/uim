@@ -2146,14 +2146,7 @@
 				  (skk-make-string
 				     (skk-context-head sc)
 				     (skk-context-kana-mode sc))))
-		      (kanji
-			(cond
-			  ((string-ci=? (last str-list) "u")
-			    (ja-kanji-code-input-ucs str-list))
-			  ((member "-" str-list)
-			    (ja-kanji-code-input-kuten str-list))
-			  (else
-			    (ja-kanji-code-input-jis str-list)))))
+		      (kanji (ja-kanji-code-input str-list)))
 		 (if (and kanji (> (string-length kanji) 0))
 		   (begin
 		     (skk-commit sc kanji)
