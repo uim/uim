@@ -41,6 +41,7 @@
 ;;  送りがな okuri
 ;;  英数 latin
 ;;  全角英数 wide-latin
+;;  漢字コード入力 kcode
 ;;
 ;;
 (require "japanese.scm")
@@ -790,6 +791,10 @@
 	    (eq? stat 'skk-state-completion)
 	    (eq? stat 'skk-state-okuri)))
 	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "▽"))
+      (if (and
+	   (null? csc)
+	   (eq? stat 'skk-state-kcode))
+	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "JIS "))
       (if (or
 	   (not (null? csc))
 	   (eq? stat 'skk-state-converting))
@@ -799,7 +804,8 @@
 	   (null? csc)
 	   (or
 	    (eq? stat 'skk-state-kanji)
-	    (eq? stat 'skk-state-okuri)))
+	    (eq? stat 'skk-state-okuri)
+	    (eq? stat 'skk-state-kcode)))
 	  (let ((h (skk-make-string 
 		    (skk-context-head sc)
 		    (skk-context-kana-mode sc))))
@@ -928,7 +934,8 @@
 		 (or
 		  (eq? stat 'skk-state-kanji)
 		  (eq? stat 'skk-state-completion)
-		  (eq? stat 'skk-state-okuri))
+		  (eq? stat 'skk-state-okuri)
+		  (eq? stat 'skk-state-kcode))
 		 skk-show-cursor-on-preedit?
 		 (not with-dcomp-word?))
 		(im-pushback-preedit sc preedit-cursor ""))))
@@ -1032,6 +1039,10 @@
       (skk-context-set-state! sc 'skk-state-latin)
       (rk-flush rkc)
       #f)
+     ((skk-kcode-input-key? key key-state)
+      (skk-context-set-state! sc 'skk-state-kcode)
+      (rk-flush rkc)
+      #f)
      ((skk-latin-conv-key? key key-state)
       (skk-context-set-state! sc 'skk-state-kanji)
       (skk-context-set-latin-conv! sc #t)
@@ -1113,10 +1124,10 @@
 	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
-       ;; Handles "n{L,l,/,Q,C-q,C-Q,q}" key sequence as below. This is
+       ;; Handles "n{L,l,/,\,Q,C-q,C-Q,q}" key sequence as below. This is
        ;; ddskk-compatible behavior.
        ;; 1. commits "n" as kana according to kana-mode
-       ;; 2. switch mode by "{L,l,/,Q,C-q,C-Q,q}"
+       ;; 2. switch mode by "{L,l,/,\,Q,C-q,C-Q,q}"
        (if (and (skk-wide-latin-key? key key-state)
 		(not (rk-expect-key? rkc key-str)))
 	   (begin
@@ -1129,6 +1140,13 @@
 	   (begin
 	     (set! res (rk-push-key-last! rkc))
 	     (skk-context-set-state! sc 'skk-state-latin)
+	     #f)
+	   #t)
+       (if (and (skk-kcode-input-key? key key-state)
+		(not (rk-expect-key? rkc key-str)))
+	   (begin
+	     (set! res (rk-push-key-last! rkc))
+	     (skk-context-set-state! sc 'skk-state-kcode)
 	     #f)
 	   #t)
        (if (and (skk-latin-conv-key? key key-state)
@@ -1234,7 +1252,8 @@
       (if (or
 	   (eq? (skk-context-state sc) 'skk-state-direct)
 	   (eq? (skk-context-state sc) 'skk-state-latin)
-	   (eq? (skk-context-state sc) 'skk-state-wide-latin))
+	   (eq? (skk-context-state sc) 'skk-state-wide-latin)
+	   (eq? (skk-context-state sc) 'skk-state-kcode))
 	  (if (and res
 		   (or
 		    (list? (car res))
@@ -2102,6 +2121,55 @@
 	(skk-commit-raw sc key key-state)))
       #f)))
 
+(define skk-proc-state-kcode
+  (lambda (c key key-state)
+    (let ((sc (skk-find-descendant-context c)))
+      (and
+       (if (skk-cancel-key? key key-state)
+	   (begin
+	     (skk-flush sc)
+	     #f)
+	   #t)
+       (if (skk-backspace-key? key key-state)
+	   (begin
+	     (if (> (length (skk-context-head sc)) 0)
+		 (skk-context-set-head! sc (cdr (skk-context-head sc)))
+		 (skk-flush sc))
+	     #f)
+	   #t)
+       (if (or
+	    (skk-commit-key? key key-state)
+	    (skk-return-key? key key-state))
+	   (begin
+	     (if (> (length (skk-context-head sc)) 0)
+	       (let* ((str-list (string-to-list
+				  (skk-make-string
+				     (skk-context-head sc)
+				     (skk-context-kana-mode sc))))
+		      (kanji
+			(cond
+			  ((string-ci=? (last str-list) "u")
+			    (ja-kanji-code-input-ucs str-list))
+			  ((member "-" str-list)
+			    (ja-kanji-code-input-kuten str-list))
+			  (else
+			    (ja-kanji-code-input-jis str-list)))))
+		 (if (and kanji (> (string-length kanji) 0))
+		   (begin
+		     (skk-commit sc kanji)
+		     (skk-flush sc))))
+	       (skk-flush sc))
+	     #f)
+	   #t)
+       ;; append latin string
+       (if (ichar-graphic? key)
+	   (let* ((s (charcode->string key))
+		  (p (cons s (cons s (cons s s)))))
+	     (skk-append-string sc p)
+	     #f)
+	   #t))
+      #f)))
+
 (define skk-push-key
   (lambda (c key key-state)
     (let* ((sc (skk-find-descendant-context c))
@@ -2120,7 +2188,9 @@
 		 ((eq? state 'skk-state-latin)
 		  skk-proc-state-latin)
 		 ((eq? state 'skk-state-wide-latin)
-		  skk-proc-state-wide-latin)))
+		  skk-proc-state-wide-latin)
+		 ((eq? state 'skk-state-kcode)
+		  skk-proc-state-kcode)))
 	   (res (fun c key key-state)))
       (if res
 	  (skk-commit sc res))

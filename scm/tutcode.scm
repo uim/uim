@@ -1552,95 +1552,16 @@
     ((kanji
       (cond
         ((string-ci=? (last str-list) "u")
-          (tutcode-kanji-code-input-ucs str-list))
+          (ja-kanji-code-input-ucs str-list))
         ((member "-" str-list)
-          (tutcode-kanji-code-input-kuten str-list))
+          (ja-kanji-code-input-kuten str-list))
         (else
-          (tutcode-kanji-code-input-jis str-list)))))
+          (ja-kanji-code-input-jis str-list)))))
     (if (and kanji (> (string-length kanji) 0))
       (begin
         (tutcode-commit pc kanji)
         (tutcode-flush pc)
         (tutcode-check-auto-help-window-begin pc (list kanji) ())))))
-
-;;; 入力されたUCSに対応する漢字を確定する
-;;; @param str-list UCS(16進数)。入力された文字列のリスト(逆順)
-;;; @return EUC-JP文字列。正しくないコードの場合は#f
-(define (tutcode-kanji-code-input-ucs str-list)
-  (and-let*
-    ((str-list-1 (drop-right str-list 1)) ; drop last "U"
-     (not-only-u? (not (null? str-list-1)))
-     (ucs-str (if (string=? (last str-list-1) "+")
-                (drop-right str-list-1 1)
-                str-list-1))
-     (ucs (string->number (string-list-concat ucs-str) 16))
-     ;; エラー回避のため範囲チェック
-     (valid? ; sigscheme/src/sigschemeinternal.h:ICHAR_VALID_UNICODEP()
-      (or
-        (<= 0 ucs #xd7ff)
-        (<= #xe000 ucs #x10ffff)))
-     (utf8-str (ucs->utf8-string ucs))
-     (ic (iconv-open "EUC-JP" "UTF-8")))
-    (let ((eucj-str (iconv-code-conv ic utf8-str)))
-      (iconv-release ic)
-      eucj-str)))
-
-;;; 入力されたJIS X 0213の(面)区点番号に対応する漢字を確定する
-;;; @param str-list (面)区点番号。入力された文字列のリスト(逆順)
-;;; @return EUC-JP文字列。正しくない番号の場合は#f
-(define (tutcode-kanji-code-input-kuten str-list)
-  (let*
-    ((numlist (string-split (string-list-concat str-list) "-"))
-     (men-exists? (>= (length numlist) 3))
-     (men (if men-exists? (string->number (list-ref numlist 0)) 1))
-     (ku (string->number (list-ref numlist (if men-exists? 1 0))))
-     (ten (string->number (list-ref numlist (if men-exists? 2 1)))))
-    (and men ku ten (<= 1 men 2)
-      (tutcode-jis-code->euc-jp-string
-        (if (= men 2) 'jisx0213-plane2 'jisx0213-plane1)
-        (+ ku #x20) (+ ten #x20)))))
-
-;;; 入力されたJISコード(ISO-2022-JP)に対応する漢字を確定する
-;;; @param str-list JISコード。入力された文字列のリスト(逆順)
-;;; @return EUC-JP文字列。正しくないコードの場合は#f
-(define (tutcode-kanji-code-input-jis str-list)
-  (and-let*
-    ((length=4? (= (length str-list) 4))
-     (str1 (string-list-concat (take-right str-list 2)))
-     (str2 (string-list-concat (take str-list 2)))
-     (jis1 (string->number str1 16))
-     (jis2 (string->number str2 16)))
-    (tutcode-jis-code->euc-jp-string 'jisx0213-plane1 jis1 jis2)))
-
-;;; JISコード(ISO-2022-JP)をEUC-JP文字列に変換する
-;;; @param state 'jisx0213-plane1か'jisx0213-plane2
-;;; @param jis1 JISコードの1バイト目
-;;; @param jis2 JISコードの2バイト目
-;;; @return EUC-JP文字列。正しくないコードの場合は#f
-(define (tutcode-jis-code->euc-jp-string state jis1 jis2)
-  (let
-    ((ej0 (if (eq? state 'jisx0213-plane2) #x8f 0))
-     (ej1 (+ jis1 #x80))
-     (ej2 (+ jis2 #x80)))
-    (and
-      ;; sigscheme/src/encoding.c:eucjp_int2str()
-      (<= #xa1 ej1 #xfe) ; IN_GR94()
-      (if (= ej0 #x8f) ; SS3?
-        (<= #xa1 ej2 #xfe) ; IN_GR94()
-        (<= #xa0 ej2 #xff)) ; IN_GR96()
-      (tutcode-euc-jp-code->euc-jp-string
-        (+ (* ej0 #x10000) (* ej1 #x100) ej2)))))
-
-;;; EUC-JPコードをEUC-JP文字列に変換する (cf. ucs->utf8-string in ichar.scm)
-;;; @param code EUC-JPコード
-;;; @return EUC-JP文字列
-(define (tutcode-euc-jp-code->euc-jp-string code)
-  (with-char-codec "EUC-JP"
-    (lambda ()
-      (let ((str (list->string (list (integer->char code)))))
-        (with-char-codec "ISO-8859-1"
-          (lambda ()
-            (%%string-reconstruct! str)))))))
 
 ;;; 子コンテキストを作成する。
 ;;; @param type 'tutcode-child-type-editorか'tutcode-child-type-dialog

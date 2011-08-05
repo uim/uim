@@ -104,6 +104,12 @@
 	       (N_ "[SKK] wide-latin mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'skk-kcode-input-key '("yen")
+               '(skk-keys1 mode-transition)
+	       '(key)
+	       (N_ "[SKK] kanji code input mode")
+	       (N_ "long description will be here"))
+
 (define-custom 'skk-kanji-mode-key '("<IgnoreCase><Shift>q")  ;; "Q"
                '(skk-keys1 mode-transition)
 	       '(key)
