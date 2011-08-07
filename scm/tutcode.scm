@@ -36,10 +36,14 @@
 ;;;
 ;;; 【部首合成変換】(ala)
 ;;;   再帰的な部首合成変換も可能です。
-;;;   部首合成のアルゴリズムはtc-2.1のものです。
+;;;   部首合成のアルゴリズムは以下の3つから選択可能です。
+;;;     - tc-2.1+[tcode-ml:1925]
+;;;     - 漢直Win YAMANOBE
+;;;     - tc-2.3.1-22.6 (対話的な部首合成変換と同じ処理を使用するので、
+;;;                      bushu.index2とbushu.expandファイルの設定が必要)
 ;;;
 ;;; * 対話的な部首合成変換
-;;;   tc-2.3.1のtc-bushu.elの移植です。(ただしsortは未対応です)
+;;;   tc-2.3.1のtc-bushu.elの移植です(ただしsortでの打ちやすさの考慮は未対応)。
 ;;;   以下のような設定をすると使用可能になります。
 ;;;   (define tutcode-use-interactive-bushu-conversion? #t)
 ;;;   (define tutcode-bushu-index2-filename "/usr/local/share/tc/bushu.index2")
