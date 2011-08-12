@@ -31,7 +31,6 @@ SUCH DAMAGE.
 
 */
 
-// FIXME: Support Qt4 TextEdit
 #include "qtextutil.h"
 
 #include <cstdlib>
@@ -158,12 +157,12 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
     preedit_len = mIc->getPreeditString().length();
     preedit_cursor_pos = mIc->getPreeditCursorPosition();
 
-    text = edit->text(); // including preedit string
+    text = edit->text(); // excluding preedit string
     len = text.length();
-    cursor_index = edit->cursorPosition();
+    cursor_index = edit->cursorPosition() + preedit_len;
 
     precedence_len = cursor_index - preedit_cursor_pos;
-    following_len = len - precedence_len - preedit_len;
+    following_len = len - precedence_len;
 
     switch ( origin ) {
     case UTextOrigin_Cursor:
@@ -254,13 +253,111 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                              int latter_req_len,
                                              char **former, char **latter )
 {
-    // FIXME: Implement this
-    Q_UNUSED( origin )
-    Q_UNUSED( former_req_len )
-    Q_UNUSED( latter_req_len )
-    Q_UNUSED( former )
-    Q_UNUSED( latter )
-    return -1; 
+    QTextEdit *edit = static_cast<QTextEdit *>( mWidget );
+    QString text = edit->toPlainText(); // excluding preedit string
+    int len = text.length();
+
+    int preedit_len = mIc->getPreeditString().length();
+    int preedit_cursor_pos = mIc->getPreeditCursorPosition();
+
+    int cursor_index = edit->textCursor().position() + preedit_len;
+    int precedence_len = cursor_index - preedit_cursor_pos;
+    int following_len = len - precedence_len;
+
+    QString former_text;
+    QString latter_text;
+    switch ( origin ) {
+    case UTextOrigin_Cursor:
+        {
+            int offset = 0;
+            if ( former_req_len >= 0 ) {
+                if ( precedence_len > former_req_len )
+                  offset = precedence_len - former_req_len;
+            } else {
+                if (! ( ~former_req_len
+                        & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                    return -1;
+            }
+            *former = strdup(
+                text.mid( offset, precedence_len - offset ).toUtf8().data() );
+
+            offset = 0;
+            if ( latter_req_len >= 0 ) {
+                if ( following_len > latter_req_len )
+                    offset = following_len - latter_req_len;
+            } else {
+                if (! ( ~latter_req_len
+                        & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) ) {
+                    free( *former );
+                    return -1;
+                }
+            }
+            *latter = strdup( text.mid( precedence_len + preedit_len,
+                following_len - offset ).toUtf8().data() );
+            break;
+        }
+
+    case UTextOrigin_Beginning:
+        *former = 0;
+        if ( latter_req_len >= 0 ) {
+            if ( precedence_len >= latter_req_len )
+                text = text.left( latter_req_len );
+            else {
+                former_text = text.left( precedence_len );
+                if ( following_len >= ( latter_req_len - precedence_len ) )
+                    latter_text = text.mid( precedence_len + preedit_len,
+                            ( latter_req_len - precedence_len ) );
+                else
+                    latter_text = text.mid( precedence_len + preedit_len,
+                            following_len );
+                text = former_text + latter_text;
+            }
+        } else {
+            if (! ( ~latter_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+
+            former_text = text.left( precedence_len );
+            latter_text = text.mid( precedence_len + preedit_len,
+                    following_len );
+            text = former_text + latter_text;
+        }
+        *latter = strdup( text.toUtf8().data() );
+        break;
+
+    case UTextOrigin_End:
+        if ( former_req_len >= 0 ) {
+            if ( following_len >= former_req_len )
+                text = text.right( former_req_len );
+            else {
+                    latter_text = text.right( following_len );
+                if ( precedence_len >= ( former_req_len - following_len ) )
+                    former_text = text.mid( precedence_len
+                            - ( former_req_len - following_len ),
+                            former_req_len - following_len );
+                else
+                    former_text = text.left( precedence_len );
+                text = former_text + latter_text;
+            }
+        } else {
+            if (! ( ~former_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+
+            former_text = text.left( precedence_len );
+            latter_text = text.right( following_len );
+            text = former_text + latter_text;
+        }
+        *former = strdup( text.toUtf8().data() );
+        *latter = 0;
+        break;
+
+    case UTextOrigin_Unspecified:
+    default:
+        return -1;
+    }
+
+    return 0;
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
@@ -515,13 +612,51 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                                                int latter_req_len,
                                                char **former, char **latter )
 {
-    // FIXME: Implement this
-    Q_UNUSED( origin )
-    Q_UNUSED( former_req_len )
-    Q_UNUSED( latter_req_len )
-    Q_UNUSED( former )
-    Q_UNUSED( latter )
-    return -1;
+    QTextEdit *edit = static_cast<QTextEdit *>( mWidget );
+    QTextCursor cursor = edit->textCursor();
+    if ( ! cursor.hasSelection() )
+        return -1;
+
+    bool cursor_at_beginning = false;
+    int current = cursor.position();
+    int start = cursor.selectionStart();
+    if ( current == start )
+        cursor_at_beginning = true;
+
+    QString text = cursor.selectedText();
+    int len = text.length();
+    int offset;
+    if ( origin == UTextOrigin_Beginning ||
+         ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
+        *former = 0;
+        offset = 0;
+        if ( latter_req_len >= 0 ) {
+            if ( len > latter_req_len )
+                offset = len - latter_req_len;
+        } else {
+            if (! ( ~latter_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+        }
+        *latter = strdup( text.left( len - offset ).toUtf8().data() );
+    } else if ( origin == UTextOrigin_End ||
+                ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
+        offset = 0;
+        if ( former_req_len >= 0 ) {
+            if ( len > former_req_len )
+                offset = len - former_req_len;
+        } else {
+            if (! ( ~former_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+        }
+        *former = strdup( text.mid( offset, len - offset ).toUtf8().data() );
+        *latter = 0;
+    } else {
+        return -1;
+    }
+
+    return 0;
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
@@ -701,12 +836,12 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
     preedit_len = mIc->getPreeditString().length();
     preedit_cursor_pos = mIc->getPreeditCursorPosition();
 
-    text = edit->text(); // including preedit string
+    text = edit->text(); // excluding preedit string
     len = text.length();
-    cursor_index = edit->cursorPosition();
+    cursor_index = edit->cursorPosition() + preedit_len;
 
     precedence_len = cursor_index - preedit_cursor_pos;
-    following_len = len - precedence_len - preedit_len;
+    following_len = len - precedence_len;
 
     switch ( origin ) {
     case UTextOrigin_Cursor:
@@ -718,7 +853,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
-        latter_del_end = len;
+        latter_del_end = len + preedit_len;
         if ( latter_req_len >= 0 ) {
             if ( following_len > latter_req_len )
                 latter_del_end = precedence_len + preedit_len + latter_req_len;
@@ -736,18 +871,18 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
                 if ( following_len >= ( latter_req_len - precedence_len ) )
                     latter_del_end = preedit_len + latter_req_len;
                 else
-                    latter_del_end = len;
+                    latter_del_end = len + preedit_len;
             }
         } else {
             if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
-            latter_del_end = len;
+            latter_del_end = len + preedit_len;
         }
         break;
 
     case UTextOrigin_End:
         former_del_start = precedence_len;
-        latter_del_end = len;
+        latter_del_end = len + preedit_len;
         if ( former_req_len < 0 ) {
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
@@ -761,7 +896,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
         return -1;
     }
 
-    edit->setText( text.left( former_del_start ) + text.right( len - latter_del_end ) );
+    edit->setText( text.left( former_del_start ) + text.right( len - latter_del_end + preedit_len ) );
     edit->setCursorPosition( former_del_start );
 
     return 0;
@@ -772,11 +907,86 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                             int former_req_len,
                                             int latter_req_len )
 {
-    // FIXME: Implement this
-    Q_UNUSED( origin )
-    Q_UNUSED( former_req_len )
-    Q_UNUSED( latter_req_len )
-    return -1; 
+    QTextEdit *edit = static_cast<QTextEdit *>( mWidget );
+    QString text = edit->toPlainText(); // excluding preedit string
+    int len = text.length();
+
+    int preedit_len = mIc->getPreeditString().length();
+    int preedit_cursor_pos = mIc->getPreeditCursorPosition();
+
+    QTextCursor cursor = edit->textCursor();
+    int cursor_index = cursor.position() + preedit_len;
+    int precedence_len = cursor_index - preedit_cursor_pos;
+    int following_len = len - precedence_len;
+
+    int former_del_start;
+    int latter_del_end;
+    switch ( origin ) {
+    case UTextOrigin_Cursor:
+        former_del_start = 0;
+        if ( former_req_len >= 0 ) {
+            if ( precedence_len > former_req_len )
+                former_del_start = precedence_len - former_req_len;
+        } else {
+            if (! ( ~former_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+        }
+        latter_del_end = len + preedit_len;
+        if ( latter_req_len >= 0 ) {
+            if ( following_len > latter_req_len )
+                latter_del_end = precedence_len + preedit_len + latter_req_len;
+        } else {
+            if (! ( ~latter_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+        }
+        break;
+
+    case UTextOrigin_Beginning:
+        former_del_start = 0;
+        latter_del_end = precedence_len + preedit_len;
+        if ( latter_req_len >= 0 ) {
+            if ( precedence_len < latter_req_len ) {
+                if ( following_len >= ( latter_req_len - precedence_len ) )
+                    latter_del_end = preedit_len + latter_req_len;
+                else
+                    latter_del_end = len + preedit_len;
+            }
+        } else {
+            if (! ( ~latter_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+            latter_del_end = len + preedit_len;
+        }
+        break;
+
+    case UTextOrigin_End:
+        former_del_start = precedence_len;
+        latter_del_end = len + preedit_len;
+        if ( former_req_len < 0 ) {
+            if (! ( ~former_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+
+            former_del_start = 0;
+        }
+        break;
+
+    case UTextOrigin_Unspecified:
+    default:
+        return -1;
+    }
+
+    if ( len < latter_del_end )
+        return 0;
+
+    cursor.setPosition( latter_del_end );
+    cursor.setPosition( former_del_start, QTextCursor::KeepAnchor );
+    edit->setTextCursor( cursor );
+    cursor.deleteChar();
+
+    return 0;
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
@@ -972,11 +1182,49 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                                               int former_req_len,
                                               int latter_req_len )
 {
-    // FIXME: Implement this
-    Q_UNUSED( origin )
-    Q_UNUSED( former_req_len )
-    Q_UNUSED( latter_req_len )
-    return -1;
+    QTextEdit *edit = static_cast<QTextEdit *>( mWidget );
+    QTextCursor cursor = edit->textCursor();
+    if ( ! cursor.hasSelection() )
+        return -1;
+
+    bool cursor_at_beginning = false;
+    int current = cursor.position();
+    int start = cursor.selectionStart();
+    if ( current == start )
+        cursor_at_beginning = true;
+
+    QString text = cursor.selectedText();
+    int len = text.length();
+    int end = start + len;
+    if ( origin == UTextOrigin_Beginning ||
+         ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
+        if ( latter_req_len >= 0 ) {
+            if ( len > latter_req_len )
+                end = start + latter_req_len;
+        } else {
+            if (! ( ~latter_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+        }
+    } else if ( origin == UTextOrigin_End ||
+                ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
+        if ( former_req_len >= 0 ) {
+            if ( len > former_req_len )
+                start = end - former_req_len;
+        } else {
+            if (! ( ~former_req_len
+                    & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
+                return -1;
+        }
+    } else {
+        return -1;
+    }
+    cursor.setPosition( start );
+    cursor.setPosition( end - start + 1, QTextCursor::KeepAnchor );
+    edit->setTextCursor( cursor );
+    cursor.deleteChar();
+
+    return 0;
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
