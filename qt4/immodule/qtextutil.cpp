@@ -978,9 +978,13 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         return -1;
     }
 
+    if ( edit->text().isEmpty() )
+        return 0;
+
     edit->setText( text.left( former_del_start )
             + text.right( len - latter_del_end + preedit_len ) );
     cursor.setPosition( former_del_start );
+    edit->setTextCursor( cursor );
 
     return 0;
 }
