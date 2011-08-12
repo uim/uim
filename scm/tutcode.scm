@@ -91,7 +91,7 @@
 ;;;   uimのsurrounding text関係のAPIを使って、
 ;;;   カーソル前の文字列の取得・削除を行います。
 ;;;   そのため、uimのsurrounding text APIをサポートしているブリッジ
-;;;   (uim-gtk, uim-qt, uim-qt4(lineeditのみ))でのみ後置型変換が可能です。
+;;;   (uim-gtk, uim-qt3, uim-qt4)でのみ後置型変換が可能です。
 ;;;
 ;;;   これら以外のブリッジでも後置型変換を使いたい場合、
 ;;;   tutcode-enable-fallback-surrounding-text?を#tに設定すると、
