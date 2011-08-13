@@ -49,6 +49,11 @@
     "タ" "チ" "テ" "ト" "ニ" "ヌ" "ネ" "ノ" "ハ" "ヒ" "ホ" "ム" "メ"
     "ヨ" "リ" "ル" "レ" "ロ" "ワ" "ン"))
 
+;;; sortを入れると遅すぎる環境でも、対話的な部首合成変換は使いたい場合向け。
+;;; ~/.uimに以下を追加するとsortを省略可能。
+;;; (set! tutcode-bushu-sort! (lambda (seq less?) seq))
+(define tutcode-bushu-sort! sort!)
+
 ;;; bushu.helpファイルを読んで生成したtutcode-bushudic形式のリスト
 (define tutcode-bushu-help ())
 
@@ -387,7 +392,7 @@
           (string<? char1 char2))))))
 
 (define (tutcode-bushu-complete-compose-set char-list bushu-list)
-  (sort!
+  (tutcode-bushu-sort!
     (tutcode-bushu-subtract-set
       (tutcode-bushu-char-list-for-bushu bushu-list) char-list)
     (lambda (a b)
@@ -403,7 +408,8 @@
         (if (null? lis)
           r
           (loop (cdr lis) (delete! (car lis) r))))))
-    (sort! r2 (lambda (a b) (tutcode-bushu-less? a b bushu-list)))))
+    (tutcode-bushu-sort! r2
+      (lambda (a b) (tutcode-bushu-less? a b bushu-list)))))
 
 (define (tutcode-bushu-include-all-chars-bushu? char char-list)
   (let*
@@ -456,7 +462,7 @@
 (define (tutcode-bushu-weak-compose-set char-list bushu-list strong-compose-set)
   (if (null? (cdr char-list)) ; char-list が一文字だけの時は何もしない
     ()
-    (sort!
+    (tutcode-bushu-sort!
       (tutcode-bushu-subtract-set
         (tutcode-bushu-all-compose-set char-list ())
         strong-compose-set)
@@ -499,7 +505,7 @@
             (if (pair? rest)
               (delete! char
                 (tutcode-bushu-strong-diff-set rest d1-or-d2 complete?))
-              (sort!
+              (tutcode-bushu-sort!
                 (delete! char
                   (if complete?
                     (tutcode-bushu-char-list-for-bushu d1-or-d2)
@@ -558,8 +564,8 @@
               (tutcode-bushu-subtract-set
                 (tutcode-bushu-for-char char) bushu-list)))
           diff-set)
-        (append! (sort! true-diff-set less-or-many?)
-                 (sort! rest-diff-set less-or-many?)))))
+        (append! (tutcode-bushu-sort! true-diff-set less-or-many?)
+                 (tutcode-bushu-sort! rest-diff-set less-or-many?)))))
     (delete-duplicates! res)))
 
 ;;; bushu.helpファイルを読んでtutcode-bushudic形式のリストを生成する
@@ -787,7 +793,7 @@
                     (lambda (set)
                       (let loop
                         ((lis
-                          (sort! set
+                          (tutcode-bushu-sort! set
                             (lambda (a b)
                               (tutcode-bushu-less? a b bushu-list)))))
                         (if (null? lis)
@@ -816,7 +822,7 @@
                   (lambda (set)
                     (let loop
                       ((lis
-                        (sort! set
+                        (tutcode-bushu-sort! set
                           (lambda (a b)
                             (tutcode-bushu-less? a b bushu-list)))))
                       (if (null? lis)
@@ -845,7 +851,7 @@
                  (bushu-list (append bushu1 bushu2))
                  (mkcl
                   (lambda (bushu)
-                    (sort!
+                    (tutcode-bushu-sort!
                       (delete-duplicates!
                         (append!
                           (tutcode-bushu-subset bushu)
@@ -872,7 +878,7 @@
         (let*
           ((bushu-list (tutcode-bushu-for-char kanji))
            (superset
-            (sort!
+            (tutcode-bushu-sort!
               (tutcode-bushu-superset bushu-list)
               (lambda (a b)
                 (tutcode-bushu-less? a b bushu-list)))))
