@@ -932,10 +932,10 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
-        latter_del_end = len + preedit_len;
+        latter_del_end = len;
         if ( latter_req_len >= 0 ) {
             if ( following_len > latter_req_len )
-                latter_del_end = precedence_len + preedit_len + latter_req_len;
+                latter_del_end = precedence_len + latter_req_len;
         } else {
             if (! ( ~latter_req_len
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
@@ -945,25 +945,25 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     case UTextOrigin_Beginning:
         former_del_start = 0;
-        latter_del_end = precedence_len + preedit_len;
+        latter_del_end = precedence_len;
         if ( latter_req_len >= 0 ) {
             if ( precedence_len < latter_req_len ) {
                 if ( following_len >= ( latter_req_len - precedence_len ) )
-                    latter_del_end = preedit_len + latter_req_len;
+                    latter_del_end = latter_req_len;
                 else
-                    latter_del_end = len + preedit_len;
+                    latter_del_end = len;
             }
         } else {
             if (! ( ~latter_req_len
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
-            latter_del_end = len + preedit_len;
+            latter_del_end = len;
         }
         break;
 
     case UTextOrigin_End:
         former_del_start = precedence_len;
-        latter_del_end = len + preedit_len;
+        latter_del_end = len;
         if ( former_req_len < 0 ) {
             if (! ( ~former_req_len
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
@@ -978,8 +978,10 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         return -1;
     }
 
+    if ( len < former_del_start )
+        former_del_start = len;
     if ( len < latter_del_end )
-        return 0;
+        latter_del_end = len;
 
     cursor.setPosition( latter_del_end );
     cursor.setPosition( former_del_start, QTextCursor::KeepAnchor );
