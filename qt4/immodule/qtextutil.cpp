@@ -828,19 +828,16 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
 {
     QLineEdit *edit = static_cast<QLineEdit *>( mWidget );
     QString text;
-    int cursor_index, len, precedence_len, following_len;
-    int preedit_len, preedit_cursor_pos;
+    int len, precedence_len, following_len;
+    int preedit_len;
     int former_del_start;
     int latter_del_end;
 
     preedit_len = mIc->getPreeditString().length();
-    preedit_cursor_pos = mIc->getPreeditCursorPosition();
 
     text = edit->text(); // excluding preedit string
     len = text.length();
-    cursor_index = edit->cursorPosition() + preedit_len;
-
-    precedence_len = cursor_index - preedit_cursor_pos;
+    precedence_len = edit->cursorPosition();
     following_len = len - precedence_len;
 
     switch ( origin ) {
@@ -912,11 +909,9 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
     int len = text.length();
 
     int preedit_len = mIc->getPreeditString().length();
-    int preedit_cursor_pos = mIc->getPreeditCursorPosition();
 
     QTextCursor cursor = edit->textCursor();
-    int cursor_index = cursor.position() + preedit_len;
-    int precedence_len = cursor_index - preedit_cursor_pos;
+    int precedence_len = cursor.position();
     int following_len = len - precedence_len;
 
     int former_del_start;
@@ -932,10 +927,10 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
-        latter_del_end = len;
+        latter_del_end = len + preedit_len;
         if ( latter_req_len >= 0 ) {
             if ( following_len > latter_req_len )
-                latter_del_end = precedence_len + latter_req_len;
+                latter_del_end = precedence_len + preedit_len + latter_req_len;
         } else {
             if (! ( ~latter_req_len
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
@@ -945,25 +940,25 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     case UTextOrigin_Beginning:
         former_del_start = 0;
-        latter_del_end = precedence_len;
+        latter_del_end = precedence_len + preedit_len;
         if ( latter_req_len >= 0 ) {
             if ( precedence_len < latter_req_len ) {
                 if ( following_len >= ( latter_req_len - precedence_len ) )
-                    latter_del_end = latter_req_len;
+                    latter_del_end = preedit_len + latter_req_len;
                 else
-                    latter_del_end = len;
+                    latter_del_end = len + preedit_len;
             }
         } else {
             if (! ( ~latter_req_len
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
-            latter_del_end = len;
+            latter_del_end = len + preedit_len;
         }
         break;
 
     case UTextOrigin_End:
         former_del_start = precedence_len;
-        latter_del_end = len;
+        latter_del_end = len + preedit_len;
         if ( former_req_len < 0 ) {
             if (! ( ~former_req_len
                     & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
@@ -978,15 +973,20 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         return -1;
     }
 
-    if ( len < former_del_start )
-        former_del_start = len;
-    if ( len < latter_del_end )
-        latter_del_end = len;
-
-    cursor.setPosition( latter_del_end );
-    cursor.setPosition( former_del_start, QTextCursor::KeepAnchor );
-    edit->setTextCursor( cursor );
-    cursor.deleteChar();
+    // don't call setText() to avoid flicker unlike QLineEdit
+    int end_index = latter_del_end - preedit_len;
+    if ( precedence_len != end_index ) {
+        cursor.setPosition( precedence_len );
+        cursor.setPosition( end_index, QTextCursor::KeepAnchor );
+        edit->setTextCursor( cursor );
+        cursor.deleteChar();
+    }
+    if ( precedence_len != former_del_start ) {
+        cursor.setPosition( precedence_len );
+        cursor.setPosition( former_del_start, QTextCursor::KeepAnchor );
+        edit->setTextCursor( cursor );
+        cursor.deleteChar();
+    }
 
     return 0;
 }
