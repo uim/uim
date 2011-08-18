@@ -4017,7 +4017,9 @@
   (if (null? tutcode-reverse-bushudic-hash-table)
     (set! tutcode-reverse-bushudic-hash-table
       (tutcode-rule->reverse-hash-table tutcode-bushudic)))
-  (hash-table-ref/default tutcode-reverse-bushudic-hash-table c #f))
+  (let ((i (tutcode-euc-jp-string->ichar c)))
+    (and i
+      (hash-table-ref/default tutcode-reverse-bushudic-hash-table i #f))))
 
 ;;; tutcode-rule形式のリストから、逆引き検索(漢字から打鍵リストを取得)用の
 ;;; hash-tableを作る
@@ -4027,10 +4029,28 @@
   (alist->hash-table
     (filter-map
       (lambda (elem)
-        (and (string? (caadr elem)) ; 'tutcode-mazegaki-start等は除く
-          (cons (caadr elem) (caar elem))))
-      rule)
-    string=?))
+        (and-let*
+          ((kanji (caadr elem))
+           (kanji-string? (string? kanji)) ; 'tutcode-mazegaki-start等は除く
+           (i (tutcode-euc-jp-string->ichar kanji)))
+          (cons i (caar elem))))
+      rule)))
+
+;;; hash-tableのキー用に、漢字1文字の文字列から漢字コードに変換する
+;;; @param s 文字列
+;;; @return 漢字コード。文字列の長さが1でない場合は#f
+(define (tutcode-euc-jp-string->ichar s)
+  ;; ichar.scmのstring->ichar(string->charcode)のEUC-JP版
+  (let ((sl (with-char-codec "EUC-JP"
+              (lambda ()
+                (string->list s)))))
+    (cond
+      ((null? sl)
+        0)
+      ((null? (cdr sl))
+        (char->integer (car sl)))
+      (else
+        #f))))
 
 ;;; 自動ヘルプ:bushu.helpファイルを検索して対象文字のヘルプ(2つの部首)を取得する
 ;;; @param c 対象文字
@@ -4336,8 +4356,10 @@
             (if (null? tutcode-reverse-rule-hash-table)
               (set! tutcode-reverse-rule-hash-table
                 (tutcode-rule->reverse-hash-table rule)))
-            tutcode-reverse-rule-hash-table))))
-       (hash-table-ref/default hash-table c #f))))
+            tutcode-reverse-rule-hash-table)))
+       (i (tutcode-euc-jp-string->ichar c)))
+      (and i
+        (hash-table-ref/default hash-table i #f)))))
 
 ;;; 現在のstateがpreeditを持つかどうかを返す。
 ;;; @param pc コンテキストリスト
