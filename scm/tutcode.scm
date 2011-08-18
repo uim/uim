@@ -272,7 +272,7 @@
 ;;;  * 自動ヘルプ表示機能を追加。
 ;;;  * 補完/予測入力・熟語ガイド機能を追加。
 
-(require-extension (srfi 1 2 8))
+(require-extension (srfi 1 2 8 69))
 (require "generic.scm")
 (require "generic-predict.scm")
 (require-custom "tutcode-custom.scm")
@@ -314,15 +314,15 @@
 (define tutcode-rule ())
 ;;; 2ストローク記号入力モード用コード表
 (define tutcode-kigou-rule ())
-;;; tutcode-ruleから作成する、逆引き検索(漢字から打鍵リストを取得)用alist。
+;;; tutcode-ruleから作成する、逆引き検索(漢字から打鍵リストを取得)用hash-table
 ;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
-(define tutcode-reverse-rule-alist ())
-;;; tutcode-kigou-ruleから作成する、逆引き検索用alist。
-(define tutcode-reverse-kigou-rule-alist ())
+(define tutcode-reverse-rule-hash-table ())
+;;; tutcode-kigou-ruleから作成する、逆引き検索用hash-table。
+(define tutcode-reverse-kigou-rule-hash-table ())
 ;;; tutcode-bushudicから作成する、
-;;; 逆引き検索(合成後の文字から合成用の2文字を取得)用alist。
-;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
-(define tutcode-reverse-bushudic-alist ())
+;;; 逆引き検索(合成後の文字から合成用の2文字を取得)用hash-table。
+;;; (自動ヘルプ用の部首合成変換候補検索時の高速化用。ただし初回作成時が遅い)
+(define tutcode-reverse-bushudic-hash-table ())
 ;;; stroke-helpで、何もキー入力が無い場合に表示する内容のalist。
 ;;; (毎回tutcode-ruleを全てなめて作成すると遅いし、
 ;;; 最初のページは固定内容なので、一度作成したものを使い回す)
@@ -4014,15 +4014,23 @@
 ;;; @param c 分解対象の文字
 ;;; @return 分解してできた2つの部首のリスト。分解できなかったときは#f
 (define (tutcode-bushu-decompose c)
-  (if (null? tutcode-reverse-bushudic-alist)
-    (set! tutcode-reverse-bushudic-alist
-      (map
-        (lambda (elem)
-          (cons (caadr elem) (caar elem)))
-        tutcode-bushudic)))
-  (let ((res (assoc c tutcode-reverse-bushudic-alist)))
-    (and res
-      (cdr res))))
+  (if (null? tutcode-reverse-bushudic-hash-table)
+    (set! tutcode-reverse-bushudic-hash-table
+      (tutcode-rule->reverse-hash-table tutcode-bushudic)))
+  (hash-table-ref/default tutcode-reverse-bushudic-hash-table c #f))
+
+;;; tutcode-rule形式のリストから、逆引き検索(漢字から打鍵リストを取得)用の
+;;; hash-tableを作る
+;;; @param rule tutcode-rule形式のリスト
+;;; @return hash-table
+(define (tutcode-rule->reverse-hash-table rule)
+  (alist->hash-table
+    (filter-map
+      (lambda (elem)
+        (and (string? (caadr elem)) ; 'tutcode-mazegaki-start等は除く
+          (cons (caadr elem) (caar elem))))
+      rule)
+    string=?))
 
 ;;; 自動ヘルプ:bushu.helpファイルを検索して対象文字のヘルプ(2つの部首)を取得する
 ;;; @param c 対象文字
@@ -4315,28 +4323,21 @@
 ;;; @param rule tutcode-rule
 ;;; @return 入力キーのリスト。tutcode-rule中にcが見つからなかった場合は#f
 (define (tutcode-reverse-find-seq c rule)
-  (let*
-    ((make-reverse-rule-alist
-      (lambda (r)
-        (map
-          (lambda (elem)
-            (cons (caadr elem) (caar elem)))
-          r)))
-     (alist
-      (if (eq? rule tutcode-kigou-rule)
-        (begin
-          (if (null? tutcode-reverse-kigou-rule-alist)
-            (set! tutcode-reverse-kigou-rule-alist
-              (make-reverse-rule-alist rule)))
-          tutcode-reverse-kigou-rule-alist)
-        (begin
-          (if (null? tutcode-reverse-rule-alist)
-            (set! tutcode-reverse-rule-alist
-              (make-reverse-rule-alist rule)))
-          tutcode-reverse-rule-alist)))
-     (res (assoc c alist)))
-    (and res
-      (cdr res))))
+  (and (string? c)
+    (let*
+      ((hash-table
+        (if (eq? rule tutcode-kigou-rule)
+          (begin
+            (if (null? tutcode-reverse-kigou-rule-hash-table)
+              (set! tutcode-reverse-kigou-rule-hash-table
+                (tutcode-rule->reverse-hash-table rule)))
+            tutcode-reverse-kigou-rule-hash-table)
+          (begin
+            (if (null? tutcode-reverse-rule-hash-table)
+              (set! tutcode-reverse-rule-hash-table
+                (tutcode-rule->reverse-hash-table rule)))
+            tutcode-reverse-rule-hash-table))))
+       (hash-table-ref/default hash-table c #f))))
 
 ;;; 現在のstateがpreeditを持つかどうかを返す。
 ;;; @param pc コンテキストリスト
