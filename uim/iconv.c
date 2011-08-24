@@ -264,11 +264,13 @@ uim_iconv_code_conv(void *obj, const char *instr)
   if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
-  if (!obj)
-    return uim_strdup(instr);
-
   if (!instr)
     goto err;
+
+  if (!obj) {
+    UIM_CATCH_ERROR_END();
+    return uim_strdup(instr);
+  }
 
   ins = strlen(instr);
   in = instr;
