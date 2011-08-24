@@ -33,7 +33,7 @@
 ;;; tc-2.3.1のtc-bushu.elを移植(sortでの打ちやすさの考慮は未対応)。
 ;;; (参考:部首合成アルゴリズムは[tcode-ml:1942]あたり)
 
-(require-extension (srfi 1 2 8 95))
+(require-extension (srfi 1 2 8 69 95))
 (require "fileio.scm")
 (require-dynlib "look")
 
@@ -57,6 +57,9 @@
 ;;; bushu.helpファイルを読んで生成したtutcode-bushudic形式のリスト
 (define tutcode-bushu-help ())
 
+;;; tutcode-bushu-for-charのキャッシュ用hash-table
+(define tutcode-bushu-for-char-hash-table (make-hash-table =))
+
 ;;; 文字のリストとして返す。
 (define (tutcode-bushu-parse-entry str)
   (reverse! (string-to-list str)))
@@ -72,10 +75,21 @@
 
 ;;; CHARを構成する部首のリストを返す。
 (define (tutcode-bushu-for-char char)
-  (let ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename)))
-    (if looked
-      (tutcode-bushu-parse-entry looked)
-      (list char))))
+  (let*
+    ((i (tutcode-euc-jp-string->ichar char))
+     (cache
+      (and i (hash-table-ref/default tutcode-bushu-for-char-hash-table i #f))))
+    (if cache
+      (list-copy cache)
+      (let*
+        ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename))
+         (res
+          (if looked
+            (tutcode-bushu-parse-entry looked)
+            (list char))))
+        (if i
+          (hash-table-set! tutcode-bushu-for-char-hash-table i (list-copy res)))
+        res))))
 
 (define (tutcode-bushu-lookup-index2-entry-internal str)
   (let
@@ -320,13 +334,12 @@
 
 ;;; CHAR1がCHAR2より優先度が高いか?
 ;;; BUSHU-LISTで指定された部首リストを基準とする。
-;;; OPT-MANY?が#fの場合、同じ優先度では、BUSHU-LISTに含まれない
+;;; MANY?が#fの場合、同じ優先度では、BUSHU-LISTに含まれない
 ;;; 部首の数が少ない方が優先される。
 ;;; #tの場合は多い方が優先される。
-(define (tutcode-bushu-less? char1 char2 bushu-list . opt-many?)
+(define (tutcode-bushu-less? char1 char2 bushu-list many?)
   (let*
-    ((many? (:optional opt-many? #f))
-     (bushu1 (tutcode-bushu-for-char char1))
+    ((bushu1 (tutcode-bushu-for-char char1))
      (bushu2 (tutcode-bushu-for-char char2))
      (i1 (tutcode-bushu-intersection bushu1 bushu-list))
      (i2 (tutcode-bushu-intersection bushu2 bushu-list))
@@ -348,21 +361,22 @@
             (else
               (let
                 ((val (tutcode-bushu-higher-priority? i1 i2
-                        (tutcode-bushu-intersection bushu-list
-                          (append bushu1 bushu2)) 'default)))
+                        (tutcode-bushu-intersection bushu-list (append! i1 i2))
+                        'default)))
                 (if (not (eq? val 'default))
                   val
-                  (let*
+                  (let
                     ((s1 (tutcode-reverse-find-seq char1 tutcode-rule))
-                     (s2 (tutcode-reverse-find-seq char2 tutcode-rule))
-                     (sl1 (if s1 (length s1) 99))
-                     (sl2 (if s2 (length s2) 99)))
+                     (s2 (tutcode-reverse-find-seq char2 tutcode-rule)))
                     (cond 
                       ((and s1 s2)
-                        (if (= sl1 sl2)
-                          ;;XXX:打ちやすさでの比較は省略
-                          (string<? char1 char2)
-                          (< sl1 sl2)))
+                        (let
+                          ((sl1 (length s1))
+                           (sl2 (length s2)))
+                          (if (= sl1 sl2)
+                            ;;XXX:打ちやすさでの比較は省略
+                            (string<? char1 char2)
+                            (< sl1 sl2))))
                       (s1
                         #t)
                       (s2
@@ -409,7 +423,7 @@
           r
           (loop (cdr lis) (delete! (car lis) r))))))
     (tutcode-bushu-sort! r2
-      (lambda (a b) (tutcode-bushu-less? a b bushu-list)))))
+      (lambda (a b) (tutcode-bushu-less? a b bushu-list #f)))))
 
 (define (tutcode-bushu-include-all-chars-bushu? char char-list)
   (let*
@@ -467,7 +481,7 @@
         (tutcode-bushu-all-compose-set char-list ())
         strong-compose-set)
       (lambda (a b)
-        (tutcode-bushu-less? a b bushu-list)))))
+        (tutcode-bushu-less? a b bushu-list #f)))))
 
 (define (tutcode-bushu-subset bushu-list)
   ;;XXX:長いリストに対するdelete-duplicates!は遅いので、filter後に行う
@@ -795,7 +809,7 @@
                         ((lis
                           (tutcode-bushu-sort! set
                             (lambda (a b)
-                              (tutcode-bushu-less? a b bushu-list)))))
+                              (tutcode-bushu-less? a b bushu-list #f)))))
                         (if (null? lis)
                           #f
                           (let
@@ -824,7 +838,7 @@
                       ((lis
                         (tutcode-bushu-sort! set
                           (lambda (a b)
-                            (tutcode-bushu-less? a b bushu-list)))))
+                            (tutcode-bushu-less? a b bushu-list #f)))))
                       (if (null? lis)
                         #f
                         (let
@@ -857,7 +871,7 @@
                           (tutcode-bushu-subset bushu)
                           (tutcode-bushu-superset bushu)))
                       (lambda (a b)
-                        (tutcode-bushu-less? a b bushu-list)))))
+                        (tutcode-bushu-less? a b bushu-list #f)))))
                  (cl1 (mkcl bushu1))
                  (cl2 (mkcl bushu2)))
                 (let loop1
@@ -881,7 +895,7 @@
             (tutcode-bushu-sort!
               (tutcode-bushu-superset bushu-list)
               (lambda (a b)
-                (tutcode-bushu-less? a b bushu-list)))))
+                (tutcode-bushu-less? a b bushu-list #f)))))
           (let loop1
             ((lis superset))
             (if (null? lis)
