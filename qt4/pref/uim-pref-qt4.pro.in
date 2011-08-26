@@ -4,7 +4,7 @@ TEMPLATE = app
 
 # to include qtgettext.h
 INCLUDEPATH += @srcdir@/..
-LIBS += -luim-custom -luim-counted-init @LIBINTL@
+LIBS += -luim-custom -luim-counted-init -luim @LIBINTL@
 
 # Input
 HEADERS += @srcdir@/customwidgets.h @srcdir@/qt4.h \
