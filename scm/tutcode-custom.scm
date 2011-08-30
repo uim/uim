@@ -86,6 +86,12 @@
   (N_ "Enable learning in mazegaki conversion")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-mazegaki-fixed-priority-count 0
+  '(tutcode tutcode-mazegaki)
+  '(integer 0 65535)
+  (N_ "Number of candidates to be excluded from mazegaki learning")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-recursive-learning? #t
   '(tutcode tutcode-mazegaki)
   '(boolean)
@@ -315,6 +321,11 @@
   (N_ "long description will be here."))
 
 ;; activity dependency
+(custom-add-hook 'tutcode-mazegaki-fixed-priority-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   tutcode-enable-mazegaki-learning?))
+
 (custom-add-hook 'tutcode-candidate-op-count
 		 'custom-activity-hooks
 		 (lambda ()

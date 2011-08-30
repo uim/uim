@@ -59,6 +59,8 @@
 ;;;   libuim-skk.soの機能を使っています。
 ;;;   そのため、学習機能もSKKと同様の動作になります:
 ;;;     + 確定した候補は次回の変換から先頭に来ます。
+;;;       tc2と同様に、先頭数個の候補順を変えたくない場合は、
+;;;       tutcode-mazegaki-fixed-priority-countにその個数を設定してください。
 ;;;     + 確定した候補は個人辞書(~/.mazegaki.dic)に保存されます。
 ;;;   これらの学習機能をオフにするには、
 ;;;   tutcode-enable-mazegaki-learning?変数を#fに設定してください。
@@ -1192,21 +1194,23 @@
 (define (tutcode-prepare-commit-string pc)
   (let ((res (tutcode-get-current-candidate pc))
         (suffix (tutcode-context-mazegaki-suffix pc))
-        (head (tutcode-context-head pc)))
+        (nth (tutcode-context-nth pc)))
     ;; いつも特定のラベルキーで特定の候補を確定する使い方ができるように、
     ;; tutcode-enable-mazegaki-learning?が#fの場合は候補の並び順を変えない。
     ;; (例:「かい」の変換において、常にdキーで「悔」、eキーで「恢」を確定)
-    (if tutcode-enable-mazegaki-learning?
-      (begin
+    (if (and tutcode-enable-mazegaki-learning?
+             (> nth tutcode-mazegaki-fixed-priority-count))
+      (let ((head-and-okuri-head
+              (cons (string-list-concat (tutcode-context-head pc)) "")))
         ;; skk-lib-commit-candidateを呼ぶと学習が行われ、候補順が変更される
-        (skk-lib-commit-candidate
-          tutcode-dic
-          (cons (string-list-concat head) "")
-          ""
-          (tutcode-context-nth pc)
-          #f)
-        (if (> (tutcode-context-nth pc) 0)
-          (tutcode-save-personal-dictionary #f))))
+        (skk-lib-commit-candidate tutcode-dic head-and-okuri-head "" nth #f)
+        ;; 先頭数個の候補順固定のため、前行の呼出で先頭になった候補を押し下げる
+        (do
+          ((i tutcode-mazegaki-fixed-priority-count (- i 1)))
+          ((<= i 0))
+          (skk-lib-commit-candidate tutcode-dic head-and-okuri-head ""
+            tutcode-mazegaki-fixed-priority-count #f))
+        (tutcode-save-personal-dictionary #f)))
     (tutcode-flush pc)
     (if (null? suffix)
       res
