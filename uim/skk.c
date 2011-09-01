@@ -54,6 +54,13 @@
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#elif defined(HAVE_SYS_POLL_H)
+#include <sys/poll.h>
+#else
+#include "bsd-poll.h"
+#endif
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -146,6 +153,8 @@ typedef struct dic_info_ {
   int skkserv_portnum;
   /* skkserv address family. AF_UNSPEC or AF_INET or AF_INET6 */
   int skkserv_family;
+  /* timeout (milisec) for skkserv completion */
+  int skkserv_completion_timeout;
 } dic_info;
 
 /* completion */
@@ -184,6 +193,7 @@ static char *quote_word(const char *word, const char *prefix);
 #define SKK_SERV_BUFSIZ	1024
 #define SKK_SERV_USE	(1<<0)
 #define SKK_SERV_CONNECTED	(1<<1)
+#define SKK_SERV_TRY_COMPLETION	(1<<2)
 
 static int skkservsock = -1;
 static FILE *rserv, *wserv;
@@ -272,6 +282,7 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
     di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_hostname,
 						    skkserv_portnum,
 						    skkserv_family);
+    di->skkserv_completion_timeout = uim_scm_symbol_value_int("skk-skkserv-completion-timeout");
   } else {
     di->skkserv_state = 0;
     fd = open(fn, O_RDONLY);
@@ -1916,6 +1927,116 @@ make_comp_array_from_cache(dic_info *di, const char *s, uim_lisp use_look_)
 }
 
 static struct skk_comp_array *
+append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const char *s, uim_lisp use_look_)
+{
+  char r;
+  struct skk_line *sl;
+  int n = 0, ret, len;
+  int i;
+  char buf[SKK_SERV_BUFSIZ];
+  char *line;
+  ssize_t nr;
+  struct pollfd pfd[1];
+
+  if (!di) {
+    return ca;
+  }
+  if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
+    if (!((di->skkserv_state |= open_skkserv(di->skkserv_hostname,
+					     di->skkserv_portnum,
+					     di->skkserv_family)) &
+	  SKK_SERV_CONNECTED))
+      return ca;
+  }
+
+  fprintf(wserv, "4%s \n", s);
+  ret = fflush(wserv);
+  if (ret != 0 && errno == EPIPE) {
+    skkserv_disconnected(di);
+    return ca;
+  }
+
+  /* check server response to see the capability of completion */
+  pfd[0].fd = skkservsock;
+  pfd[0].events = POLLIN;
+  ret = poll(pfd, 1, di->skkserv_completion_timeout);
+  if (ret == -1) {
+    skkserv_disconnected(di);
+    return ca;
+  } else if (ret == 0) {
+    uim_notify_info(N_("SKK server without completion capability\n"));
+    /* don't try server completion further any more */
+    di->skkserv_state &= ~SKK_SERV_TRY_COMPLETION;
+    return ca;
+  }
+
+  if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
+    skkserv_disconnected(di);
+    return ca;
+  }
+
+  if (r == '1') {
+    uim_asprintf(&line, "%s ", s);
+    while (1) {
+      if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
+        skkserv_disconnected(di);
+        free(line);
+        return ca;
+      }
+
+      if (r == '\n') {
+        len = strlen(line) + n;
+        line = uim_realloc(line, len + 1);
+        strlcat(line, buf, len + 1);
+        break;
+      }
+
+      buf[n] = r;
+      buf[n + 1] = '\0';
+      if (n == SKK_SERV_BUFSIZ - 2) {
+        len = strlen(line) + n + 1;
+        line = uim_realloc(line, len + 1);
+        strlcat(line, buf, len + 1);
+        n = 0;
+      } else {
+        n++;
+      }
+    }
+    sl = compose_line(di, s, '\0', line);
+    free(line);
+
+    if (!ca) {
+      ca = uim_malloc(sizeof(struct skk_comp_array));
+      ca->nr_comps = 0;
+      ca->refcount = 0;
+      ca->comps = NULL;
+      ca->head = NULL;
+      ca->next = NULL;
+    }
+    for (i = 0; i < sl->cands[0].nr_cands; i++) {
+      if (strcmp(s, sl->cands[0].cands[i]) != 0) {
+        ca->nr_comps++;
+        ca->comps = uim_realloc(ca->comps, sizeof(char *) * ca->nr_comps);
+        ca->comps[ca->nr_comps - 1] = uim_strdup(sl->cands[0].cands[i]);
+      }
+    }
+    free_skk_line(sl);
+    if (ca->nr_comps == 0) {
+      free(ca);
+      ca = NULL;
+    } else if (ca->head == NULL) {
+      ca->head = uim_strdup(s);
+      ca->next = skk_comp;
+      skk_comp = ca;
+    }
+  } else {
+    while ((nr = read(skkservsock, &r, 1)) != -1 && nr != 0 && r != '\n');
+  }
+
+  return ca;
+}
+
+static struct skk_comp_array *
 find_comp_array(dic_info *di, const char *s, uim_lisp use_look_)
 {
   struct skk_comp_array *ca;
@@ -1929,6 +2050,8 @@ find_comp_array(dic_info *di, const char *s, uim_lisp use_look_)
   }
   if (ca == NULL) {
     ca = make_comp_array_from_cache(di, s, use_look_);
+    if (di->skkserv_state & SKK_SERV_TRY_COMPLETION)
+      ca = append_comp_array_from_server(ca, di, s, use_look_);
   }
 
   return ca;
@@ -3663,6 +3786,7 @@ open_skkserv(const char *hostname, int portnum, int family)
   struct addrinfo hints, *aitop, *ai;
   char port[BUFSIZ];
   int error;
+  int enable_completion;
 
   (void)snprintf(port, sizeof(port), "%d", portnum);
 
@@ -3703,7 +3827,11 @@ open_skkserv(const char *hostname, int portnum, int family)
   skkservsock = sock;
   rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");
-  return SKK_SERV_CONNECTED;
+
+  enable_completion =
+    uim_scm_symbol_value_bool("skk-skkserv-enable-completion?") ?
+      SKK_SERV_TRY_COMPLETION : 0;
+  return SKK_SERV_CONNECTED | enable_completion;
 }
 
 static void

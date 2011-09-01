@@ -350,6 +350,28 @@
   (N_ "Use skkserv instead of SKK-JISYO")
   (N_ "long description will be here."))
 
+(define-custom 'skk-skkserv-enable-completion? #f
+  '(skk-dict skkserv)
+  '(boolean)
+  (N_ "Enable skkserv completion")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'skk-skkserv-enable-completion?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-skkserv?))
+
+(define-custom 'skk-skkserv-completion-timeout 2000
+  '(skk-dict skkserv)
+  '(integer -1 65535)
+  (N_ "Timeout for skkserv completion (msec)")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'skk-skkserv-completion-timeout
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-skkserv-enable-completion?))
+
 (define-custom 'skk-skkserv-use-env? #t
   '(skk-dict skkserv)
   '(boolean)
