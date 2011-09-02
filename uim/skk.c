@@ -1976,6 +1976,7 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
   }
 
   if (r == '1') {
+    char sep = '\0';
     uim_asprintf(&line, "%s ", s);
     while (1) {
       if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
@@ -1989,6 +1990,15 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
         line = uim_realloc(line, len + 1);
         strlcat(line, buf, len + 1);
         break;
+      }
+
+      /* FIXME: should handle word with '/' properly */
+      if (n == 0 && sep == '\0') {
+	sep = r;
+      } else {
+	if (sep == ' ' && r == ' ') {
+	  r = '/';
+	}
       }
 
       buf[n] = r;
