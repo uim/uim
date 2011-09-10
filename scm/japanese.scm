@@ -393,12 +393,8 @@
        (filter (lambda (x) (not (string=? "n" x)))
                (map car ja-consonant-syllable-table))))
 
-(define ja-rk-rule-update
+(define ja-rk-rule-keep-consonant-update
   (lambda ()
-    (and
-      (eq? ja-rk-rule-type 'custom)
-      (set! ja-rk-rule-basic
-        (ja-rk-rule-table->rule ja-rk-rule-table-basic)))
     (if ja-rk-rule-keep-consonant?
       (set! ja-rk-rule (append ja-rk-rule-consonant-to-keep
                                ja-rk-rule-basic
@@ -406,6 +402,23 @@
       (set! ja-rk-rule (append ja-rk-rule-basic
                                ja-rk-rule-additional)))))
 
+;; In ja-rk-rule-update,
+;; don't set ja-rk-rule-basic to ja-rk-rule-basic-uim
+;;
+;; If you do so, when
+;;   1) users call ja-rk-rule-update
+;;      in ~/.uim and ja-rk-rule-type is 'uim
+;;   2) ja-rk-rule-type is 'uim (default value)
+;; ja-rk-rule-basic is always overriden
+;; with ja-rk-rule-basic-uim.
+;; This is an unwanted behavior for users.
+(define ja-rk-rule-update
+  (lambda ()
+    (and
+      (eq? ja-rk-rule-type 'custom)
+      (set! ja-rk-rule-basic
+        (ja-rk-rule-table->rule ja-rk-rule-table-basic)))
+    (ja-rk-rule-keep-consonant-update)))
 
 ;;; Convert EUC-JP code to EUC-JP string (cf. ucs->utf8-string in ichar.scm)
 (define (ja-euc-jp-code->euc-jp-string code)

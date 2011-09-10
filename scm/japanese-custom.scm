@@ -675,9 +675,9 @@
 (custom-add-hook 'ja-rk-rule-keep-consonant?
                  'custom-set-hooks
                  (lambda ()
-                   (ja-rk-rule-update)))
+                   (ja-rk-rule-keep-consonant-update)))
 
-(custom-add-hook 'ja-rk-rule-type
+(custom-add-hook 'ja-rk-rule-table-basic
                  'custom-set-hooks
                  (lambda ()
                    (and
@@ -689,10 +689,3 @@
                  'custom-activity-hooks
                  (lambda ()
                    (eq? ja-rk-rule-type 'custom)))
-
-(custom-add-hook 'ja-rk-rule-table-basic
-                 'custom-set-hooks
-                 (lambda ()
-                   (set! ja-rk-rule-basic
-                     (ja-rk-rule-table->rule ja-rk-rule-table-basic))
-                   (ja-rk-rule-update)))
