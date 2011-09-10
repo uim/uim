@@ -395,8 +395,10 @@
 
 (define ja-rk-rule-update
   (lambda ()
-    (set! ja-rk-rule-basic
-      (ja-rk-rule-table->rule ja-rk-rule-table-basic))
+    (and
+      (eq? ja-rk-rule-type 'custom)
+      (set! ja-rk-rule-basic
+        (ja-rk-rule-table->rule ja-rk-rule-table-basic)))
     (if ja-rk-rule-keep-consonant?
       (set! ja-rk-rule (append ja-rk-rule-consonant-to-keep
                                ja-rk-rule-basic
