@@ -527,14 +527,16 @@
 
     ))
 
+(define ja-rk-rule-basic-uim ja-rk-rule-basic)
+
+(define ja-rk-rule (append ja-rk-rule-basic ja-rk-rule-additional))
+
 (define ja-type-direct	       -1)
 (define ja-type-hiragana	0)
 (define ja-type-katakana	1)
 (define ja-type-halfkana	2)
 (define ja-type-halfwidth-alnum	3)
 (define ja-type-fullwidth-alnum	4)
-
-(define ja-rk-rule (append ja-rk-rule-basic ja-rk-rule-additional))
 
 ;; getting required type of kana string from above kana-str-list
 ;; (ja-make-kana-str
@@ -655,17 +657,38 @@
                (N_ "Keep consonant Romaji not convertible to Kana")
                (N_ "long description will be here."))
 
+(define-custom 'ja-rk-rule-type 'uim
+               '(ja-rk-rule)
+               (list 'choice
+	         (list 'uim (N_ "uim") (N_ "uim native"))
+	         (list 'custom (N_ "Custom") (N_ "Custom")))
+               (N_ "Japanese Romaji-Kana rule type")
+               (N_ "long description will be here."))
+
 (define-custom 'ja-rk-rule-table-basic
                (ja-rk-rule-rule->table ja-rk-rule-basic)
                '(ja-rk-rule)
                '(table)
-               (N_ "Japanese Romaji-Kana rule")
+               (N_ "Japanese Romaji-Kana custom rule")
                (N_ "long description will be here."))
 
 (custom-add-hook 'ja-rk-rule-keep-consonant?
                  'custom-set-hooks
                  (lambda ()
                    (ja-rk-rule-update)))
+
+(custom-add-hook 'ja-rk-rule-type
+                 'custom-set-hooks
+                 (lambda ()
+                   (and
+                     (eq? ja-rk-rule-type 'uim)
+                       (set! ja-rk-rule-basic ja-rk-rule-basic-uim))
+                   (ja-rk-rule-update)))
+
+(custom-add-hook 'ja-rk-rule-table-basic
+                 'custom-activity-hooks
+                 (lambda ()
+                   (eq? ja-rk-rule-type 'custom)))
 
 (custom-add-hook 'ja-rk-rule-table-basic
                  'custom-set-hooks
