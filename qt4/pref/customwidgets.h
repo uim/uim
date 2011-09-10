@@ -307,17 +307,32 @@ public:
 
     virtual void update();
     virtual void setDefault();
+private slots:
+    void slotEditButtonClicked();
 private:
-    void setTableCustom();
-    QTableWidget *m_table;
-    QPushButton *m_addButton;
-    QPushButton *m_removeButton;
+    QPushButton *m_editButton;
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
     void customValueChanged();
+};
+
+
+class TableEditForm : public QDialog
+{
+    Q_OBJECT
+
+public:
+    TableEditForm( QWidget *parent );
+
+    void setCustomTable( char ***custom_table );
+    char ***customTable() const;
+
+private:
+    QTableWidget *m_table;
+    QPushButton *m_addButton;
+    QPushButton *m_removeButton;
 private slots:
-    void slotCellChanged(int row, int column);
     void slotAddClicked();
     void slotRemoveClicked();
 };

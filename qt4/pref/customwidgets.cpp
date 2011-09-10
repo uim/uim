@@ -1197,31 +1197,14 @@ CustomTable::CustomTable( struct uim_custom *c, QWidget *parent )
     : QFrame( parent ),
       UimCustomItemIface( c )
 {
-    m_table = new QTableWidget;
-    m_table->setSelectionMode( QAbstractItemView::SingleSelection );
-    m_table->horizontalHeader()->setVisible( false );
-    m_table->verticalHeader()->setVisible( false );
-    connect( m_table, SIGNAL(cellChanged(int, int)),
-            this, SLOT(slotCellChanged(int, int)) );
-
-    m_addButton = new QPushButton;
-    m_addButton->setText( _("Add") );
-    connect( m_addButton, SIGNAL(clicked()),
-            this, SLOT(slotAddClicked()) );
-
-    m_removeButton = new QPushButton;
-    m_removeButton->setText( _("Remove") );
-    connect( m_removeButton, SIGNAL(clicked()),
-            this, SLOT(slotRemoveClicked()) );
-
-    QVBoxLayout *buttonLayout = new QVBoxLayout;
-    buttonLayout->addWidget( m_addButton );
-    buttonLayout->addWidget( m_removeButton );
-    buttonLayout->addStretch();
+    m_editButton = new QPushButton;
+    m_editButton->setText( _("Edit") );
+    connect( m_editButton, SIGNAL(clicked()),
+            this, SLOT(slotEditButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget( m_table );
-    layout->addLayout( buttonLayout );
+    layout->addStretch();
+    layout->addWidget( m_editButton );
 
     setLayout( layout );
 
@@ -1232,38 +1215,6 @@ void CustomTable::update()
 {
     if( !m_custom || m_custom->type != UCustom_Table )
         return;
-
-    char ***custom_table = m_custom->value->as_table;
-    if ( custom_table ) {
-        // the number may differ from row to row
-        int max_column = -1;
-        int row;
-        for ( row = 0; custom_table[row]; row++ ) {
-            for ( int column = 0; custom_table[row][column]; column++ ) {
-                if ( max_column < column )
-                    max_column = column;
-            }
-        }
-        m_table->setRowCount( row );
-        m_table->setColumnCount( max_column + 1 );
-
-        // don't call slotCellChanged()
-        m_table->setEnabled( false );
-        for ( int row = 0; custom_table[row]; row++ ) {
-            bool expanded = false;
-            for ( int column = 0; column < max_column + 1; column++ ) {
-                if ( !custom_table[row][column] )
-                    expanded = true;
-                QTableWidgetItem *item = new QTableWidgetItem( expanded ?
-                    "" : _FU8( custom_table[row][column] ) );
-                if ( expanded )
-                    item->setFlags( Qt::NoItemFlags );
-                m_table->setItem( row, column, item );
-            }
-        }
-        m_table->setEnabled( true );
-    }
-
     /* sync with Label */
     parentWidget()->setEnabled( m_custom->is_active );
 }
@@ -1300,20 +1251,98 @@ void CustomTable::setDefault()
     update();
 }
 
-void CustomTable::setTableCustom()
+void CustomTable::slotEditButtonClicked()
 {
-    char ***custom_table = m_custom->value->as_table;
-    for ( int row = 0; custom_table[row]; row++ ) {
-        for ( int column = 0; custom_table[row][column]; column++ ) {
-            free( custom_table[row][column] );
-        }
-        free( custom_table[row] );
+    TableEditForm dialog( this );
+    dialog.setCustomTable( m_custom->value->as_table );
+    if ( dialog.exec() == QDialog::Accepted ) {
+        m_custom->value->as_table = dialog.customTable();
+        setCustom( m_custom );
+        update();
     }
-    int rowCount = m_table->rowCount();
-    custom_table = (char ***)malloc( sizeof(char **) * ( rowCount + 1 ) );
-    custom_table[rowCount] = 0;
+}
 
-    m_custom->value->as_table = custom_table;
+TableEditForm::TableEditForm( QWidget *parent )
+    : QDialog( parent )
+{
+    m_table = new QTableWidget;
+    m_table->setSelectionMode( QAbstractItemView::SingleSelection );
+    m_table->horizontalHeader()->setVisible( false );
+    m_table->verticalHeader()->setVisible( false );
+
+    m_addButton = new QPushButton;
+    m_addButton->setText( _("Add") );
+    connect( m_addButton, SIGNAL(clicked()),
+            this, SLOT(slotAddClicked()) );
+
+    m_removeButton = new QPushButton;
+    m_removeButton->setText( _("Remove") );
+    connect( m_removeButton, SIGNAL(clicked()),
+            this, SLOT(slotRemoveClicked()) );
+
+    QPushButton *m_okButton = new QPushButton;
+    m_okButton->setText( _("OK") );
+    connect( m_okButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
+
+    QPushButton *m_cancelButton = new QPushButton;
+    m_cancelButton->setText( _("Cancel") );
+    connect( m_cancelButton, SIGNAL( clicked() ), this, SLOT( reject() ) );
+
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+    buttonLayout->addWidget( m_addButton );
+    buttonLayout->addWidget( m_removeButton );
+    buttonLayout->addStretch();
+    buttonLayout->addWidget( m_okButton );
+    buttonLayout->addWidget( m_cancelButton );
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget( m_table );
+    layout->addLayout( buttonLayout );
+
+    setLayout( layout );
+
+    m_table->horizontalHeader()->adjustSize();
+}
+
+void TableEditForm::setCustomTable( char ***custom_table )
+{
+    if ( !custom_table )
+        return;
+    // the number may differ from row to row
+    int max_column = -1;
+    int row;
+    for ( row = 0; custom_table[row]; row++ ) {
+        for ( int column = 0; custom_table[row][column]; column++ ) {
+            if ( max_column < column )
+                max_column = column;
+        }
+    }
+    m_table->setRowCount( row );
+    m_table->setColumnCount( max_column + 1 );
+
+    // don't call slotCellChanged()
+    m_table->setEnabled( false );
+    for ( int row = 0; custom_table[row]; row++ ) {
+        bool expanded = false;
+        for ( int column = 0; column < max_column + 1; column++ ) {
+            if ( !custom_table[row][column] )
+                expanded = true;
+            QTableWidgetItem *item = new QTableWidgetItem( expanded ?
+                "" : _FU8( custom_table[row][column] ) );
+            if ( expanded )
+                item->setFlags( Qt::NoItemFlags );
+            m_table->setItem( row, column, item );
+        }
+    }
+    m_table->setEnabled( true );
+}
+
+char ***TableEditForm::customTable() const
+{
+    int rowCount = m_table->rowCount();
+    char ***custom_table
+            = (char ***)malloc( sizeof(char **) * ( rowCount + 1 ) );
+    custom_table[rowCount] = 0;
 
     int columnCount = m_table->columnCount();
 
@@ -1333,19 +1362,10 @@ void CustomTable::setTableCustom()
                 m_table->item( row, column )->text().toUtf8().data() );
     }
 
-    setCustom( m_custom );
+    return custom_table;
 }
 
-void CustomTable::slotCellChanged(int row, int column)
-{
-    if ( !m_table->isEnabled() )
-        return;
-    m_custom->value->as_table[row][column]
-        = strdup( m_table->item( row, column )->text().toUtf8().data() );
-    setCustom( m_custom );
-}
-
-void CustomTable::slotAddClicked()
+void TableEditForm::slotAddClicked()
 {
     QList<QTableWidgetItem *> items = m_table->selectedItems();
     int row = ( items.count() > 0 ) ? items[0]->row() + 1 : m_table->rowCount();
@@ -1356,16 +1376,14 @@ void CustomTable::slotAddClicked()
         m_table->setItem( row, i, new QTableWidgetItem( "" ) );
     m_table->setEnabled( true );
     m_table->scrollToItem( m_table->item( row, 0 ) );
-    setTableCustom();
 }
 
-void CustomTable::slotRemoveClicked()
+void TableEditForm::slotRemoveClicked()
 {
     QList<QTableWidgetItem *> items = m_table->selectedItems();
     if ( items.count() != 1 )
         return;
     m_table->removeRow( items[0]->row() );
-    setTableCustom();
 }
 
 static QString unicodeKeyToSymStr ( QChar c )

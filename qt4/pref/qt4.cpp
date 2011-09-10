@@ -705,7 +705,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeTable( QGroupBox *vbox, struct
     connect( tableBox, SIGNAL(customValueChanged()),
                       this, SLOT(slotCustomValueChanged()) );
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
