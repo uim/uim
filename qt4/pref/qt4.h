@@ -126,6 +126,7 @@ protected:
     UimCustomItemIface *addCustomTypeChoice( QGroupBox *vbox, struct uim_custom *custom );
     UimCustomItemIface *addCustomTypeOrderedList( QGroupBox *vbox, struct uim_custom *custom );
     UimCustomItemIface *addCustomTypeKey( QGroupBox *vbox, struct uim_custom *custom );
+    UimCustomItemIface *addCustomTypeTable( QGroupBox *vbox, struct uim_custom *custom );
 
 protected slots:
     void slotCustomValueChanged(){ emit customValueChanged(); }

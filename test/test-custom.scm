@@ -322,6 +322,45 @@
    (assert-false (uim-bool '(custom-key?
 			     '(test-nonexistent-key "<Alt>a")))))
 
+  ("test custom-table?"
+   (assert-true  (uim-bool '(custom-table?
+			     '())))
+   (assert-true  (uim-bool '(custom-table?
+			     '(("")))))
+   (assert-true  (uim-bool '(custom-table?
+			     '(("Alice")))))
+   (assert-true  (uim-bool '(custom-table?
+			     '(("Alice" "Bob")))))
+   (assert-true  (uim-bool '(custom-table?
+			     '(("Alice" "Bob") ("Carol" "Dave")))))
+   (assert-true  (uim-bool '(custom-table?
+			     '(("Alice" "Bob") ("Carol" "Dave" "Eve")))))
+
+   (assert-false (uim-bool '(custom-table?
+			     #t)))
+   (assert-false (uim-bool '(custom-table?
+			     "Alice")))
+   (assert-false (uim-bool '(custom-table?
+			     'Alice)))
+   (assert-false (uim-bool '(custom-table?
+			     1)))
+
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") #t))))
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") "Carol"))))
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") 'Carol))))
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") 1))))
+
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") ("Carol" "Dave" #t)))))
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") ("Carol" "Dave" 'Eve)))))
+   (assert-false (uim-bool '(custom-table?
+			     '(("Alice" "Bob") ("Carol" "Dave" 1))))))
+
   ("test custom-expand-key-references"
    (assert-equal '("<Control>g" "escape")
 		 (uim '(custom-value 'test-cancel-key)))
@@ -1763,6 +1802,11 @@
 	       (latin "latin" "latin")
 	       (wide-latin "wide-latin" "wide-latin"))
 	     "Mode list"
+	     "long description will be here."))
+     (uim '(define-custom 'test-case-table '(("abc" "ABC") ("def" "DEF"))
+	     '(test)
+	     '(table)
+	     "alphabet table"
 	     "long description will be here."))))
 
   ("test custom-valid?"
@@ -1834,7 +1878,9 @@
    (assert-equal "a string"
 		 (uim '(custom-value 'test-string)))
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
-		 (uim '(custom-value 'test-dic-file-name))))
+		 (uim '(custom-value 'test-dic-file-name)))
+   (assert-equal '(("abc" "ABC") ("def" "DEF"))
+		 (uim '(custom-value 'test-case-table))))
 
   ("test custom-set-value!"
    ;;; choice
@@ -1957,7 +2003,21 @@
    ;; invalid value is ignored
    (assert-false (uim-bool '(custom-set-value! 'test-modelist 'kanji)))
    (assert-equal 'latin
-		 (uim '(custom-value 'test-modelist))))
+		 (uim '(custom-value 'test-modelist)))
+   ;;; table
+   ;; default value
+   (assert-equal '(("abc" "ABC") ("def" "DEF"))
+		 (uim '(custom-value 'test-case-table)))
+   ;; valid value
+   (assert-true  (uim-bool '(custom-set-value!
+			     'test-case-table
+			     '(("ghi" "GHI") ("jkl" "JKL")))))
+   (assert-equal '(("ghi" "GHI") ("jkl" "JKL"))
+		 (uim '(custom-value 'test-case-table)))
+   ;; invalid value is ignored
+   (assert-false (uim-bool '(custom-set-value! 'test-case-table #f)))
+   (assert-equal '(("ghi" "GHI") ("jkl" "JKL"))
+		 (uim '(custom-value 'test-case-table))))
 
   ("test custom-default?"
    ;;; choice
@@ -2045,7 +2105,21 @@
    ;; come back to default
    (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
 					 "/usr/share/skk/SKK-JISYO.L")))
-   (assert-true  (uim-bool '(custom-default? 'test-dic-file-name))))
+   (assert-true  (uim-bool '(custom-default? 'test-dic-file-name)))
+
+   ;;; table
+   ;; default value
+   (assert-equal '(("abc" "ABC") ("def" "DEF"))
+		 (uim '(custom-value 'test-case-table)))
+   (assert-true  (uim-bool '(custom-default? 'test-case-table)))
+   ;; valid, but non-default value
+   (assert-true  (uim-bool '(custom-set-value! 'test-case-table
+					 '(("ghi" "GHI") ("jkl" "JKL")))))
+   (assert-false (uim-bool '(custom-default? 'test-case-table)))
+   ;; come back to default
+   (assert-true  (uim-bool '(custom-set-value! 'test-case-table
+					 '(("abc" "ABC") ("def" "DEF")))))
+   (assert-true  (uim-bool '(custom-default? 'test-case-table))))
 
   ("test custom-default-value"
    ;;; choice
@@ -2134,7 +2208,21 @@
    (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
 		 (uim '(custom-value 'test-dic-file-name)))
    (assert-equal "/usr/share/skk/SKK-JISYO.L"
-		 (uim '(custom-default-value 'test-dic-file-name))))
+		 (uim '(custom-default-value 'test-dic-file-name)))
+
+   ;;; table
+   ;; default value
+   (assert-equal '(("abc" "ABC") ("def" "DEF"))
+		 (uim '(custom-value 'test-case-table)))
+   (assert-equal '(("abc" "ABC") ("def" "DEF"))
+		 (uim '(custom-default-value 'test-case-table)))
+   ;; default value is not affected by current value
+   (assert-true  (uim-bool '(custom-set-value! 'test-case-table
+					 '(("ghi" "GHI") ("jkl" "JKL")))))
+   (assert-equal '(("ghi" "GHI") ("jkl" "JKL"))
+		 (uim '(custom-value 'test-case-table)))
+   (assert-equal '(("abc" "ABC") ("def" "DEF"))
+		 (uim '(custom-default-value 'test-case-table))))
 
   ("test custom-groups"
    (assert-equal '(global main)
@@ -2150,7 +2238,9 @@
    (assert-equal '(test main)
 		 (uim '(custom-groups 'test-string)))
    (assert-equal '(test main)
-		 (uim '(custom-groups 'test-dic-file-name))))
+		 (uim '(custom-groups 'test-dic-file-name)))
+   (assert-equal '(test main)
+		 (uim '(custom-groups 'test-case-table))))
 
   ("test custom-type"
    (assert-equal 'choice
@@ -2166,7 +2256,9 @@
    (assert-equal 'string
 		 (uim '(custom-type 'test-string)))
    (assert-equal 'pathname
-		 (uim '(custom-type 'test-dic-file-name))))
+		 (uim '(custom-type 'test-dic-file-name)))
+   (assert-equal 'table
+		 (uim '(custom-type 'test-case-table))))
    
   ("test custom-type-attrs"
    (assert-equal '((test-style-uim "uim" "uim native")
@@ -2186,7 +2278,9 @@
    (assert-equal '(".+")
 		 (uim '(custom-type-attrs 'test-string)))
    (assert-equal '(regular-file)
-		 (uim '(custom-type-attrs 'test-dic-file-name))))
+		 (uim '(custom-type-attrs 'test-dic-file-name)))
+   (assert-equal '()
+		 (uim '(custom-type-attrs 'test-case-table))))
 
   ("test custom-range"
    (assert-equal '(test-style-uim test-style-ddskk test-style-canna)
@@ -2202,7 +2296,9 @@
    (assert-equal '(".+")
 		 (uim '(custom-range 'test-string)))
    (assert-equal ()
-		 (uim '(custom-range 'test-dic-file-name))))
+		 (uim '(custom-range 'test-dic-file-name)))
+   (assert-equal ()
+		 (uim '(custom-range 'test-case-table))))
 
   ("test custom-label"
    (assert-equal "Test style"
@@ -2218,7 +2314,9 @@
    (assert-equal "A string for testing purpose"
 		 (uim '(custom-label 'test-string)))
    (assert-equal "Dictionary file"
-		 (uim '(custom-label 'test-dic-file-name))))
+		 (uim '(custom-label 'test-dic-file-name)))
+   (assert-equal "alphabet table"
+		 (uim '(custom-label 'test-case-table))))
    
   ("test custom-desc"
    (assert-equal "long description will be here."
@@ -2234,7 +2332,9 @@
    (assert-equal "long description will be here."
 		 (uim '(custom-desc 'test-style)))
    (assert-equal "long description will be here."
-		 (uim '(custom-desc 'test-dic-file-name))))
+		 (uim '(custom-desc 'test-dic-file-name)))
+   (assert-equal "long description will be here."
+		 (uim '(custom-desc 'test-case-table))))
 
   ("test custom-value-as-literal"
    (assert-equal "'test-style-ddskk"
@@ -2256,7 +2356,9 @@
    (assert-equal "\"a string\""
 		 (uim '(custom-value-as-literal 'test-string)))
    (assert-equal "\"/usr/share/skk/SKK-JISYO.L\""
-		 (uim '(custom-value-as-literal 'test-dic-file-name))))
+		 (uim '(custom-value-as-literal 'test-dic-file-name)))
+   (assert-equal "'((\"abc\" \"ABC\") (\"def\" \"DEF\"))"
+		 (uim '(custom-value-as-literal 'test-case-table))))
 
   ("test custom-definition-as-literal"
    (assert-equal "(define test-style 'test-style-ddskk)"
@@ -2279,6 +2381,8 @@
 		 (uim '(custom-definition-as-literal 'test-string)))
    (assert-equal "(define test-dic-file-name \"/usr/share/skk/SKK-JISYO.L\")"
 		 (uim '(custom-definition-as-literal 'test-dic-file-name)))
+   (assert-equal "(define test-case-table '((\"abc\" \"ABC\") (\"def\" \"DEF\")))"
+		 (uim '(custom-definition-as-literal 'test-case-table)))
    ;; hooked
    (assert-equal "(define test-style 'test-style-ddskk)"
 		 (uim '(custom-definition-as-literal 'test-style)))

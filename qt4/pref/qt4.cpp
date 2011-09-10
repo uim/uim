@@ -540,6 +540,9 @@ UimCustomItemIface *GroupPageWidget::addCustom( QGroupBox *vbox, const char *cus
         case UCustom_Key:
             w = addCustomTypeKey( vbox, custom );
             break;
+        case UCustom_Table:
+            w = addCustomTypeTable( vbox, custom );
+            break;
         default:
             w = 0;
             qWarning( "Invalid custom type: %d\n", custom->type );
@@ -692,6 +695,28 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QGroupBox *vbox, struct u
 
     return keyEditBox;
 }
+
+UimCustomItemIface *GroupPageWidget::addCustomTypeTable( QGroupBox *vbox, struct uim_custom *custom )
+{
+    QFrame *hbox = new QFrame;
+    QLabel *label = new QLabel( _FU8(custom->label), hbox );
+    CustomTable *tableBox = new CustomTable( custom, hbox );
+    label->setBuddy( tableBox );
+    connect( tableBox, SIGNAL(customValueChanged()),
+                      this, SLOT(slotCustomValueChanged()) );
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin( 0 );
+    layout->setSpacing( 6 );
+    layout->addWidget( label );
+    layout->addWidget( tableBox );
+
+    hbox->setLayout( layout );
+    vbox->layout()->addWidget( hbox );
+
+    return tableBox;
+}
+
 
 void GroupPageWidget::setDefault()
 {

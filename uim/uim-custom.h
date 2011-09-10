@@ -48,7 +48,8 @@ enum UCustomType {
   UCustom_Pathname,
   UCustom_Choice,
   UCustom_OrderedList,
-  UCustom_Key
+  UCustom_Key,
+  UCustom_Table
 };
 
 enum UCustomPathnameType {
@@ -74,6 +75,7 @@ union uim_custom_value {
   struct uim_custom_choice *as_choice;
   struct uim_custom_choice **as_olist;
   struct uim_custom_key **as_key;
+  char ***as_table;
 };
 
 struct uim_custom_pathname {

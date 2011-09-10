@@ -65,7 +65,8 @@
     (pathname     . custom-pathname?)
     (choice       . custom-valid-choice?)
     (ordered-list . custom-ordered-list?)
-    (key          . custom-key?)))
+    (key          . custom-key?)
+    (table        . custom-table?)))
 
 (define anything?
   (lambda (x)
@@ -118,6 +119,16 @@
 		      (and (symbol? key)  ;; 'generic-cancel-key
 			   (custom-exist? key 'key))))
 		key-repls))))
+
+(define custom-table?
+  (lambda (table-repls)
+    (and (list? table-repls)
+         (every (lambda (row)
+                  (and (list? row)
+                       (every (lambda (cell)
+                                (string? cell))
+                              row)))
+                table-repls))))
 
 (define custom-pathname-type
   (lambda (custom-sym)
@@ -677,6 +688,18 @@
 			      lst)))
       (string-append "'(" (string-join canonicalized " ") ")"))))
 
+; (custom-list-as-table  '(("a" "b" "c") ("d" "e")))
+;   -> "'((\"a\" \"b\" \"c\") (\"d\" \"e\"))"
+(define custom-list-as-table
+  (lambda (tbl)
+    (string-append "'("
+      (string-join
+        (map (lambda (lst)
+          (string-append "(" 
+            (string-join
+              (map (lambda (elem)
+                (string-escape elem)) lst) " ") ")")) tbl) " ") ")")))
+
 ;; API
 (define custom-value-as-literal
   (lambda (sym)
@@ -694,6 +717,8 @@
        ((or (eq? type 'ordered-list)
 	    (eq? type 'key))
 	(custom-list-as-literal val))
+       ((eq? type 'table)
+	(custom-list-as-table val))
        ((or (eq? val #f)
 	    (eq? type 'boolean))
 	(if (eq? val #f)

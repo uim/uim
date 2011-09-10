@@ -47,9 +47,10 @@
 #include "keyeditformbase.h"
 #include "olisteditformbase.h"
 
-class QPushButton;
 class QListViewItem;
 class QFileDialog;
+class QPushButton;
+class QTableWidget;
 
 class UimCustomItemIface
 {
@@ -294,6 +295,31 @@ protected:
     Qt::KeyboardModifiers pressed_keystate;
     QChar pressed_unichar;
     QString m_keystr; 
+};
+
+//----------------------------------------------------------------------------------------
+class CustomTable : public QFrame, public UimCustomItemIface
+{
+    Q_OBJECT
+
+public:
+    CustomTable( struct uim_custom *c, QWidget *parent );
+
+    virtual void update();
+    virtual void setDefault();
+private:
+    void setTableCustom();
+    QTableWidget *m_table;
+    QPushButton *m_addButton;
+    QPushButton *m_removeButton;
+protected:
+    void currentCustomValueChanged(){ emit customValueChanged(); }
+signals:
+    void customValueChanged();
+private slots:
+    void slotCellChanged(int row, int column);
+    void slotAddClicked();
+    void slotRemoveClicked();
 };
 
 #endif /* Not def: UIM_QT4_PREF_CUSTOMWIDGETS_H */
