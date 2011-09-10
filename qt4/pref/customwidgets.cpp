@@ -1320,8 +1320,6 @@ void TableEditForm::setCustomTable( char ***custom_table )
     m_table->setRowCount( row );
     m_table->setColumnCount( max_column + 1 );
 
-    // don't call slotCellChanged()
-    m_table->setEnabled( false );
     for ( int row = 0; custom_table[row]; row++ ) {
         bool expanded = false;
         for ( int column = 0; column < max_column + 1; column++ ) {
@@ -1334,7 +1332,6 @@ void TableEditForm::setCustomTable( char ***custom_table )
             m_table->setItem( row, column, item );
         }
     }
-    m_table->setEnabled( true );
 }
 
 char ***TableEditForm::customTable() const
@@ -1370,11 +1367,8 @@ void TableEditForm::slotAddClicked()
     QList<QTableWidgetItem *> items = m_table->selectedItems();
     int row = ( items.count() > 0 ) ? items[0]->row() + 1 : m_table->rowCount();
     m_table->insertRow( row );
-    // don't call slotCellChanged()
-    m_table->setEnabled( false );
     for ( int i = 0; i < m_table->columnCount(); i++ )
         m_table->setItem( row, i, new QTableWidgetItem( "" ) );
-    m_table->setEnabled( true );
     m_table->scrollToItem( m_table->item( row, 0 ) );
 }
 
