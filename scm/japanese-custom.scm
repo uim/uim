@@ -651,31 +651,26 @@
                      (N_ "Composing rule")
                      (N_ "long description will be here."))
 
+(define-custom 'ja-rk-rule-type 'uim
+               '(ja-rk-rule composing-rule)
+               (list 'choice
+	         (list 'uim (N_ "uim") (N_ "uim native"))
+	         (list 'custom (N_ "Custom") (N_ "Custom")))
+               (N_ "Composing rule type")
+               (N_ "long description will be here."))
+
+(define-custom 'ja-rk-rule-table-basic
+               (ja-rk-rule-rule->table ja-rk-rule-basic)
+               '(ja-rk-rule composing-rule)
+               '(table)
+               (N_ "Custom composing rule")
+               (N_ "long description will be here."))
+
 (define-custom 'ja-rk-rule-keep-consonant? #f
                '(ja-rk-rule composing-rule)
                '(boolean)
                (N_ "Keep consonant Romaji not convertible to Kana")
                (N_ "long description will be here."))
-
-(define-custom 'ja-rk-rule-type 'uim
-               '(ja-rk-rule)
-               (list 'choice
-	         (list 'uim (N_ "uim") (N_ "uim native"))
-	         (list 'custom (N_ "Custom") (N_ "Custom")))
-               (N_ "Japanese Romaji-Kana rule type")
-               (N_ "long description will be here."))
-
-(define-custom 'ja-rk-rule-table-basic
-               (ja-rk-rule-rule->table ja-rk-rule-basic)
-               '(ja-rk-rule)
-               '(table)
-               (N_ "Japanese Romaji-Kana custom rule")
-               (N_ "long description will be here."))
-
-(custom-add-hook 'ja-rk-rule-keep-consonant?
-                 'custom-set-hooks
-                 (lambda ()
-                   (ja-rk-rule-keep-consonant-update)))
 
 (custom-add-hook 'ja-rk-rule-table-basic
                  'custom-set-hooks
@@ -689,3 +684,8 @@
                  'custom-activity-hooks
                  (lambda ()
                    (eq? ja-rk-rule-type 'custom)))
+
+(custom-add-hook 'ja-rk-rule-keep-consonant?
+                 'custom-set-hooks
+                 (lambda ()
+                   (ja-rk-rule-keep-consonant-update)))
