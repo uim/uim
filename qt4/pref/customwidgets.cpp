@@ -1283,6 +1283,18 @@ TableEditForm::TableEditForm( QWidget *parent )
     connect( m_removeButton, SIGNAL( clicked() ),
             this, SLOT( slotRemoveClicked() ) );
 
+    m_upButton = new QPushButton;
+    m_upButton->setEnabled( false );
+    m_upButton->setText( _("Up") );
+    connect( m_upButton, SIGNAL( clicked() ),
+            this, SLOT( slotUpClicked() ) );
+
+    m_downButton = new QPushButton;
+    m_downButton->setEnabled( false );
+    m_downButton->setText( _("Down") );
+    connect( m_downButton, SIGNAL( clicked() ),
+            this, SLOT( slotDownClicked() ) );
+
     QPushButton *okButton = new QPushButton;
     okButton->setText( _("OK") );
     connect( okButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
@@ -1294,6 +1306,8 @@ TableEditForm::TableEditForm( QWidget *parent )
     QVBoxLayout *buttonLayout = new QVBoxLayout;
     buttonLayout->addWidget( addButton );
     buttonLayout->addWidget( m_removeButton );
+    buttonLayout->addWidget( m_upButton );
+    buttonLayout->addWidget( m_downButton );
     buttonLayout->addStretch();
     buttonLayout->addWidget( okButton );
     buttonLayout->addWidget( cancelButton );
@@ -1369,6 +1383,8 @@ void TableEditForm::slotItemSelectionChanged()
 {
     bool itemSelected = ( m_table->selectedItems().count() == 1 );
     m_removeButton->setEnabled( itemSelected );
+    m_upButton->setEnabled( itemSelected );
+    m_downButton->setEnabled( itemSelected );
 }
 
 void TableEditForm::slotAddClicked()
@@ -1387,6 +1403,47 @@ void TableEditForm::slotRemoveClicked()
     if ( items.count() != 1 )
         return;
     m_table->removeRow( items[0]->row() );
+}
+
+void TableEditForm::slotUpClicked()
+{
+    QList<QTableWidgetItem *> items = m_table->selectedItems();
+    if ( items.count() != 1 )
+        return;
+    QTableWidgetItem *item = items[0];
+    const int row = item->row();
+    if ( row < 1 || row > m_table->rowCount() - 1 )
+        return;
+    const int newRow = row - 1;
+    m_table->insertRow( newRow );
+    for ( int column = 0; column < m_table->columnCount(); column++ ) {
+        m_table->setItem( newRow, column,
+                m_table->takeItem( row + 1, column ) );
+    }
+    m_table->removeRow( row + 1 );
+
+    m_table->setCurrentItem( item );
+    m_table->scrollToItem( item );
+}
+
+void TableEditForm::slotDownClicked()
+{
+    QList<QTableWidgetItem *> items = m_table->selectedItems();
+    if ( items.count() != 1 )
+        return;
+    QTableWidgetItem *item = items[0];
+    const int row = item->row();
+    if ( row < 0 || row >= m_table->rowCount() - 1 )
+        return;
+    const int newRow = row + 2;
+    m_table->insertRow( newRow );
+    for ( int column = 0; column < m_table->columnCount(); column++ ) {
+        m_table->setItem( newRow, column, m_table->takeItem( row, column ) );
+    }
+    m_table->removeRow( row );
+
+    m_table->setCurrentItem( item );
+    m_table->scrollToItem( item );
 }
 
 static QString unicodeKeyToSymStr ( QChar c )

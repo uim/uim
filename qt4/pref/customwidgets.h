@@ -329,10 +329,14 @@ public:
 private:
     QTableWidget *m_table;
     QPushButton *m_removeButton;
+    QPushButton *m_upButton;
+    QPushButton *m_downButton;
 private slots:
     void slotItemSelectionChanged();
     void slotAddClicked();
     void slotRemoveClicked();
+    void slotUpClicked();
+    void slotDownClicked();
 };
 
 #endif /* Not def: UIM_QT4_PREF_CUSTOMWIDGETS_H */
