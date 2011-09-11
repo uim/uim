@@ -1257,6 +1257,7 @@ void CustomTable::setDefault()
 void CustomTable::slotEditButtonClicked()
 {
     TableEditForm dialog( this );
+    dialog.setWindowTitle( _FU8( m_custom->label ) );
     dialog.setCustomTable( m_custom->value->as_table );
     if ( dialog.exec() == QDialog::Accepted ) {
         m_custom->value->as_table = dialog.customTable();
