@@ -331,6 +331,7 @@ private:
     QPushButton *m_removeButton;
     QPushButton *m_upButton;
     QPushButton *m_downButton;
+    char ***m_customTable;
 private slots:
     void slotItemSelectionChanged();
     void slotAddClicked();

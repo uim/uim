@@ -1349,13 +1349,21 @@ void TableEditForm::setCustomTable( char ***custom_table )
             m_table->setItem( row, column, item );
         }
     }
+    m_customTable = custom_table;
 }
 
 char ***TableEditForm::customTable() const
 {
+    char ***custom_table = m_customTable;
+    for ( int row = 0; custom_table[row]; row++ ) {
+        for ( int column = 0; custom_table[row][column]; column++ ) {
+            free( custom_table[row][column] );
+        }
+        free( custom_table[row] );
+    }
+
     int rowCount = m_table->rowCount();
-    char ***custom_table
-            = (char ***)malloc( sizeof(char **) * ( rowCount + 1 ) );
+    custom_table = (char ***)malloc( sizeof(char **) * ( rowCount + 1 ) );
     custom_table[rowCount] = 0;
 
     int columnCount = m_table->columnCount();
