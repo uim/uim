@@ -531,34 +531,6 @@
 
 (define ja-rk-rule (append ja-rk-rule-basic ja-rk-rule-additional))
 
-(define ja-type-direct	       -1)
-(define ja-type-hiragana	0)
-(define ja-type-katakana	1)
-(define ja-type-halfkana	2)
-(define ja-type-halfwidth-alnum	3)
-(define ja-type-fullwidth-alnum	4)
-
-;; getting required type of kana string from above kana-str-list
-;; (ja-make-kana-str
-;;  (("じ" "ジ" "ｼﾞ") ("ん" "ン" "ﾝ") ("か" "カ" "ｶ"))
-;;  ja-type-katakana)
-;;  -> "カンジ"
-(define ja-make-kana-str
-  (lambda (sl type)
-    (let ((get-str-by-type
-	   (lambda (l)
-	     (cond
-	      ((= type ja-type-hiragana)
-	       (caar l))
-	      ((= type ja-type-katakana)
-	       (car (cdar l)))
-	      ((= type ja-type-halfkana)
-	       (cadr (cdar l)))))))
-      (if (not (null? sl))
-	  (string-append (ja-make-kana-str (cdr sl) type)
-			 (get-str-by-type sl))
-	  ""))))
-
 (define ja-rk-rule-rule->table (lambda (rule)
   (map
     (lambda (item)
@@ -592,9 +564,8 @@
               (eucjp->utf8 single-output))
             ; ((("k" "y" "a")) (("き" "キ" "ｷ") ("ゃ" "ャ" "ｬ"))) -> "きゃ"
             (eucjp->utf8
-              (fold-right string-append ""
-                (string-to-list
-                  (ja-make-kana-str output ja-type-hiragana)))))))) rule)))
+              (string-join
+                (map first output) "")))))) rule)))
 
 (define ja-rk-rule-table->rule (lambda (table)
   (map

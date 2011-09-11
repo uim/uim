@@ -360,6 +360,13 @@
 		(ja-make-kana-str-list (cdr sl)))
 	'())))
 
+(define ja-type-direct	       -1)
+(define ja-type-hiragana	0)
+(define ja-type-katakana	1)
+(define ja-type-halfkana	2)
+(define ja-type-halfwidth-alnum	3)
+(define ja-type-fullwidth-alnum	4)
+
 (define ja-opposite-kana
   (lambda (kana)
     (cond
@@ -369,7 +376,28 @@
       ja-type-hiragana)
      ((= kana ja-type-halfkana)
       ja-type-hiragana))))
-    
+
+;; getting required type of kana string from above kana-str-list
+;; (ja-make-kana-str
+;;  (("じ" "ジ" "ｼﾞ") ("ん" "ン" "ﾝ") ("か" "カ" "ｶ"))
+;;  ja-type-katakana)
+;;  -> "カンジ"
+(define ja-make-kana-str
+  (lambda (sl type)
+    (let ((get-str-by-type
+	   (lambda (l)
+	     (cond
+	      ((= type ja-type-hiragana)
+	       (caar l))
+	      ((= type ja-type-katakana)
+	       (car (cdar l)))
+	      ((= type ja-type-halfkana)
+	       (cadr (cdar l)))))))
+      (if (not (null? sl))
+	  (string-append (ja-make-kana-str (cdr sl) type)
+			 (get-str-by-type sl))
+	  ""))))
+
 (define japanese-roma-set-yen-representation
   (lambda ()
     ;; Since ordinary Japanese users press the "yen sign" key on
@@ -408,7 +436,7 @@
 ;; If you do so, when the following conditions are met
 ;;   1) users call ja-rk-rule-update in ~/.uim
 ;;   2) ja-rk-rule-type is 'uim (default value)
-;; ja-rk-rule-basic is always overriden
+;; ja-rk-rule-basic is always overridden
 ;; with ja-rk-rule-basic-uim.
 ;; This is an unwanted behavior for users.
 (define ja-rk-rule-update
