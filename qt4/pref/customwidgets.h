@@ -328,7 +328,9 @@ public:
 
 private:
     QTableWidget *m_table;
+    QPushButton *m_removeButton;
 private slots:
+    void slotItemSelectionChanged();
     void slotAddClicked();
     void slotRemoveClicked();
 };

@@ -1269,16 +1269,19 @@ TableEditForm::TableEditForm( QWidget *parent )
     m_table->setSelectionMode( QAbstractItemView::SingleSelection );
     m_table->horizontalHeader()->setVisible( false );
     m_table->verticalHeader()->setVisible( false );
+    connect( m_table, SIGNAL( itemSelectionChanged() ),
+            this, SLOT( slotItemSelectionChanged() ) );
 
     QPushButton *addButton = new QPushButton;
     addButton->setText( _("Add") );
-    connect( addButton, SIGNAL(clicked()),
-            this, SLOT(slotAddClicked()) );
+    connect( addButton, SIGNAL( clicked() ),
+            this, SLOT( slotAddClicked() ) );
 
-    QPushButton *removeButton = new QPushButton;
-    removeButton->setText( _("Remove") );
-    connect( removeButton, SIGNAL(clicked()),
-            this, SLOT(slotRemoveClicked()) );
+    m_removeButton = new QPushButton;
+    m_removeButton->setEnabled( false );
+    m_removeButton->setText( _("Remove") );
+    connect( m_removeButton, SIGNAL( clicked() ),
+            this, SLOT( slotRemoveClicked() ) );
 
     QPushButton *okButton = new QPushButton;
     okButton->setText( _("OK") );
@@ -1290,7 +1293,7 @@ TableEditForm::TableEditForm( QWidget *parent )
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
     buttonLayout->addWidget( addButton );
-    buttonLayout->addWidget( removeButton );
+    buttonLayout->addWidget( m_removeButton );
     buttonLayout->addStretch();
     buttonLayout->addWidget( okButton );
     buttonLayout->addWidget( cancelButton );
@@ -1360,6 +1363,12 @@ char ***TableEditForm::customTable() const
     }
 
     return custom_table;
+}
+
+void TableEditForm::slotItemSelectionChanged()
+{
+    bool itemSelected = ( m_table->selectedItems().count() == 1 );
+    m_removeButton->setEnabled( itemSelected );
 }
 
 void TableEditForm::slotAddClicked()
