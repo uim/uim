@@ -447,28 +447,26 @@
                 (string=? next-input "") '())
               ; ("kk" "k" "っ") -> "k"
               (cons next-input '()))))
-        (let ((output (caddr item))
+        (let* ((output (caddr item))
                (utf8->eucjp (lambda (str)
                  (and-let* ((ic (iconv-open "EUC-JP" "UTF-8"))
                              (converted-str (iconv-code-conv ic str)))
                    (and ic
                      (iconv-release ic))
-                   converted-str))))
+                   converted-str)))
+               (eucjp-output (utf8->eucjp output))
+               (eucjp-output-list (string-to-list eucjp-output)))
           (or
-            (let ((eucjp-output (utf8->eucjp output)))
-              (and
-                (=
-                  (length
-                    (string-to-list eucjp-output)) 1)
-                ; ("ka" "" "か") ->  ("か" "カ" "ｶ")
-                (ja-find-kana-list-from-rule ja-rk-rule eucjp-output)))
+            (and
+              (=
+                (length eucjp-output-list) 1)
+              ; ("ka" "" "か") ->  ("か" "カ" "ｶ")
+              (ja-find-kana-list-from-rule ja-rk-rule eucjp-output))
             ; ("kya" "" "きゃ") -> (("き" "キ" "ｷ") ("ゃ" "ャ" "ｬ"))
             (map
               (lambda (char)
                 (ja-find-kana-list-from-rule ja-rk-rule char))
-                  (reverse
-                    (string-to-list
-                      (utf8->eucjp output)))))))) table)))
+                  (reverse eucjp-output-list)))))) table)))
 
 (define-custom-group 'ja-rk-rule
                      (N_ "Japanese Romaji-Kana")
