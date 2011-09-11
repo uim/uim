@@ -309,8 +309,6 @@ public:
     virtual void setDefault();
 private slots:
     void slotEditButtonClicked();
-private:
-    QPushButton *m_editButton;
 protected:
     void currentCustomValueChanged(){ emit customValueChanged(); }
 signals:
@@ -330,8 +328,6 @@ public:
 
 private:
     QTableWidget *m_table;
-    QPushButton *m_addButton;
-    QPushButton *m_removeButton;
 private slots:
     void slotAddClicked();
     void slotRemoveClicked();

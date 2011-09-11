@@ -1197,14 +1197,14 @@ CustomTable::CustomTable( struct uim_custom *c, QWidget *parent )
     : QFrame( parent ),
       UimCustomItemIface( c )
 {
-    m_editButton = new QPushButton;
-    m_editButton->setText( _("Edit") );
-    connect( m_editButton, SIGNAL(clicked()),
+    QPushButton *editButton = new QPushButton;
+    editButton->setText( _("Edit") );
+    connect( editButton, SIGNAL(clicked()),
             this, SLOT(slotEditButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addStretch();
-    layout->addWidget( m_editButton );
+    layout->addWidget( editButton );
 
     setLayout( layout );
 
@@ -1270,30 +1270,30 @@ TableEditForm::TableEditForm( QWidget *parent )
     m_table->horizontalHeader()->setVisible( false );
     m_table->verticalHeader()->setVisible( false );
 
-    m_addButton = new QPushButton;
-    m_addButton->setText( _("Add") );
-    connect( m_addButton, SIGNAL(clicked()),
+    QPushButton *addButton = new QPushButton;
+    addButton->setText( _("Add") );
+    connect( addButton, SIGNAL(clicked()),
             this, SLOT(slotAddClicked()) );
 
-    m_removeButton = new QPushButton;
-    m_removeButton->setText( _("Remove") );
-    connect( m_removeButton, SIGNAL(clicked()),
+    QPushButton *removeButton = new QPushButton;
+    removeButton->setText( _("Remove") );
+    connect( removeButton, SIGNAL(clicked()),
             this, SLOT(slotRemoveClicked()) );
 
-    QPushButton *m_okButton = new QPushButton;
-    m_okButton->setText( _("OK") );
-    connect( m_okButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
+    QPushButton *okButton = new QPushButton;
+    okButton->setText( _("OK") );
+    connect( okButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
 
-    QPushButton *m_cancelButton = new QPushButton;
-    m_cancelButton->setText( _("Cancel") );
-    connect( m_cancelButton, SIGNAL( clicked() ), this, SLOT( reject() ) );
+    QPushButton *cancelButton = new QPushButton;
+    cancelButton->setText( _("Cancel") );
+    connect( cancelButton, SIGNAL( clicked() ), this, SLOT( reject() ) );
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
-    buttonLayout->addWidget( m_addButton );
-    buttonLayout->addWidget( m_removeButton );
+    buttonLayout->addWidget( addButton );
+    buttonLayout->addWidget( removeButton );
     buttonLayout->addStretch();
-    buttonLayout->addWidget( m_okButton );
-    buttonLayout->addWidget( m_cancelButton );
+    buttonLayout->addWidget( okButton );
+    buttonLayout->addWidget( cancelButton );
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget( m_table );
