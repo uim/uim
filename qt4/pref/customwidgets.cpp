@@ -1206,6 +1206,8 @@ CustomTable::CustomTable( struct uim_custom *c, QWidget *parent )
             this, SLOT(slotEditButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
+    layout->setSpacing( 3 );
     layout->addStretch();
     layout->addWidget( editButton );
 
