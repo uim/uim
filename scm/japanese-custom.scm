@@ -438,8 +438,8 @@
                 ; ("yen" "" "бя") -> ("yen")
                 '("yen"))
               ; ("ka" "" "дл") -> ("k" "a")
-              (reverse
-                (string-to-list input))))
+              (map string
+                (string->list input))))
           (let ((next-input (cadr item)))
             (or
               (and
