@@ -44,8 +44,6 @@
 
 OListEditFormBase::OListEditFormBase(QWidget *widget) : QDialog(widget)
 {
-    setWindowTitle(_("Edit Ordered List"));
-
     m_listView = new QTreeWidget;
     m_listView->setSelectionMode(QAbstractItemView::SingleSelection);
 

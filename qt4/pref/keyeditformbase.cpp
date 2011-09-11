@@ -44,8 +44,6 @@
 
 KeyEditFormBase::KeyEditFormBase(QWidget *widget) : QDialog(widget)
 {
-    setWindowTitle(_("Edit Keys"));
-
     m_listView = new QTreeWidget;
     QTreeWidgetItem *item = m_listView->headerItem();
     item->setText(0, _("Key Combination"));

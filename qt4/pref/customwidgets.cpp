@@ -240,7 +240,7 @@ void CustomPathnameEdit::setDefault()
 
 void CustomPathnameEdit::slotPathnameButtonClicked()
 {
-    m_fileDialog = new QFileDialog( this, "file dialog" );
+    m_fileDialog = new QFileDialog( this, _("Specify file") );
 
     switch (m_custom->value->as_pathname->type) {
     case UCustomPathnameType_Directory:
@@ -459,6 +459,7 @@ void CustomOrderedListEdit::initPtrList()
 void CustomOrderedListEdit::slotEditButtonClicked()
 {
     OListEditForm *d = new OListEditForm( this );
+    d->setWindowTitle( _FU8( m_custom->label ) );
     initPtrList();
 
     /*
@@ -729,6 +730,8 @@ void CustomKeyEdit::setDefault()
 void CustomKeyEdit::slotKeyButtonClicked()
 {
     KeyEditForm *d = new KeyEditForm( this );
+    d->setWindowTitle(
+            _( "%1 - key configuration" ).arg( _FU8( m_custom->label ) ) );
 
     /* add items */
     QString str;
