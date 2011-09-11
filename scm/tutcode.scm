@@ -340,16 +340,10 @@
 ;;; tutcode-context-new時に反映する。
 (define tutcode-rule-userconfig ())
 
-;;; 候補ウィンドウのプログラム名。
-;;; uim-ximが、UIM_LIBEXECDIR/uim-candwin-progを候補ウィンドウとして使用。
-;;; gtk-immodule等が、表形式候補ウィンドウを使用するか判断するため、
-;;; "uim-candwin-tbl"で始まっているかどうかをチェックしている。
-;;; 表形式候補ウィンドウをcustomで設定できるようにするため、
-;;; あらかじめdefine。
-;;; XXX:tutcode以外にも影響するので、他の場所の方がいいかも。
-(define uim-candwin-prog "")
-(if tutcode-use-table-style-candidate-window?
-  (set! uim-candwin-prog "uim-candwin-tbl-gtk"))
+;;; 旧版の設定を反映
+(if (and (symbol-bound? 'tutcode-use-table-style-candidate-window?)
+         tutcode-use-table-style-candidate-window?)
+  (set! candidate-window-style 'table))
 
 ;;; 表形式の候補ウィンドウ上の各ボタンとキーの対応表(13列8行)。
 ;;; 表形式候補ウィンドウが参照して使用する。
@@ -805,7 +799,7 @@
         (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
     ;; 表形式候補ウィンドウ用設定
     (if (null? tutcode-heading-label-char-list)
-      (if tutcode-use-table-style-candidate-window?
+      (if (eq? candidate-window-style 'table)
         (set! tutcode-heading-label-char-list
           (case tutcode-candidate-window-table-layout
             ((qwerty-jis) tutcode-table-heading-label-char-list-qwerty-jis)
@@ -818,7 +812,7 @@
       (set! tutcode-heading-label-char-list-for-history
         tutcode-heading-label-char-list))
     (if (null? tutcode-heading-label-char-list-for-kigou-mode)
-      (if tutcode-use-table-style-candidate-window?
+      (if (eq? candidate-window-style 'table)
         (begin
           (set! tutcode-heading-label-char-list-for-kigou-mode
             tutcode-table-heading-label-char-list-for-kigou-mode)

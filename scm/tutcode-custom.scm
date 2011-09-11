@@ -193,12 +193,6 @@
   (N_ "Use candidate window")
   (N_ "long description will be here."))
 
-(define-custom 'tutcode-use-table-style-candidate-window? #f
-  '(tutcode candwin)
-  '(boolean)
-  (N_ "Use table style candidate window")
-  (N_ "long description will be here."))
-
 (define-custom 'tutcode-candidate-window-table-layout 'qwerty-jis
   '(tutcode candwin)
   (list 'choice
@@ -356,10 +350,10 @@
 		 (lambda ()
 		   tutcode-use-auto-help-window?))
 
-(custom-add-hook 'tutcode-use-table-style-candidate-window?
+(custom-add-hook 'candidate-window-style
   'custom-set-hooks
   (lambda ()
-    (if tutcode-use-table-style-candidate-window?
+    (if (eq? candidate-window-style 'table)
       (begin
         (custom-set-value! 'tutcode-nr-candidate-max
           (length tutcode-table-heading-label-char-list))
@@ -382,7 +376,7 @@
 (custom-add-hook 'tutcode-candidate-window-table-layout
 		 'custom-activity-hooks
 		 (lambda ()
-		   tutcode-use-table-style-candidate-window?))
+                   (eq? candidate-window-style 'table)))
 
 (custom-add-hook 'tutcode-bushu-index2-filename
 		 'custom-activity-hooks
