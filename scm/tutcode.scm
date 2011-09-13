@@ -326,14 +326,16 @@
 ;;; (自動ヘルプ用の部首合成変換候補検索時の高速化用。ただし初回作成時が遅い)
 (define tutcode-reverse-bushudic-hash-table ())
 ;;; stroke-helpで、何もキー入力が無い場合に表示する内容のalist。
+;;; 表示したくない場合は~/.uimで()に設定するか、
+;;; tutcode-show-stroke-help-window-on-no-input?を#fに設定する。
 ;;; (毎回tutcode-ruleを全てなめて作成すると遅いし、
 ;;; 最初のページは固定内容なので、一度作成したものを使い回す)
-(define tutcode-stroke-help-top-page-alist ())
+(define tutcode-stroke-help-top-page-alist #f)
 ;;; stroke-helpで、何もキー入力が無い場合に表示する内容のalist。
 ;;; カタカナモード用。
 ;;; (XXX:キー入力有の場合もキャッシュを使うようにする?
 ;;;  もしそうすれば、~/.uimで仮想鍵盤表示内容のカスタマイズも容易になる)
-(define tutcode-stroke-help-top-page-katakana-alist ())
+(define tutcode-stroke-help-top-page-katakana-alist #f)
 
 ;;; コード表を上書き変更/追加するためのコード表。
 ;;; ~/.uimでtutcode-rule-set-sequences!で登録して、
@@ -1662,16 +1664,18 @@
              (label-cand-alist
               (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
                 (cond
+                  ((not tutcode-show-stroke-help-window-on-no-input?)
+                    ())
                   ((tutcode-kigou2-mode? pc)
                     tutcode-kigou-rule-stroke-help-top-page-alist)
                   (katakana?
-                    (if (null? tutcode-stroke-help-top-page-katakana-alist)
+                    (if (not tutcode-stroke-help-top-page-katakana-alist)
                       (set! tutcode-stroke-help-top-page-katakana-alist
                         (tutcode-stroke-help-update-alist
                           () seqlen katakana? ret)))
                     tutcode-stroke-help-top-page-katakana-alist)
                   (else
-                    (if (null? tutcode-stroke-help-top-page-alist)
+                    (if (not tutcode-stroke-help-top-page-alist)
                       (set! tutcode-stroke-help-top-page-alist
                         (tutcode-stroke-help-update-alist
                           () seqlen katakana? ret)))

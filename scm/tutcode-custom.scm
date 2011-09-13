@@ -250,6 +250,12 @@
   (N_ "Use stroke help window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-show-stroke-help-window-on-no-input? #t
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Show stroke help window on no input")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-auto-help-window? #f
   '(tutcode candwin)
   '(boolean)
