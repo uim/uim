@@ -1261,6 +1261,13 @@ void CustomTable::slotEditButtonClicked()
     TableEditForm dialog( this );
     dialog.setWindowTitle( _FU8( m_custom->label ) );
     dialog.setCustomTable( m_custom->value->as_table );
+    int column = 0;
+    for ( struct uim_custom_choice **item
+            = m_custom->range->as_table_header.valid_items;
+            *item; item++ ) {
+        dialog.setTableHeaderItem( _FU8( ( *item )->label ), column );
+        column++;
+    }
     if ( dialog.exec() == QDialog::Accepted ) {
         m_custom->value->as_table = dialog.customTable();
         setCustom( m_custom );
@@ -1273,7 +1280,6 @@ TableEditForm::TableEditForm( QWidget *parent )
 {
     m_table = new QTableWidget;
     m_table->setSelectionMode( QAbstractItemView::SingleSelection );
-    m_table->horizontalHeader()->setVisible( false );
     m_table->verticalHeader()->setVisible( false );
     connect( m_table, SIGNAL( itemSelectionChanged() ),
             this, SLOT( slotItemSelectionChanged() ) );
@@ -1391,6 +1397,14 @@ char ***TableEditForm::customTable() const
     }
 
     return custom_table;
+}
+
+void TableEditForm::setTableHeaderItem( const QString &item, int column )
+{
+    if ( column < m_table->columnCount() ) {
+        m_table->setHorizontalHeaderItem( column,
+                new QTableWidgetItem( item ) );
+    }
 }
 
 void TableEditForm::slotItemSelectionChanged()

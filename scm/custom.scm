@@ -121,14 +121,16 @@
 		key-repls))))
 
 (define custom-table?
-  (lambda (table-repls)
-    (and (list? table-repls)
-         (every (lambda (row)
-                  (and (list? row)
-                       (every (lambda (cell)
-                                (string? cell))
-                              row)))
-                table-repls))))
+  (lambda arg
+    (let ((syms (car arg))
+          (choice-rec-alist (cdr arg)))
+      (and (list? syms)
+           (every (lambda (row)
+                    (and (list? row)
+                         (every (lambda (cell)
+                                  (string? cell))
+                                row)))
+                  syms)))))
 
 (define custom-pathname-type
   (lambda (custom-sym)
@@ -658,7 +660,7 @@
     (let* ((type (custom-type sym))
 	   (attrs (custom-type-attrs sym)))
       (case type
-	((choice ordered-list)
+	((choice ordered-list table)
 	 (map custom-choice-rec-sym attrs))
 	((integer string)
 	 attrs)

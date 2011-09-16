@@ -1805,7 +1805,9 @@
 	     "long description will be here."))
      (uim '(define-custom 'test-case-table '(("abc" "ABC") ("def" "DEF"))
 	     '(test)
-	     '(table)
+	     '(table
+	       (lower-case "lower-case" "lower-case")
+	       (upper-case "upper-case" "upper-case"))
 	     "alphabet table"
 	     "long description will be here."))))
 
@@ -2279,7 +2281,8 @@
 		 (uim '(custom-type-attrs 'test-string)))
    (assert-equal '(regular-file)
 		 (uim '(custom-type-attrs 'test-dic-file-name)))
-   (assert-equal '()
+   (assert-equal '((lower-case "lower-case" "lower-case")
+                   (upper-case "upper-case" "upper-case"))
 		 (uim '(custom-type-attrs 'test-case-table))))
 
   ("test custom-range"
@@ -2297,7 +2300,7 @@
 		 (uim '(custom-range 'test-string)))
    (assert-equal ()
 		 (uim '(custom-range 'test-dic-file-name)))
-   (assert-equal ()
+   (assert-equal '(lower-case upper-case)
 		 (uim '(custom-range 'test-case-table))))
 
   ("test custom-label"

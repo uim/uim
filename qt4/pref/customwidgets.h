@@ -326,6 +326,8 @@ public:
     void setCustomTable( char ***custom_table );
     char ***customTable() const;
 
+    void setTableHeaderItem( const QString &item, int column );
+
 private:
     QTableWidget *m_table;
     QPushButton *m_removeButton;

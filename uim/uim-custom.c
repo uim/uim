@@ -210,6 +210,7 @@ static char ***uim_custom_table_get(const char *custom_sym, const char *getter_p
 static char *literalized_strdup(const char *str);
 static char *row_list_to_str(const char *const *list);
 static char *table_to_str(const char** const *list, const char *sep);
+static struct uim_custom_choice **uim_custom_table_header_item_list(const char *custom_sym);
 
 
 static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
@@ -862,6 +863,12 @@ table_to_str(const char** const *list, const char *sep)
 		       (char *(*)(const void *))row_list_to_str, sep);
 }
 
+static struct uim_custom_choice **
+uim_custom_table_header_item_list(const char *custom_sym)
+{
+  return uim_custom_choice_item_list(custom_sym);
+}
+
 static union uim_custom_value *
 uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
 {
@@ -991,6 +998,10 @@ uim_custom_range_get(const char *custom_sym)
     break;
   case UCustom_OrderedList:
     range->as_olist.valid_items = uim_custom_olist_item_list(custom_sym);
+    break;
+  case UCustom_Table:
+    range->as_table_header.valid_items
+        = uim_custom_table_header_item_list(custom_sym);
     break;
   }
 

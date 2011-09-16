@@ -487,7 +487,10 @@
 (define-custom 'ja-rk-rule-table-basic
                (ja-rk-rule-rule->table ja-rk-rule-basic)
                '(ja-rk-rule composing-rule)
-               '(table)
+               (list 'table
+                 (list 'input (N_ "Input") (N_ "Input"))
+		 (list 'next-input (N_ "Next intput") (N_ "Next input"))
+                 (list 'output (N_ "Output") (N_ "Output")))
                (N_ "Custom composing rule")
                (N_ "long description will be here."))
 

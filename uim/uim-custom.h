@@ -113,6 +113,10 @@ union uim_custom_range {
   struct {
     struct uim_custom_choice **valid_items;  /* contains all possible items */
   } as_olist;
+
+  struct {
+    struct uim_custom_choice **valid_items;
+  } as_table_header;
 };
 
 struct uim_custom {
