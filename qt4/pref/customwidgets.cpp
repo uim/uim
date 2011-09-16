@@ -1281,6 +1281,9 @@ TableEditForm::TableEditForm( QWidget *parent )
     m_table = new QTableWidget;
     m_table->setSelectionMode( QAbstractItemView::SingleSelection );
     m_table->verticalHeader()->setVisible( false );
+    QHeaderView *header = m_table->horizontalHeader();
+    header->setResizeMode( QHeaderView::ResizeToContents );
+    header->setStretchLastSection( true );
     connect( m_table, SIGNAL( itemSelectionChanged() ),
             this, SLOT( slotItemSelectionChanged() ) );
 
@@ -1360,6 +1363,8 @@ void TableEditForm::setTable( char ***custom_table )
                 item->setFlags( Qt::NoItemFlags );
             m_table->setItem( row, column, item );
         }
+        m_table->setRowHeight( row,
+                QFontMetrics( m_table->font() ).height() + 2 );
     }
     m_customTable = custom_table;
 }
