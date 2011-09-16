@@ -323,8 +323,8 @@ class TableEditForm : public QDialog
 public:
     TableEditForm( QWidget *parent );
 
-    void setCustomTable( char ***custom_table );
-    char ***customTable() const;
+    void setTable( char ***custom_table );
+    char ***table() const;
 
     void setTableHeaderItem( const QString &item, int column );
 

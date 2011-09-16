@@ -1260,7 +1260,7 @@ void CustomTable::slotEditButtonClicked()
 {
     TableEditForm dialog( this );
     dialog.setWindowTitle( _FU8( m_custom->label ) );
-    dialog.setCustomTable( m_custom->value->as_table );
+    dialog.setTable( m_custom->value->as_table );
     int column = 0;
     for ( struct uim_custom_choice **item
             = m_custom->range->as_table_header.valid_items;
@@ -1269,7 +1269,7 @@ void CustomTable::slotEditButtonClicked()
         column++;
     }
     if ( dialog.exec() == QDialog::Accepted ) {
-        m_custom->value->as_table = dialog.customTable();
+        m_custom->value->as_table = dialog.table();
         setCustom( m_custom );
         update();
     }
@@ -1333,7 +1333,7 @@ TableEditForm::TableEditForm( QWidget *parent )
     m_table->horizontalHeader()->adjustSize();
 }
 
-void TableEditForm::setCustomTable( char ***custom_table )
+void TableEditForm::setTable( char ***custom_table )
 {
     if ( !custom_table )
         return;
@@ -1364,7 +1364,7 @@ void TableEditForm::setCustomTable( char ***custom_table )
     m_customTable = custom_table;
 }
 
-char ***TableEditForm::customTable() const
+char ***TableEditForm::table() const
 {
     char ***custom_table = m_customTable;
     for ( int row = 0; custom_table[row]; row++ ) {
