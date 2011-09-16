@@ -49,13 +49,13 @@ KeyEditFormBase::KeyEditFormBase(QWidget *widget) : QDialog(widget)
     item->setText(0, _("Key Combination"));
 
     m_addButton = new QPushButton;
-    m_addButton->setText(_("Add"));
+    m_addButton->setText(_("Add..."));
 
     m_removeButton = new QPushButton;
     m_removeButton->setText(_("Remove"));
 
     m_editButton = new QPushButton;
-    m_editButton->setText(_("Edit"));
+    m_editButton->setText(_("Edit..."));
 
     QSpacerItem *spacer = new QSpacerItem(0, 0,
             QSizePolicy::Minimum, QSizePolicy::Expanding);

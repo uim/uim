@@ -359,7 +359,7 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
     m_lineEdit->setReadOnly( true );
 
     m_editButton = new QPushButton( this );
-    m_editButton->setText( _("Edit") );
+    m_editButton->setText( _("Edit...") );
     connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotEditButtonClicked()) );
 
@@ -638,7 +638,7 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent )
     m_lineEdit->setReadOnly( true );
 
     m_editButton = new QPushButton( this );
-    m_editButton->setText( _("Edit") );
+    m_editButton->setText( _("Edit...") );
     connect( m_editButton, SIGNAL(clicked()),
                       this, SLOT(slotKeyButtonClicked()) );
 
@@ -1201,7 +1201,7 @@ CustomTable::CustomTable( struct uim_custom *c, QWidget *parent )
       UimCustomItemIface( c )
 {
     QPushButton *editButton = new QPushButton;
-    editButton->setText( _("Edit") );
+    editButton->setText( _("Edit...") );
     connect( editButton, SIGNAL(clicked()),
             this, SLOT(slotEditButtonClicked()) );
 
