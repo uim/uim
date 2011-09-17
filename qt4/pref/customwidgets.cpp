@@ -1427,6 +1427,8 @@ void TableEditForm::slotAddClicked()
     m_table->insertRow( row );
     for ( int i = 0; i < m_table->columnCount(); i++ )
         m_table->setItem( row, i, new QTableWidgetItem( "" ) );
+    m_table->setRowHeight( row,
+            QFontMetrics( m_table->font() ).height() + 2 );
     m_table->scrollToItem( m_table->item( row, 0 ) );
 }
 
