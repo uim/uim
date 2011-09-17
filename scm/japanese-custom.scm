@@ -485,7 +485,7 @@
                (N_ "long description will be here."))
 
 (define-custom 'ja-rk-rule-table-basic
-               (ja-rk-rule-rule->table ja-rk-rule-basic)
+               (ja-rk-rule-rule->table ja-rk-rule-basic-uim)
                '(ja-rk-rule composing-rule)
                (list 'table
                  (list 'input (N_ "Input") (N_ "Input"))
