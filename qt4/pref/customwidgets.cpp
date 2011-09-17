@@ -1280,10 +1280,13 @@ TableEditForm::TableEditForm( QWidget *parent )
 {
     m_table = new QTableWidget;
     m_table->setSelectionMode( QAbstractItemView::SingleSelection );
-    m_table->verticalHeader()->setVisible( false );
-    QHeaderView *header = m_table->horizontalHeader();
-    header->setResizeMode( QHeaderView::ResizeToContents );
-    header->setStretchLastSection( true );
+    QHeaderView *verticalHeader = m_table->verticalHeader();
+    verticalHeader->setVisible( false );
+    verticalHeader->setDefaultSectionSize( 
+            QFontMetrics( m_table->font() ).height() + 2 );
+    QHeaderView *horizontalHeader = m_table->horizontalHeader();
+    horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
+    horizontalHeader->setStretchLastSection( true );
     connect( m_table, SIGNAL( itemSelectionChanged() ),
             this, SLOT( slotItemSelectionChanged() ) );
 
@@ -1363,8 +1366,6 @@ void TableEditForm::setTable( char ***custom_table )
                 item->setFlags( Qt::NoItemFlags );
             m_table->setItem( row, column, item );
         }
-        m_table->setRowHeight( row,
-                QFontMetrics( m_table->font() ).height() + 2 );
     }
     m_customTable = custom_table;
 }
@@ -1427,8 +1428,6 @@ void TableEditForm::slotAddClicked()
     m_table->insertRow( row );
     for ( int i = 0; i < m_table->columnCount(); i++ )
         m_table->setItem( row, i, new QTableWidgetItem( "" ) );
-    m_table->setRowHeight( row,
-            QFontMetrics( m_table->font() ).height() + 2 );
     m_table->scrollToItem( m_table->item( row, 0 ) );
 }
 
