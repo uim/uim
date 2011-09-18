@@ -341,12 +341,7 @@
 		 (lambda ()
 		   tutcode-use-candidate-window?))
 
-(custom-add-hook 'tutcode-nr-candidate-max-for-prediction
-		 'custom-activity-hooks
-		 (lambda ()
-		   tutcode-use-candidate-window?))
-
-(custom-add-hook 'tutcode-nr-candidate-max-for-guide
+(custom-add-hook 'tutcode-nr-candidate-max-for-history
 		 'custom-activity-hooks
 		 (lambda ()
 		   tutcode-use-candidate-window?))
@@ -372,12 +367,16 @@
         (custom-set-value!
           'tutcode-nr-candidate-max-for-guide
           (- (length tutcode-table-heading-label-char-list-for-kigou-mode)
-             (length tutcode-heading-label-char-list-for-prediction))))
+             (length tutcode-heading-label-char-list-for-prediction)))
+        (custom-set-value!
+          'tutcode-nr-candidate-max-for-history
+          (length tutcode-table-heading-label-char-list)))
       (begin
         (custom-set-value! 'tutcode-nr-candidate-max 10)
         (custom-set-value! 'tutcode-nr-candidate-max-for-kigou-mode 10)
         (custom-set-value! 'tutcode-nr-candidate-max-for-prediction 10)
-        (custom-set-value! 'tutcode-nr-candidate-max-for-guide 10)))))
+        (custom-set-value! 'tutcode-nr-candidate-max-for-guide 10)
+        (custom-set-value! 'tutcode-nr-candidate-max-for-history 10)))))
 
 (custom-add-hook 'tutcode-candidate-window-table-layout
 		 'custom-activity-hooks
