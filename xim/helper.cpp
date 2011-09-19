@@ -108,8 +108,10 @@ send_im_list(void)
 	    return;
 	len = static_cast<int>(strlen(buf) + strlen(tmp));
 	buf = (char *)realloc(buf, sizeof(char) * len + 1);
-	if (!buf)
+	if (!buf) {
+	    free(tmp);
 	    return;
+        }
 	strcat(buf, tmp);
 	free(tmp);
 
@@ -119,8 +121,10 @@ send_im_list(void)
 		return;
 	    len = static_cast<int>(strlen(buf) + strlen(tmp));
 	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
-	    if (!buf)
+	    if (!buf) {
+		free(tmp);
 		return;
+            }
 	    strcat(buf, tmp);
 	    free(tmp);
 	} else {
@@ -129,8 +133,10 @@ send_im_list(void)
 		return;
 	    len = static_cast<int>(strlen(buf) + strlen(tmp));
 	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
-	    if (!buf)
+	    if (!buf) {
+		free(tmp);
 		return;
+            }
 	    strcat(buf, tmp);
 	    free(tmp);
 	}
