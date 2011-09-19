@@ -495,7 +495,7 @@ word_window_add(WordWindow *window)
     g_free(phonetic);
     g_free(literal);
     g_free(cclass_desc);
-    g_free(word);
+    free(word);
 #endif
   } else {
     ret = 0;
