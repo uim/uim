@@ -1258,21 +1258,22 @@ void CustomTable::setDefault()
 
 void CustomTable::slotEditButtonClicked()
 {
-    TableEditForm dialog( this );
-    dialog.setWindowTitle( _FU8( m_custom->label ) );
-    dialog.setTable( m_custom->value->as_table );
+    QPointer<TableEditForm> d = new TableEditForm( this );
+    d->setWindowTitle( _FU8( m_custom->label ) );
+    d->setTable( m_custom->value->as_table );
     int column = 0;
     for ( struct uim_custom_choice **item
             = m_custom->range->as_table_header.valid_items;
             *item; item++ ) {
-        dialog.setTableHeaderItem( _FU8( ( *item )->label ), column );
+        d->setTableHeaderItem( _FU8( ( *item )->label ), column );
         column++;
     }
-    if ( dialog.exec() == QDialog::Accepted ) {
-        m_custom->value->as_table = dialog.table();
+    if ( d->exec() == QDialog::Accepted ) {
+        m_custom->value->as_table = d->table();
         setCustom( m_custom );
         update();
     }
+    delete d;
 }
 
 TableEditForm::TableEditForm( QWidget *parent )
