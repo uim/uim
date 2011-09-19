@@ -914,6 +914,7 @@ uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
     value->as_table = uim_custom_table_get(custom_sym, getter_proc);
     break;
   default:
+    free(value);
     value = NULL;
   }
 
@@ -1330,6 +1331,9 @@ uim_custom_save_group(const char *group)
 
  error:
   free(tmp_file_path);
+
+  if (file)
+    fclose(file);
 
   return succeeded;
 }
