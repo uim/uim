@@ -326,6 +326,7 @@ alloc_id( uim_lisp name_ )
     if ( uuid.empty() )
     {
         uim_notify_fatal( "uim-scim: failed to search uuid" );
+        delete context;
         return uim_scm_f();
     }
     context->factory = be->get_factory( uuid );
@@ -338,6 +339,7 @@ alloc_id( uim_lisp name_ )
     if ( context->instance.null() )
     {
         uim_notify_fatal("uim-scim: failed to create IMEngineInstance");
+        delete context;
         return uim_scm_f();
     }
 
