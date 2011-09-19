@@ -730,8 +730,11 @@ void im_uim_create_compose_tree()
 	}
     }
 
-    if (name[0] == '\0' && !get_compose_filename(name, sizeof(name)))
+    if (name[0] == '\0' && !get_compose_filename(name, sizeof(name))) {
+        if (fp)
+            fclose(fp);
 	return;
+    }
 
     if (fp == NULL && ((fp = fopen(name, "r")) == NULL))
 	return;
