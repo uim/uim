@@ -177,6 +177,7 @@ load_configration(const char *filename)
     parse_config_line(line);
     free(line);
   }
+  fclose(fp);
 
   /* open file and load config */
 }
