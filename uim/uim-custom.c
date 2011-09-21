@@ -1307,8 +1307,11 @@ uim_custom_save_group(const char *group)
   }
   uim_custom_symbol_list_free(custom_syms);
 
-  if (fclose(file) < 0)
+  if (fclose(file) < 0) {
+    file = NULL;
     goto error;
+  }
+  file = NULL;
 
   /* rename prepared temporary file to proper name */
   file_path = custom_file_path(group, 0);
