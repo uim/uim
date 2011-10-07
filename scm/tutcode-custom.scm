@@ -268,6 +268,48 @@
   (N_ "Show real keys on auto help window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-candidate-window-activate-delay-for-mazegaki 0
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for mazegaki [s]")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-activate-delay-for-stroke-help 2
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for stroke help [s]")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-activate-delay-for-auto-help 1
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for auto help [s]")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-activate-delay-for-completion 2
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for completion [s]")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-activate-delay-for-prediction 2
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for prediction [s]")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-activate-delay-for-bushu-prediction 2
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for bushu prediction [s]")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-activate-delay-for-interactive-bushu 1
+  '(tutcode candwin)
+  '(integer 0 65535)
+  (N_ "Delay before showing candidate window for interactive bushu conversion [s]")
+  (N_ "long description will be here."))
+
 ;; prediction/completion
 (define-custom 'tutcode-use-completion? #f
   '(tutcode tutcode-prediction)

@@ -45,6 +45,7 @@
 #include "compose.h"
 
 #define UIM_XIM_USE_NEW_PAGE_HANDLING 1
+#define UIM_XIM_USE_DELAY 1
 
 // preedit ornament
 #define PE_NORMAL 0
@@ -102,6 +103,10 @@ void update_default_xftfont();
 void reload_uim(int x);
 void check_candwin_style();
 void check_candwin_pos_type();
+#if UIM_XIM_USE_DELAY
+void timer_set(int seconds, void (*timeout_cb)(void *ptr), void *ptr);
+void timer_cancel();
+#endif
 
 
 // for command line option
@@ -176,6 +181,10 @@ public:
     void pushback_preedit_string(int attr, const char *str);
     void update_preedit();
     void candidate_activate(int nr, int display_limit);
+#if UIM_XIM_USE_DELAY
+    void candidate_activate_with_delay(int nr, int display_limit);
+    void candidate_activate_timeout();
+#endif
     void candidate_select(int index);
     void candidate_shift_page(int direction);
     void candidate_deactivate();
@@ -203,6 +212,10 @@ public:
     static void pushback_cb(void *ptr, int attr, const char *str);
     static void update_cb(void *ptr);
     static void candidate_activate_cb(void *ptr, int nr, int index);
+#if UIM_XIM_USE_DELAY
+    static void candidate_activate_with_delay_cb(void *ptr, int nr, int display_limit);
+    static void candidate_activate_timeout_cb(void *ptr);
+#endif
     static void candidate_select_cb(void *ptr, int index);
     static void candidate_shift_page_cb(void *ptr, int direction);
     static void candidate_deactivate_cb(void *ptr);

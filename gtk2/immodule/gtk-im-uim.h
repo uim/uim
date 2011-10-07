@@ -55,6 +55,8 @@
 
 /* enable per page candidates handling */
 #define IM_UIM_USE_NEW_PAGE_HANDLING	1
+/* enable delay showing candidate window */
+#define IM_UIM_USE_DELAY	1
 
 typedef struct _IMUIMContext {
   struct _GtkIMContext parent;

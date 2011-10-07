@@ -111,6 +111,7 @@ typedef struct _IMContextUIMClass
 } IMContextUIMClass;
 
 
+static void cand_select_cb(void *ptr, int index);
 static void im_uim_class_init(GtkIMContextClass *class);
 static void im_uim_class_finalize(GtkIMContextClass *class);
 static void im_uim_init(IMUIMContext *uic);
@@ -729,6 +730,45 @@ free_candidates(GSList *candidates)
   g_slist_free(candidates);
 }
 #endif /* IM_UIM_USE_NEW_PAGE_HANDLING */
+
+static void
+negotiate_scm(IMUIMContext *uic, int *nr, int *display_limit)
+{
+  gint negotiated_scm = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(uic->cwin), "negotiated_scm"));
+  /* XXX: get nr and display_limit for delay || negotiate with scm side */
+  if (*nr < 0 || !negotiated_scm) {
+    int cmd = 0;
+    if (*nr < 0) {
+      cmd = 0x4000; /* get nr and display_limit for delay */
+    } else {
+      if (UIM_IS_CAND_WIN_TBL_GTK(uic->cwin)) {
+        cmd |= 0x1000; /* adjust display_limit for table style candwin */
+      }
+#if IM_UIM_USE_DELAY
+      if (uim_scm_symbol_value_bool("candidate-window-use-delay?")) {
+        cmd |= 0x2000; /* notify delay support */
+      }
+#endif
+      g_object_set_data(G_OBJECT(uic->cwin), "negotiated_scm", GINT_TO_POINTER(1));
+    }
+    if (cmd >= 0x1000) {
+      uim_candidate c;
+      const char *s, *p;
+      c = uim_get_candidate(uic->uc, 0, cmd);
+      s = uim_candidate_get_annotation_str(c);
+#define LEN_DISPLAY_LIMIT 14
+      if (strncmp(s, "display_limit=", LEN_DISPLAY_LIMIT) == 0) {
+        *display_limit = atoi(s + LEN_DISPLAY_LIMIT);
+      }
+      if (*nr < 0) {
+        if ((p = strstr(s, "nr=")) != NULL) {
+          *nr = atoi(p + 3);
+        }
+      }
+      uim_candidate_free(c);
+    }
+  }
+}
  
 static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
@@ -739,20 +779,16 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
   uim_candidate cand;
   gint i;
 #endif
+#if IM_UIM_USE_DELAY
+  uim_lisp idx_delay;
+#endif
 
   uic->cwin_is_active = TRUE;
 
-  /* XXX: adjust display_limit for UIMCandWinTblGtk */
-  if (UIM_IS_CAND_WIN_TBL_GTK(uic->cwin) && nr > display_limit) {
-    uim_candidate c;
-    const char *s;
-    c = uim_get_candidate(uic->uc, 0, 9999);
-    s = uim_candidate_get_annotation_str(c);
-#define LEN_DISPLAY_LIMIT 14
-    if (strncmp(s, "display_limit=", LEN_DISPLAY_LIMIT) == 0) {
-      display_limit = atoi(s + LEN_DISPLAY_LIMIT);
-    }
-    uim_candidate_free(c);
+  negotiate_scm(uic, &nr, &display_limit);
+  if (nr <= 0) {
+    uic->cwin_is_active = FALSE;
+    return;
   }
 #if !IM_UIM_USE_NEW_PAGE_HANDLING
   for (i = 0; i < nr; i++) {
@@ -785,7 +821,62 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
     toplevel = gdk_window_get_toplevel(uic->win);
     gdk_window_add_filter(toplevel, toplevel_window_candidate_cb, uic);
   }
+
+#if IM_UIM_USE_DELAY
+  idx_delay = uim_scm_symbol_value("candidate-window-delay-selected-index");
+  if (!uim_scm_falsep(idx_delay)) {
+    long idx = uim_scm_c_int(idx_delay);
+    if (idx >= 0) {
+      cand_select_cb(uic, idx);
+    }
+  }
+#endif
 }
+
+#if IM_UIM_USE_DELAY
+static gint
+cand_activate_timeout(gpointer data)
+{
+  IMUIMContext *uic = (IMUIMContext *)data;
+  gint nr, display_limit;
+
+  g_object_set_data(G_OBJECT(uic->cwin), "timeout-tag", GUINT_TO_POINTER(0));
+  nr = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(uic->cwin), "nr-candidates"));
+  display_limit = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(uic->cwin), "display-limit"));
+  cand_activate_cb(uic, nr, display_limit);
+  return FALSE;
+}
+
+static void
+cand_delay_timer_remove(UIMCandWinGtk *cwin)
+{
+  guint tag = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(cwin), "timeout-tag"));
+  if (tag > 0)
+    g_source_remove(tag);
+}
+
+static void
+cand_activate_with_delay_cb(void *ptr, int nr, int display_limit)
+{
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+  long timeout;
+  guint tag;
+
+  cand_delay_timer_remove(uic->cwin);
+
+  g_object_set_data(G_OBJECT(uic->cwin), "nr-candidates", GINT_TO_POINTER(nr));
+  g_object_set_data(G_OBJECT(uic->cwin), "display-limit", GINT_TO_POINTER(display_limit));
+  timeout = uim_scm_symbol_value_int("candidate-window-activate-delay");
+  if (timeout > 0) {
+    /* g_timeout_add_seconds() needs GLib 2.14 */
+    tag = g_timeout_add(timeout * 1000, cand_activate_timeout, (gpointer)uic);
+
+    g_object_set_data(G_OBJECT(uic->cwin), "timeout-tag", GUINT_TO_POINTER(tag));
+  } else {
+    cand_activate_timeout(ptr);
+  }
+}
+#endif /* IM_UIM_USE_DELAY */
 
 static void
 cand_select_cb(void *ptr, int index)
@@ -850,6 +941,9 @@ cand_deactivate_cb(void *ptr)
   uic->cwin_is_active = FALSE;
 
   if (uic->cwin) {
+#if IM_UIM_USE_DELAY
+    cand_delay_timer_remove(uic->cwin);
+#endif
     gtk_widget_hide(GTK_WIDGET(uic->cwin));
     uim_cand_win_gtk_clear_candidates(uic->cwin);
   }
@@ -1133,6 +1227,9 @@ update_candwin_style()
     if (cc->cwin) {
       g_signal_handlers_disconnect_by_func(cc->cwin,
 		      (gpointer)(uintptr_t)index_changed_cb, cc);
+#if IM_UIM_USE_DELAY
+      cand_delay_timer_remove(cc->cwin);
+#endif
       gtk_widget_destroy(GTK_WIDGET(cc->cwin));
 #if IM_UIM_USE_TOPLEVEL
       cwin_list = g_list_remove(cwin_list, cc->cwin);
@@ -1517,6 +1614,9 @@ im_uim_finalize(GObject *obj)
   uic->prev->next = uic->next;
 
   if (uic->cwin) {
+#if IM_UIM_USE_DELAY
+    cand_delay_timer_remove(uic->cwin);
+#endif
     gtk_widget_destroy(GTK_WIDGET(uic->cwin));
 #if IM_UIM_USE_TOPLEVEL
     cwin_list = g_list_remove(cwin_list, uic->cwin);
@@ -1586,6 +1686,7 @@ im_module_create(const gchar *context_id)
   GObject *obj;
   IMUIMContext *uic;
   const char *im_name;
+  void (*activate_cb)(void *ptr, int nr, int display_limit) = cand_activate_cb;
 
   g_return_val_if_fail(context_id, NULL);
   g_return_val_if_fail(!strcmp(context_id, "uim"), NULL);
@@ -1610,7 +1711,12 @@ im_module_create(const gchar *context_id)
 
   uim_set_preedit_cb(uic->uc, clear_cb, pushback_cb, update_cb);
   uim_set_prop_list_update_cb(uic->uc, update_prop_list_cb);
-  uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
+#if IM_UIM_USE_DELAY
+  if (uim_scm_symbol_value_bool("candidate-window-use-delay?")) {
+    activate_cb = cand_activate_with_delay_cb;
+  }
+#endif
+  uim_set_candidate_selector_cb(uic->uc, activate_cb, cand_select_cb,
 				cand_shift_page_cb, cand_deactivate_cb);
   uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);
   uim_set_im_switch_request_cb(uic->uc,

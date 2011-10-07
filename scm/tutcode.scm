@@ -205,13 +205,11 @@
 ;;;        ど忘れした場合、<Control>.キーで補完。熟語ガイドで+付きの「蓋」の
 ;;;        表示に従って1,2,3打鍵を入力。
 ;;;
-;;; - (理想的には、次の打鍵がしばらく無い場合に補完/予測入力候補を表示したいの
-;;;    ですが、現状のuimにはタイマが無いので、打鍵直後に表示されます。
-;;;    1文字入力するごとに表示されると邪魔なことが多いので、
-;;;    デフォルトでは2文字入力時に表示する設定にしています:
-;;;      tutcode-completion-chars-min, tutcode-prediction-start-char-count。
-;;;    この場合でも、1文字入力後に<Control>.キー(tutcode-begin-completion-key)
-;;;    により補完/予測入力候補の表示が可能です。)
+;;; * 次の打鍵がしばらく無い場合に補完/予測入力候補を表示するには、
+;;;   候補ウィンドウが遅延表示に対応していれば、以下の設定で可能です。
+;;;     candidate-window-use-delay?を#tに設定し、
+;;;     tutcode-candidate-window-activate-delay-for-{completion,prediction}
+;;;     の値を1[秒]以上に設定。
 ;;;
 ;;; 【部首合成変換時の予測入力】
 ;;;   部首合成変換辞書を検索して、入力された部首が含まれる項目を表示。
@@ -482,6 +480,46 @@
 ;;; 自動ヘルプ作成時間上限[s]
 (define tutcode-auto-help-time-limit 3)
 
+;;; 候補ウィンドウ表示待ち時間[s]
+(define candidate-window-activate-delay 0)
+;;; 候補ウィンドウの遅延表示待ち中に選択された候補のインデックス番号
+(define candidate-window-delay-selected-index -1)
+;;; 候補ウィンドウが遅延表示に対応しているかどうか
+(define tutcode-candidate-window-delay-support? #f)
+;;; 遅延表示の目的:ユーザが入力時にヘルプや補完の処理完了を待たずにすむように。
+;;;  + 自動ヘルプの作成に少し時間がかかるため、自動ヘルプが表示されるまでの間に
+;;;    以降の文字のキー入力をしても入力した文字が表示されない問題に対処
+;;;  + 一定時間キー入力が無い場合のみヘルプ(仮想鍵盤)や補完/予測入力候補表示
+;;;    (迷わず入力している間は余計なヘルプは表示しない)
+;;; 遅延表示の流れ:
+;;; candwin                        tutcode.scm
+;;;  [candwin表示時]
+;;;                                候補リストを作成しnr,display_limitを計算
+;;;                                candidate-window-activate-delayを設定
+;;;                            <-- im-activate-candidate-selector (nr>=0)
+;;;  candidate-window-activate-delayの値が0より大きければタイマ設定して待つ
+;;;  タイマ満了
+;;;                            --> get-candidate-handler (候補を返す)
+;;;  候補表示
+;;;
+;;; さらに、candwinが遅延表示対応なことをscm側が認識すれば、
+;;; 候補リストの作成も遅延可能:
+;;;  [candwinが遅延表示対応なことをscm側に通知(現状はcandwin初回表示時)]
+;;;  --(accel-enum-hint|#x2000)--> get-candidate-handler
+;;;                                  tutcode-candidate-window-delay-support? #t
+;;;  [次回以降のcandwin表示時(遅延表示)]
+;;;                                candidate-window-activate-delayを設定
+;;;                            <-- im-activate-candidate-selector (nr=-1)
+;;;  candidate-window-activate-delayの値が0より大きければタイマ設定して待つ
+;;;  タイマ満了
+;;;  --(accel-enum-hint|#x4000)--> get-candidate-handler
+;;;                                  候補リストを作成し、nr,display_limitを返す
+;;;                            --> get-candidate-handler (候補を返す)
+;;;  候補表示
+;;;
+;;; (タイマ満了前にキー入力等によりim-{de,}activate-candidate-selector
+;;;  が呼ばれたらタイマキャンセル)
+
 ;;; 熟語ガイド用マーク
 (define tutcode-guide-mark "+")
 ;;; 熟語ガイド用終了マーク
@@ -693,6 +731,8 @@
      ;;; 'tutcode-candidate-window-interactive-bushu 対話的部首合成変換候補表示
      ;;; 'tutcode-candidate-window-history ヒストリ入力候補表示中
      (list 'candidate-window 'tutcode-candidate-window-off)
+     ;;; 候補ウィンドウの遅延表示待ち中かどうか
+     (list 'candwin-delay-waiting #f)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
      (list 'stroke-help ())
@@ -1498,7 +1538,7 @@
             (tutcode-check-candidate-window-begin pc)
             (if (eq? (tutcode-context-candidate-window pc)
                      'tutcode-candidate-window-converting)
-              (im-select-candidate pc 0))))
+              (tutcode-select-candidate pc 0))))
         #t)
       ;; 候補無し
       (begin
@@ -1580,7 +1620,7 @@
   (tutcode-check-candidate-window-begin pc)
   (if (eq? (tutcode-context-candidate-window pc)
            'tutcode-candidate-window-kigou)
-    (im-select-candidate pc 0)))
+    (tutcode-select-candidate pc 0)))
 
 ;;; ヒストリ入力の候補表示を開始する
 (define (tutcode-begin-history pc)
@@ -1594,7 +1634,7 @@
       (tutcode-check-candidate-window-begin pc)
       (if (eq? (tutcode-context-candidate-window pc)
                'tutcode-candidate-window-hisory)
-        (im-select-candidate pc 0)))))
+        (tutcode-select-candidate pc 0)))))
 
 ;;; 2ストローク記号入力モード(tutcode-kigou-rule)とtutcode-ruleの切り替えを行う
 ;;; @param pc コンテキストリスト
@@ -1610,6 +1650,7 @@
       (set! tutcode-use-stroke-help-window-another? tmp-stroke-help?)
       (tutcode-context-set-guide-chars! pc ()))))
 
+;;; 交ぜ書き変換・記号入力モード・ヒストリ入力モード時に
 ;;; 候補ウィンドウの表示を開始する
 (define (tutcode-check-candidate-window-begin pc)
   (if (and (eq? (tutcode-context-candidate-window pc)
@@ -1617,100 +1658,133 @@
            tutcode-use-candidate-window?
            (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
     (let ((state (tutcode-context-state pc)))
-      (tutcode-context-set-candidate-window! pc
+      (tutcode-activate-candidate-window pc
         (case state
           ((tutcode-state-kigou) 'tutcode-candidate-window-kigou)
           ((tutcode-state-history) 'tutcode-candidate-window-history)
-          (else 'tutcode-candidate-window-converting)))
-      (im-activate-candidate-selector
-        pc
+          (else 'tutcode-candidate-window-converting))
+        tutcode-candidate-window-activate-delay-for-mazegaki
         (tutcode-context-nr-candidates pc)
         (case state
           ((tutcode-state-kigou) tutcode-nr-candidate-max-for-kigou-mode)
           ((tutcode-state-history) tutcode-nr-candidate-max-for-history)
           (else tutcode-nr-candidate-max))))))
 
+;;; 候補ウィンドウを表示する
+;;; @param type 候補ウィンドウタイプ
+;;; @param delay 候補ウィンドウ表示までの待ち時間[s]
+;;; @param nr 候補数。delay後に計算する場合は-1
+;;; @param display-limit ページ内候補数
+(define (tutcode-activate-candidate-window pc type delay nr display-limit)
+  (tutcode-context-set-candidate-window! pc type)
+  (tutcode-context-set-candwin-delay-waiting! pc #t)
+  (set! candidate-window-delay-selected-index -1)
+  (set! candidate-window-activate-delay delay)
+  (im-activate-candidate-selector pc nr display-limit))
+
+;;; 候補ウィンドウ上で候補を選択する
+;;; @param idx 選択する候補のインデックス番号
+(define (tutcode-select-candidate pc idx)
+  (if (tutcode-context-candwin-delay-waiting pc)
+    ;; 遅延表示待ち中はcandwinは未作成のためim-select-candidateするとSEGV。
+    ;; (XXX (uim api-docに合わせて)candwin側で対処した方がいいかもしれないが、
+    ;;      ブリッジごとに対応が必要なので、とりあえずscm側で。)
+    (set! candidate-window-delay-selected-index idx)
+    (im-select-candidate pc idx)))
+
+;;; 仮想鍵盤に表示する候補リストを作って返す
+;;; @return 候補リスト(get-candidate-handler用形式)
+(define (tutcode-stroke-help-make pc)
+  (let*
+    ((rkc (tutcode-context-rk-context pc))
+     (seq (rk-context-seq rkc))
+     (seqlen (length seq))
+     (seq-rev (reverse seq))
+     (guide-seqs
+      (and
+        (pair? seq)
+        (pair? (tutcode-context-guide-chars pc))
+        (rk-lib-find-partial-seqs seq-rev (tutcode-context-guide-chars pc))))
+     (guide-alist (tutcode-stroke-help-guide-update-alist () seqlen
+                    (if (pair? guide-seqs) guide-seqs ())))
+     ;; 例:(("v" "玉+") ("a" "倉+") ("r" "石+"))
+     (guide-candcombined
+      (map
+        (lambda (elem)
+          (list (car elem) (string-list-concat (cdr elem))))
+        guide-alist))
+     ;; stroke-help. 例:(("k" "あ") ("i" "い") ("g" "*贈"))
+     (label-cand-alist
+      (if (or tutcode-use-stroke-help-window?
+              (and
+                (pair? guide-seqs)
+                (eq? tutcode-stroke-help-with-kanji-combination-guide 'full)))
+        (let*
+          ((rule (rk-context-rule rkc))
+           (ret (rk-lib-find-partial-seqs seq-rev rule))
+           (katakana? (tutcode-context-katakana-mode? pc))
+           (label-cand-alist
+            (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
+              (cond
+                ((not tutcode-show-stroke-help-window-on-no-input?)
+                  ())
+                ((tutcode-kigou2-mode? pc)
+                  tutcode-kigou-rule-stroke-help-top-page-alist)
+                (katakana?
+                  (if (not tutcode-stroke-help-top-page-katakana-alist)
+                    (set! tutcode-stroke-help-top-page-katakana-alist
+                      (tutcode-stroke-help-update-alist
+                        () seqlen katakana? ret)))
+                  tutcode-stroke-help-top-page-katakana-alist)
+                (else
+                  (if (not tutcode-stroke-help-top-page-alist)
+                    (set! tutcode-stroke-help-top-page-alist
+                      (tutcode-stroke-help-update-alist
+                        () seqlen katakana? ret)))
+                  tutcode-stroke-help-top-page-alist))
+              (tutcode-stroke-help-update-alist () seqlen katakana? ret))))
+          ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
+          (for-each
+            (lambda (elem)
+              (let*
+                ((label (car elem))
+                 (label-cand (assoc label label-cand-alist)))
+                (if label-cand
+                  (set-cdr! label-cand (cdr elem)))))
+            guide-candcombined)
+          label-cand-alist)
+        (if (eq? tutcode-stroke-help-with-kanji-combination-guide 'guide-only)
+          guide-candcombined
+          ()))))
+    (if (null? label-cand-alist)
+      ()
+      (map
+        (lambda (elem)
+          (list (cadr elem) (car elem) ""))
+        (reverse label-cand-alist)))))
+
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
   (if (eq? (tutcode-context-candidate-window pc) 'tutcode-candidate-window-off)
-    (let*
-      ((rkc (tutcode-context-rk-context pc))
-       (seq (rk-context-seq rkc))
-       (seqlen (length seq))
-       (seq-rev (reverse seq))
-       (guide-seqs
-        (and
-          (pair? seq)
-          (pair? (tutcode-context-guide-chars pc))
-          (rk-lib-find-partial-seqs seq-rev (tutcode-context-guide-chars pc))))
-       (guide-alist (tutcode-stroke-help-guide-update-alist () seqlen
-                      (if (pair? guide-seqs) guide-seqs ())))
-       ;; 例:(("v" "玉+") ("a" "倉+") ("r" "石+"))
-       (guide-candcombined
-        (map
-          (lambda (elem)
-            (list (car elem) (string-list-concat (cdr elem))))
-          guide-alist))
-       ;; stroke-help. 例:(("k" "あ") ("i" "い") ("g" "*贈"))
-       (label-cand-alist
-        (if (or tutcode-use-stroke-help-window?
-                (and
-                  (pair? guide-seqs)
-                  (eq? tutcode-stroke-help-with-kanji-combination-guide 'full)))
-          (let*
-            ((rule (rk-context-rule rkc))
-             (ret (rk-lib-find-partial-seqs seq-rev rule))
-             (katakana? (tutcode-context-katakana-mode? pc))
-             (label-cand-alist
-              (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
-                (cond
-                  ((not tutcode-show-stroke-help-window-on-no-input?)
-                    ())
-                  ((tutcode-kigou2-mode? pc)
-                    tutcode-kigou-rule-stroke-help-top-page-alist)
-                  (katakana?
-                    (if (not tutcode-stroke-help-top-page-katakana-alist)
-                      (set! tutcode-stroke-help-top-page-katakana-alist
-                        (tutcode-stroke-help-update-alist
-                          () seqlen katakana? ret)))
-                    tutcode-stroke-help-top-page-katakana-alist)
-                  (else
-                    (if (not tutcode-stroke-help-top-page-alist)
-                      (set! tutcode-stroke-help-top-page-alist
-                        (tutcode-stroke-help-update-alist
-                          () seqlen katakana? ret)))
-                    tutcode-stroke-help-top-page-alist))
-                (tutcode-stroke-help-update-alist () seqlen katakana? ret))))
-            ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
-            (for-each
-              (lambda (elem)
-                (let*
-                  ((label (car elem))
-                   (label-cand (assoc label label-cand-alist)))
-                  (if label-cand
-                    (set-cdr! label-cand (cdr elem)))))
-              guide-candcombined)
-            label-cand-alist)
-          (if (eq? tutcode-stroke-help-with-kanji-combination-guide 'guide-only)
-            guide-candcombined
-            ()))))
-      (if (not (null? label-cand-alist))
-        (let
-          ((stroke-help
-            (map
-              (lambda (elem)
-                (list (cadr elem) (car elem) ""))
-              (reverse label-cand-alist))))
-          (tutcode-context-set-stroke-help! pc stroke-help)
-          (tutcode-context-set-candidate-window! pc
-            'tutcode-candidate-window-stroke-help)
-          (im-activate-candidate-selector pc
-            (length stroke-help) tutcode-nr-candidate-max-for-kigou-mode))))))
+    (if tutcode-candidate-window-delay-support?
+      ;; XXX:何も表示しない場合にはタイマも動かないようにしたいところ
+      (tutcode-activate-candidate-window pc
+        'tutcode-candidate-window-stroke-help
+        tutcode-candidate-window-activate-delay-for-stroke-help
+        -1
+        tutcode-nr-candidate-max-for-kigou-mode)
+      (let ((stroke-help (tutcode-stroke-help-make pc)))
+        (if (pair? stroke-help)
+          (begin
+            (tutcode-context-set-stroke-help! pc stroke-help)
+            (tutcode-activate-candidate-window pc
+              'tutcode-candidate-window-stroke-help
+              tutcode-candidate-window-activate-delay-for-stroke-help
+              (length stroke-help)
+              tutcode-nr-candidate-max-for-kigou-mode)))))))
 
 ;;; 仮想鍵盤の表示を行うかどうかの設定を一時的に切り替える(トグル)。
-;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。
-;;;  XXX: tc2だと、一定時間以内に次の打鍵が無かったら仮想鍵盤を
-;;;  表示するようになっているが、現状のuimで同じことをするのは難しそう。)
+;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。)
 (define (tutcode-toggle-stroke-help pc)
   (if tutcode-use-stroke-help-window?
     (begin
@@ -1841,7 +1915,7 @@
           (list label tutcode-guide-end-mark cand))
         label-cands-alist))))
 
-;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
+;;; 自動ヘルプ表示のための候補リストを作成する。
 ;;; 表形式の候補ウィンドウの場合は、以下のように表示する。
 ;;; 1が第1打鍵、2が第2打鍵。「携」
 ;;;  ・・・・        ・・・・
@@ -1872,34 +1946,51 @@
 ;;;
 ;;; @param strlist 確定した文字列のリスト(逆順)
 ;;; @param yomilist 変換前の読みの文字列のリスト(逆順)
+;;; @return 候補リスト(get-candidate-handler用形式)
+(define (tutcode-auto-help-make pc strlist yomilist)
+  (let*
+    ((helpstrlist (lset-difference string=? (reverse strlist) yomilist))
+     (label-cands-alist
+      (if (not tutcode-auto-help-with-real-keys?)
+        ;; 表形式の場合の例:(("y" "2" "1") ("t" "3"))
+        (tutcode-auto-help-update-stroke-alist
+          pc () tutcode-auto-help-cand-str-list helpstrlist)
+        ;; 通常の場合の例:(("暗" "t" "y" "y"))
+        (reverse
+          (tutcode-auto-help-update-stroke-alist-normal pc () helpstrlist)))))
+    (if (null? label-cands-alist)
+      ()
+      (map
+        (lambda (elem)
+          (list (string-list-concat (cdr elem)) (car elem) ""))
+        label-cands-alist))))
+
+;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
+;;; @param strlist 確定した文字列のリスト(逆順)
+;;; @param yomilist 変換前の読みの文字列のリスト(逆順)
 (define (tutcode-check-auto-help-window-begin pc strlist yomilist)
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-auto-help-window?)
     (begin
       (tutcode-context-set-guide-chars! pc ())
-      (let*
-        ((helpstrlist (lset-difference string=? (reverse strlist) yomilist))
-         (label-cands-alist
-          (if (not tutcode-auto-help-with-real-keys?)
-            ;; 表形式の場合の例:(("y" "2" "1") ("t" "3"))
-            (tutcode-auto-help-update-stroke-alist
-              pc () tutcode-auto-help-cand-str-list helpstrlist)
-            ;; 通常の場合の例:(("暗" "t" "y" "y"))
-            (reverse
-              (tutcode-auto-help-update-stroke-alist-normal pc () helpstrlist)))))
-        (if (not (null? label-cands-alist))
-          (let
-            ((auto-help
-              (map
-                (lambda (elem)
-                  (list (string-list-concat (cdr elem)) (car elem) ""))
-                label-cands-alist)))
-            (tutcode-context-set-auto-help! pc auto-help)
-            (tutcode-context-set-candidate-window! pc
-              'tutcode-candidate-window-auto-help)
-            (im-activate-candidate-selector pc
-              (length auto-help) tutcode-nr-candidate-max-for-kigou-mode)))))))
+      (if tutcode-candidate-window-delay-support?
+        (begin
+          (tutcode-context-set-auto-help! pc (list 'delaytmp strlist yomilist))
+          (tutcode-activate-candidate-window pc
+            'tutcode-candidate-window-auto-help
+            tutcode-candidate-window-activate-delay-for-auto-help
+            -1
+            tutcode-nr-candidate-max-for-kigou-mode))
+        (let ((auto-help (tutcode-auto-help-make pc strlist yomilist)))
+          (if (pair? auto-help)
+            (begin
+              (tutcode-context-set-auto-help! pc auto-help)
+              (tutcode-activate-candidate-window pc
+                'tutcode-candidate-window-auto-help
+                tutcode-candidate-window-activate-delay-for-auto-help
+                (length auto-help)
+                tutcode-nr-candidate-max-for-kigou-mode))))))))
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
@@ -2123,13 +2214,14 @@
 ;;; 自動ヘルプ:直近の自動ヘルプを再表示する
 (define (tutcode-auto-help-redisplay pc)
   (let ((help (tutcode-context-auto-help pc)))
-    (if (and help (> (length help) 0))
-      (begin
-        (tutcode-context-set-candidate-window! pc
-          'tutcode-candidate-window-auto-help)
-        (im-activate-candidate-selector pc
-          (length help)
-          tutcode-nr-candidate-max-for-kigou-mode)))))
+    (if (and help
+             (> (length help) 0)
+             (not (eq? (car help) 'delaytmp)))
+      (tutcode-activate-candidate-window pc
+        'tutcode-candidate-window-auto-help
+        0
+        (length help)
+        tutcode-nr-candidate-max-for-kigou-mode))))
 
 ;;; preedit表示を更新する。
 (define (tutcode-do-update-preedit pc)
@@ -2248,6 +2340,40 @@
         (or (>= len tutcode-completion-chars-min)
             (and force-check?
                  (> len 0)))
+        (if (and (not force-check?)
+                 tutcode-candidate-window-delay-support?)
+          (tutcode-activate-candidate-window pc
+            'tutcode-candidate-window-predicting
+            tutcode-candidate-window-activate-delay-for-completion
+            -1
+            tutcode-nr-candidate-max-for-prediction)
+          (if (tutcode-check-completion-make pc force-check? num)
+            (tutcode-activate-candidate-window pc
+              'tutcode-candidate-window-predicting
+              (if force-check?
+                0
+                tutcode-candidate-window-activate-delay-for-completion)
+              (tutcode-context-prediction-nr-all pc)
+              (tutcode-context-prediction-page-limit pc))))))))
+
+;;; 補完候補を検索して候補リストを作成する
+;;; @param force-check? 必ず検索を行うかどうか。
+;;;  #fの場合は文字数が設定値未満の場合は検索しない。
+;;; @param num commit-strsから検索対象にする文字数。0の場合は全て。
+;;; @return #t:表示する候補あり, #f:表示する候補なし
+(define (tutcode-check-completion-make pc force-check? num)
+  (tutcode-context-set-commit-strs-used-len! pc 0)
+  (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
+    (let* ((commit-strs-all (tutcode-context-commit-strs pc))
+           (commit-strs
+            (if (> num 0)
+              (take commit-strs-all num)
+              commit-strs-all))
+           (len (length commit-strs)))
+      (if
+        (or (>= len tutcode-completion-chars-min)
+            (and force-check?
+                 (> len 0)))
         (let ((str (string-list-concat commit-strs)))
           (tutcode-lib-set-prediction-src-string pc str #t)
           (let ((nr (tutcode-lib-get-nr-predictions pc)))
@@ -2270,23 +2396,51 @@
                     (tutcode-context-set-prediction-page-limit! pc page-limit)
                     (tutcode-context-set-prediction-nr-all! pc nr-all)
                     (tutcode-context-set-prediction-index! pc 0)
-                    (tutcode-context-set-candidate-window! pc
-                      'tutcode-candidate-window-predicting)
                     (tutcode-context-set-predicting! pc
-                      'tutcode-predicting-completion)
-                    (im-activate-candidate-selector pc nr-all page-limit))))
+                      'tutcode-predicting-completion)))
+                #t)
               ;; 補完候補が見つからない場合、1文字削った文字列を使って再検索
               ;; (直接tutcode-context-set-commit-strs!で文字を削ると、
               ;;  間違った文字を入力してBackspaceで消したときに、
               ;;  以前入力した文字列が削られているため、期待した補完にならない
               ;;  恐れあり。速度的には、直接削る方が速いけど)
               (if (> len 1)
-                (tutcode-check-completion pc force-check? (- len 1))))))))))
+                (tutcode-check-completion-make pc force-check? (- len 1))
+                #f))))
+        #f))
+    #f))
 
 ;;; 交ぜ書き変換中に予測入力候補を検索して候補ウィンドウに表示する
 ;;; @param force-check? 必ず検索を行うかどうか。
 ;;;  #fの場合は文字数が設定値未満の場合は検索しない。
 (define (tutcode-check-prediction pc force-check?)
+  (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
+    (let* ((head (tutcode-context-head pc))
+           (preedit-len (length head)))
+      (if
+        (or (>= preedit-len tutcode-prediction-start-char-count)
+            force-check?)
+        (if (and (not force-check?)
+                 tutcode-candidate-window-delay-support?)
+          (tutcode-activate-candidate-window pc
+            'tutcode-candidate-window-predicting
+            tutcode-candidate-window-activate-delay-for-prediction
+            -1
+            tutcode-nr-candidate-max-for-prediction)
+          (if (tutcode-check-prediction-make pc force-check?)
+            (tutcode-activate-candidate-window pc
+              'tutcode-candidate-window-predicting
+              (if force-check?
+                0
+                tutcode-candidate-window-activate-delay-for-prediction)
+              (tutcode-context-prediction-nr-all pc)
+              (tutcode-context-prediction-page-limit pc))))))))
+
+;;; 予測入力候補を検索して候補リストを作る
+;;; @param force-check? 必ず検索を行うかどうか。
+;;;  #fの場合は文字数が設定値未満の場合は検索しない。
+;;; @return #t:表示する候補あり, #f:表示する候補なし
+(define (tutcode-check-prediction-make pc force-check?)
   (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
     (let* ((head (tutcode-context-head pc))
            (preedit-len (length head)))
@@ -2315,25 +2469,42 @@
                   (tutcode-context-set-prediction-page-limit! pc page-limit)
                   (tutcode-context-set-prediction-nr-all! pc nr-all)
                   (tutcode-context-set-prediction-index! pc 0)
-                  (tutcode-context-set-candidate-window! pc
-                    'tutcode-candidate-window-predicting)
                   (tutcode-context-set-predicting! pc
                     'tutcode-predicting-prediction)
-                  (im-activate-candidate-selector pc nr-all page-limit))))))
-        (tutcode-reset-candidate-window pc)))))
+                  #t)
+                #f))
+            #f))
+        #f))
+    #f))
 
-;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
+;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに(遅延)表示する
 ;;; @param char 入力された部首1
 (define (tutcode-check-bushu-prediction pc char)
-  (case tutcode-bushu-conversion-algorithm
-    ((tc-2.3.1-22.6)
-      (tutcode-check-bushu-prediction-tc23 pc char))
-    (else ; 'tc-2.1+ml1925
-      (tutcode-check-bushu-prediction-tc21 pc char))))
+  (if tutcode-candidate-window-delay-support?
+    (begin
+      (tutcode-context-set-prediction-bushu! pc char) ; 遅延呼出時用に一時保持
+      (tutcode-activate-candidate-window pc
+        'tutcode-candidate-window-predicting
+        tutcode-candidate-window-activate-delay-for-bushu-prediction
+        -1
+        tutcode-nr-candidate-max-for-prediction))
+    (tutcode-check-bushu-prediction-with-delay pc char
+      tutcode-candidate-window-activate-delay-for-bushu-prediction)))
 
 ;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
 ;;; @param char 入力された部首1
-(define (tutcode-check-bushu-prediction-tc21 pc char)
+;;; @param delay 表示待ち時間[s]。遅延呼出しの最中に候補リストを作成する時は-1
+(define (tutcode-check-bushu-prediction-with-delay pc char delay)
+  (case tutcode-bushu-conversion-algorithm
+    ((tc-2.3.1-22.6)
+      (tutcode-check-bushu-prediction-tc23 pc char delay))
+    (else ; 'tc-2.1+ml1925
+      (tutcode-check-bushu-prediction-tc21 pc char delay))))
+
+;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
+;;; @param char 入力された部首1
+;;; @param delay 表示待ち時間[s]
+(define (tutcode-check-bushu-prediction-tc21 pc char delay)
   (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
     (let* ((res (tutcode-bushu-predict char tutcode-bushudic))
            (alt (assoc char tutcode-bushudic-altchar))
@@ -2343,11 +2514,12 @@
               ()))
            (resall (append res altres)))
       (tutcode-context-set-prediction-bushu! pc resall)
-      (tutcode-bushu-prediction-show-page pc 0))))
+      (tutcode-bushu-prediction-show-page pc 0 delay))))
 
 ;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
 ;;; @param char 入力された部首1
-(define (tutcode-check-bushu-prediction-tc23 pc char)
+;;; @param delay 表示待ち時間[s]
+(define (tutcode-check-bushu-prediction-tc23 pc char delay)
   (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
     (let*
       ((gosei (tutcode-bushu-compose-tc23 (list char) #f))
@@ -2357,11 +2529,12 @@
             (list #f elem))
           gosei)))
       (tutcode-context-set-prediction-bushu! pc res)
-      (tutcode-bushu-prediction-show-page pc 0))))
+      (tutcode-bushu-prediction-show-page pc 0 delay))))
 
 ;;; 部首合成変換の予測入力候補のうち、指定された番号から始まる候補を表示する。
 ;;; @param start-index 開始番号
-(define (tutcode-bushu-prediction-show-page pc start-index)
+;;; @param delay 表示待ち時間[s]
+(define (tutcode-bushu-prediction-show-page pc start-index delay)
   (tutcode-lib-set-bushu-prediction pc start-index)
   (let ((nr (tutcode-lib-get-nr-predictions pc)))
     (if (and nr (> nr 0))
@@ -2382,10 +2555,13 @@
             (tutcode-context-set-prediction-page-limit! pc page-limit)
             (tutcode-context-set-prediction-nr-all! pc nr-all)
             (tutcode-context-set-prediction-index! pc 0)
-            (tutcode-context-set-candidate-window! pc
-              'tutcode-candidate-window-predicting)
             (tutcode-context-set-predicting! pc 'tutcode-predicting-bushu)
-            (im-activate-candidate-selector pc nr-all page-limit)))))))
+            (if (>= delay 0) ; -1の場合は遅延呼び出しされている最中
+              (tutcode-activate-candidate-window pc
+                'tutcode-candidate-window-predicting
+                delay
+                nr-all
+                page-limit))))))))
 
 ;;; 補完候補と熟語ガイド表示のためのcandwin用パラメータを計算する
 ;;; @param nr 補完候補数
@@ -3043,7 +3219,7 @@
         (tutcode-commit-by-label-key-for-kigou-mode pc (charcode->string key))
         (if (eq? (tutcode-context-candidate-window pc)
                  'tutcode-candidate-window-kigou)
-          (im-select-candidate pc (tutcode-context-nth pc))))
+          (tutcode-select-candidate pc (tutcode-context-nth pc))))
       ((tutcode-next-candidate-key? key key-state)
         (tutcode-change-candidate-index pc 1))
       ((tutcode-prev-candidate-key? key key-state)
@@ -3560,12 +3736,11 @@
       ((null? res)
         (tutcode-context-set-head! pc (cdr (tutcode-context-head pc)))
         (if (> (tutcode-context-prediction-nr pc) 0)
-          (begin
-            (tutcode-context-set-candidate-window! pc
-              'tutcode-candidate-window-interactive-bushu)
-            (im-activate-candidate-selector pc
-              (tutcode-context-prediction-nr-all pc)
-              (tutcode-context-prediction-page-limit pc)))))
+          (tutcode-activate-candidate-window pc
+            'tutcode-candidate-window-interactive-bushu
+            tutcode-candidate-window-activate-delay-for-interactive-bushu
+            (tutcode-context-prediction-nr-all pc)
+            (tutcode-context-prediction-page-limit pc))))
       (else
         (let ((nr (length res)))
           (tutcode-context-set-prediction-word! pc ())
@@ -3584,9 +3759,11 @@
                 (tutcode-context-set-prediction-nr-in-page! pc nr-in-page)
                 (tutcode-context-set-prediction-page-limit! pc page-limit)
                 (tutcode-context-set-prediction-nr-all! pc nr-all)
-                (tutcode-context-set-candidate-window! pc
-                  'tutcode-candidate-window-interactive-bushu)
-                (im-activate-candidate-selector pc nr-all page-limit)))))))))
+                (tutcode-activate-candidate-window pc
+                  'tutcode-candidate-window-interactive-bushu
+                  tutcode-candidate-window-activate-delay-for-interactive-bushu
+                  nr-all
+                  page-limit)))))))))
 
 ;;; 新しい候補を選択する
 ;;; @param pc コンテキストリスト
@@ -3612,7 +3789,7 @@
       (tutcode-check-candidate-window-begin pc)
       (if (not (eq? (tutcode-context-candidate-window pc)
                     'tutcode-candidate-window-off))
-        (im-select-candidate pc (tutcode-context-nth pc))))))
+        (tutcode-select-candidate pc (tutcode-context-nth pc))))))
 
 ;;; 新しい補完/予測入力候補を選択する
 ;;; @param num 現在の候補番号から新候補番号までのオフセット
@@ -3626,7 +3803,7 @@
            ((< n 0) 0)
            (else n))))
     (tutcode-context-set-prediction-index! pc compensated-n)
-    (im-select-candidate pc compensated-n)))
+    (tutcode-select-candidate pc compensated-n)))
 
 ;;; 次/前ページの補完/予測入力候補を表示する
 ;;; @param next? #t:次ページ, #f:前ページ
@@ -3642,7 +3819,7 @@
               (if next?
                 tutcode-nr-candidate-max-for-prediction
                 (- tutcode-nr-candidate-max-for-prediction)))))
-    (tutcode-bushu-prediction-show-page pc n)))
+    (tutcode-bushu-prediction-show-page pc n 0)))
 
 ;;; 候補ウィンドウを閉じる
 (define (tutcode-reset-candidate-window pc)
@@ -3671,7 +3848,7 @@
   (tutcode-check-candidate-window-begin pc)
   (if (eq? (tutcode-context-candidate-window pc)
            'tutcode-candidate-window-converting)
-    (im-select-candidate pc (tutcode-context-nth pc)))
+    (tutcode-select-candidate pc (tutcode-context-nth pc)))
   (tutcode-context-set-state! pc 'tutcode-state-converting))
 
 ;;; 入力されたキーが候補ラベル文字かどうかを調べる
@@ -4468,34 +4645,110 @@
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
 (define (tutcode-get-candidate-handler c idx accel-enum-hint)
   (let ((tc (tutcode-find-descendant-context c)))
+    (tutcode-context-set-candwin-delay-waiting! tc #f)
     (cond
-      ((= accel-enum-hint 9999) ;XXX 表形式候補ウィンドウからのdisplay_limit調整時
-        (set! tutcode-nr-candidate-max (length tutcode-heading-label-char-list))
-        (set! tutcode-nr-candidate-max-for-kigou-mode
-          (length tutcode-heading-label-char-list-for-kigou-mode))
-        (set! tutcode-nr-candidate-max-for-history
-          (length tutcode-heading-label-char-list-for-history))
-        (set! tutcode-nr-candidate-max-for-prediction
-          (length tutcode-heading-label-char-list-for-prediction))
-        (set! tutcode-nr-candidate-max-for-guide
-          (- tutcode-nr-candidate-max-for-kigou-mode
-             tutcode-nr-candidate-max-for-prediction))
-        (list "" ""
-          (string-append "display_limit="
-            (number->string
-              (cond
-                ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
-                  tutcode-nr-candidate-max-for-kigou-mode)
-                ((eq? (tutcode-context-state tc) 'tutcode-state-history)
-                  tutcode-nr-candidate-max-for-history)
-                ((eq? (tutcode-context-state tc)
-                      'tutcode-state-interactive-bushu)
-                  (tutcode-context-prediction-page-limit tc))
-                ((not (eq? (tutcode-context-predicting tc)
-                           'tutcode-predicting-off))
-                  (tutcode-context-prediction-page-limit tc))
-                (else
-                  tutcode-nr-candidate-max))))))
+      ;;XXX 表形式候補ウィンドウからのdisplay_limit調整時等。
+      ;;    (API追加する方が良いが影響範囲が大きくなるのでまずは既存の枠組内で)
+      ;;    (表形式候補ウィンドウの無いブリッジを併用する場合(ほとんど無い?)、
+      ;;     表形式候補ウィンドウ用display_limitは大きすぎるので、
+      ;;     uim-prefではnr-candidate-max値は小さい値に設定しておき、
+      ;;     表形式候補ウィンドウのactivate時にdisplay_limitをnegotiate)
+      ((>= accel-enum-hint #x1000)
+        (if (logtest accel-enum-hint #x2000) ; 候補ウィンドウはdelay表示対応
+          (set! tutcode-candidate-window-delay-support? #t))
+        (if (logtest accel-enum-hint #x1000) ; 表形式candwin向けに候補数調整
+          (begin
+            (set! tutcode-nr-candidate-max
+              (length tutcode-heading-label-char-list))
+            (set! tutcode-nr-candidate-max-for-kigou-mode
+              (length tutcode-heading-label-char-list-for-kigou-mode))
+            (set! tutcode-nr-candidate-max-for-history
+              (length tutcode-heading-label-char-list-for-history))
+            (set! tutcode-nr-candidate-max-for-prediction
+              (length tutcode-heading-label-char-list-for-prediction))
+            (set! tutcode-nr-candidate-max-for-guide
+              (- tutcode-nr-candidate-max-for-kigou-mode
+                 tutcode-nr-candidate-max-for-prediction))))
+        (let*
+          ((delay? (logtest accel-enum-hint #x4000)) ; 遅延表示
+           (res
+            (cond
+              ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
+                (list tutcode-nr-candidate-max-for-kigou-mode
+                      (and delay? (tutcode-context-nr-candidates tc))))
+              ((eq? (tutcode-context-state tc) 'tutcode-state-history)
+                (list tutcode-nr-candidate-max-for-history
+                      (and delay? (tutcode-context-nr-candidates tc))))
+              ((eq? (tutcode-context-candidate-window tc)
+                    'tutcode-candidate-window-predicting)
+                (case (tutcode-context-state tc)
+                  ((tutcode-state-bushu)
+                    (if delay?
+                      (tutcode-check-bushu-prediction-with-delay tc
+                        (tutcode-context-prediction-bushu tc) -1)) ; 候補作成
+                    (list (tutcode-context-prediction-page-limit tc)
+                          (and delay? (tutcode-context-prediction-nr-all tc))))
+                  ((tutcode-state-on)
+                    (if delay?
+                      (if (tutcode-check-completion-make tc #f 0)
+                        (list (tutcode-context-prediction-page-limit tc)
+                              (tutcode-context-prediction-nr-all tc))
+                        (list (tutcode-context-prediction-page-limit tc)
+                              0))
+                      (list (tutcode-context-prediction-page-limit tc)
+                            #f)))
+                  ((tutcode-state-yomi)
+                    (if delay?
+                      (if (tutcode-check-prediction-make tc #f)
+                        (list (tutcode-context-prediction-page-limit tc)
+                              (tutcode-context-prediction-nr-all tc))
+                        (list (tutcode-context-prediction-page-limit tc)
+                              0))
+                      (list (tutcode-context-prediction-page-limit tc)
+                            #f)))))
+              ((eq? (tutcode-context-candidate-window tc)
+                    'tutcode-candidate-window-stroke-help)
+                (if delay?
+                  (let ((stroke-help (tutcode-stroke-help-make tc)))
+                    (if (pair? stroke-help)
+                      (begin
+                        (tutcode-context-set-stroke-help! tc stroke-help)
+                        (list tutcode-nr-candidate-max-for-kigou-mode
+                              (length stroke-help)))
+                      (list tutcode-nr-candidate-max-for-kigou-mode 0)))
+                  (list tutcode-nr-candidate-max-for-kigou-mode #f)))
+              ((eq? (tutcode-context-candidate-window tc)
+                    'tutcode-candidate-window-auto-help)
+                (if delay?
+                  (let*
+                    ((tmp (cdr (tutcode-context-auto-help tc)))
+                     (strlist (car tmp))
+                     (yomilist (cadr tmp))
+                     (auto-help (tutcode-auto-help-make tc strlist yomilist)))
+                    (if (pair? auto-help)
+                      (begin
+                        (tutcode-context-set-auto-help! tc auto-help)
+                        (list tutcode-nr-candidate-max-for-kigou-mode
+                              (length auto-help)))
+                      (list tutcode-nr-candidate-max-for-kigou-mode 0)))
+                  (list tutcode-nr-candidate-max-for-kigou-mode #f)))
+              ((eq? (tutcode-context-state tc)
+                    'tutcode-state-interactive-bushu)
+                (list (tutcode-context-prediction-page-limit tc)
+                      (and delay? (tutcode-context-prediction-nr-all tc))))
+              ((eq? (tutcode-context-candidate-window tc)
+                    'tutcode-candidate-window-converting)
+                (list tutcode-nr-candidate-max
+                      (and delay? (tutcode-context-nr-candidates tc))))
+              (else
+                (list tutcode-nr-candidate-max
+                      (and delay? 0)))))
+           (nrstr (if delay?
+                    (string-append " nr=" (number->string (cadr res)))
+                    "")))
+          (list "" ""
+            (string-append "display_limit=" (number->string (car res))
+                           nrstr))))
       ;; 記号入力
       ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
         (let* ((cand (tutcode-get-nth-candidate-for-kigou-mode tc idx))
@@ -4512,7 +4765,8 @@
                (label (nth n tutcode-heading-label-char-list-for-history)))
           (list cand label "")))
       ;; 補完/予測入力候補
-      ((not (eq? (tutcode-context-predicting tc) 'tutcode-predicting-off))
+      ((eq? (tutcode-context-candidate-window tc)
+            'tutcode-candidate-window-predicting)
         (let*
           ((nr-in-page (tutcode-context-prediction-nr-in-page tc))
            (page-limit (tutcode-context-prediction-page-limit tc))
@@ -4580,11 +4834,14 @@
            (label (nth n tutcode-heading-label-char-list-for-prediction)))
           (list cand label "")))
       ;; 交ぜ書き変換
-      (else
+      ((eq? (tutcode-context-candidate-window tc)
+            'tutcode-candidate-window-converting)
         (let* ((cand (tutcode-get-nth-candidate tc idx))
                (n (remainder idx (length tutcode-heading-label-char-list)))
                (label (nth n tutcode-heading-label-char-list)))
-          (list cand label ""))))))
+          (list cand label "")))
+      (else
+        (list "" "" "")))))
 
 ;;; 候補ウィンドウが候補を選択したときに呼ぶ関数。
 ;;; 選択された候補を確定する。

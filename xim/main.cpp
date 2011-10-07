@@ -43,6 +43,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sys/select.h>
+#include <time.h>
 
 #include "xim.h"
 #include "xdispatch.h"
@@ -91,6 +92,13 @@ static std::map<unsigned int, WindowIf *> window_watch_stat;
 static char *supported_locales;
 std::list<UIMInfo> uim_info;
 static void check_pending_xevent(void);
+
+#if UIM_XIM_USE_DELAY
+static void timer_check(void);
+static void *timer_ptr;
+static void (*timer_cb)(void *ptr);
+static time_t timer_time;
+#endif
 
 bool
 pretrans_register()
@@ -143,7 +151,11 @@ static void main_loop()
     while (1) {
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
+#if UIM_XIM_USE_DELAY
+	tv.tv_sec = 1;
+#else
 	tv.tv_sec = 2;
+#endif
 	tv.tv_usec = 0;
 
 	std::map<int, fd_watch_struct>::iterator it;
@@ -159,6 +171,9 @@ static void main_loop()
 	}
 	if ((select(fd_max + 1, &rfds, &wfds, NULL, &tv)) == 0) {
 	    check_pending_xevent();
+#if UIM_XIM_USE_DELAY
+	    timer_check();
+#endif
 	    continue;
 	}
 
@@ -178,6 +193,9 @@ static void main_loop()
 		break;
 	    ++it;
 	}
+#if UIM_XIM_USE_DELAY
+	timer_check();
+#endif
     }
 }
 
@@ -337,6 +355,31 @@ xEventRead(int /* fd */, int /* ev */)
 {
     check_pending_xevent();
 }
+
+#if UIM_XIM_USE_DELAY
+static void
+timer_check(void)
+{
+    if (timer_time > 0 && time(NULL) >= timer_time) {
+	timer_time = 0;
+	timer_cb(timer_ptr);
+    }
+}
+
+void
+timer_set(int seconds, void (*timeout_cb)(void *ptr), void *ptr)
+{
+    timer_time = time(NULL) + seconds;
+    timer_cb = timeout_cb;
+    timer_ptr = ptr;
+}
+
+void
+timer_cancel()
+{
+    timer_time = 0;
+}
+#endif
 
 static void
 error_handler_setup()
