@@ -430,12 +430,6 @@
   (N_ "Candidate window position")
   (N_ "long description will be here."))
 
-(define-custom 'candidate-window-use-delay? #f
-  '(global visual-preference)
-  '(boolean)
-  (N_ "Use delay showing candidate window")
-  (N_ "long description will be here."))
-
 (define-custom 'enable-lazy-loading? #t
   '(global advanced)
   '(boolean)

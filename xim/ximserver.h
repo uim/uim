@@ -182,7 +182,7 @@ public:
     void update_preedit();
     void candidate_activate(int nr, int display_limit);
 #if UIM_XIM_USE_DELAY
-    void candidate_activate_with_delay(int nr, int display_limit);
+    void candidate_activate_with_delay(int delay);
     void candidate_activate_timeout();
 #endif
     void candidate_select(int index);
@@ -213,7 +213,7 @@ public:
     static void update_cb(void *ptr);
     static void candidate_activate_cb(void *ptr, int nr, int index);
 #if UIM_XIM_USE_DELAY
-    static void candidate_activate_with_delay_cb(void *ptr, int nr, int display_limit);
+    static void candidate_activate_with_delay_cb(void *ptr, int delay);
     static void candidate_activate_timeout_cb(void *ptr);
 #endif
     static void candidate_select_cb(void *ptr, int index);

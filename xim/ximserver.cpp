@@ -421,18 +421,12 @@ InputContext::createUimContext(const char *engine)
 					InputContext::commit_cb);
 
     if (uc) {
-	void (*activate_cb)(void *, int, int) = InputContext::candidate_activate_cb;
-#if UIM_XIM_USE_DELAY
-	if (uim_scm_symbol_value_bool("candidate-window-use-delay?")) {
-	    activate_cb = InputContext::candidate_activate_with_delay_cb;
-	}
-#endif
 	uim_set_preedit_cb(uc,
 			InputContext::clear_cb,
 			InputContext::pushback_cb,
 			InputContext::update_cb);
 	uim_set_candidate_selector_cb(uc,
-			activate_cb,
+			InputContext::candidate_activate_cb,
 			InputContext::candidate_select_cb,
 			InputContext::candidate_shift_page_cb,
 			InputContext::candidate_deactivate_cb);
@@ -447,6 +441,10 @@ InputContext::createUimContext(const char *engine)
 	uim_set_im_switch_request_cb(uc,
 			InputContext::switch_app_global_im_cb,
 			InputContext::switch_system_global_im_cb);
+#if UIM_XIM_USE_DELAY
+	uim_set_delay_candidate_selector_cb(uc,
+			InputContext::candidate_activate_with_delay_cb);
+#endif
 
 	if (mFocusedContext == this)
 	    uim_prop_list_update(uc);
@@ -645,10 +643,10 @@ void InputContext::candidate_activate_cb(void *ptr, int nr, int display_limit)
 }
 
 #if UIM_XIM_USE_DELAY
-void InputContext::candidate_activate_with_delay_cb(void *ptr, int nr, int display_limit)
+void InputContext::candidate_activate_with_delay_cb(void *ptr, int delay)
 {
     InputContext *ic = (InputContext *)ptr;
-    ic->candidate_activate_with_delay(nr, display_limit);
+    ic->candidate_activate_with_delay(delay);
 }
 
 void InputContext::candidate_activate_timeout_cb(void *ptr)
@@ -844,16 +842,12 @@ void InputContext::candidate_activate(int nr, int display_limit)
 #endif
     std::vector<const char *> candidates;
     std::vector<const char *>::iterator it;
-#if UIM_XIM_USE_DELAY
-    uim_lisp idx_delay;
-#endif
 
+#if UIM_XIM_USE_DELAY
+    timer_cancel();
+#endif
     Canddisp *disp = canddisp_singleton();
 
-    disp->negotiate_scm(mUc, &nr, &display_limit);
-    if (nr <= 0) {
-        return;
-    }
     mDisplayLimit = display_limit;
     if (display_limit)
 	mNumPage = (nr - 1) / display_limit + 1;
@@ -913,28 +907,14 @@ void InputContext::candidate_activate(int nr, int display_limit)
     current_cand_selection = 0;
     current_page = 0;
     need_hilite_selected_cand = false;
-
-#if UIM_XIM_USE_DELAY
-    idx_delay = uim_scm_symbol_value("candidate-window-delay-selected-index");
-    if (!uim_scm_falsep(idx_delay)) {
-	long idx = uim_scm_c_int(idx_delay);
-	if (idx >= 0) {
-	    InputContext::candidate_select_cb(this, static_cast<int>(idx));
-	}
-    }
-#endif
 }
 
 #if UIM_XIM_USE_DELAY
-void InputContext::candidate_activate_with_delay(int nr, int display_limit)
+void InputContext::candidate_activate_with_delay(int delay)
 {
     timer_cancel();
-    mNumCandidates = nr;
-    mDisplayLimit = display_limit;
-    int timeout = static_cast<int>(uim_scm_symbol_value_int(
-	    "candidate-window-activate-delay"));
-    if (timeout > 0) {
-	timer_set(timeout, InputContext::candidate_activate_timeout_cb, this);
+    if (delay > 0) {
+	timer_set(delay, InputContext::candidate_activate_timeout_cb, this);
     } else {
 	candidate_activate_timeout();
     }
@@ -942,7 +922,14 @@ void InputContext::candidate_activate_with_delay(int nr, int display_limit)
 
 void InputContext::candidate_activate_timeout()
 {
-    candidate_activate(mNumCandidates, mDisplayLimit);
+    int nr = -1, display_limit = -1, selected_index = -1;
+    uim_delay_activating(mUc, &nr, &display_limit, &selected_index);
+    if (nr > 0) {
+	candidate_activate(nr, display_limit);
+	if (selected_index >= 0) {
+	    candidate_select(selected_index);
+	}
+    }
 }
 #endif
 

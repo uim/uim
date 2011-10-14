@@ -69,6 +69,13 @@ struct uim_get_candidate_args {
   int enum_hint;
 };
 static void *uim_get_candidate_internal(struct uim_get_candidate_args *args);
+struct uim_delay_activating_args {
+  uim_context uc;
+  int nr;
+  int display_limit;
+  int selected_index;
+};
+static void *uim_delay_activating_internal(struct uim_delay_activating_args *);
 static uim_lisp get_nth_im(uim_context uc, int nth);
 #ifdef ENABLE_ANTHY_STATIC
 void uim_anthy_plugin_instance_init(void);
@@ -786,6 +793,62 @@ uim_init_notify_subrs(void)
   uim_scm_init_proc1("uim-notify-fatal", notify_fatal);
 }
 #endif  /* !UIM_USE_NOTIFY_PLUGINS */
+
+void
+uim_set_delay_candidate_selector_cb(uim_context uc,
+                                    void (*delay_activate_cb)(void *ptr,
+                                                              int delay))
+{
+  if (UIM_CATCH_ERROR_BEGIN())
+    return;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uc);
+
+  uc->candidate_selector_delay_activate_cb = delay_activate_cb;
+
+  UIM_CATCH_ERROR_END();
+}
+
+void
+uim_delay_activating(uim_context uc, int *nr, int *display_limit, int *selected_index)
+{
+  struct uim_delay_activating_args args;
+
+  if (UIM_CATCH_ERROR_BEGIN())
+    return;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uc);
+
+  args.uc = uc;
+  args.nr = *nr;
+  args.display_limit = *display_limit;
+  args.selected_index = *selected_index;
+
+  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_delay_activating_internal, &args);
+  *nr = args.nr;
+  *display_limit = args.display_limit;
+  *selected_index = args.selected_index;
+
+  UIM_CATCH_ERROR_END();
+}
+
+static void *
+uim_delay_activating_internal(struct uim_delay_activating_args *args)
+{
+  uim_context uc;
+  uim_lisp triple;
+
+  uc = args->uc;
+  triple = uim_scm_callf("delay-activating-handler", "p", uc);
+  if (LISTP(triple) && uim_scm_length(triple) == 3) {
+    args->nr = C_INT(CAR(triple));
+    args->display_limit = C_INT(CAR(CDR(triple)));
+    args->selected_index = C_INT(CAR(CDR(CDR(triple))));
+  }
+  return NULL;
+}
 
 /****************************************************************
  * Legacy 'mode' API                                            *

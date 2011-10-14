@@ -268,6 +268,12 @@
   (N_ "Show real keys on auto help window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-candidate-window-use-delay? #f
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Use delay showing candidate window")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-candidate-window-activate-delay-for-mazegaki 0
   '(tutcode candwin)
   '(integer 0 65535)

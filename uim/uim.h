@@ -689,6 +689,31 @@ void uim_set_candidate_selector_cb(uim_context uc,
                                    void (*deactivate_cb)(void *ptr));
 
 /**
+ * Set callback function to support delay showing candidate-selection.
+ *
+ * @param uc input context
+ * @param delay_activate_cb called when candidate window should be activated with delay.
+ *
+ * @see uim_create_context
+ */
+void uim_set_delay_candidate_selector_cb(uim_context uc,
+                                         void (*delay_activate_cb)(void *ptr,
+                                                                   int delay));
+
+/**
+ * Notify that the candidate selector is being activated after delay.
+ *
+ * The input context must update number of candidates,
+ * display limit and selected index.
+ *
+ * @param uc input context
+ * @param nr [out] total number of candidates
+ * @param display_limit [out] number of candidates to show on one page
+ * @param selected_index [out] index of selected candidate
+ */
+void uim_delay_activating(uim_context uc, int *nr, int *display_limit, int *selected_index);
+
+/**
  * Get candidate data.
  *
  * @param uc input context

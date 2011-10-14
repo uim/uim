@@ -55,10 +55,8 @@ public:
     void set_page_candidates(int page, CandList candidates);
     void show_page(int page);
 #endif
-    void negotiate_scm(uim_context uc, int *nr, int *display_limit);
 private:
     void check_connection();
-    bool negotiated_scm;
 };
 
 Canddisp *canddisp_singleton();

@@ -105,6 +105,7 @@ struct uim_context_ {
   void (*candidate_selector_select_cb)(void *ptr, int index);
   void (*candidate_selector_shift_page_cb)(void *ptr, int direction);
   void (*candidate_selector_deactivate_cb)(void *ptr);
+  void (*candidate_selector_delay_activate_cb)(void *ptr, int delay);
   /* text acquisition */
   int (*acquire_text_cb)(void *ptr,
                          enum UTextArea text_id, enum UTextOrigin origin,

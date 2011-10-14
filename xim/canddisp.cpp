@@ -146,48 +146,11 @@ Canddisp *canddisp_singleton()
     return disp;
 }
 
-Canddisp::Canddisp(): negotiated_scm(false)
+Canddisp::Canddisp()
 {
 }
 
 Canddisp::~Canddisp() {
-}
-
-/* XXX: get nr and display_limit for delay || negotiate with scm side */
-void Canddisp::negotiate_scm(uim_context uc, int *nr, int *display_limit)
-{
-    if (*nr < 0 || !negotiated_scm) {
-	int cmd = 0;
-	if (*nr < 0) {
-	    cmd = 0x4000; // get nr and display_limit for delay
-	} else {
-	    if (command && strstr(command, "/uim-candwin-tbl-") != NULL) {
-		cmd |= 0x1000; // adjust display_limit for table style candwin
-	    }
-#if UIM_XIM_USE_DELAY
-	    if (uim_scm_symbol_value_bool("candidate-window-use-delay?")) {
-		cmd |= 0x2000; // notify delay support
-	    }
-#endif
-	    negotiated_scm = true;
-	}
-	if (cmd >= 0x1000) {
-	    uim_candidate c;
-	    const char *s, *p;
-	    c = uim_get_candidate(uc, 0, cmd);
-	    s = uim_candidate_get_annotation_str(c);
-#define LEN_DISPLAY_LIMIT 14
-	    if (strncmp(s, "display_limit=", LEN_DISPLAY_LIMIT) == 0) {
-		*display_limit = atoi(s + LEN_DISPLAY_LIMIT);
-	    }
-	    if (*nr < 0) {
-		if ((p = strstr(s, "nr=")) != NULL) {
-		    *nr = atoi(p + 3);
-		}
-	    }
-	    uim_candidate_free(c);
-	}
-    }
 }
 
 void Canddisp::activate(std::vector<const char *> candidates, int display_limit)

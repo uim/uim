@@ -288,6 +288,21 @@ im_activate_candidate_selector(uim_lisp uc_,
 }
 
 static uim_lisp
+im_delay_activate_candidate_selector(uim_lisp uc_, uim_lisp delay_)
+{
+  uim_context uc;
+  int delay;
+
+  uc = retrieve_uim_context(uc_);
+  delay = C_INT(delay_);
+
+  if (uc->candidate_selector_delay_activate_cb)
+    uc->candidate_selector_delay_activate_cb(uc->ptr, delay);
+
+  return uim_scm_f();
+}
+
+static uim_lisp
 im_select_candidate(uim_lisp uc_, uim_lisp idx_)
 {
   uim_context uc;
@@ -329,6 +344,18 @@ im_deactivate_candidate_selector(uim_lisp uc_)
   if (uc->candidate_selector_deactivate_cb)
     uc->candidate_selector_deactivate_cb(uc->ptr);
 
+  return uim_scm_f();
+}
+
+static uim_lisp
+im_delay_activate_candidate_selector_supportedp(uim_lisp uc_)
+{
+  uim_context uc;
+
+  uc = retrieve_uim_context(uc_);
+
+  if (uc->candidate_selector_delay_activate_cb)
+    return uim_scm_t();
   return uim_scm_f();
 }
 
@@ -459,6 +486,11 @@ uim_init_im_subrs(void)
   uim_scm_init_proc2("im-shift-page-candidate", im_shift_page_candidate);
   uim_scm_init_proc1("im-deactivate-candidate-selector",
 		     im_deactivate_candidate_selector);
+
+  uim_scm_init_proc2("im-delay-activate-candidate-selector",
+		     im_delay_activate_candidate_selector);
+  uim_scm_init_proc1("im-delay-activate-candidate-selector-supported?",
+		     im_delay_activate_candidate_selector_supportedp);
 
   uim_scm_init_proc5("im-acquire-text-internal", im_acquire_text);
   uim_scm_init_proc5("im-delete-text-internal", im_delete_text);

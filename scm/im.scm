@@ -105,7 +105,8 @@
    (list 'focus-out-handler           list)
    (list 'place-handler               list)
    (list 'displace-handler            list)
-   (list 'module-name                 "")))
+   (list 'module-name                 "")
+   (list 'delay-activating-handler    #f)))
 
 (define im-custom-set-handler
   (lambda (im)
@@ -147,7 +148,7 @@
 			   get-candidate set-candidate-index prop
 			   input-string focus-in focus-out place displace
 			   currently-loading-module-name))
-               (initial-registration? (not (assq name im-list))))
+	       (initial-registration? (not (assq name im-list))))
 	   (set! im-list (alist-replace im im-list))
 	   (normalize-im-list)
            initial-registration?))))
@@ -526,6 +527,10 @@
 (define set-candidate-index
   (lambda (uc idx)
     (invoke-handler im-set-candidate-index-handler uc idx)))
+
+(define delay-activating-handler
+  (lambda (uc)
+    (invoke-handler im-delay-activating-handler uc)))
 
 (define im-acquire-text
   (lambda (c id origin former-len latter-len)
