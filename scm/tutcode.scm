@@ -3584,7 +3584,12 @@
         ((symbol? res) ;XXX 部首合成変換中は交ぜ書き変換等は無効にする
           (set! res #f)))))
     (if res
-      (tutcode-begin-bushu-conversion pc res))))
+      (tutcode-begin-bushu-conversion pc res)
+      (if (and tutcode-use-bushu-prediction?
+               (pair? (tutcode-context-head pc)))
+        (let ((prevchar (car (tutcode-context-head pc))))
+          (if (not (string=? prevchar "▲"))
+            (tutcode-check-bushu-prediction pc prevchar)))))))
 
 ;;; 部首合成変換開始
 ;;; @param char 新たに入力された文字(2番目の部首)
@@ -3600,8 +3605,9 @@
         (if (string? convchar)
           ;; 合成成功
           (tutcode-bushu-commit pc convchar)
-          ;; 合成失敗時は入力し直しを待つ
-          )))))
+          ;; 合成失敗時は入力し直しを待つ。予測入力候補は再表示
+          (if tutcode-use-bushu-prediction?
+            (tutcode-check-bushu-prediction pc prevchar)))))))
 
 ;;; 部首合成変換で変換した文字を確定する
 ;;; @param convchar 変換後の文字
