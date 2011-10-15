@@ -192,7 +192,8 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 } else {
                     button->setText( fields[ 2 ] );
                 }
-                button->setToolTip( fields[ 3 ] );
+                if ( fields.size() > 3 )
+                    button->setToolTip( fields[ 3 ] );
 
                 // create popup
 #ifdef PLASMA_APPLET_UIM
