@@ -3586,7 +3586,8 @@
     (if res
       (tutcode-begin-bushu-conversion pc res)
       (if (and tutcode-use-bushu-prediction?
-               (pair? (tutcode-context-head pc)))
+               (pair? (tutcode-context-head pc))
+               (= (length (rk-context-seq rkc)) 0))
         (let ((prevchar (car (tutcode-context-head pc))))
           (if (not (string=? prevchar "ве"))
             (tutcode-check-bushu-prediction pc prevchar)))))))
