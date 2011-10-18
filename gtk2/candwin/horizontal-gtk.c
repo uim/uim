@@ -331,7 +331,7 @@ label_exposed(GtkWidget *label, GdkEventExpose *event, gpointer data)
 #endif
 
 static void
-button_clicked(GtkEventBox *button, gpointer data)
+button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
 {
   UIMCandidateWindow *cwin = UIM_CANDIDATE_WINDOW(data);
   gint i;
