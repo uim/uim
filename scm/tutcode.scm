@@ -3503,7 +3503,13 @@
      (rkc (tutcode-context-rk-context pc))
      (res #f)
      (predicting?
-      (eq? (tutcode-context-predicting pc) 'tutcode-predicting-bushu)))
+      (eq? (tutcode-context-predicting pc) 'tutcode-predicting-bushu))
+     (re-predict
+      (lambda ()
+        (if tutcode-use-bushu-prediction?
+          (let ((prevchar (car (tutcode-context-head pc))))
+            (if (not (string=? prevchar "▲"))
+              (tutcode-check-bushu-prediction pc prevchar)))))))
     (tutcode-reset-candidate-window pc)
     (cond
       ((tutcode-off-key? key key-state)
@@ -3540,7 +3546,9 @@
               (tutcode-commit pc res))
             (tutcode-flush pc)
             (if res (tutcode-check-auto-help-window-begin pc (list res) ()))
-            (set! res #f))))
+            (set! res #f))
+          (if (not res)
+            (re-predict))))
       ((tutcode-cancel-key? key key-state)
         ;; 再帰的部首合成変換を(キャンセルして)一段戻す
         (set! res (car (tutcode-context-head pc)))
@@ -3550,7 +3558,8 @@
           (tutcode-context-set-head! pc (cdr (tutcode-context-head pc))))
         (set! res #f)
         (if (= (length (tutcode-context-head pc)) 0)
-          (tutcode-flush pc)))
+          (tutcode-flush pc)
+          (re-predict)))
       ((tutcode-stroke-help-toggle-key? key key-state)
        (tutcode-toggle-stroke-help pc))
       ((and predicting? (tutcode-next-page-key? key key-state))
@@ -3584,13 +3593,7 @@
         ((symbol? res) ;XXX 部首合成変換中は交ぜ書き変換等は無効にする
           (set! res #f)))))
     (if res
-      (tutcode-begin-bushu-conversion pc res)
-      (if (and tutcode-use-bushu-prediction?
-               (pair? (tutcode-context-head pc))
-               (= (length (rk-context-seq rkc)) 0))
-        (let ((prevchar (car (tutcode-context-head pc))))
-          (if (not (string=? prevchar "▲"))
-            (tutcode-check-bushu-prediction pc prevchar)))))))
+      (tutcode-begin-bushu-conversion pc res))))
 
 ;;; 部首合成変換開始
 ;;; @param char 新たに入力された文字(2番目の部首)
