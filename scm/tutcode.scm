@@ -3745,11 +3745,14 @@
       ((null? res)
         (tutcode-context-set-head! pc (cdr (tutcode-context-head pc)))
         (if (> (tutcode-context-prediction-nr pc) 0)
-          (tutcode-activate-candidate-window pc
-            'tutcode-candidate-window-interactive-bushu
-            tutcode-candidate-window-activate-delay-for-interactive-bushu
-            (tutcode-context-prediction-nr-all pc)
-            (tutcode-context-prediction-page-limit pc))))
+          (begin
+            (tutcode-activate-candidate-window pc
+              'tutcode-candidate-window-interactive-bushu
+              tutcode-candidate-window-activate-delay-for-interactive-bushu
+              (tutcode-context-prediction-nr-all pc)
+              (tutcode-context-prediction-page-limit pc))
+            (tutcode-select-candidate pc
+              (tutcode-context-prediction-index pc)))))
       (else
         (let ((nr (length res)))
           (tutcode-context-set-prediction-word! pc ())
@@ -3772,7 +3775,8 @@
                   'tutcode-candidate-window-interactive-bushu
                   tutcode-candidate-window-activate-delay-for-interactive-bushu
                   nr-all
-                  page-limit)))))))))
+                  page-limit)
+                (tutcode-select-candidate pc 0)))))))))
 
 ;;; 新しい候補を選択する
 ;;; @param pc コンテキストリスト
