@@ -57,6 +57,65 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: New API for delay showing candidate window
+Affects: IM developers, Bridge developers
+Updates: C API, Scheme API
+Version: 1.8.0
+Revision: ac7324
+Date: 2011-10-15
+Modifier: KIHARA Hideto
+Related:
+URL:
+  http://groups.google.com/group/uim-ja/t/d5012ec79b02e5a3 (Japanese)
+Changes:
+  (new) uim_set_delay_candidate_selector_cb
+  (new) uim_delay_activating
+  (new) im-delay-activate-candidate-selector
+  (new) im-delay-activate-candidate-selector-supported?
+  (new) im-set-delay-activating-handler!
+Description:
+  New API for delay showing candidate window for use with prediction.
+  Purpose:
+    - Not to disturb user input by prediction or help.
+  Problem:
+    - It is annoyance that candidate window filckers when IM shows
+      help on candidate window for every key type.
+    - User must wait while IM predicts candidates before typed key
+      is processed even when prediction is not needed.
+    - While user types smoothly, there is no need to show help or
+      prediction.
+  Effect:
+    - IM can show prediction candidates only when user does not type
+      anything while specified delay seconds elapses.
+  Sequence:
+   [candwin]               [uim]                      [tutcode.scm]
+      uim_set_delay_candidate_selector_cb(delay_activate_cb)
+      ----------------------->
+                     im-set-delay-activating-handler!(delay-activating-handler)
+                             <-----------------------------
+
+                            im-delay-activate-candidate-selector-supported?
+                             <-----------------------------
+                             -------------#t-------------->
+                            im-delay-activate-candidate-selector(delaysecs)
+                             <-----------------------------
+      delay_activate_cb(delaysecs)
+      <----------------------
+   [set timer with delaysecs]
+   ...
+   [timeout]
+          uim_delay_activating
+      ----------------------->
+                             delay-activating-handler
+                             ----------------------------->
+                                                          [make candidate list]
+                             [return nr,display_limit,selected_index]
+                             <-----------------------------
+      [return nr,display_limit,selected_index]
+      <----------------------
+   [get and display candidates in an ordinary way]
+   [if selcted_index >= 0, select candidate]
+------------------------------------------------------------------------------
 Summary: Add an internal variable to count uim_init() and uim_quit()
 Affects: None
 Updates: libuim ABI
