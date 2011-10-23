@@ -1411,48 +1411,41 @@
      (nr (tutcode-lib-get-nr-predictions pc))
      (i (remainder idx nr)))
     (if (>= i 0)
-      (begin
-        (tutcode-context-set-prediction-index! pc i)
-        (case mode
-          ((tutcode-predicting-bushu)
-            (tutcode-do-commit-prediction-for-bushu pc))
-          ((tutcode-predicting-interactive-bushu)
-            (tutcode-do-commit-prediction-for-interactive-bushu pc))
-          ((tutcode-predicting-completion)
-            (tutcode-do-commit-prediction pc #t))
-          (else
-            (tutcode-do-commit-prediction pc #f)))))))
+      (case mode
+        ((tutcode-predicting-bushu)
+          (tutcode-do-commit-prediction-for-bushu pc i))
+        ((tutcode-predicting-interactive-bushu)
+          (tutcode-do-commit-prediction-for-interactive-bushu pc i))
+        ((tutcode-predicting-completion)
+          (tutcode-do-commit-prediction pc i #t))
+        (else
+          (tutcode-do-commit-prediction pc i #f))))))
 
-(define (tutcode-get-prediction-string pc)
-  (tutcode-lib-get-nth-prediction
-   pc
-   (tutcode-context-prediction-index pc)))
+(define (tutcode-get-prediction-string pc idx)
+  (tutcode-lib-get-nth-prediction pc idx))
 
-(define (tutcode-learn-prediction-string pc completion?)
-  (tutcode-lib-commit-nth-prediction
-   pc
-   (tutcode-context-prediction-index pc)
-   completion?))
+(define (tutcode-learn-prediction-string pc idx completion?)
+  (tutcode-lib-commit-nth-prediction pc idx completion?))
 
 ;;; 補完/予測入力候補を確定する
 ;;; @param completion? 補完かどうか
-(define (tutcode-do-commit-prediction pc completion?)
-  (let ((str (tutcode-get-prediction-string pc)))
-    (tutcode-learn-prediction-string pc completion?)
+(define (tutcode-do-commit-prediction pc idx completion?)
+  (let ((str (tutcode-get-prediction-string pc idx)))
+    (tutcode-learn-prediction-string pc idx completion?)
     (tutcode-reset-candidate-window pc)
     (tutcode-commit pc str)
     (tutcode-flush pc)
     (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
 
 ;;; 部首合成変換時の予測入力候補を確定する
-(define (tutcode-do-commit-prediction-for-bushu pc)
-  (let ((str (tutcode-get-prediction-string pc)))
+(define (tutcode-do-commit-prediction-for-bushu pc idx)
+  (let ((str (tutcode-get-prediction-string pc idx)))
     (tutcode-reset-candidate-window pc)
     (tutcode-bushu-commit pc str)))
 
 ;;; 対話的部首合成変換時の候補を確定する
-(define (tutcode-do-commit-prediction-for-interactive-bushu pc)
-  (let ((str (tutcode-get-prediction-string pc)))
+(define (tutcode-do-commit-prediction-for-interactive-bushu pc idx)
+  (let ((str (tutcode-get-prediction-string pc idx)))
     (tutcode-reset-candidate-window pc)
     (tutcode-commit pc str)
     (tutcode-flush pc)
@@ -2292,7 +2285,8 @@
           (begin
             (im-pushback-preedit pc preedit-underline "=>")
             (im-pushback-preedit pc preedit-underline
-              (tutcode-get-prediction-string pc)))))
+              (tutcode-get-prediction-string pc
+                (tutcode-context-prediction-index pc)))))) ; 熟語ガイド無し
       ((tutcode-state-kigou)
         ;; 候補ウィンドウ非表示時でも候補選択できるようにpreedit表示
         (im-pushback-preedit pc preedit-reverse
@@ -3694,7 +3688,8 @@
            (let ((str
                   (cond
                     (has-candidate?
-                      (tutcode-get-prediction-string pc))
+                      (tutcode-get-prediction-string pc
+                        (tutcode-context-prediction-index pc))) ; 熟語ガイド無
                     ((> (length head) 0)
                       (string-list-concat (tutcode-context-head pc)))
                     (else
@@ -4798,12 +4793,11 @@
                (p-idx (+ idx-in-page (* pages nr-in-page)))
                (i (remainder p-idx nr-predictions))
                (mode (tutcode-context-predicting pc)))
-              (tutcode-context-set-prediction-index! pc i)
               (if (eq? candwin 'tutcode-candidate-window-interactive-bushu)
-                (tutcode-do-commit-prediction-for-interactive-bushu pc)
+                (tutcode-do-commit-prediction-for-interactive-bushu pc i)
                 (if (eq? mode 'tutcode-predicting-bushu)
-                  (tutcode-do-commit-prediction-for-bushu pc)
-                  (tutcode-do-commit-prediction pc
+                  (tutcode-do-commit-prediction-for-bushu pc i)
+                  (tutcode-do-commit-prediction pc i
                     (eq? mode 'tutcode-predicting-completion))))
               (tutcode-update-preedit pc))))))))
 
