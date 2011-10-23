@@ -2513,6 +2513,7 @@
               ()))
            (resall (append res altres)))
       (tutcode-context-set-prediction-bushu! pc resall)
+      (tutcode-context-set-prediction-bushu-page-start! pc 0)
       (tutcode-bushu-prediction-make-page pc 0 show-candwin?))))
 
 ;;; 部首合成変換中に予測入力候補を検索して候補リストを作成する
@@ -2528,6 +2529,7 @@
             (list #f elem))
           gosei)))
       (tutcode-context-set-prediction-bushu! pc res)
+      (tutcode-context-set-prediction-bushu-page-start! pc 0)
       (tutcode-bushu-prediction-make-page pc 0 show-candwin?))))
 
 ;;; 部首合成変換の予測入力候補のうち、
@@ -3611,7 +3613,11 @@
           (tutcode-bushu-commit pc convchar)
           ;; 合成失敗時は入力し直しを待つ。予測入力候補は再表示
           (if tutcode-use-bushu-prediction?
-            (tutcode-check-bushu-prediction pc prevchar)))))))
+            (if (string? (tutcode-context-prediction-bushu pc)) ; 遅延待ち中?
+              (tutcode-check-bushu-prediction pc prevchar)
+              ;; 予測入力候補リスト作成済の場合、前回表示したページから再表示
+              (tutcode-bushu-prediction-make-page pc
+                (tutcode-context-prediction-bushu-page-start pc) #t))))))))
 
 ;;; 部首合成変換で変換した文字を確定する
 ;;; @param convchar 変換後の文字
