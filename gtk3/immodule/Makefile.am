@@ -25,6 +25,8 @@ IM_UIM_SOURCES = \
 	../../gtk2/immodule/key-util-gtk.c ../../gtk2/immodule/key-util-gtk.h \
 	../../gtk2/immodule/uim-cand-win-gtk.c \
 	../../gtk2/immodule/uim-cand-win-gtk.h \
+	../../gtk2/immodule/uim-cand-win-vertical-gtk.c \
+	../../gtk2/immodule/uim-cand-win-vertical-gtk.h \
 	../../gtk2/immodule/uim-cand-win-tbl-gtk.c \
 	../../gtk2/immodule/uim-cand-win-tbl-gtk.h \
 	../../gtk2/immodule/uim-cand-win-horizontal-gtk.c \

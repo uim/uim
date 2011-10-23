@@ -59,6 +59,7 @@
 
 #include "gtk-im-uim.h"
 #include "uim-cand-win-gtk.h"
+#include "uim-cand-win-vertical-gtk.h"
 #include "uim-cand-win-tbl-gtk.h"
 #include "uim-cand-win-horizontal-gtk.h"
 #include "caret-state-indicator.h"
@@ -1521,7 +1522,7 @@ im_uim_create_cand_win_gtk()
   free(style);
 
   if (!cwin)
-    cwin = uim_cand_win_gtk_new(); /* vertical */
+    cwin = UIM_CAND_WIN_GTK(uim_cand_win_vertical_gtk_new());
 
   return cwin;
 }

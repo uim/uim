@@ -167,7 +167,6 @@ uim_cand_win_tbl_gtk_init (UIMCandWinTblGtk *ctblwin)
   ctblwin->buttons = g_ptr_array_new();
   ctblwin->tbl_cell2label = init_tbl_cell2label();
 
-  gtk_widget_destroy(cwin->view);
   cwin->view = gtk_table_new(TABLE_NR_ROWS, TABLE_NR_COLUMNS, FALSE);
   viewport = gtk_viewport_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(viewport), cwin->view);

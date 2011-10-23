@@ -133,7 +133,6 @@ uim_cand_win_horizontal_gtk_init (UIMCandWinHorizontalGtk *horizontal_cwin)
   horizontal_cwin->buttons = g_ptr_array_new();
   horizontal_cwin->selected = NULL;
 
-  gtk_widget_destroy(cwin->view);
   cwin->view = gtk_table_new(1, DEFAULT_NR_CELLS, FALSE);
   gtk_table_set_col_spacings(GTK_TABLE(cwin->view), 10);
   viewport = gtk_viewport_new(NULL, NULL);
