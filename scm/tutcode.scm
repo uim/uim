@@ -4757,7 +4757,9 @@
         (list "" "" "")))))
 
 ;;; 候補ウィンドウが候補を選択したときに呼ぶ関数。
-;;; 選択された候補を確定する。
+;;; 表示中の候補が選択された場合、該当する候補を確定する。
+;;; 表示されていない候補が選択された(候補ウィンドウ側で
+;;; ページ移動操作が行われた)場合、内部の選択候補番号を更新するだけ。
 (define (tutcode-set-candidate-index-handler c idx)
   (let* ((pc (tutcode-find-descendant-context c))
          (candwin (tutcode-context-candidate-window pc)))
@@ -4767,30 +4769,47 @@
                             tutcode-candidate-window-history))
           (>= idx 0)
           (< idx (tutcode-context-nr-candidates pc)))
-        (tutcode-context-set-nth! pc idx)
-        (case (tutcode-context-state pc)
-          ((tutcode-state-kigou)
-            (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc)))
-          ((tutcode-state-history)
-            (let ((str (tutcode-prepare-commit-string-for-history pc)))
-              (tutcode-commit pc str)
-              (tutcode-flush pc)
-              (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
-          (else
-            (tutcode-commit-with-auto-help pc)))
-        (tutcode-update-preedit pc))
+        (let*
+          ((prev (tutcode-context-nth pc))
+           (state (tutcode-context-state pc))
+           (page-limit
+            (case state
+              ((tutcode-state-kigou) tutcode-nr-candidate-max-for-kigou-mode)
+              ((tutcode-state-history) tutcode-nr-candidate-max-for-history)
+              (else tutcode-nr-candidate-max)))
+           (prev-page (quotient prev page-limit))
+           (new-page (quotient idx page-limit)))
+          (tutcode-context-set-nth! pc idx)
+          (if (= new-page prev-page)
+            (case state
+              ((tutcode-state-kigou)
+                (tutcode-commit pc
+                  (tutcode-prepare-commit-string-for-kigou-mode pc)))
+              ((tutcode-state-history)
+                (let ((str (tutcode-prepare-commit-string-for-history pc)))
+                  (tutcode-commit pc str)
+                  (tutcode-flush pc)
+                  (tutcode-check-auto-help-window-begin pc
+                    (string-to-list str) ())))
+              (else
+                (tutcode-commit-with-auto-help pc))))
+          (tutcode-update-preedit pc)))
       ((and (or (eq? candwin 'tutcode-candidate-window-predicting)
                 (eq? candwin 'tutcode-candidate-window-interactive-bushu))
             (>= idx 0))
         (let*
           ((nr-in-page (tutcode-context-prediction-nr-in-page pc))
            (page-limit (tutcode-context-prediction-page-limit pc))
-           (idx-in-page (remainder idx page-limit)))
-          (if (< idx-in-page nr-in-page)
+           (idx-in-page (remainder idx page-limit))
+           (prev (tutcode-context-prediction-index pc))
+           (prev-page (quotient prev page-limit))
+           (new-page (quotient idx page-limit)))
+          (tutcode-context-set-prediction-index! pc idx)
+          (if (and (= new-page prev-page)
+                   (< idx-in-page nr-in-page))
             (let*
               ((nr-predictions (tutcode-lib-get-nr-predictions pc))
-               (pages (quotient idx page-limit))
-               (p-idx (+ idx-in-page (* pages nr-in-page)))
+               (p-idx (+ idx-in-page (* new-page nr-in-page)))
                (i (remainder p-idx nr-predictions))
                (mode (tutcode-context-predicting pc)))
               (if (eq? candwin 'tutcode-candidate-window-interactive-bushu)
@@ -4798,8 +4817,8 @@
                 (if (eq? mode 'tutcode-predicting-bushu)
                   (tutcode-do-commit-prediction-for-bushu pc i)
                   (tutcode-do-commit-prediction pc i
-                    (eq? mode 'tutcode-predicting-completion))))
-              (tutcode-update-preedit pc))))))))
+                    (eq? mode 'tutcode-predicting-completion))))))
+          (tutcode-update-preedit pc))))))
 
 ;;; 遅延表示に対応している候補ウィンドウが、待ち時間満了時に
 ;;; (候補数、ページ内候補表示数、選択されたインデックス番号)を

@@ -67,6 +67,7 @@ static void	uim_cand_win_gtk_real_set_page		(UIMCandWinGtk *cwin,
 static void	uim_cand_win_gtk_real_create_sub_window(UIMCandWinGtk *cwin);
 static void	uim_cand_win_gtk_real_layout_sub_window	(UIMCandWinGtk *cwin);
 
+static void	pagebutton_clicked(GtkButton *button, gpointer data);
 
 static GType cand_win_type = 0;
 static GTypeInfo const object_info = {
@@ -152,6 +153,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 {
   GtkWidget *frame;
   GtkWidget *vbox;
+  GtkWidget *hbox;
 
   /* init struct */
   cwin->scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -180,7 +182,20 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   gtk_box_pack_start(GTK_BOX(vbox), cwin->scrolled_window, TRUE, TRUE, 0);
   uim_cand_win_gtk_set_scrollable(cwin, FALSE);
 
-  gtk_box_pack_start(GTK_BOX(vbox), cwin->num_label, FALSE, FALSE, 0);
+  /* hbox with prev and next page button: [[<] num_label [>]] */
+  hbox = gtk_hbox_new(FALSE, 0);
+  cwin->prev_page_button = gtk_button_new_with_label("<");
+  cwin->next_page_button = gtk_button_new_with_label(">");
+  gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(cwin->prev_page_button),
+      TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), cwin->num_label, FALSE, FALSE, 0);
+  gtk_box_pack_end(GTK_BOX(hbox), GTK_WIDGET(cwin->next_page_button),
+      TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+  g_signal_connect(cwin->prev_page_button, "clicked",
+      G_CALLBACK(pagebutton_clicked), cwin);
+  g_signal_connect(cwin->next_page_button, "clicked",
+      G_CALLBACK(pagebutton_clicked), cwin);
 
   frame = gtk_frame_new(NULL);
 
@@ -193,7 +208,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 
   /* show children */
   gtk_widget_show(cwin->scrolled_window);
-  gtk_widget_show(cwin->num_label);
+  gtk_widget_show_all(hbox);
   gtk_widget_show(vbox);
   gtk_widget_show(frame);
 
@@ -293,6 +308,14 @@ uim_cand_win_gtk_set_nr_candidates(UIMCandWinGtk *cwin,
 
   cwin->nr_candidates = nr;
   cwin->display_limit = display_limit;
+
+  if (nr <= display_limit) {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), FALSE);
+  } else {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), TRUE);
+  }
 
   if (cwin->stores == NULL)
     cwin->stores = g_ptr_array_new();
@@ -404,6 +427,14 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 #endif
       }
     }
+  }
+
+  if (cwin->nr_candidates <= cwin->display_limit) {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), FALSE);
+  } else {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), TRUE);
   }
 
   uim_cand_win_gtk_set_page(cwin, 0);
@@ -634,6 +665,38 @@ uim_cand_win_gtk_query_new_page_by_shift_page(UIMCandWinGtk *cwin,
     new_page = index;
 
   return new_page;
+}
+
+static void
+pagebutton_clicked(GtkButton *button, gpointer data)
+{
+  UIMCandWinGtk *cwin = UIM_CAND_WIN_GTK(data);
+  gboolean has_candidates = FALSE;
+
+  if (cwin->candidate_index < 0) {
+    /* if candidate_index < 0, "index-changed" signal is not emitted
+     * and candidates for new page is not set.
+     */
+    cwin->candidate_index = cwin->page_index * cwin->display_limit;
+  }
+  if (button == GTK_BUTTON(cwin->prev_page_button)) {
+    uim_cand_win_gtk_shift_page(cwin, FALSE);
+  } else if (button == GTK_BUTTON(cwin->next_page_button)) {
+    uim_cand_win_gtk_shift_page(cwin, TRUE);
+  } else {
+    return;
+  }
+  if (cwin->stores->pdata[cwin->page_index]) {
+    has_candidates = TRUE;
+  }
+  if (cwin->candidate_index >= 0) {
+    g_signal_emit(G_OBJECT(cwin),
+                  cand_win_gtk_signals[INDEX_CHANGED_SIGNAL], 0);
+  }
+  /* if got candidates, update view */
+  if (!has_candidates && cwin->stores->pdata[cwin->page_index]) {
+    uim_cand_win_gtk_set_page(cwin, cwin->page_index);
+  }
 }
 
 void

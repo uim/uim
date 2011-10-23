@@ -127,6 +127,10 @@ static gboolean handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gp
 #if IM_UIM_USE_DELAY
 static void cand_delay_timer_remove(UIMCandWinGtk *cwin);
 #endif
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+static GSList *get_page_candidates(IMUIMContext *uic, guint page, guint nr, guint display_limit);
+static void free_candidates(GSList *candidates);
+#endif
 static void send_im_list(void);
 static UIMCandWinGtk *im_uim_create_cand_win_gtk(void);
 
@@ -487,9 +491,30 @@ preedit_strlen(IMUIMContext *uic)
 static void
 index_changed_cb(UIMCandWinGtk *cwin, IMUIMContext *uic)
 {
+  gint index;
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+  guint new_page;
+#endif
+
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
-  uim_set_candidate_index(uic->uc, uim_cand_win_gtk_get_index(cwin));
+  index = uim_cand_win_gtk_get_index(cwin);
+  uim_set_candidate_index(uic->uc, index);
+
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+  new_page = uim_cand_win_gtk_query_new_page_by_cand_select(uic->cwin, index);
+
+  if (!uic->cwin->stores->pdata[new_page]) {
+    /* index_changed signal was triggered by prev/next page button on candwin
+     * (not from uim (cand_select_cb(), cand_shift_page_cb()))
+     */
+    guint nr = uic->cwin->nr_candidates;
+    guint display_limit = uic->cwin->display_limit;
+    GSList *list = get_page_candidates(uic, new_page, nr, display_limit);
+    uim_cand_win_gtk_set_page_candidates(uic->cwin, new_page, list);
+    free_candidates(list);
+  }
+#endif /* IM_UIM_USE_NEW_PAGE_HANDLING */
 }
 
 static void

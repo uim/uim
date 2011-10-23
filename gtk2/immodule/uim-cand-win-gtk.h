@@ -60,6 +60,8 @@ struct _UIMCandWinGtk {
   GtkWidget     *scrolled_window;
   GtkWidget	*view;
   GtkWidget	*num_label;
+  GtkWidget	*prev_page_button;
+  GtkWidget	*next_page_button;
 
   GPtrArray	*stores;
 

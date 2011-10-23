@@ -441,7 +441,7 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
     horizontal_cwin->selected = idxbutton;
 
     /* show subwin */
-    {
+    if (cwin->stores->pdata[new_page]) {
       char *annotation = NULL;
       GtkTreeModel *model = GTK_TREE_MODEL(cwin->stores->pdata[new_page]);
       GtkTreeIter iter;
@@ -530,6 +530,9 @@ update_table_button(UIMCandWinHorizontalGtk *horizontal_cwin, guint new_page)
   gint display_limit, len, cand_index = 0;
 
   cwin = UIM_CAND_WIN_GTK(horizontal_cwin);
+  if (!cwin->stores->pdata[new_page]) {
+    return;
+  }
   model = GTK_TREE_MODEL(cwin->stores->pdata[new_page]);
   buttons = horizontal_cwin->buttons;
   display_limit = cwin->display_limit;

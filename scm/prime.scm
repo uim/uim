@@ -2309,8 +2309,25 @@
     (if (prime-context-session context)
 	(begin
 	  (if (eq? (prime-context-state context) 'prime-state-segment)
-	      (prime-commit-segment-nth context selection-index)
-	      (prime-commit-candidate context selection-index))
+              (let*
+                ((prev (prime-context-segment-nth context))
+                 (prev-page (quotient prev prime-nr-candidate-max))
+                 (new-page (quotient selection-index prime-nr-candidate-max)))
+                (if (= new-page prev-page)
+                  (prime-commit-segment-nth context selection-index)
+                  (prime-context-set-segment-nth! context selection-index)))
+              (let*
+                ((prev (prime-context-nth context))
+                 (page-limit
+                  (if (and (eq? (prime-context-history-compare context) 'state)
+                           (eq? (prime-context-state context) 'prime-state-preedit))
+                    3
+                    prime-nr-candidate-max))
+                 (prev-page (quotient prev page-limit))
+                 (new-page (quotient selection-index page-limit)))
+                (if (= new-page prev-page)
+                  (prime-commit-candidate context selection-index)
+                  (prime-context-set-nth! context selection-index))))
 	  (prime-update context)
 	  ))))
 

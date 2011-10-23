@@ -488,10 +488,12 @@ uim_cand_win_tbl_gtk_set_page(UIMCandWinTblGtk *ctblwin, gint page)
   else
     new_page = page;
 
-  update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
-                      ctblwin->buttons, ctblwin->tbl_cell2label,
-                      cwin->display_limit);
-  show_table(GTK_TABLE(cwin->view), ctblwin->buttons);
+  if (cwin->stores->pdata[new_page]) {
+    update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
+                        ctblwin->buttons, ctblwin->tbl_cell2label,
+                        cwin->display_limit);
+    show_table(GTK_TABLE(cwin->view), ctblwin->buttons);
+  }
 
   cwin->page_index = new_page;
 

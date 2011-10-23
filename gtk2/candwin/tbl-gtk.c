@@ -66,6 +66,9 @@ struct _UIMCandidateWindow {
   GtkWidget *viewport;
   GtkWidget *vbox;
   GtkWidget *frame;
+  GtkWidget *hbox;
+  GtkWidget *prev_page_button;
+  GtkWidget *next_page_button;
 
   GPtrArray *stores;
   GPtrArray *buttons;
@@ -85,6 +88,7 @@ struct _UIMCandidateWindow {
 
   gboolean is_active;
   gboolean need_hilite;
+  gboolean need_page_update;
 };
 
 struct _UIMCandidateWindowClass {
@@ -296,6 +300,44 @@ button_clicked(GtkButton *button, gpointer data)
 }
 
 static void
+pagebutton_clicked(GtkButton *button, gpointer data)
+{
+  UIMCandidateWindow *cwin = UIM_CANDIDATE_WINDOW(data);
+
+  if (cwin->candidate_index < 0) {
+    /* if candidate_index < 0, "index-changed" signal is not emitted
+     * and candidates for new page is not set.
+     */
+    cwin->candidate_index = cwin->page_index * cwin->display_limit;
+  }
+  if (button == GTK_BUTTON(cwin->prev_page_button)) {
+    uim_cand_win_gtk_set_page(cwin, cwin->page_index - 1);
+  } else if (button == GTK_BUTTON(cwin->next_page_button)) {
+    uim_cand_win_gtk_set_page(cwin, cwin->page_index + 1);
+  } else {
+    return;
+  }
+  if (cwin->candidate_index >= 0) {
+    g_signal_emit(G_OBJECT(cwin),
+                  cand_win_gtk_signals[INDEX_CHANGED_SIGNAL], 0);
+  }
+  if (!cwin->stores->pdata[cwin->page_index]) {
+    /*       candwin                         uim-xim
+     * pagebutton_clicked()
+     *            ---------"index"------------>
+     *                                      InputContext::candidate_select()
+     *            <---"set_page_candidates"----
+     *                                        Canddisp::select()
+     *            <--------"select"------------
+     * candwin_update()
+     *   uim_cand_win_gtk_set_index()
+     *     uim_cand_win_gtk_set_page()
+     */
+    cwin->need_page_update = TRUE;
+  }
+}
+
+static void
 cb_table_view_destroy(GtkWidget *widget, GPtrArray *stores)
 {
   gint i;
@@ -400,12 +442,26 @@ candidate_window_init(UIMCandidateWindow *cwin)
 
   cwin->num_label = gtk_label_new("");
 
-  gtk_box_pack_start(GTK_BOX(cwin->vbox), cwin->num_label, FALSE, FALSE, 0);
+  /* hbox with prev and next page button: [[<] num_label [>]] */
+  cwin->hbox = gtk_hbox_new(FALSE, 0);
+  cwin->prev_page_button = gtk_button_new_with_label("<");
+  cwin->next_page_button = gtk_button_new_with_label(">");
+  gtk_box_pack_start(GTK_BOX(cwin->hbox), GTK_WIDGET(cwin->prev_page_button),
+      TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(cwin->hbox), cwin->num_label, FALSE, FALSE, 0);
+  gtk_box_pack_end(GTK_BOX(cwin->hbox), GTK_WIDGET(cwin->next_page_button),
+      TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(cwin->vbox), cwin->hbox, FALSE, FALSE, 0);
+  g_signal_connect(cwin->prev_page_button, "clicked",
+      G_CALLBACK(pagebutton_clicked), cwin);
+  g_signal_connect(cwin->next_page_button, "clicked",
+      G_CALLBACK(pagebutton_clicked), cwin);
 
   cwin->pos_x = 0;
   cwin->pos_y = 0;
   cwin->is_active = FALSE;
   cwin->need_hilite = FALSE;
+  cwin->need_page_update = FALSE;
   cwin->caret_state_indicator = caret_state_indicator_new();
 
   cursor_location.x = 0;
@@ -568,6 +624,7 @@ candwin_activate(gchar **str)
   cwin->nr_candidates = j - 1;
   cwin->display_limit = display_limit;
   cwin->need_hilite = FALSE;
+  cwin->need_page_update = FALSE;
 
   if (candidates == NULL)
     return;
@@ -609,6 +666,14 @@ candwin_activate(gchar **str)
     }
   }
   g_slist_free(candidates);
+
+  if (cwin->nr_candidates <= cwin->display_limit) {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), FALSE);
+  } else {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), TRUE);
+  }
 
   uim_cand_win_gtk_set_page(cwin, 0);
   update_label(cwin);
@@ -688,7 +753,16 @@ candwin_set_nr_candidates(gchar **str)
   cwin->nr_candidates = nr;
   cwin->display_limit = display_limit;
   cwin->need_hilite = FALSE;
+  cwin->need_page_update = FALSE;
   cwin->is_active = TRUE;
+
+  if (cwin->nr_candidates <= cwin->display_limit) {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), FALSE);
+  } else {
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->prev_page_button), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(cwin->next_page_button), TRUE);
+  }
 
   if (cwin->stores == NULL)
     cwin->stores = g_ptr_array_new();
@@ -894,7 +968,7 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
   else
     new_page = cwin->page_index;
 
-  if (cwin->page_index != new_page)
+  if (cwin->page_index != new_page || cwin->need_page_update)
     uim_cand_win_gtk_set_page(cwin, new_page);
 
   update_label(cwin);
@@ -987,9 +1061,11 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
   else
     new_page = page;
 
-  update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
-                      cwin->buttons, cwin->tbl_cell2label,
-                      cwin->display_limit);
+  if (cwin->stores->pdata[new_page]) {
+    update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
+                        cwin->buttons, cwin->tbl_cell2label,
+                        cwin->display_limit);
+  }
 
   cwin->page_index = new_page;
 
@@ -1009,6 +1085,7 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
  /* shrink the window */
   gtk_window_resize(GTK_WINDOW(cwin), CANDWIN_DEFAULT_WIDTH, 1);
 
+  cwin->need_page_update = FALSE; /* avoid infinite loop with set_index() */
   uim_cand_win_gtk_set_index(cwin, new_index);
 }
 
@@ -1182,7 +1259,7 @@ uim_cand_win_gtk_show(UIMCandidateWindow *cwin)
   show_table(GTK_TABLE(cwin->view), cwin->buttons);
   gtk_widget_show(GTK_WIDGET(cwin->viewport));
   gtk_widget_show(GTK_WIDGET(cwin->scrolled_window));
-  gtk_widget_show(GTK_WIDGET(cwin->num_label));
+  gtk_widget_show_all(GTK_WIDGET(cwin->hbox));
   gtk_widget_show(GTK_WIDGET(cwin->vbox));
   gtk_widget_show(GTK_WIDGET(cwin->frame));
   gtk_widget_show(GTK_WIDGET(cwin));
