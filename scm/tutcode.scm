@@ -3855,6 +3855,7 @@
       (tutcode-reset-candidate-window pc)
       (tutcode-context-set-state! pc 'tutcode-state-yomi)
       (tutcode-context-set-head! pc (tutcode-context-mazegaki-yomi-all pc))
+      (tutcode-context-set-mazegaki-suffix! pc ())
       (tutcode-context-set-nr-candidates! pc 0))))
 
 ;;; 交ぜ書き変換の辞書登録状態から、候補選択状態に戻す。
