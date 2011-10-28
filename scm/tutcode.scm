@@ -750,6 +750,8 @@
      (list 'commit-strs-used-len 0)
      ;;; commitした文字列の履歴(ヒストリ入力用)
      (list 'history ())
+     ;;; 後置型変換の確定をundoするためのデータ
+     (list 'undo ())
      ;;; 補完/予測入力の候補選択中かどうか
      ;;; 'tutcode-predicting-off 補完/予測入力の候補選択中でない
      ;;; 'tutcode-predicting-completion 補完候補選択中
@@ -1256,6 +1258,7 @@
 ;;; im-commit-rawを呼び出す。
 ;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
 (define (tutcode-commit-raw pc key key-state)
+  (tutcode-context-set-undo! pc ())
   (if (or tutcode-use-completion? tutcode-enable-fallback-surrounding-text?)
     (tutcode-append-commit-string pc (im-get-raw-key-str key key-state)))
   (let ((ppc (tutcode-context-parent-context pc)))
@@ -1274,6 +1277,7 @@
 ;;;  opt-skip-append-history? historyへの追加を
 ;;;  スキップするかどうか。未指定時は#f。
 (define (tutcode-commit pc str . opts)
+  (tutcode-context-set-undo! pc ())
   (let-optionals* opts ((opt-skip-append-commit-strs? #f)
                         (opt-skip-append-history? #f))
     (if (and
@@ -1294,11 +1298,16 @@
 (define (tutcode-commit-with-auto-help pc)
   (let* ((head (tutcode-context-head pc))
          (yomi-len (tutcode-context-postfix-yomi-len pc))
+         (yomi (and (> yomi-len 0)
+                    (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
          (suffix (tutcode-context-mazegaki-suffix pc))
          (res (tutcode-prepare-commit-string pc))) ; flushによりhead等がクリア
     (if (> yomi-len 0)
-      (tutcode-postfix-delete-text pc yomi-len))
-    (tutcode-commit pc res)
+      (begin
+        (tutcode-postfix-delete-text pc yomi-len)
+        (tutcode-commit pc res)
+        (tutcode-undo-prepare pc res yomi))
+      (tutcode-commit pc res))
     (tutcode-check-auto-help-window-begin pc
       (drop (string-to-list res) (length suffix))
       (append suffix head))))
@@ -1858,6 +1867,7 @@
             ((tutcode-postfix-mazegaki-inflection-8-start) "―8")
             ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
             ((tutcode-auto-help-redisplay) "≪")
+            ((tutcode-undo) "⇔")
             (else cand)))
          (cand-hint
           (or
@@ -2308,17 +2318,22 @@
 ;;; tutcode-editor側での編集完了時に呼ばれる。
 ;;; @param str エディタ側で確定された文字列
 (define (tutcode-commit-editor-context pc str)
-  (let ((yomi-len (tutcode-context-postfix-yomi-len pc))
-        (suffix (tutcode-context-mazegaki-suffix pc)))
-    (if (> yomi-len 0)
-      (tutcode-postfix-delete-text pc yomi-len))
-    (tutcode-flush pc)
+  (let* ((yomi-len (tutcode-context-postfix-yomi-len pc))
+         (suffix (tutcode-context-mazegaki-suffix pc))
+         (commit-str (if (null? suffix)
+                         str
+                         (string-append str (string-list-concat suffix)))))
     (tutcode-context-set-child-context! pc ())
     (tutcode-context-set-child-type! pc ())
-    (tutcode-commit pc
-      (if (null? suffix)
-        str
-        (string-append str (string-list-concat suffix))))
+    (if (> yomi-len 0)
+      (let ((yomi (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
+        (tutcode-postfix-delete-text pc yomi-len)
+        (tutcode-flush pc)
+        (tutcode-commit pc commit-str)
+        (tutcode-undo-prepare pc commit-str yomi))
+      (begin
+        (tutcode-flush pc)
+        (tutcode-commit pc commit-str)))
     (tutcode-update-preedit pc)))
 
 ;;; 補完候補を検索して候補ウィンドウに表示する
@@ -2807,6 +2822,8 @@
                 (tutcode-begin-postfix-mazegaki-inflection-conversion pc 9))
               ((eq? res 'tutcode-history-start)
                 (tutcode-begin-history pc))
+              ((eq? res 'tutcode-undo)
+                (tutcode-undo pc))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
 
@@ -2818,7 +2835,24 @@
                (tutcode-bushu-convert (cadr former-seq) (car former-seq)))))
     (tutcode-postfix-delete-text pc 2)
     (tutcode-commit pc res)
+    (tutcode-undo-prepare pc res former-seq)
     (tutcode-check-auto-help-window-begin pc (list res) ())))
+
+;;; 後置型変換の確定をundoする
+(define (tutcode-undo pc)
+  (and-let*
+    ((undo (tutcode-context-undo pc))
+     (len (and (pair? undo) (car undo)))
+     (strs (cdr undo)))
+    (tutcode-postfix-delete-text pc len)
+    (tutcode-commit pc (string-list-concat strs) #t #t)))
+
+;;; 後置型変換の確定をundoするための準備
+;;; @param commit-str 確定文字列
+;;; @param yomi-str 変換元の文字列(読み/部首)のリスト(逆順)
+(define (tutcode-undo-prepare pc commit-str yomi-list)
+  (let ((commit-len (length (string-to-list commit-str))))
+    (tutcode-context-set-undo! pc (cons commit-len yomi-list))))
 
 ;;; 後置型交ぜ書き変換を開始する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
@@ -3926,10 +3960,17 @@
             (tutcode-heading-label-char? key))
         (tutcode-commit-by-label-key pc (charcode->string key)))
       (else
-        (let ((postfix-yomi-len (tutcode-context-postfix-yomi-len pc)))
+        (let* ((postfix-yomi-len (tutcode-context-postfix-yomi-len pc))
+               (yomi (and (> postfix-yomi-len 0)
+                          (take (tutcode-context-mazegaki-yomi-all pc)
+                                postfix-yomi-len)))
+               (commit-str (tutcode-prepare-commit-string pc)))
           (if (> postfix-yomi-len 0)
-            (tutcode-postfix-delete-text pc postfix-yomi-len)))
-        (tutcode-commit pc (tutcode-prepare-commit-string pc))
+            (begin
+              (tutcode-postfix-delete-text pc postfix-yomi-len)
+              (tutcode-commit pc commit-str)
+              (tutcode-undo-prepare pc commit-str yomi))
+            (tutcode-commit pc commit-str)))
         (tutcode-proc-state-on pc key key-state)))))
 
 ;;; 部首合成変換を行う。
@@ -5214,7 +5255,9 @@
           (make-subrule tutcode-postfix-mazegaki-inflection-9-start-sequence
             '(tutcode-postfix-mazegaki-inflection-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
-            '(tutcode-auto-help-redisplay)))))))
+            '(tutcode-auto-help-redisplay))
+          (make-subrule tutcode-undo-sequence
+            '(tutcode-undo)))))))
 
 ;;; コード表の一部の定義を上書き変更/追加する。~/.uimからの使用を想定。
 ;;; 呼び出し時にはtutcode-rule-userconfigに登録しておくだけで、
