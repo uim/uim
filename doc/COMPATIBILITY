@@ -116,6 +116,22 @@ Description:
    [get and display candidates in an ordinary way]
    [if selcted_index >= 0, select candidate]
 ------------------------------------------------------------------------------
+Summary: Support range for table custom type
+Affects: IM developers, Helper program developers
+Updates: Scheme API, C API (uim-custom)
+Version: 1.8.0
+Revision: ac7305
+Date: 2011-09-16
+Modifier: Muneyuki Noguchi
+URL:
+Changes:
+   (update) custom-table?
+   (update) custom-range
+   (update) struct uim_custom_range
+Description:
+  Add support range to the table custom type. This range represents
+  a horizontal header for a table.
+------------------------------------------------------------------------------
 Summary: New table custom type
 Affects: IM developers, Helper program developers
 Updates: Scheme API, C API (uim-custom)
