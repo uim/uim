@@ -35,6 +35,7 @@
 #include "common-uimstateindicator.h"
 #include <uim/uim-scm.h>
 
+#include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -45,7 +46,6 @@
 
 #include <cstring>
 #include <cstdlib>
-#include <sys/stat.h>
 
 #include "qtgettext.h"
 
@@ -179,8 +179,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
                 const QString append = isDarkBg ? "_dark_background" : "";
                 QString fileName = ICONDIR + '/' + fields[1] + append + ".png";
-                struct stat st;
-                if ( isDarkBg && stat( fileName.toUtf8().data(), &st ) == -1 )
+                if ( isDarkBg && !QFile::exists( fileName ) )
 		{
                   fileName = ICONDIR + '/' + fields[1] + ".png";
                 }
@@ -344,8 +343,7 @@ QAction *QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
 	    uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
     const QString append = isDarkBg ? "_dark_background" : "";
     QString fileName = ICONDIR + '/' + indicationIdStr + append + ".png";
-    struct stat st;
-    if ( isDarkBg && stat( fileName.toUtf8().data(), &st ) == -1 )
+    if ( isDarkBg && !QFile::exists( fileName ) )
     {
         fileName = ICONDIR + '/' + indicationIdStr + ".png";
     }
