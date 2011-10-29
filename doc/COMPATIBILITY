@@ -116,6 +116,26 @@ Description:
    [get and display candidates in an ordinary way]
    [if selcted_index >= 0, select candidate]
 ------------------------------------------------------------------------------
+Summary: New table custom type
+Affects: IM developers, Helper program developers
+Updates: Scheme API, C API (uim-custom)
+Version: 1.8.0
+Revision: ac7283
+Date: 2011-09-09
+Modifier: Muneyuki Noguchi
+URL:
+  http://groups.google.com/group/uim-en/browse_thread/thread/a04eda53ce82a0ec
+Changes:
+   (update) custom-validator-alist
+      (new) custom-table?
+      (new) custom-list-as-table
+   (update) custom-value-as-literal
+   (update) enum UCustomType
+   (update) struct uim_custom_value
+Description:
+  Add a new table custom type. This custom type can be used to modify
+  2D array data.
+------------------------------------------------------------------------------
 Summary: Add an internal variable to count uim_init() and uim_quit()
 Affects: None
 Updates: libuim ABI
