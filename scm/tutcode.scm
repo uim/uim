@@ -4817,7 +4817,18 @@
 ;;; ページ移動操作が行われた)場合、内部の選択候補番号を更新するだけ。
 (define (tutcode-set-candidate-index-handler c idx)
   (let* ((pc (tutcode-find-descendant-context c))
-         (candwin (tutcode-context-candidate-window pc)))
+         (candwin (tutcode-context-candidate-window pc))
+         ;; 仮想鍵盤上のクリックをキー入力として処理(ソフトキーボード)
+         (label-to-key-press
+          (lambda (label)
+            (let ((key (string->ichar label)))
+              (if key
+                (tutcode-key-press-handler c key 0)))))
+         (candlist-to-key-press
+          (lambda (candlist)
+            (let* ((candlabel (list-ref candlist idx))
+                   (label (cadr candlabel)))
+              (label-to-key-press label)))))
     (cond
       ((and (memq candwin '(tutcode-candidate-window-converting
                             tutcode-candidate-window-kigou
@@ -4860,20 +4871,38 @@
            (prev-page (quotient prev page-limit))
            (new-page (quotient idx page-limit)))
           (tutcode-context-set-prediction-index! pc idx)
-          (if (and (= new-page prev-page)
-                   (< idx-in-page nr-in-page))
-            (let*
-              ((nr-predictions (tutcode-lib-get-nr-predictions pc))
-               (p-idx (+ idx-in-page (* new-page nr-in-page)))
-               (i (remainder p-idx nr-predictions))
-               (mode (tutcode-context-predicting pc)))
-              (if (eq? candwin 'tutcode-candidate-window-interactive-bushu)
-                (tutcode-do-commit-prediction-for-interactive-bushu pc i)
-                (if (eq? mode 'tutcode-predicting-bushu)
-                  (tutcode-do-commit-prediction-for-bushu pc i)
-                  (tutcode-do-commit-prediction pc i
-                    (eq? mode 'tutcode-predicting-completion))))))
-          (tutcode-update-preedit pc))))))
+          (if (= new-page prev-page)
+            (if (< idx-in-page nr-in-page)
+              (let*
+                ((nr-predictions (tutcode-lib-get-nr-predictions pc))
+                 (p-idx (+ idx-in-page (* new-page nr-in-page)))
+                 (i (remainder p-idx nr-predictions))
+                 (mode (tutcode-context-predicting pc)))
+                (if (eq? candwin 'tutcode-candidate-window-interactive-bushu)
+                  (tutcode-do-commit-prediction-for-interactive-bushu pc i)
+                  (if (eq? mode 'tutcode-predicting-bushu)
+                    (tutcode-do-commit-prediction-for-bushu pc i)
+                    (tutcode-do-commit-prediction pc i
+                      (eq? mode 'tutcode-predicting-completion)))))
+              ;; 熟語ガイド
+              (let*
+                ((guide (tutcode-context-guide pc))
+                 (guide-len (length guide)))
+                (if (positive? guide-len)
+                  (let*
+                    ((guide-idx-in-page (- idx-in-page nr-in-page))
+                     (nr-guide-in-page (- page-limit nr-in-page))
+                     (guide-idx (+ guide-idx-in-page
+                                   (* new-page nr-guide-in-page)))
+                     (n (remainder guide-idx guide-len))
+                     (label-cands-alist (nth n guide))
+                     (label (car label-cands-alist)))
+                    (label-to-key-press label))))))
+          (tutcode-update-preedit pc)))
+        ((eq? candwin 'tutcode-candidate-window-stroke-help)
+          (candlist-to-key-press (tutcode-context-stroke-help pc)))
+        ((eq? candwin 'tutcode-candidate-window-auto-help)
+          (candlist-to-key-press (tutcode-context-auto-help pc))))))
 
 ;;; 遅延表示に対応している候補ウィンドウが、待ち時間満了時に
 ;;; (候補数、ページ内候補表示数、選択されたインデックス番号)を
