@@ -2578,8 +2578,6 @@
 ;;; @param nr-guide 熟語ガイド候補数
 ;;; @return (<全候補数> <ページごとの候補数上限> <ページごとの補完候補数上限>)
 (define (tutcode-prediction-calc-window-param nr nr-guide)
-  ;; XXX:表形式候補ウィンドウ用display_limitの調整前だと、計算に使う
-  ;;     tutcode-nr-candidate-max-for-guide等が適切な値になっていない恐れあり。
   (cond
     ;; 1ページに収まる場合
     ((and (<= nr-guide tutcode-nr-candidate-max-for-guide)
