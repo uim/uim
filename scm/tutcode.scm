@@ -157,6 +157,9 @@
 ;;;    tutcode-auto-help-redisplay-sequenceに以下のようにキーシーケンスを
 ;;;    設定すると使用可能になります。
 ;;;      (define tutcode-auto-help-redisplay-sequence "al-")
+;;; * 文字ヘルプ表示機能
+;;;   カーソル位置直前の文字のヘルプを表示します。
+;;;   (uimのsurrounding text APIを使ってカーソル位置直前の文字を取得)
 ;;;
 ;;; 【補完/予測入力・熟語ガイド】
 ;;; +「補完」:確定済文字列に対して、続く文字列の候補を表示します。
@@ -1867,6 +1870,7 @@
             ((tutcode-postfix-mazegaki-inflection-8-start) "―8")
             ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
             ((tutcode-auto-help-redisplay) "≪")
+            ((tutcode-help) "？")
             ((tutcode-undo) "⇔")
             (else cand)))
          (cand-hint
@@ -1975,14 +1979,16 @@
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; @param strlist 確定した文字列のリスト(逆順)
 ;;; @param yomilist 変換前の読みの文字列のリスト(逆順)
-(define (tutcode-check-auto-help-window-begin pc strlist yomilist)
+;;; @param opt-immediate? 遅延無しですぐに表示するかどうか(オプション)
+(define (tutcode-check-auto-help-window-begin pc strlist yomilist . opt-immediate?)
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-auto-help-window?)
-    (begin
+    (let ((immediate? (:optional opt-immediate? #f)))
       (tutcode-context-set-guide-chars! pc ())
-      (if (tutcode-candidate-window-enable-delay? pc
-            tutcode-candidate-window-activate-delay-for-auto-help)
+      (if (and (not immediate?)
+               (tutcode-candidate-window-enable-delay? pc
+                tutcode-candidate-window-activate-delay-for-auto-help))
         (begin
           (tutcode-context-set-auto-help! pc (list 'delaytmp strlist yomilist))
           (tutcode-activate-candidate-window pc
@@ -1998,6 +2004,13 @@
                 0
                 (length auto-help)
                 tutcode-nr-candidate-max-for-kigou-mode))))))))
+
+;;; カーソル位置の直前にある文字の打ち方を表示する。
+;;; (surrounding text APIを使ってカーソル位置の直前にある文字を取得)
+(define (tutcode-help pc)
+  (let ((former-seq (tutcode-postfix-acquire-text pc 1)))
+    (if (positive? (length former-seq))
+      (tutcode-check-auto-help-window-begin pc former-seq () #t))))
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
@@ -2822,6 +2835,8 @@
                 (tutcode-begin-history pc))
               ((eq? res 'tutcode-undo)
                 (tutcode-undo pc))
+              ((eq? res 'tutcode-help)
+                (tutcode-help pc))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
 
@@ -5254,6 +5269,8 @@
             '(tutcode-postfix-mazegaki-inflection-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay))
+          (make-subrule tutcode-help-sequence
+            '(tutcode-help))
           (make-subrule tutcode-undo-sequence
             '(tutcode-undo)))))))
 
