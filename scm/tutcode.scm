@@ -243,6 +243,16 @@
 ;;;   漢字コード入力で確定した文字列を再入力するモード。
 ;;;   tutcode-history-sizeを1以上に設定すると有効になります。
 ;;;
+;;; 【アンドゥ】
+;;;   以下の変換では、変換後に確定される文字列を確認する機会無しに
+;;;   確定を行うので、意図しない漢字に確定されることがあります。
+;;;   そのような場合でも、最初から入力し直さなくてすむように、
+;;;   アンドゥ機能を追加しました。
+;;;   (確定済文字列を削除するため、uimのsurrounding text APIを使います)
+;;;   + 部首合成変換: 2文字目の部首入力により変換・確定開始(特に再帰的な場合)
+;;;   + 漢字コード入力
+;;;   + 交ぜ書き変換: 候補数が1個の時の自動確定
+;;;
 ;;; 【設定例】
 ;;; * コード表の一部を変更したい場合は、例えば~/.uimで以下のように記述する。
 ;;;   (require "tutcode.scm")
@@ -1304,13 +1314,21 @@
          (yomi (and (> yomi-len 0)
                     (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
          (suffix (tutcode-context-mazegaki-suffix pc))
+         (state (tutcode-context-state pc))
+         ;; 候補1個で自動確定された漢字が意図したものでなかった場合のundoを想定
+         ;; (読み入力状態を再現。候補選択状態ではなく。選択中の候補番号は不要)
+         (undo-data (and (eq? state 'tutcode-state-converting)
+                         (list head (tutcode-context-latin-conv pc))))
          (res (tutcode-prepare-commit-string pc))) ; flushによりhead等がクリア
     (if (> yomi-len 0)
       (begin
         (tutcode-postfix-delete-text pc yomi-len)
         (tutcode-commit pc res)
-        (tutcode-undo-prepare pc res yomi))
-      (tutcode-commit pc res))
+        (tutcode-undo-prepare-postfix pc res yomi))
+      (begin
+        (tutcode-commit pc res)
+        (if undo-data
+          (tutcode-undo-prepare pc state res undo-data))))
     (tutcode-check-auto-help-window-begin pc
       (drop (string-to-list res) (length suffix))
       (append suffix head))))
@@ -1595,6 +1613,7 @@
       (begin
         (tutcode-commit pc kanji)
         (tutcode-flush pc)
+        (tutcode-undo-prepare pc 'tutcode-state-code kanji str-list)
         (tutcode-check-auto-help-window-begin pc (list kanji) ())))))
 
 ;;; 子コンテキストを作成する。
@@ -2343,7 +2362,7 @@
         (tutcode-postfix-delete-text pc yomi-len)
         (tutcode-flush pc)
         (tutcode-commit pc commit-str)
-        (tutcode-undo-prepare pc commit-str yomi))
+        (tutcode-undo-prepare-postfix pc commit-str yomi))
       (begin
         (tutcode-flush pc)
         (tutcode-commit pc commit-str)))
@@ -2774,6 +2793,7 @@
               ((eq? res 'tutcode-kanji-code-input-start)
                 (tutcode-context-set-state! pc 'tutcode-state-code))
               ((eq? res 'tutcode-bushu-start)
+                (tutcode-context-set-undo! pc ()) ; 再帰的部首合成変換のundo用
                 (tutcode-context-set-state! pc 'tutcode-state-bushu)
                 (tutcode-append-string pc "▲"))
               ((eq? res 'tutcode-interactive-bushu-start)
@@ -2848,24 +2868,46 @@
                (tutcode-bushu-convert (cadr former-seq) (car former-seq)))))
     (tutcode-postfix-delete-text pc 2)
     (tutcode-commit pc res)
-    (tutcode-undo-prepare pc res former-seq)
+    (tutcode-undo-prepare-postfix pc res former-seq)
     (tutcode-check-auto-help-window-begin pc (list res) ())))
 
-;;; 後置型変換の確定をundoする
+;;; 後置型/前置型変換の確定をundoする
 (define (tutcode-undo pc)
-  (and-let*
-    ((undo (tutcode-context-undo pc))
-     (len (and (pair? undo) (car undo)))
-     (strs (cdr undo)))
-    (tutcode-postfix-delete-text pc len)
-    (tutcode-commit pc (string-list-concat strs) #t #t)))
+  (let ((undo (tutcode-context-undo pc)))
+    (if (pair? undo)
+      (let ((state (list-ref undo 0))
+            (commit-len (list-ref undo 1))
+            (data (list-ref undo 2)))
+        (tutcode-postfix-delete-text pc commit-len)
+        (case state
+          ((tutcode-state-off) ; 後置型変換
+            (tutcode-commit pc (string-list-concat data) #t #t))
+          ((tutcode-state-converting)
+            (tutcode-context-set-head! pc (list-ref data 0))
+            (tutcode-context-set-latin-conv! pc (list-ref data 1))
+            (tutcode-context-set-state! pc 'tutcode-state-yomi))
+          ((tutcode-state-bushu)
+            (tutcode-context-set-head! pc data)
+            (tutcode-context-set-state! pc 'tutcode-state-bushu))
+          ((tutcode-state-code)
+            (tutcode-context-set-head! pc data)
+            (tutcode-context-set-state! pc 'tutcode-state-code))
+          )))))
+
+;;; 後置型/前置型変換の確定をundoするための準備
+;;; @param state 変換の種類('tutcode-state-converting)
+;;; @param commit-str 確定文字列
+;;; @param data 確定前の状態を再現するのに必要な情報
+(define (tutcode-undo-prepare pc state commit-str data)
+  (let ((commit-len (length (string-to-list commit-str))))
+    ;; XXX: 多段undoは未対応
+    (tutcode-context-set-undo! pc (list state commit-len data))))
 
 ;;; 後置型変換の確定をundoするための準備
 ;;; @param commit-str 確定文字列
 ;;; @param yomi-str 変換元の文字列(読み/部首)のリスト(逆順)
-(define (tutcode-undo-prepare pc commit-str yomi-list)
-  (let ((commit-len (length (string-to-list commit-str))))
-    (tutcode-context-set-undo! pc (cons commit-len yomi-list))))
+(define (tutcode-undo-prepare-postfix pc commit-str yomi-list)
+  (tutcode-undo-prepare pc 'tutcode-state-off commit-str yomi-list))
 
 ;;; 後置型交ぜ書き変換を開始する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
@@ -3633,10 +3675,19 @@
         ((eq? res 'tutcode-auto-help-redisplay)
           (tutcode-auto-help-redisplay pc)
           (set! res #f))
+        ((eq? res 'tutcode-undo) ; 再帰的な部首合成変換をundoする
+          (let ((undo (tutcode-context-undo pc)))
+            (if (pair? undo)
+              (tutcode-context-set-head! pc (list-ref undo 2))))
+          (set! res #f))
         ((symbol? res) ;XXX 部首合成変換中は交ぜ書き変換等は無効にする
           (set! res #f)))))
     (if res
-      (tutcode-begin-bushu-conversion pc res))))
+      (begin
+        ;; 再帰的に部首合成される場合があるので、head全体をundo用に保持
+        (tutcode-undo-prepare pc 'tutcode-state-bushu " " ; " ":確定後は1文字
+          (tutcode-context-head pc))
+        (tutcode-begin-bushu-conversion pc res)))))
 
 ;;; 部首合成変換開始
 ;;; @param char 新たに入力された文字(2番目の部首)
@@ -3667,9 +3718,10 @@
   (tutcode-context-set-head! pc (cddr (tutcode-context-head pc)))
   (if (null? (tutcode-context-head pc))
     ;; 変換待ちの部首が残ってなければ、確定して終了
-    (begin
+    (let ((undo-data (tutcode-context-undo pc))) ; commitするとクリアされる
       (tutcode-commit pc convchar)
       (tutcode-flush pc)
+      (tutcode-context-set-undo! pc undo-data)
       (tutcode-check-auto-help-window-begin pc (list convchar) ()))
     ;; 部首がまだ残ってれば、再確認。
     ;; (合成した文字が2文字目ならば、連続して部首合成変換)
@@ -3982,7 +4034,7 @@
             (begin
               (tutcode-postfix-delete-text pc postfix-yomi-len)
               (tutcode-commit pc commit-str)
-              (tutcode-undo-prepare pc commit-str yomi))
+              (tutcode-undo-prepare-postfix pc commit-str yomi))
             (tutcode-commit pc commit-str)))
         (tutcode-proc-state-on pc key key-state)))))
 
