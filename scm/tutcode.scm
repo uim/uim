@@ -1650,7 +1650,7 @@
       (tutcode-context-set-state! pc 'tutcode-state-history)
       (tutcode-check-candidate-window-begin pc)
       (if (eq? (tutcode-context-candidate-window pc)
-               'tutcode-candidate-window-hisory)
+               'tutcode-candidate-window-history)
         (tutcode-select-candidate pc 0)))))
 
 ;;; 2ストローク記号入力モード(tutcode-kigou-rule)とtutcode-ruleの切り替えを行う
