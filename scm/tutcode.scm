@@ -2035,13 +2035,23 @@
 ;;; クリップボード内の文字の打ち方を表示する。
 ;;; (surrounding text APIを使ってクリップボードから文字を取得)
 (define (tutcode-help-clipboard pc)
-  (and-let*
+  (let*
     ((len (length tutcode-auto-help-cand-str-list))
-     (ustr (im-acquire-text pc 'clipboard 'beginning 0 len))
-     (latter (ustr-latter-seq ustr))
-     (latter-seq (and (pair? latter) (string-to-list (car latter)))))
-    (if (positive? (length latter-seq))
+     (latter-seq (tutcode-clipboard-acquire-text pc len)))
+    (if (pair? latter-seq)
       (tutcode-check-auto-help-window-begin pc latter-seq () #t))))
+
+;;; surrounding text APIを使ってクリップボードから文字を取得
+;;; @param len 取得する文字数
+;;; @return 取得した文字列のリスト(逆順)。取得できない場合は#f
+(define (tutcode-clipboard-acquire-text pc len)
+  (and-let*
+    ((ustr (im-acquire-text pc 'clipboard 'beginning 0 len))
+     (latter (ustr-latter-seq ustr))
+     (latter-seq (and (pair? latter) (string-to-list (car latter))))
+     (latter-seq-wo-nl (delete "\n" latter-seq)))
+    (and (not (null? latter-seq-wo-nl))
+         latter-seq-wo-nl)))
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
@@ -2767,6 +2777,11 @@
                (if (> len 1)
                  (tutcode-check-completion pc #t (- len 1))))
              (tutcode-check-completion pc #t 0)))
+          ((and (tutcode-paste-key? key key-state)
+                (pair? (tutcode-context-parent-context pc)))
+            (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+              (if (pair? latter-seq)
+                (tutcode-commit pc (string-list-concat latter-seq)))))
           ((or
             (symbol? key)
             (and
@@ -3461,6 +3476,10 @@
                   ja-type-hiragana
                   ja-type-katakana)))
             (tutcode-flush pc))
+          ((tutcode-paste-key? key key-state)
+            (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+              (if (pair? latter-seq)
+                (tutcode-context-set-head! pc (append latter-seq head)))))
           ((symbol? key)
            (tutcode-flush pc)
            (tutcode-proc-state-on pc key key-state))
@@ -3573,6 +3592,10 @@
            (tutcode-return-key? key key-state))
         (tutcode-commit pc (string-list-concat head))
         (tutcode-flush pc))
+      ((tutcode-paste-key? key key-state)
+        (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+          (if (pair? latter-seq)
+            (tutcode-context-set-head! pc (append latter-seq head)))))
       ((symbol? key)
         (tutcode-flush pc)
         (tutcode-proc-state-on pc key key-state))
@@ -3665,6 +3688,11 @@
        (tutcode-change-bushu-prediction-page pc #t))
       ((and predicting? (tutcode-prev-page-key? key key-state))
        (tutcode-change-bushu-prediction-page pc #f))
+      ((tutcode-paste-key? key key-state)
+        ;; XXX:1文字のみ取得。▲を含む文字列をペーストできるとうれしいかも
+        (let ((latter-seq (tutcode-clipboard-acquire-text pc 1)))
+          (if (pair? latter-seq)
+            (set! res (car latter-seq)))))
       ((or
         (symbol? key)
         (and
@@ -3814,6 +3842,11 @@
            (tutcode-flush pc))
           ((tutcode-stroke-help-toggle-key? key key-state)
            (tutcode-toggle-stroke-help pc))
+          ((tutcode-paste-key? key key-state)
+            ;; XXX:1文字のみ取得。複数の部首を一度にpasteできるとうれしいかも
+            (let ((latter-seq (tutcode-clipboard-acquire-text pc 1)))
+              (if (pair? latter-seq)
+                (set! res (car latter-seq)))))
           ((or
             (symbol? key)
             (and

@@ -293,6 +293,12 @@
 	       (N_ "[TUT-Code] cancel")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-paste-key '()
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] paste from clipboard")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-next-candidate-key '(generic-next-candidate-key)
                '(tutcode-keys1)
 	       '(key)
