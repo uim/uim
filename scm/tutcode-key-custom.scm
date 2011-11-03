@@ -245,6 +245,12 @@
 	       (N_ "[TUT-Code] display help for char at current position")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-help-clipboard-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] display help for string on clipboard")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-undo-sequence ""
                '(tutcode-keys1)
 	       '(string ".*")

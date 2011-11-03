@@ -1890,6 +1890,7 @@
             ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
             ((tutcode-auto-help-redisplay) "≪")
             ((tutcode-help) "？")
+            ((tutcode-help-clipboard) "?c")
             ((tutcode-undo) "⇔")
             (else cand)))
          (cand-hint
@@ -2030,6 +2031,17 @@
   (let ((former-seq (tutcode-postfix-acquire-text pc 1)))
     (if (positive? (length former-seq))
       (tutcode-check-auto-help-window-begin pc former-seq () #t))))
+
+;;; クリップボード内の文字の打ち方を表示する。
+;;; (surrounding text APIを使ってクリップボードから文字を取得)
+(define (tutcode-help-clipboard pc)
+  (and-let*
+    ((len (length tutcode-auto-help-cand-str-list))
+     (ustr (im-acquire-text pc 'clipboard 'beginning 0 len))
+     (latter (ustr-latter-seq ustr))
+     (latter-seq (and (pair? latter) (string-to-list (car latter)))))
+    (if (positive? (length latter-seq))
+      (tutcode-check-auto-help-window-begin pc latter-seq () #t))))
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
@@ -2857,6 +2869,8 @@
                 (tutcode-undo pc))
               ((eq? res 'tutcode-help)
                 (tutcode-help pc))
+              ((eq? res 'tutcode-help-clipboard)
+                (tutcode-help-clipboard pc))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
 
@@ -5352,6 +5366,8 @@
             '(tutcode-auto-help-redisplay))
           (make-subrule tutcode-help-sequence
             '(tutcode-help))
+          (make-subrule tutcode-help-clipboard-sequence
+            '(tutcode-help-clipboard))
           (make-subrule tutcode-undo-sequence
             '(tutcode-undo)))))))
 
