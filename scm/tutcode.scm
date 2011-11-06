@@ -2922,7 +2922,7 @@
         (tutcode-postfix-delete-text pc commit-len)
         (case state
           ((tutcode-state-off) ; 後置型変換
-            (tutcode-commit pc (string-list-concat data) #t #t))
+            (tutcode-commit pc (string-list-concat data) #f #t))
           ((tutcode-state-converting)
             (tutcode-context-set-head! pc (list-ref data 0))
             (tutcode-context-set-latin-conv! pc (list-ref data 1))
