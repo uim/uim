@@ -126,6 +126,11 @@
 ;;; ** 読みの文字数を指定して変換開始した場合
 ;;;    活用する語に関しては、読みは指定された文字数で固定して語幹のみ伸縮。
 ;;;      例(「あおい」に対して3文字指定):「あおい―」>「あお―」>「あ―」
+;;; * 後置型カタカナ変換は、以下の開始キーを設定すると使用可能になります。
+;;;            tutcode-postfix-katakana-start-sequence
+;;;  読み1文字 tutcode-postfix-katakana-1-start-sequence
+;;;   ...
+;;;  読み9文字 tutcode-postfix-katakana-9-start-sequence
 ;;;
 ;;; 【ヘルプ機能】
 ;;; * 仮想鍵盤表示(表形式の候補ウィンドウを流用)
@@ -713,6 +718,7 @@
      ;;; 'tutcode-state-interactive-bushu 対話的部首合成変換中
      ;;; 'tutcode-state-kigou 記号入力モード
      ;;; 'tutcode-state-history ヒストリ入力モード
+     ;;; 'tutcode-state-postfix-katakana 後置型カタカナ変換中
      (list 'state 'tutcode-state-off)
      ;;; カタカナモードかどうか
      ;;; #t: カタカナモード。#f: ひらがなモード。
@@ -1900,6 +1906,16 @@
             ((tutcode-postfix-mazegaki-inflection-7-start) "―7")
             ((tutcode-postfix-mazegaki-inflection-8-start) "―8")
             ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
+            ((tutcode-postfix-katakana-start) "カ")
+            ((tutcode-postfix-katakana-1-start) "カ1")
+            ((tutcode-postfix-katakana-2-start) "カ2")
+            ((tutcode-postfix-katakana-3-start) "カ3")
+            ((tutcode-postfix-katakana-4-start) "カ4")
+            ((tutcode-postfix-katakana-5-start) "カ5")
+            ((tutcode-postfix-katakana-6-start) "カ6")
+            ((tutcode-postfix-katakana-7-start) "カ7")
+            ((tutcode-postfix-katakana-8-start) "カ8")
+            ((tutcode-postfix-katakana-9-start) "カ9")
             ((tutcode-auto-help-redisplay) "≪")
             ((tutcode-help) "？")
             ((tutcode-help-clipboard) "?c")
@@ -2370,7 +2386,12 @@
       ((tutcode-state-history)
         (im-pushback-preedit pc preedit-none "◎")
         (im-pushback-preedit pc preedit-none
-          (tutcode-get-current-candidate-for-history pc))))
+          (tutcode-get-current-candidate-for-history pc)))
+      ((tutcode-state-postfix-katakana)
+        (im-pushback-preedit pc preedit-none "☆")
+        (let ((h (string-list-concat (tutcode-context-head pc))))
+          (if (string? h)
+            (im-pushback-preedit pc preedit-none h)))))
     (if (not cursor-shown?)
       (im-pushback-preedit pc preedit-cursor ""))))
 
@@ -2890,6 +2911,26 @@
                 (tutcode-begin-postfix-mazegaki-inflection-conversion pc 8))
               ((eq? res 'tutcode-postfix-mazegaki-inflection-9-start)
                 (tutcode-begin-postfix-mazegaki-inflection-conversion pc 9))
+              ((eq? res 'tutcode-postfix-katakana-start)
+                (tutcode-begin-postfix-katakana-conversion pc #f))
+              ((eq? res 'tutcode-postfix-katakana-1-start)
+                (tutcode-begin-postfix-katakana-conversion pc 1))
+              ((eq? res 'tutcode-postfix-katakana-2-start)
+                (tutcode-begin-postfix-katakana-conversion pc 2))
+              ((eq? res 'tutcode-postfix-katakana-3-start)
+                (tutcode-begin-postfix-katakana-conversion pc 3))
+              ((eq? res 'tutcode-postfix-katakana-4-start)
+                (tutcode-begin-postfix-katakana-conversion pc 4))
+              ((eq? res 'tutcode-postfix-katakana-5-start)
+                (tutcode-begin-postfix-katakana-conversion pc 5))
+              ((eq? res 'tutcode-postfix-katakana-6-start)
+                (tutcode-begin-postfix-katakana-conversion pc 6))
+              ((eq? res 'tutcode-postfix-katakana-7-start)
+                (tutcode-begin-postfix-katakana-conversion pc 7))
+              ((eq? res 'tutcode-postfix-katakana-8-start)
+                (tutcode-begin-postfix-katakana-conversion pc 8))
+              ((eq? res 'tutcode-postfix-katakana-9-start)
+                (tutcode-begin-postfix-katakana-conversion pc 9))
               ((eq? res 'tutcode-history-start)
                 (tutcode-begin-history pc))
               ((eq? res 'tutcode-undo)
@@ -3298,6 +3339,88 @@
                   (make-list len tutcode-fallback-backspace-string))
                 #t #t))))))))
 
+;;; 後置型カタカナ変換を確定する
+;;; @param yomi 読み
+;;; @param katakana 読みをカタカナに変換した文字列リスト
+;;; @param show-help? katakanaが1文字の場合に自動ヘルプを表示するかどうか
+(define (tutcode-postfix-katakana-commit pc yomi katakana show-help?)
+  (let ((str (string-list-concat katakana)))
+    (tutcode-postfix-delete-text pc (length yomi))
+    (tutcode-commit pc str)
+    (tutcode-undo-prepare-postfix pc str yomi)
+    (tutcode-flush pc)
+    (if (and show-help?
+             (= (length katakana) 1)) ; 1文字の場合、自動ヘルプ表示(tc2と同様)
+      (tutcode-check-auto-help-window-begin pc katakana ()))))
+
+;;; 後置型カタカナ変換を開始する
+;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+(define (tutcode-begin-postfix-katakana-conversion pc yomi-len)
+  (let*
+    ;; 指定した1文字が漢字(ひらがな、カタカナ、記号以外)かどうかを返す
+    ((kanji?
+      (lambda (str)
+        (let ((ch (tutcode-euc-jp-string->ichar str)))
+          (and ch (>= ch #xaea1))))) ; EUC-JIS-2004
+     (former-all (tutcode-postfix-mazegaki-acquire-yomi pc yomi-len))
+     (former-seq
+      (if yomi-len
+        former-all
+        (take-while
+          (lambda (elem)
+            (not (kanji? elem))) ; 漢字があったら、そこで中断
+          former-all)))
+     (former-len (length former-seq)))
+    (if yomi-len
+      (let*
+        ((yomi (if (> former-len yomi-len)
+                (take former-seq yomi-len)
+                former-seq))
+         (katakana
+          (tutcode-katakana-convert yomi
+            (not (tutcode-context-katakana-mode? pc)))))
+        (tutcode-postfix-katakana-commit pc yomi katakana #t))
+      ;; 読みの文字数が指定されていない
+      (if (> former-len 0)
+        (begin
+          (tutcode-context-set-mazegaki-yomi-all! pc former-all)
+          (tutcode-context-set-head! pc
+            (tutcode-katakana-convert former-seq
+              (not (tutcode-context-katakana-mode? pc))))
+          (tutcode-context-set-state! pc 'tutcode-state-postfix-katakana))))))
+
+;;; 後置型カタカナ変換モード時のキー入力を処理する。
+;;; @param key 入力されたキー
+;;; @param key-state コントロールキー等の状態
+(define (tutcode-proc-state-postfix-katakana c key key-state)
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (head (tutcode-context-head pc)))
+    (cond
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-flush pc))
+      ((or (tutcode-commit-key? key key-state)
+           (tutcode-return-key? key key-state))
+        (tutcode-postfix-katakana-commit pc
+          (take (tutcode-context-mazegaki-yomi-all pc) (length head))
+          head #t))
+      ((tutcode-mazegaki-relimit-right-key? key key-state)
+        (if (> (length head) 1)
+          (tutcode-context-set-head! pc (drop-right head 1))))
+      ((tutcode-mazegaki-relimit-left-key? key key-state)
+        (let ((yomi-all (tutcode-context-mazegaki-yomi-all pc))
+              (cur-len (length head)))
+          (if (> (length yomi-all) cur-len)
+            (tutcode-context-set-head! pc
+              (tutcode-katakana-convert
+                (take yomi-all (+ cur-len 1))
+                (not (tutcode-context-katakana-mode? pc)))))))
+      (else
+        (tutcode-postfix-katakana-commit pc
+          (take (tutcode-context-mazegaki-yomi-all pc) (length head))
+          head #f)
+        (tutcode-proc-state-on pc key key-state)))))
+
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
@@ -3402,6 +3525,18 @@
         (tutcode-flush pc)
         (tutcode-proc-state-on pc key key-state)))))
 
+;;; 文字列リストをカタカナに変換する
+;;; @param strlist 文字列のリスト
+;;; @param to-katakana? カタカナに変換する場合は#t。ひらがなに変換する場合は#f
+;;; @return 変換後の文字列リスト
+(define (tutcode-katakana-convert strlist to-katakana?)
+  ;;XXX:かなカナ混在時の反転(→カナかな)は未対応
+  (let ((idx (if to-katakana? 1 0)))
+    (map
+      (lambda (e)
+        (list-ref (ja-find-kana-list-from-rule ja-rk-rule e) idx))
+      strlist)))
+
 ;;; 交ぜ書き変換の読み入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
@@ -3413,6 +3548,13 @@
      (head (tutcode-context-head pc))
      (kigou2-mode? (tutcode-kigou2-mode? pc))
      (res #f)
+     (katakana-commit
+      (lambda ()
+        (tutcode-commit pc
+          (string-list-concat
+            (tutcode-katakana-convert head
+              (not (tutcode-context-katakana-mode? pc)))))
+        (tutcode-flush pc)))
      ;; reset-candidate-windowでリセットされるので保存しておく
      (predicting?
       (eq? (tutcode-context-predicting pc) 'tutcode-predicting-prediction))
@@ -3481,13 +3623,7 @@
            (tutcode-context-set-state! pc 'tutcode-state-converting)
            (tutcode-setup-child-context pc 'tutcode-child-type-editor))
           ((tutcode-katakana-commit-key? key key-state)
-            (tutcode-commit pc
-              ;;XXX:かなカナ混在時の反転(→カナかな)や、「ゑゐ」は未対応
-              (ja-make-kana-str (ja-make-kana-str-list head)
-                (if (tutcode-context-katakana-mode? pc)
-                  ja-type-hiragana
-                  ja-type-katakana)))
-            (tutcode-flush pc))
+            (katakana-commit))
           ((tutcode-paste-key? key key-state)
             (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
               (if (pair? latter-seq)
@@ -3559,6 +3695,13 @@
                 (begin
                   (tutcode-flush pc)
                   (tutcode-begin-postfix-mazegaki-inflection-conversion pc #f))))
+            ((eq? res 'tutcode-postfix-katakana-start)
+              (set! res #f)
+              (if (not (null? head))
+                (katakana-commit)
+                (begin
+                  (tutcode-flush pc)
+                  (tutcode-begin-postfix-katakana-conversion pc #f))))
             ((symbol? res)
               (set! res #f)))))
         (if res
@@ -4730,7 +4873,8 @@
     (memq (tutcode-context-state pc)
       '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
         tutcode-state-interactive-bushu tutcode-state-kigou
-        tutcode-state-code tutcode-state-history))))
+        tutcode-state-code tutcode-state-history
+        tutcode-state-postfix-katakana))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param c コンテキストリスト
@@ -4769,6 +4913,9 @@
            (tutcode-update-preedit pc))
           ((tutcode-state-history)
            (tutcode-proc-state-history pc key key-state)
+           (tutcode-update-preedit pc))
+          ((tutcode-state-postfix-katakana)
+           (tutcode-proc-state-postfix-katakana pc key key-state)
            (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
@@ -5407,6 +5554,26 @@
             '(tutcode-postfix-mazegaki-inflection-8-start))
           (make-subrule tutcode-postfix-mazegaki-inflection-9-start-sequence
             '(tutcode-postfix-mazegaki-inflection-9-start))
+          (make-subrule tutcode-postfix-katakana-start-sequence
+            '(tutcode-postfix-katakana-start))
+          (make-subrule tutcode-postfix-katakana-1-start-sequence
+            '(tutcode-postfix-katakana-1-start))
+          (make-subrule tutcode-postfix-katakana-2-start-sequence
+            '(tutcode-postfix-katakana-2-start))
+          (make-subrule tutcode-postfix-katakana-3-start-sequence
+            '(tutcode-postfix-katakana-3-start))
+          (make-subrule tutcode-postfix-katakana-4-start-sequence
+            '(tutcode-postfix-katakana-4-start))
+          (make-subrule tutcode-postfix-katakana-5-start-sequence
+            '(tutcode-postfix-katakana-5-start))
+          (make-subrule tutcode-postfix-katakana-6-start-sequence
+            '(tutcode-postfix-katakana-6-start))
+          (make-subrule tutcode-postfix-katakana-7-start-sequence
+            '(tutcode-postfix-katakana-7-start))
+          (make-subrule tutcode-postfix-katakana-8-start-sequence
+            '(tutcode-postfix-katakana-8-start))
+          (make-subrule tutcode-postfix-katakana-9-start-sequence
+            '(tutcode-postfix-katakana-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay))
           (make-subrule tutcode-help-sequence
