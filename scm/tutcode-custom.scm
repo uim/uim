@@ -122,6 +122,18 @@
   (N_ "Enable fallback of surrounding text API")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-keep-illegal-sequence? #f
+  '(tutcode)
+  '(boolean)
+  (N_ "Keep key sequence not convertible to Kanji")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-delete-leading-delimiter-on-postfix-kanji2seq? #f
+  '(tutcode)
+  '(boolean)
+  (N_ "Delete leading delimiter on postfix kanji to sequence conversion")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-history-size 0
   '(tutcode)
   '(integer 0 65535)

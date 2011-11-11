@@ -131,6 +131,31 @@
 ;;;  読み1文字 tutcode-postfix-katakana-1-start-sequence
 ;;;   ...
 ;;;  読み9文字 tutcode-postfix-katakana-9-start-sequence
+;;; * 後置型漢字→入力シーケンス変換
+;;;   TUT-Codeオン・オフのモード切り替えなしで英単語を入力して、
+;;;   後から英字化するための機能です。
+;;;   tutcode-keep-illegal-sequence?を#tに設定した上で、
+;;;   英単語入力後に、tutcode-verbose-stroke-key(デフォルトはスペースキー)を
+;;;   打鍵することでシーケンスを終端した後に、以下の開始キーを入力して下さい。
+;;;   (変換後に、最後のtutcode-verbose-stroke-keyは自動削除します)
+;;;   例:"undo "と打鍵すると"趣・"と表示され、以下の開始キーで、"undo"に変換。
+;;;               tutcode-postfix-kanji2seq-start-sequence
+;;;     漢字1文字 tutcode-postfix-kanji2seq-1-start-sequence
+;;;      ...
+;;;     漢字9文字 tutcode-postfix-kanji2seq-9-start-sequence
+;;;   文字数を指定しない場合、<と>キーにより、字数の伸縮が可能です。
+;;;   文字数を指定しない場合、英単語入力前にスペースを入力しておくと、
+;;;   スペースより後の文字を英字に変換します。
+;;;   このとき、英単語の区切りのために入力したスペースを自動削除するには、
+;;;   tutcode-delete-leading-delimiter-on-postfix-kanji2seq?を
+;;;   #tに設定してください。
+;;;   例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
+;;;   注:英単語中に前置型交ぜ書き変換開始などの機能に対するシーケンスが
+;;;      含まれていると、該当する機能が実行されてしまいます。
+;;;      現状では、それらの機能に対するシーケンスを、
+;;;      英単語中では出現しないシーケンスに変更することで回避してください。
+;;;      例:"/local/"と打つと"授阪"の後に"al/"により前置型英字変換モードが開始
+;;;         (なお、"local/"の場合は"薬児適"なので問題なし)
 ;;;
 ;;; 【ヘルプ機能】
 ;;; * 仮想鍵盤表示(表形式の候補ウィンドウを流用)
@@ -554,6 +579,12 @@
 (define tutcode-postfix-mazegaki-terminate-char-list
   '("\n" "\t" " " "、" "。" "，" "．" "・" "「" "」" "（" "）"))
 
+;;; 後置型漢字→入力シーケンス変換の読み取得時に、読みに含めない文字のリスト。
+;;; スペースを含む英単語の変換を楽にしたい場合、'(":")等にすることを想定。
+;;; ("\n" "\t"は別扱い。tutcode-delete-leading-delimiter-on-postfix-kanji2seq?
+;;;  が#tの場合でも削除しないようにするため)
+(define tutcode-postfix-kanji2seq-delimiter-char-list '(" "))
+
 ;;; surrounding text APIが使えない時に、文字削除のためにcommitする文字列
 (define tutcode-fallback-backspace-string "\b")
 
@@ -719,6 +750,7 @@
      ;;; 'tutcode-state-kigou 記号入力モード
      ;;; 'tutcode-state-history ヒストリ入力モード
      ;;; 'tutcode-state-postfix-katakana 後置型カタカナ変換中
+     ;;; 'tutcode-state-postfix-kanji2seq 後置型漢字→入力シーケンス変換中
      (list 'state 'tutcode-state-off)
      ;;; カタカナモードかどうか
      ;;; #t: カタカナモード。#f: ひらがなモード。
@@ -1339,10 +1371,7 @@
                          (list head (tutcode-context-latin-conv pc))))
          (res (tutcode-prepare-commit-string pc))) ; flushによりhead等がクリア
     (if (> yomi-len 0)
-      (begin
-        (tutcode-postfix-delete-text pc yomi-len)
-        (tutcode-commit pc res)
-        (tutcode-undo-prepare-postfix pc res yomi))
+      (tutcode-postfix-commit pc res yomi)
       (begin
         (tutcode-commit pc res)
         (if undo-data
@@ -1916,6 +1945,16 @@
             ((tutcode-postfix-katakana-7-start) "カ7")
             ((tutcode-postfix-katakana-8-start) "カ8")
             ((tutcode-postfix-katakana-9-start) "カ9")
+            ((tutcode-postfix-kanji2seq-start) "/@")
+            ((tutcode-postfix-kanji2seq-1-start) "/1")
+            ((tutcode-postfix-kanji2seq-2-start) "/2")
+            ((tutcode-postfix-kanji2seq-3-start) "/3")
+            ((tutcode-postfix-kanji2seq-4-start) "/4")
+            ((tutcode-postfix-kanji2seq-5-start) "/5")
+            ((tutcode-postfix-kanji2seq-6-start) "/6")
+            ((tutcode-postfix-kanji2seq-7-start) "/7")
+            ((tutcode-postfix-kanji2seq-8-start) "/8")
+            ((tutcode-postfix-kanji2seq-9-start) "/9")
             ((tutcode-auto-help-redisplay) "≪")
             ((tutcode-help) "？")
             ((tutcode-help-clipboard) "?c")
@@ -2391,6 +2430,11 @@
         (im-pushback-preedit pc preedit-none "☆")
         (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
+            (im-pushback-preedit pc preedit-none h))))
+      ((tutcode-state-postfix-kanji2seq)
+        (im-pushback-preedit pc preedit-none "／")
+        (let ((h (string-list-concat (tutcode-context-head pc))))
+          (if (string? h)
             (im-pushback-preedit pc preedit-none h)))))
     (if (not cursor-shown?)
       (im-pushback-preedit pc preedit-cursor ""))))
@@ -2414,10 +2458,8 @@
     (tutcode-context-set-child-type! pc ())
     (if (> yomi-len 0)
       (let ((yomi (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
-        (tutcode-postfix-delete-text pc yomi-len)
-        (tutcode-flush pc)
-        (tutcode-commit pc commit-str)
-        (tutcode-undo-prepare-postfix pc commit-str yomi))
+        (tutcode-postfix-commit pc commit-str yomi)
+        (tutcode-flush pc))
       (begin
         (tutcode-flush pc)
         (tutcode-commit pc commit-str)))
@@ -2742,6 +2784,11 @@
      ;; reset-candidate-windowでリセットされるので保存しておく
      (completing?
       (eq? (tutcode-context-predicting pc) 'tutcode-predicting-completion))
+     (rk-commit-flush
+      (lambda ()
+        (if tutcode-keep-illegal-sequence?
+          (tutcode-commit pc (rk-pending rkc) #f #t))
+        (rk-flush rkc)))
      ;; 補完候補表示のページ移動時は、reset-candidate-windowしたら駄目
      (prediction-keys-handled?
       (if completing?
@@ -2762,26 +2809,26 @@
           ((and
             (tutcode-vi-escape-key? key key-state)
             tutcode-use-with-vi?)
-           (rk-flush rkc)
+           (rk-commit-flush)
            (tutcode-context-set-commit-strs! pc ())
            (tutcode-context-set-state! pc 'tutcode-state-off)
            (tutcode-commit-raw pc key key-state)) ; ESCキーをアプリにも渡す
           ((tutcode-off-key? key key-state)
-           (rk-flush rkc)
+           (rk-commit-flush)
            (tutcode-context-set-commit-strs! pc ())
            (tutcode-context-set-state! pc 'tutcode-state-off))
           ((tutcode-on-key? key key-state) ; off-keyとon-keyが別キーの場合
            ;; 現在onでもoffでも、on-keyでonにしたいだけなのでcommit-rawを回避
-           (rk-flush rkc))
+           (rk-commit-flush))
           ((tutcode-kigou-toggle-key? key key-state)
-           (rk-flush rkc)
+           (rk-commit-flush)
            (tutcode-begin-kigou-mode pc))
           ((tutcode-kigou2-toggle-key? key key-state)
-           (rk-flush rkc)
+           (rk-commit-flush)
            (tutcode-toggle-kigou2-mode pc))
           ((and (tutcode-kana-toggle-key? key key-state)
                 (not (tutcode-kigou2-mode? pc)))
-           (rk-flush rkc)
+           (rk-commit-flush)
            (tutcode-context-kana-toggle pc))
           ((tutcode-backspace-key? key key-state)
            (if (> (length (rk-context-seq rkc)) 0)
@@ -2801,7 +2848,7 @@
            (tutcode-toggle-stroke-help pc))
           ((and tutcode-use-completion?
                 (tutcode-begin-completion-key? key key-state))
-           (rk-flush rkc)
+           (rk-commit-flush)
            (if completing?
              ;; 補完中にbegin-completin-keyが押されたら対象文字を1減らして再補完
              ;; (意図しない文字列で補完された場合に、補完し直しができるように)
@@ -2820,7 +2867,7 @@
             (and
               (modifier-key-mask key-state)
               (not (shift-key-mask key-state))))
-           (rk-flush rkc)
+           (rk-commit-flush)
            (tutcode-commit-raw pc key key-state))
           ;; 補完候補用ラベルキー?
           ((and completing? (tutcode-heading-label-char-for-prediction? key))
@@ -2831,7 +2878,14 @@
           ;; 間違ったキーは残ってしまうので、rk-push-key!は使えない)
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
-             (rk-flush rkc) ; 正しくないシーケンスは捨てる
+             (begin
+               (cond
+                 ((tutcode-verbose-stroke-key? key key-state)
+                   (tutcode-commit pc (rk-pending rkc) #f #t))
+                 (tutcode-keep-illegal-sequence?
+                   (tutcode-commit pc (rk-pending rkc) #f #t)
+                   (tutcode-commit-raw pc key key-state)))
+               (rk-flush rkc))
              ;; 単独のキー入力(TUT-Code入力でなくて)
              (tutcode-commit-raw pc key key-state)))
           (else
@@ -2931,6 +2985,26 @@
                 (tutcode-begin-postfix-katakana-conversion pc 8))
               ((eq? res 'tutcode-postfix-katakana-9-start)
                 (tutcode-begin-postfix-katakana-conversion pc 9))
+              ((eq? res 'tutcode-postfix-kanji2seq-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc #f))
+              ((eq? res 'tutcode-postfix-kanji2seq-1-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 1))
+              ((eq? res 'tutcode-postfix-kanji2seq-2-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 2))
+              ((eq? res 'tutcode-postfix-kanji2seq-3-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 3))
+              ((eq? res 'tutcode-postfix-kanji2seq-4-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 4))
+              ((eq? res 'tutcode-postfix-kanji2seq-5-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 5))
+              ((eq? res 'tutcode-postfix-kanji2seq-6-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 6))
+              ((eq? res 'tutcode-postfix-kanji2seq-7-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 7))
+              ((eq? res 'tutcode-postfix-kanji2seq-8-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 8))
+              ((eq? res 'tutcode-postfix-kanji2seq-9-start)
+                (tutcode-begin-postfix-kanji2seq-conversion pc 9))
               ((eq? res 'tutcode-history-start)
                 (tutcode-begin-history pc))
               ((eq? res 'tutcode-undo)
@@ -2948,9 +3022,7 @@
     ((former-seq (tutcode-postfix-acquire-text pc 2))
      (res (and (>= (length former-seq) 2)
                (tutcode-bushu-convert (cadr former-seq) (car former-seq)))))
-    (tutcode-postfix-delete-text pc 2)
-    (tutcode-commit pc res)
-    (tutcode-undo-prepare-postfix pc res former-seq)
+    (tutcode-postfix-commit pc res former-seq)
     (tutcode-check-auto-help-window-begin pc (list res) ())))
 
 ;;; 後置型/前置型変換の確定をundoする
@@ -2985,11 +3057,13 @@
     ;; XXX: 多段undoは未対応
     (tutcode-context-set-undo! pc (list state commit-len data))))
 
-;;; 後置型変換の確定をundoするための準備
-;;; @param commit-str 確定文字列
-;;; @param yomi-str 変換元の文字列(読み/部首)のリスト(逆順)
-(define (tutcode-undo-prepare-postfix pc commit-str yomi-list)
-  (tutcode-undo-prepare pc 'tutcode-state-off commit-str yomi-list))
+;;; 後置型変換を確定する
+;;; @param str 確定する文字列
+;;; @param yomi-list 変換元の文字列(読み/部首)のリスト(逆順)
+(define (tutcode-postfix-commit pc str yomi-list)
+  (tutcode-postfix-delete-text pc (length yomi-list))
+  (tutcode-commit pc str)
+  (tutcode-undo-prepare pc 'tutcode-state-off str yomi-list))
 
 ;;; 後置型交ぜ書き変換を開始する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
@@ -3345,9 +3419,7 @@
 ;;; @param show-help? katakanaが1文字の場合に自動ヘルプを表示するかどうか
 (define (tutcode-postfix-katakana-commit pc yomi katakana show-help?)
   (let ((str (string-list-concat katakana)))
-    (tutcode-postfix-delete-text pc (length yomi))
-    (tutcode-commit pc str)
-    (tutcode-undo-prepare-postfix pc str yomi)
+    (tutcode-postfix-commit pc str yomi)
     (tutcode-flush pc)
     (if (and show-help?
              (= (length katakana) 1)) ; 1文字の場合、自動ヘルプ表示(tc2と同様)
@@ -3419,6 +3491,119 @@
         (tutcode-postfix-katakana-commit pc
           (take (tutcode-context-mazegaki-yomi-all pc) (length head))
           head #f)
+        (tutcode-proc-state-on pc key key-state)))))
+
+;;; 漢字のリストを入力シーケンスに変換する。
+;;; 漢字入力を終端するために入力された余分なverbose-stroke-keyは削除して返す。
+;;; @param kanji-list 漢字文字列リスト(逆順)
+;;; @return 入力シーケンス文字列リスト(逆順)。
+;;;  このシーケンスを入力すればkanji-listが生成される。
+;;;XXX:コード表に、ある漢字に対する複数のシーケンスがある場合、最初のものを使用
+;;;    カタカナ入力用大文字定義もある場合、小文字シーケンスが使われる。
+;;;    例:"CODE "と打鍵、"CODー"と表示、漢字→入力シーケンス変換すると"CODe "
+(define (tutcode-kanji-list->sequence pc kanji-list)
+  (let*
+    ((rule (rk-context-rule (tutcode-context-rk-context pc)))
+     (allseq
+      (append-map
+        (lambda (x)
+          (let ((seq (tutcode-reverse-find-seq x rule)))
+            ;; 直接入力できない場合は漢字のまま(XXX:部首合成方法まで表示?)
+            (if seq (reverse seq) (list x))))
+        kanji-list)))
+    ;; 最後のverbose-stroke-key(例:":")は漢字入力を終端するため
+    ;; 余分に入力された可能性があるので削る
+    ;; 例: "undo:"→"趣o"→("o" "趣")、"code:"→"演各:"→(":" "各" "演")
+    (if (tutcode-verbose-stroke-key? (string->ichar (safe-car allseq)) 0)
+      (cdr allseq)
+      allseq)))
+
+;;; 後置型の漢字→入力シーケンス変換を開始する
+;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+(define (tutcode-begin-postfix-kanji2seq-conversion pc yomi-len)
+  (let*
+    ((former-all (tutcode-postfix-acquire-text pc
+                  (or yomi-len tutcode-mazegaki-yomi-max)))
+     (former-seq
+      (if yomi-len
+        former-all
+        (let*
+          ;; verbose-stroke-keyが" "(デフォルト)の場合、余分に入力されてると
+          ;; 何もtakeされないので、余分なverbose-stroke-keyはスキップ。
+          ;; (tutcode-kanji-list->sequenceで余分なverbose-stroke-keyを削除)
+          ;; 例:"undo "→"趣・"→("・" "趣")、"code "→"演各 "→(" " "各" "演")
+          ((first (safe-car former-all))
+           (first-verbose-key?
+            (tutcode-verbose-stroke-key? (and first (string->ichar first)) 0))
+           (rest (if first-verbose-key? (cdr former-all) former-all))
+           (seq
+            (take-while
+              (lambda (elem)
+                (not (member elem
+                      (append tutcode-postfix-kanji2seq-delimiter-char-list
+                        '("\n" "\t")))))
+              rest)))
+          (if first-verbose-key?
+            (cons first seq) ; delete-textする長さを合わせるためfirstは入れる
+            seq))))
+     (former-len (length former-seq)))
+    (if yomi-len
+      (let*
+        ((yomi (if (> former-len yomi-len)
+                (take former-seq yomi-len)
+                former-seq))
+         (seq (tutcode-kanji-list->sequence pc yomi)))
+        (tutcode-postfix-commit pc (string-list-concat seq) yomi))
+      ;; 読みの文字数が指定されていない
+      (if (> former-len 0)
+        (begin
+          (tutcode-context-set-mazegaki-yomi-all! pc former-all)
+          (tutcode-context-set-postfix-yomi-len! pc former-len)
+          (tutcode-context-set-head! pc
+            (tutcode-kanji-list->sequence pc former-seq))
+          (tutcode-context-set-state! pc 'tutcode-state-postfix-kanji2seq))))))
+
+;;; 後置型の漢字→入力シーケンス変換モード時のキー入力を処理する。
+;;; @param key 入力されたキー
+;;; @param key-state コントロールキー等の状態
+(define (tutcode-proc-state-postfix-kanji2seq c key key-state)
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (head (tutcode-context-head pc))
+     (yomi-len (tutcode-context-postfix-yomi-len pc))
+     (yomi-all (tutcode-context-mazegaki-yomi-all pc))
+     (update-context!
+      (lambda (new-yomi-len)
+        (tutcode-context-set-postfix-yomi-len! pc new-yomi-len)
+        (tutcode-context-set-head! pc
+          (tutcode-kanji-list->sequence pc (take yomi-all new-yomi-len)))))
+     (commit
+      (lambda ()
+        (let*
+          ((len (if (and tutcode-delete-leading-delimiter-on-postfix-kanji2seq?
+                         (> (length yomi-all) yomi-len)
+                         (member (list-ref yomi-all yomi-len)
+                          tutcode-postfix-kanji2seq-delimiter-char-list))
+                  (+ yomi-len 1)
+                  yomi-len))
+           (yomi (take yomi-all len)))
+        (tutcode-postfix-commit pc (string-list-concat head) yomi)))))
+    (cond
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-flush pc))
+      ((or (tutcode-commit-key? key key-state)
+           (tutcode-return-key? key key-state))
+        (commit)
+        (tutcode-flush pc))
+      ((tutcode-mazegaki-relimit-right-key? key key-state)
+        (if (> yomi-len 1)
+          (update-context! (- yomi-len 1))))
+      ((tutcode-mazegaki-relimit-left-key? key key-state)
+        (if (> (length yomi-all) yomi-len)
+          (update-context! (+ yomi-len 1))))
+      (else
+        (commit)
+        (tutcode-flush pc)
         (tutcode-proc-state-on pc key key-state)))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
@@ -3555,6 +3740,11 @@
             (tutcode-katakana-convert head
               (not (tutcode-context-katakana-mode? pc)))))
         (tutcode-flush pc)))
+     (rk-append-flush
+      (lambda ()
+        (if tutcode-keep-illegal-sequence?
+          (tutcode-context-set-head! pc (append (rk-context-seq rkc) head)))
+        (rk-flush rkc)))
      ;; reset-candidate-windowでリセットされるので保存しておく
      (predicting?
       (eq? (tutcode-context-predicting pc) 'tutcode-predicting-prediction))
@@ -3581,10 +3771,10 @@
           ((and (tutcode-kana-toggle-key? key key-state)
                 (not (tutcode-context-latin-conv pc))
                 (not kigou2-mode?))
-           (rk-flush rkc)
+           (rk-append-flush)
            (tutcode-context-kana-toggle pc))
           ((tutcode-kigou2-toggle-key? key key-state)
-           (rk-flush rkc)
+           (rk-append-flush)
            (tutcode-toggle-kigou2-mode pc))
           ((tutcode-backspace-key? key key-state)
            (if (> (length (rk-context-seq rkc)) 0)
@@ -3605,7 +3795,7 @@
            (tutcode-toggle-stroke-help pc))
           ((and tutcode-use-prediction?
                 (tutcode-begin-completion-key? key key-state))
-           (rk-flush rkc)
+           (rk-append-flush)
            (if (not predicting?)
              (tutcode-check-prediction pc #t)))
           ;; 候補数が1個の場合、変換後自動確定されてconvertingモードに入らない
@@ -3654,7 +3844,16 @@
              (set! res (charcode->string key))))
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
-             (rk-flush rkc)
+             (begin
+               (cond
+                 ((tutcode-verbose-stroke-key? key key-state)
+                   (tutcode-context-set-head! pc
+                     (append (rk-context-seq rkc) head)))
+                 (tutcode-keep-illegal-sequence?
+                   (tutcode-context-set-head! pc
+                     (append (rk-context-seq rkc) head))
+                   (set! res (charcode->string key))))
+               (rk-flush rkc))
              ;; spaceキーでの変換開始?
              ;; (spaceはキーシーケンスに含まれる場合があるので、
              ;;  rk-expectにspaceが無いことが条件)
@@ -4233,10 +4432,7 @@
                                 postfix-yomi-len)))
                (commit-str (tutcode-prepare-commit-string pc)))
           (if (> postfix-yomi-len 0)
-            (begin
-              (tutcode-postfix-delete-text pc postfix-yomi-len)
-              (tutcode-commit pc commit-str)
-              (tutcode-undo-prepare-postfix pc commit-str yomi))
+            (tutcode-postfix-commit pc commit-str yomi)
             (tutcode-commit pc commit-str)))
         (tutcode-proc-state-on pc key key-state)))))
 
@@ -4874,7 +5070,7 @@
       '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
         tutcode-state-interactive-bushu tutcode-state-kigou
         tutcode-state-code tutcode-state-history
-        tutcode-state-postfix-katakana))))
+        tutcode-state-postfix-katakana tutcode-state-postfix-kanji2seq))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param c コンテキストリスト
@@ -4916,6 +5112,9 @@
            (tutcode-update-preedit pc))
           ((tutcode-state-postfix-katakana)
            (tutcode-proc-state-postfix-katakana pc key key-state)
+           (tutcode-update-preedit pc))
+          ((tutcode-state-postfix-kanji2seq)
+           (tutcode-proc-state-postfix-kanji2seq pc key key-state)
            (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
@@ -5574,6 +5773,26 @@
             '(tutcode-postfix-katakana-8-start))
           (make-subrule tutcode-postfix-katakana-9-start-sequence
             '(tutcode-postfix-katakana-9-start))
+          (make-subrule tutcode-postfix-kanji2seq-start-sequence
+            '(tutcode-postfix-kanji2seq-start))
+          (make-subrule tutcode-postfix-kanji2seq-1-start-sequence
+            '(tutcode-postfix-kanji2seq-1-start))
+          (make-subrule tutcode-postfix-kanji2seq-2-start-sequence
+            '(tutcode-postfix-kanji2seq-2-start))
+          (make-subrule tutcode-postfix-kanji2seq-3-start-sequence
+            '(tutcode-postfix-kanji2seq-3-start))
+          (make-subrule tutcode-postfix-kanji2seq-4-start-sequence
+            '(tutcode-postfix-kanji2seq-4-start))
+          (make-subrule tutcode-postfix-kanji2seq-5-start-sequence
+            '(tutcode-postfix-kanji2seq-5-start))
+          (make-subrule tutcode-postfix-kanji2seq-6-start-sequence
+            '(tutcode-postfix-kanji2seq-6-start))
+          (make-subrule tutcode-postfix-kanji2seq-7-start-sequence
+            '(tutcode-postfix-kanji2seq-7-start))
+          (make-subrule tutcode-postfix-kanji2seq-8-start-sequence
+            '(tutcode-postfix-kanji2seq-8-start))
+          (make-subrule tutcode-postfix-kanji2seq-9-start-sequence
+            '(tutcode-postfix-kanji2seq-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay))
           (make-subrule tutcode-help-sequence
