@@ -3441,19 +3441,13 @@
         (take-while
           (lambda (elem)
             (not (kanji? elem))) ; 漢字があったら、そこで中断
-          former-all)))
-     (former-len (length former-seq)))
+          former-all))))
     (if yomi-len
-      (let*
-        ((yomi (if (> former-len yomi-len)
-                (take former-seq yomi-len)
-                former-seq))
-         (katakana
-          (tutcode-katakana-convert yomi
-            (not (tutcode-context-katakana-mode? pc)))))
-        (tutcode-postfix-katakana-commit pc yomi katakana #t))
+      (let ((katakana (tutcode-katakana-convert former-seq
+                        (not (tutcode-context-katakana-mode? pc)))))
+        (tutcode-postfix-katakana-commit pc former-seq katakana #t))
       ;; 読みの文字数が指定されていない
-      (if (> former-len 0)
+      (if (pair? former-seq)
         (begin
           (tutcode-context-set-mazegaki-yomi-all! pc former-all)
           (tutcode-context-set-head! pc
@@ -3514,7 +3508,8 @@
     ;; 最後のverbose-stroke-key(例:":")は漢字入力を終端するため
     ;; 余分に入力された可能性があるので削る
     ;; 例: "undo:"→"趣o"→("o" "趣")、"code:"→"演各:"→(":" "各" "演")
-    (if (tutcode-verbose-stroke-key? (string->ichar (safe-car allseq)) 0)
+    (if (and (pair? allseq)
+             (tutcode-verbose-stroke-key? (string->ichar (car allseq)) 0))
       (cdr allseq)
       allseq)))
 
@@ -3545,20 +3540,15 @@
               rest)))
           (if first-verbose-key?
             (cons first seq) ; delete-textする長さを合わせるためfirstは入れる
-            seq))))
-     (former-len (length former-seq)))
+            seq)))))
     (if yomi-len
-      (let*
-        ((yomi (if (> former-len yomi-len)
-                (take former-seq yomi-len)
-                former-seq))
-         (seq (tutcode-kanji-list->sequence pc yomi)))
-        (tutcode-postfix-commit pc (string-list-concat seq) yomi))
+      (let ((seq (tutcode-kanji-list->sequence pc former-seq)))
+        (tutcode-postfix-commit pc (string-list-concat seq) former-seq))
       ;; 読みの文字数が指定されていない
-      (if (> former-len 0)
+      (if (pair? former-seq)
         (begin
           (tutcode-context-set-mazegaki-yomi-all! pc former-all)
-          (tutcode-context-set-postfix-yomi-len! pc former-len)
+          (tutcode-context-set-postfix-yomi-len! pc (length former-seq))
           (tutcode-context-set-head! pc
             (tutcode-kanji-list->sequence pc former-seq))
           (tutcode-context-set-state! pc 'tutcode-state-postfix-kanji2seq))))))
@@ -3587,14 +3577,14 @@
                   (+ yomi-len 1)
                   yomi-len))
            (yomi (take yomi-all len)))
-        (tutcode-postfix-commit pc (string-list-concat head) yomi)))))
+          (tutcode-postfix-commit pc (string-list-concat head) yomi)
+          (tutcode-flush pc)))))
     (cond
       ((tutcode-cancel-key? key key-state)
         (tutcode-flush pc))
       ((or (tutcode-commit-key? key key-state)
            (tutcode-return-key? key key-state))
-        (commit)
-        (tutcode-flush pc))
+        (commit))
       ((tutcode-mazegaki-relimit-right-key? key key-state)
         (if (> yomi-len 1)
           (update-context! (- yomi-len 1))))
@@ -3603,7 +3593,6 @@
           (update-context! (+ yomi-len 1))))
       (else
         (commit)
-        (tutcode-flush pc)
         (tutcode-proc-state-on pc key key-state)))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
