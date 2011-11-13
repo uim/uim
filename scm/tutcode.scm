@@ -2786,7 +2786,8 @@
       (eq? (tutcode-context-predicting pc) 'tutcode-predicting-completion))
      (rk-commit-flush
       (lambda ()
-        (if tutcode-keep-illegal-sequence?
+        (if (and tutcode-keep-illegal-sequence?
+                 (pair? (rk-context-seq rkc)))
           (tutcode-commit pc (rk-pending rkc) #f #t))
         (rk-flush rkc)))
      ;; 補完候補表示のページ移動時は、reset-candidate-windowしたら駄目
