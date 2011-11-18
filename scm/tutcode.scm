@@ -3062,6 +3062,9 @@
 ;;; @param str 確定する文字列
 ;;; @param yomi-list 変換元の文字列(読み/部首)のリスト(逆順)
 (define (tutcode-postfix-commit pc str yomi-list)
+  ;; Firefoxで削除位置がずれるのを回避するためpreeditをclearしてからdelete-text
+  (im-clear-preedit pc)
+  (im-update-preedit pc)
   (tutcode-postfix-delete-text pc (length yomi-list))
   (tutcode-commit pc str)
   (tutcode-undo-prepare pc 'tutcode-state-off str yomi-list))
