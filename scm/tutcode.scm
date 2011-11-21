@@ -2631,50 +2631,47 @@
 ;;; 部首合成変換中に予測入力候補を検索して候補リストを作成する
 ;;; @param char 入力された部首1
 ;;; @param show-candwin? 候補リストの作成後候補ウィンドウの表示を行うかどうか
+;;; @return #t:表示する候補あり, #f:表示する候補なし
 (define (tutcode-check-bushu-prediction-make pc char show-candwin?)
-  (case tutcode-bushu-conversion-algorithm
-    ((tc-2.3.1-22.6)
-      (tutcode-check-bushu-prediction-tc23 pc char show-candwin?))
-    (else ; 'tc-2.1+ml1925
-      (tutcode-check-bushu-prediction-tc21 pc char show-candwin?))))
+  (let ((res
+          (case tutcode-bushu-conversion-algorithm
+            ((tc-2.3.1-22.6)
+              (tutcode-bushu-predict-tc23 char))
+            (else ; 'tc-2.1+ml1925
+              (tutcode-bushu-predict-tc21 char)))))
+    (tutcode-context-set-prediction-bushu! pc res)
+    (tutcode-context-set-prediction-bushu-page-start! pc 0)
+    (tutcode-bushu-prediction-make-page pc 0 show-candwin?)))
 
 ;;; 部首合成変換中に予測入力候補を検索して候補リストを作成する
 ;;; @param char 入力された部首1
-;;; @param show-candwin? 候補リストの作成後候補ウィンドウの表示を行うかどうか
-(define (tutcode-check-bushu-prediction-tc21 pc char show-candwin?)
-  (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
-    (let* ((res (tutcode-bushu-predict char tutcode-bushudic))
-           (alt (assoc char tutcode-bushudic-altchar))
-           (altres
-            (if alt
-              (tutcode-bushu-predict (cadr alt) tutcode-bushudic)
-              ()))
-           (resall (append res altres)))
-      (tutcode-context-set-prediction-bushu! pc resall)
-      (tutcode-context-set-prediction-bushu-page-start! pc 0)
-      (tutcode-bushu-prediction-make-page pc 0 show-candwin?))))
+;;; @return (<部首2> <合成文字>)のリスト
+(define (tutcode-bushu-predict-tc21 char)
+  (let* ((res (tutcode-bushu-predict char tutcode-bushudic))
+         (alt (assoc char tutcode-bushudic-altchar))
+         (altres
+          (if alt
+            (tutcode-bushu-predict (cadr alt) tutcode-bushudic)
+            ()))
+         (resall (append res altres)))
+    resall))
 
 ;;; 部首合成変換中に予測入力候補を検索して候補リストを作成する
 ;;; @param char 入力された部首1
-;;; @param show-candwin? 候補リストの作成後候補ウィンドウの表示を行うかどうか
-(define (tutcode-check-bushu-prediction-tc23 pc char show-candwin?)
-  (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
-    (let*
-      ((gosei (tutcode-bushu-compose-tc23 (list char) #f))
-       (res
-        (map
-          (lambda (elem)
-            (list #f elem))
-          gosei)))
-      (tutcode-context-set-prediction-bushu! pc res)
-      (tutcode-context-set-prediction-bushu-page-start! pc 0)
-      (tutcode-bushu-prediction-make-page pc 0 show-candwin?))))
+;;; @return (<部首2> <合成文字>)のリスト
+(define (tutcode-bushu-predict-tc23 char)
+  (let ((gosei (tutcode-bushu-compose-tc23 (list char) #f)))
+    (map
+      (lambda (elem)
+        (list #f elem))
+      gosei)))
 
 ;;; 部首合成変換の予測入力候補のうち、
 ;;; 指定された番号から始まる1ページぶんの候補リストを作成する。
 ;;; @param start-index 開始番号
 ;;; @param show-candwin? 候補リストの作成後候補ウィンドウの表示を行うかどうか。
 ;;;  #fの場合は、候補リストの作成のみ行う(delay-activating-handler時)
+;;; @return #t:表示する候補あり, #f:表示する候補なし
 (define (tutcode-bushu-prediction-make-page pc start-index show-candwin?)
   (tutcode-lib-set-bushu-prediction pc start-index)
   (let ((nr (tutcode-lib-get-nr-predictions pc)))
@@ -2700,7 +2697,10 @@
             (if show-candwin?
               (tutcode-activate-candidate-window pc
                 'tutcode-candidate-window-predicting
-                0 nr-all page-limit))))))))
+                0 nr-all page-limit))
+            #t)
+          #f))
+      #f)))
 
 ;;; 補完候補と熟語ガイド表示のためのcandwin用パラメータを計算する
 ;;; @param nr 補完候補数
@@ -5377,10 +5377,11 @@
                 'tutcode-candidate-window-predicting)
             (case (tutcode-context-state tc)
               ((tutcode-state-bushu)
-                (tutcode-check-bushu-prediction-make tc
-                  (tutcode-context-prediction-bushu tc) #f) ; 候補リスト作成
-                (list (tutcode-context-prediction-page-limit tc)
-                      (tutcode-context-prediction-nr-all tc)))
+                (if (tutcode-check-bushu-prediction-make tc
+                      (tutcode-context-prediction-bushu tc) #f) ;候補リスト作成
+                  (list (tutcode-context-prediction-page-limit tc)
+                        (tutcode-context-prediction-nr-all tc))
+                  (list (tutcode-context-prediction-page-limit tc) 0)))
               ((tutcode-state-on)
                 (if (tutcode-check-completion-make tc #f 0)
                   (list (tutcode-context-prediction-page-limit tc)
