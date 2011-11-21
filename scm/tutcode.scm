@@ -156,6 +156,16 @@
 ;;;      英単語中では出現しないシーケンスに変更することで回避してください。
 ;;;      例:"/local/"と打つと"授阪"の後に"al/"により前置型英字変換モードが開始
 ;;;         (なお、"local/"の場合は"薬児適"なので問題なし)
+;;; * 後置型入力シーケンス→漢字変換
+;;;   TUT-Codeオンにし忘れてTUT-Codeを入力した場合に後から漢字に変換するための
+;;;   機能です。
+;;;           tutcode-postfix-seq2kanji-start-sequence
+;;;     1文字 tutcode-postfix-seq2kanji-1-start-sequence
+;;;      ...
+;;;     9文字 tutcode-postfix-seq2kanji-9-start-sequence
+;;;   前置型交ぜ書き変換の読み入力など、確定されていない入力は消えます。
+;;;   例:"aljekri"を変換→""。"ekri"だけ変換→"かい"。
+;;;      "aljekri \n"のように確定されている場合→"下位"
 ;;;
 ;;; 【ヘルプ機能】
 ;;; * 仮想鍵盤表示(表形式の候補ウィンドウを流用)
@@ -751,6 +761,7 @@
      ;;; 'tutcode-state-history ヒストリ入力モード
      ;;; 'tutcode-state-postfix-katakana 後置型カタカナ変換中
      ;;; 'tutcode-state-postfix-kanji2seq 後置型漢字→入力シーケンス変換中
+     ;;; 'tutcode-state-postfix-seq2kanji 後置型入力シーケンス→漢字変換中
      (list 'state 'tutcode-state-off)
      ;;; カタカナモードかどうか
      ;;; #t: カタカナモード。#f: ひらがなモード。
@@ -798,6 +809,7 @@
      ;;; 子コンテキストの種類
      ;;; 'tutcode-child-type-editor 登録用の変換後文字列編集エディタ
      ;;; 'tutcode-child-type-dialog 辞書からの削除確認ダイアログ
+     ;;; 'tutcode-child-type-seq2kanji シーケンス→漢字変換用
      (list 'child-type ())
      ;;; 親コンテキスト
      (list 'parent-context ())
@@ -1326,9 +1338,13 @@
     (tutcode-append-commit-string pc (im-get-raw-key-str key key-state)))
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
-      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
-        (tutcode-editor-commit-raw (tutcode-context-editor ppc) key key-state)
-        (tutcode-dialog-commit-raw (tutcode-context-dialog ppc) key key-state))
+      (case (tutcode-context-child-type ppc)
+        ((tutcode-child-type-editor)
+          (tutcode-editor-commit-raw (tutcode-context-editor ppc) key key-state))
+        ((tutcode-child-type-dialog)
+          (tutcode-dialog-commit-raw (tutcode-context-dialog ppc) key key-state))
+        ((tutcode-child-type-seq2kanji)
+          (tutcode-seq2kanji-commit-raw-from-child ppc key key-state)))
       (im-commit-raw pc))))
 
 ;;; im-commitを呼び出す。
@@ -1352,9 +1368,13 @@
       (tutcode-append-history pc str)))
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
-      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
-        (tutcode-editor-commit (tutcode-context-editor ppc) str)
-        (tutcode-dialog-commit (tutcode-context-dialog ppc) str))
+      (case (tutcode-context-child-type ppc)
+        ((tutcode-child-type-editor)
+          (tutcode-editor-commit (tutcode-context-editor ppc) str))
+        ((tutcode-child-type-dialog)
+          (tutcode-dialog-commit (tutcode-context-dialog ppc) str))
+        ((tutcode-child-type-seq2kanji)
+          (tutcode-seq2kanji-commit-from-child ppc str)))
       (im-commit pc str))))
 
 ;;; im-commitを呼び出すとともに、自動ヘルプ表示のチェックを行う
@@ -1671,9 +1691,10 @@
     (tutcode-context-set-child-context! pc cpc)
     (tutcode-context-set-child-type! pc type)
     (tutcode-context-set-parent-context! cpc pc)
-    (if (eq? type 'tutcode-child-type-editor)
-      (tutcode-context-set-state! cpc 'tutcode-state-on)
-      (tutcode-context-set-state! cpc 'tutcode-state-off))))
+    (if (eq? type 'tutcode-child-type-dialog)
+      (tutcode-context-set-state! cpc 'tutcode-state-off)
+      (tutcode-context-set-state! cpc 'tutcode-state-on))
+    cpc))
 
 ;;; 記号入力モードを開始する。
 ;;; @param pc コンテキストリスト
@@ -1955,6 +1976,16 @@
             ((tutcode-postfix-kanji2seq-7-start) "/7")
             ((tutcode-postfix-kanji2seq-8-start) "/8")
             ((tutcode-postfix-kanji2seq-9-start) "/9")
+            ((tutcode-postfix-seq2kanji-start) "漢@")
+            ((tutcode-postfix-seq2kanji-1-start) "漢1")
+            ((tutcode-postfix-seq2kanji-2-start) "漢2")
+            ((tutcode-postfix-seq2kanji-3-start) "漢3")
+            ((tutcode-postfix-seq2kanji-4-start) "漢4")
+            ((tutcode-postfix-seq2kanji-5-start) "漢5")
+            ((tutcode-postfix-seq2kanji-6-start) "漢6")
+            ((tutcode-postfix-seq2kanji-7-start) "漢7")
+            ((tutcode-postfix-seq2kanji-8-start) "漢8")
+            ((tutcode-postfix-seq2kanji-9-start) "漢9")
             ((tutcode-auto-help-redisplay) "≪")
             ((tutcode-help) "？")
             ((tutcode-help-clipboard) "?c")
@@ -2388,17 +2419,19 @@
               (im-pushback-preedit pc preedit-none h))
             (im-pushback-preedit pc preedit-none "【")
             (im-pushback-preedit pc preedit-none
-              (if (eq? (tutcode-context-child-type pc)
-                    'tutcode-child-type-editor)
-                (tutcode-editor-get-left-string editor)
-                (tutcode-dialog-get-left-string dialog)))
+              (case (tutcode-context-child-type pc)
+                ((tutcode-child-type-editor)
+                  (tutcode-editor-get-left-string editor))
+                ((tutcode-child-type-dialog)
+                  (tutcode-dialog-get-left-string dialog))))
             (tutcode-do-update-preedit cpc)
             (set! cursor-shown? #t)
             (im-pushback-preedit pc preedit-none
-              (if (eq? (tutcode-context-child-type pc)
-                    'tutcode-child-type-editor)
-                (tutcode-editor-get-right-string editor)
-                (tutcode-dialog-get-right-string dialog)))
+              (case (tutcode-context-child-type pc)
+                ((tutcode-child-type-editor)
+                  (tutcode-editor-get-right-string editor))
+                ((tutcode-child-type-dialog)
+                  (tutcode-dialog-get-right-string dialog))))
             (im-pushback-preedit pc preedit-none "】"))))
       ;; 部首合成変換のマーカ▲は文字列としてhead内で管理(再帰的部首合成のため)
       ((tutcode-state-bushu)
@@ -2433,6 +2466,11 @@
             (im-pushback-preedit pc preedit-none h))))
       ((tutcode-state-postfix-kanji2seq)
         (im-pushback-preedit pc preedit-none "／")
+        (let ((h (string-list-concat (tutcode-context-head pc))))
+          (if (string? h)
+            (im-pushback-preedit pc preedit-none h))))
+      ((tutcode-state-postfix-seq2kanji)
+        (im-pushback-preedit pc preedit-none "￥")
         (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h)))))
@@ -3006,6 +3044,26 @@
                 (tutcode-begin-postfix-kanji2seq-conversion pc 8))
               ((eq? res 'tutcode-postfix-kanji2seq-9-start)
                 (tutcode-begin-postfix-kanji2seq-conversion pc 9))
+              ((eq? res 'tutcode-postfix-seq2kanji-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc #f))
+              ((eq? res 'tutcode-postfix-seq2kanji-1-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 1))
+              ((eq? res 'tutcode-postfix-seq2kanji-2-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 2))
+              ((eq? res 'tutcode-postfix-seq2kanji-3-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 3))
+              ((eq? res 'tutcode-postfix-seq2kanji-4-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 4))
+              ((eq? res 'tutcode-postfix-seq2kanji-5-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 5))
+              ((eq? res 'tutcode-postfix-seq2kanji-6-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 6))
+              ((eq? res 'tutcode-postfix-seq2kanji-7-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 7))
+              ((eq? res 'tutcode-postfix-seq2kanji-8-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 8))
+              ((eq? res 'tutcode-postfix-seq2kanji-9-start)
+                (tutcode-begin-postfix-seq2kanji-conversion pc 9))
               ((eq? res 'tutcode-history-start)
                 (tutcode-begin-history pc))
               ((eq? res 'tutcode-undo)
@@ -3330,6 +3388,12 @@
     (if (not found?) ; 候補無し→読み/語幹を伸ばすのは中止
       (tutcode-context-set-postfix-yomi-len! pc postfix-yomi-len))))
 
+;;; ASCII文字かどうかを返す
+;;; @param str 文字列
+(define (tutcode-ascii? str)
+  (let ((ch (string->ichar str)))
+    (and ch (<= ch 127))))
+
 ;;; 後置型交ぜ書き変換用の読みを取得する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
 ;;; @return 取得した読み(文字列の逆順リスト)
@@ -3341,17 +3405,13 @@
       ;;     経由の場合もユーザが明示的に指定したものとみなして同様に含める。
       former-seq
       ;; 読みの文字数が指定されていない→取得できた文字を使用(上限yomi-max)。
-      (let*
-        ;; 日本語文字とASCII文字の境目があれば、そこまでを取得する
-        ((ascii?
-          (lambda (str)
-            (let ((ch (string->ichar str)))
-              (and ch (<= ch 127)))))
-         (last-ascii? (and (pair? former-seq) (ascii? (car former-seq)))))
+      (let ((last-ascii? (and (pair? former-seq)
+                              (tutcode-ascii? (car former-seq)))))
         (take-while
           (lambda (elem)
             (and
-              (eq? (ascii? elem) last-ascii?)
+              ;; 日本語文字とASCII文字の境目があれば、そこまでを取得する
+              (eq? (tutcode-ascii? elem) last-ascii?)
               ;; "、"や"。"以前の文字は読みに含めない。
               (not (member elem tutcode-postfix-mazegaki-terminate-char-list))))
           former-seq)))))
@@ -3362,14 +3422,21 @@
 (define (tutcode-postfix-acquire-text pc len)
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
-      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-dialog)
-        ()
-        (let*
-          ((ec (tutcode-context-editor ppc))
-           (left-string (tutcode-editor-left-string ec)))
-          (if (> (length left-string) len)
-            (take left-string len)
-            left-string)))
+      (case (tutcode-context-child-type ppc)
+        ((tutcode-child-type-dialog)
+          ())
+        ((tutcode-child-type-editor)
+          (let*
+            ((ec (tutcode-context-editor ppc))
+             (left-string (tutcode-editor-left-string ec)))
+            (if (> (length left-string) len)
+              (take left-string len)
+              left-string)))
+        ((tutcode-child-type-seq2kanji)
+          (let ((head (tutcode-context-head ppc)))
+            (if (> (length head) len)
+              (take head len)
+              head))))
       (let*
         ((ustr (im-acquire-text pc 'primary 'cursor len 0))
          (former (and ustr (ustr-former-seq ustr)))
@@ -3389,14 +3456,21 @@
 (define (tutcode-postfix-delete-text pc len)
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
-      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
-        (let*
-          ((ec (tutcode-context-editor ppc))
-           (left-string (tutcode-editor-left-string ec)))
-          (tutcode-editor-set-left-string! ec
-            (if (> (length left-string) len)
-              (drop left-string len)
-              ()))))
+      (case (tutcode-context-child-type ppc)
+        ((tutcode-child-type-editor)
+          (let*
+            ((ec (tutcode-context-editor ppc))
+             (left-string (tutcode-editor-left-string ec)))
+            (tutcode-editor-set-left-string! ec
+              (if (> (length left-string) len)
+                (drop left-string len)
+                ()))))
+        ((tutcode-child-type-seq2kanji)
+          (let ((head (tutcode-context-head ppc)))
+            (tutcode-context-set-head! ppc
+              (if (> (length head) len)
+                (drop head len)
+                ())))))
       (or
         (im-delete-text pc 'primary 'cursor len 0)
         ;; im-delete-text未対応環境の場合、"\b"を送る。
@@ -3591,6 +3665,181 @@
         (commit))
       ((tutcode-mazegaki-relimit-right-key? key key-state)
         (if (> yomi-len 1)
+          (update-context! (- yomi-len 1))))
+      ((tutcode-mazegaki-relimit-left-key? key key-state)
+        (if (> (length yomi-all) yomi-len)
+          (update-context! (+ yomi-len 1))))
+      (else
+        (commit)
+        (tutcode-proc-state-on pc key key-state)))))
+
+;;; 入力キーシーケンスを漢字に変換する
+;;; @param sequence 入力キーシーケンス。文字列のリスト(逆順)
+;;; @return 変換後の漢字文字列のリスト(逆順)
+(define (tutcode-sequence->kanji-list pc sequence)
+  (if (null? sequence)
+    ()
+    (let ((string->key-and-status
+            (lambda (s)
+              (let ((ch (string->ichar s)))
+                (cond
+                  ;; key-press-handlerに渡すため、symbolに変換(uim-key.c)
+                  ;; (tutcode-return-key?等でマッチするようにするため)
+                  ((not (integer? ch)) (cons ch 0)) ; sが漢字の場合chは#f
+                  ((= ch 8) '(backspace . 0))
+                  ((= ch 9) '(tab . 0))
+                  ((= ch 10) '(return . 0))
+                  ((= ch 27) '(escape . 0))
+                  ((= ch 127) '(delete . 0))
+                  ((ichar-control? ch)
+                    (cons (ichar-downcase (+ ch 64)) 2)) ; ex. "<Control>j"
+                  ((ichar-upper-case? ch)
+                    ;; key-predicate用にshift-key-maskをset。
+                    ;; downcaseするとruleと一致しなくなるのでそのまま。
+                    (cons ch 1))
+                  (else (cons ch 0))))))
+          (key? (lambda (k) (or (integer? k) (key-symbol? k))))
+          (commit-pending-rk
+            (lambda (c)
+              (let ((rkc (tutcode-context-rk-context c)))
+                (if (pair? (rk-context-seq rkc))
+                  (tutcode-commit c (rk-pending rkc) #f #t)))))
+          (head-save (tutcode-context-head pc))
+          ;; 対話的な操作時のみ意味のあるヘルプ表示等は一時的にオフにする
+          ;; (補完/予測入力はひょっとして使うかもしれないのでそのまま)
+          (use-candwin-save tutcode-use-candidate-window?)
+          (use-stroke-help-win-save tutcode-use-stroke-help-window?)
+          (use-auto-help-win-save tutcode-use-auto-help-window?)
+          (use-kanji-combination-guide-save tutcode-use-kanji-combination-guide?)
+          (stroke-help-with-guide-save
+            tutcode-stroke-help-with-kanji-combination-guide)
+          ;; child contextを作ってそこにkey-pressを食わせる
+          (cpc (tutcode-setup-child-context pc 'tutcode-child-type-seq2kanji)))
+      (tutcode-context-set-head! pc ()) ; 子contextでのcommitをheadにためる
+      (set! tutcode-use-candidate-window? #f)
+      (set! tutcode-use-stroke-help-window? #f)
+      (set! tutcode-use-auto-help-window? #f)
+      (set! tutcode-use-kanji-combination-guide? #f)
+      (set! tutcode-stroke-help-with-kanji-combination-guide 'disable)
+      (for-each
+        (lambda (s)
+          (let ((k-s (string->key-and-status s)))
+            (if (key? (car k-s))
+              (tutcode-key-press-handler-internal cpc (car k-s) (cdr k-s))
+              (begin ; 漢字はそのまま
+                (commit-pending-rk cpc)
+                (tutcode-flush cpc)
+                (tutcode-commit cpc s)))))
+        (reverse sequence))
+      (commit-pending-rk cpc) ; 最上位のpendingのみ確定。消えるとうれしくない
+      ;; XXX:現状は確定済文字列のみ取得。未確定文字列は消える
+      (let ((kanji-list (tutcode-context-head pc)))
+        (tutcode-flush cpc)
+        (tutcode-context-set-child-context! pc ())
+        (tutcode-context-set-child-type! pc ())
+        (tutcode-context-set-head! pc head-save)
+        (set! tutcode-use-candidate-window? use-candwin-save)
+        (set! tutcode-use-stroke-help-window? use-stroke-help-win-save)
+        (set! tutcode-use-auto-help-window? use-auto-help-win-save)
+        (set! tutcode-use-kanji-combination-guide?
+          use-kanji-combination-guide-save)
+        (set! tutcode-stroke-help-with-kanji-combination-guide
+          stroke-help-with-guide-save)
+        kanji-list))))
+
+;;; 子コンテキストでのcommit
+;;; @param str commitされた文字列
+(define (tutcode-seq2kanji-commit-from-child pc str)
+  (tutcode-context-set-head! pc
+    (append (string-to-list str) (tutcode-context-head pc))))
+
+;;; 子コンテキストでのcommit-raw
+(define (tutcode-seq2kanji-commit-raw-from-child pc key key-state)
+  (let ((raw-str
+          (im-get-raw-key-str
+            (cond
+              ;; tutcode-sequence->kanji-listで変換したsymbolからcharcodeに戻す
+              ((eq? key 'backspace) 8)
+              ((eq? key 'tab) 9)
+              ((eq? key 'return) 10)
+              ((eq? key 'escape) 27)
+              ((eq? key 'delete) 127)
+              ((control-key-mask key-state)
+                (- (ichar-upcase key) 64))
+              ((shift-key-mask key-state)
+                (ichar-upcase key))
+              (else key))
+            0)))
+    (if raw-str
+      (tutcode-seq2kanji-commit-from-child pc raw-str))))
+
+;;; 後置型の入力シーケンス→漢字変換を開始する
+;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+(define (tutcode-begin-postfix-seq2kanji-conversion pc yomi-len)
+  (let*
+    ((former-all (tutcode-postfix-acquire-text pc
+                  (or yomi-len tutcode-mazegaki-yomi-max)))
+     (former-seq
+      (if yomi-len
+        former-all
+        ;; 行頭の場合、交ぜ書き変換の確定後の可能性があるので、改行を含める
+        (receive
+          (newlines rest)
+          (span
+            (lambda (x)
+              (string=? x "\n"))
+            former-all)
+          (append newlines
+            (take-while
+              (lambda (elem)
+                (and (tutcode-ascii? elem)
+                     (not (string=? elem "\n"))))
+              rest))))))
+    (if (pair? former-seq)
+      (let ((kanji-list (tutcode-sequence->kanji-list pc former-seq)))
+        (if yomi-len
+          (begin
+            (tutcode-postfix-commit pc
+              (string-list-concat kanji-list) former-seq)
+            (tutcode-flush pc))
+          ;; 読みの文字数が指定されていない
+          (begin
+            (tutcode-context-set-mazegaki-yomi-all! pc former-all)
+            (tutcode-context-set-postfix-yomi-len! pc (length former-seq))
+            (tutcode-context-set-head! pc kanji-list)
+            (tutcode-context-set-state! pc
+              'tutcode-state-postfix-seq2kanji)))))))
+
+;;; 後置型の入力シーケンス→漢字変換モード時のキー入力を処理する。
+;;; @param key 入力されたキー
+;;; @param key-state コントロールキー等の状態
+(define (tutcode-proc-state-postfix-seq2kanji c key key-state)
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (yomi-len (tutcode-context-postfix-yomi-len pc))
+     (yomi-all (tutcode-context-mazegaki-yomi-all pc))
+     (update-context!
+      (lambda (new-yomi-len)
+        (tutcode-context-set-postfix-yomi-len! pc new-yomi-len)
+        (tutcode-context-set-head! pc
+          (tutcode-sequence->kanji-list pc (take yomi-all new-yomi-len)))))
+     (commit
+      (lambda ()
+        (tutcode-postfix-commit pc
+          (string-list-concat (tutcode-context-head pc))
+          (take yomi-all yomi-len))
+        (tutcode-flush pc))))
+    (cond
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-flush pc))
+      ((or (tutcode-commit-key? key key-state)
+           (tutcode-return-key? key key-state))
+        (commit))
+      ((tutcode-mazegaki-relimit-right-key? key key-state)
+        (if (> yomi-len 1)
+          ;; 前置型交ぜ書きで確定されていない文字がある場合など、
+          ;; relimit-rightすると変換後文字列が伸びる場合あり。
+          ;; 例:"aljrk"→"" > "ljrk"→"設あ"
           (update-context! (- yomi-len 1))))
       ((tutcode-mazegaki-relimit-left-key? key key-state)
         (if (> (length yomi-all) yomi-len)
@@ -5063,7 +5312,8 @@
       '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
         tutcode-state-interactive-bushu tutcode-state-kigou
         tutcode-state-code tutcode-state-history
-        tutcode-state-postfix-katakana tutcode-state-postfix-kanji2seq))))
+        tutcode-state-postfix-katakana tutcode-state-postfix-kanji2seq
+        tutcode-state-postfix-seq2kanji))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param c コンテキストリスト
@@ -5072,59 +5322,67 @@
 (define (tutcode-key-press-handler c key key-state)
   (if (ichar-control? key)
       (im-commit-raw c)
-      (let ((pc (tutcode-find-descendant-context c)))
-        (case (tutcode-context-state pc)
-          ((tutcode-state-on)
-           (tutcode-proc-state-on pc key key-state)
-           (if (or
-                 ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
-                 (tutcode-state-has-preedit? c)
-                 ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
-                 (not (eq? (tutcode-find-descendant-context c) pc)))
-             (tutcode-update-preedit pc)))
-          ((tutcode-state-kigou)
-           (tutcode-proc-state-kigou pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-yomi)
-           (tutcode-proc-state-yomi pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-converting)
-           (tutcode-proc-state-converting pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-bushu)
-           (tutcode-proc-state-bushu pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-interactive-bushu)
-           (tutcode-proc-state-interactive-bushu pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-code)
-           (tutcode-proc-state-code pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-history)
-           (tutcode-proc-state-history pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-postfix-katakana)
-           (tutcode-proc-state-postfix-katakana pc key key-state)
-           (tutcode-update-preedit pc))
-          ((tutcode-state-postfix-kanji2seq)
-           (tutcode-proc-state-postfix-kanji2seq pc key key-state)
-           (tutcode-update-preedit pc))
-          (else
-           (tutcode-proc-state-off pc key key-state)
-           (if (tutcode-state-has-preedit? c) ; 再帰学習時
-             (tutcode-update-preedit pc))))
-        (if (or tutcode-use-stroke-help-window?
-                (not (eq? tutcode-stroke-help-with-kanji-combination-guide
-                          'disable)))
-          ;; editorの作成・削除の可能性があるのでdescendant-context取得し直し
-          (let ((newpc (tutcode-find-descendant-context c)))
-            (if
-              (and
-                (memq (tutcode-context-state newpc)
-                  '(tutcode-state-on tutcode-state-yomi tutcode-state-bushu
-                    tutcode-state-interactive-bushu))
-                (not (tutcode-context-latin-conv newpc)))
-              (tutcode-check-stroke-help-window-begin newpc)))))))
+      (tutcode-key-press-handler-internal c key key-state)))
+
+;;; キーが押されたときの処理の振り分けを行う。
+;;; (seq2kanjiからの呼出用。ichar-control?文字がseq2kanjiを通しても残るように)
+(define (tutcode-key-press-handler-internal c key key-state)
+  (let ((pc (tutcode-find-descendant-context c)))
+    (case (tutcode-context-state pc)
+      ((tutcode-state-on)
+       (tutcode-proc-state-on pc key key-state)
+       (if (or
+             ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
+             (tutcode-state-has-preedit? c)
+             ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
+             (not (eq? (tutcode-find-descendant-context c) pc)))
+         (tutcode-update-preedit pc)))
+      ((tutcode-state-kigou)
+       (tutcode-proc-state-kigou pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-yomi)
+       (tutcode-proc-state-yomi pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-converting)
+       (tutcode-proc-state-converting pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-bushu)
+       (tutcode-proc-state-bushu pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-interactive-bushu)
+       (tutcode-proc-state-interactive-bushu pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-code)
+       (tutcode-proc-state-code pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-history)
+       (tutcode-proc-state-history pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-postfix-katakana)
+       (tutcode-proc-state-postfix-katakana pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-postfix-kanji2seq)
+       (tutcode-proc-state-postfix-kanji2seq pc key key-state)
+       (tutcode-update-preedit pc))
+      ((tutcode-state-postfix-seq2kanji)
+       (tutcode-proc-state-postfix-seq2kanji pc key key-state)
+       (tutcode-update-preedit pc))
+      (else
+       (tutcode-proc-state-off pc key key-state)
+       (if (tutcode-state-has-preedit? c) ; 再帰学習時
+         (tutcode-update-preedit pc))))
+    (if (or tutcode-use-stroke-help-window?
+            (not (eq? tutcode-stroke-help-with-kanji-combination-guide
+                      'disable)))
+      ;; editorの作成・削除の可能性があるのでdescendant-context取得し直し
+      (let ((newpc (tutcode-find-descendant-context c)))
+        (if
+          (and
+            (memq (tutcode-context-state newpc)
+              '(tutcode-state-on tutcode-state-yomi tutcode-state-bushu
+                tutcode-state-interactive-bushu))
+            (not (tutcode-context-latin-conv newpc)))
+          (tutcode-check-stroke-help-window-begin newpc))))))
 
 ;;; キーが離されたときの処理を行う。
 ;;; @param pc コンテキストリスト
@@ -5787,6 +6045,26 @@
             '(tutcode-postfix-kanji2seq-8-start))
           (make-subrule tutcode-postfix-kanji2seq-9-start-sequence
             '(tutcode-postfix-kanji2seq-9-start))
+          (make-subrule tutcode-postfix-seq2kanji-start-sequence
+            '(tutcode-postfix-seq2kanji-start))
+          (make-subrule tutcode-postfix-seq2kanji-1-start-sequence
+            '(tutcode-postfix-seq2kanji-1-start))
+          (make-subrule tutcode-postfix-seq2kanji-2-start-sequence
+            '(tutcode-postfix-seq2kanji-2-start))
+          (make-subrule tutcode-postfix-seq2kanji-3-start-sequence
+            '(tutcode-postfix-seq2kanji-3-start))
+          (make-subrule tutcode-postfix-seq2kanji-4-start-sequence
+            '(tutcode-postfix-seq2kanji-4-start))
+          (make-subrule tutcode-postfix-seq2kanji-5-start-sequence
+            '(tutcode-postfix-seq2kanji-5-start))
+          (make-subrule tutcode-postfix-seq2kanji-6-start-sequence
+            '(tutcode-postfix-seq2kanji-6-start))
+          (make-subrule tutcode-postfix-seq2kanji-7-start-sequence
+            '(tutcode-postfix-seq2kanji-7-start))
+          (make-subrule tutcode-postfix-seq2kanji-8-start-sequence
+            '(tutcode-postfix-seq2kanji-8-start))
+          (make-subrule tutcode-postfix-seq2kanji-9-start-sequence
+            '(tutcode-postfix-seq2kanji-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay))
           (make-subrule tutcode-help-sequence
