@@ -95,6 +95,36 @@
 	       (N_ "[TUT-Code] postfix bushu conversion")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-selection-mazegaki-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] mazegaki conversion on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-mazegaki-inflection-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] mazegaki conversion with inflection on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-katakana-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] katakana conversion on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-kanji2seq-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] kanji to sequence conversion on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-seq2kanji-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] sequence to kanji conversion on selection")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-postfix-mazegaki-start-sequence ""
                '(tutcode-keys1)
 	       '(string ".*")

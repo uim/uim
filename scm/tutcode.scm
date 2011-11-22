@@ -167,6 +167,16 @@
 ;;;   例:"aljekri"を変換→""。"ekri"だけ変換→"かい"。
 ;;;      "aljekri \n"のように確定されている場合→"下位"
 ;;;
+;;; 【selectionに対する変換】
+;;;   uimのsurrounding text関係のAPI(text acquisition API)を使って、
+;;;   selection文字列の取得・削除を行います。
+;;; * 交ぜ書き変換
+;;;     活用しない語  tutcode-selection-mazegaki-start-sequence
+;;;     活用する語    tutcode-selection-mazegaki-inflection-start-sequence
+;;; * カタカナ変換    tutcode-selection-katakana-start-sequence
+;;; * 漢字→入力シーケンス変換  tutcode-selection-kanji2seq-start-sequence
+;;; * 入力シーケンス→漢字変換  tutcode-selection-seq2kanji-start-sequence
+;;;
 ;;; 【ヘルプ機能】
 ;;; * 仮想鍵盤表示(表形式の候補ウィンドウを流用)
 ;;;   各位置のキーの打鍵により入力される文字を表示します。
@@ -775,7 +785,7 @@
      (list 'nr-candidates 0)
      ;;; 後置型交ぜ書き変換時に、変換に使用する読みの長さ。
      ;;; (確定時にim-delete-textするために使用)
-     ;;; 後置型か前置型かの判定にも使用。(前置型の場合は0)
+     ;;; 後置型(正)か前置型(0)かselection型(負)かの判定にも使用。
      (list 'postfix-yomi-len 0)
      ;;; 交ぜ書き変換開始時に指定された読みの文字数。
      ;;; 前置型の場合は入力済みの読みの文字数。
@@ -1381,8 +1391,9 @@
 (define (tutcode-commit-with-auto-help pc)
   (let* ((head (tutcode-context-head pc))
          (yomi-len (tutcode-context-postfix-yomi-len pc))
-         (yomi (and (> yomi-len 0)
-                    (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
+         (yomi (and (not (zero? yomi-len))
+                    (take (tutcode-context-mazegaki-yomi-all pc)
+                          (abs yomi-len))))
          (suffix (tutcode-context-mazegaki-suffix pc))
          (state (tutcode-context-state pc))
          ;; 候補1個で自動確定された漢字が意図したものでなかった場合のundoを想定
@@ -1390,12 +1401,15 @@
          (undo-data (and (eq? state 'tutcode-state-converting)
                          (list head (tutcode-context-latin-conv pc))))
          (res (tutcode-prepare-commit-string pc))) ; flushによりhead等がクリア
-    (if (> yomi-len 0)
-      (tutcode-postfix-commit pc res yomi)
-      (begin
+    (cond
+      ((= yomi-len 0)
         (tutcode-commit pc res)
         (if undo-data
-          (tutcode-undo-prepare pc state res undo-data))))
+          (tutcode-undo-prepare pc state res undo-data)))
+      ((> yomi-len 0)
+        (tutcode-postfix-commit pc res yomi))
+      (else
+        (tutcode-selection-commit pc res yomi)))
     (tutcode-check-auto-help-window-begin pc
       (drop (string-to-list res) (length suffix))
       (append suffix head))))
@@ -1936,6 +1950,8 @@
             ((tutcode-bushu-start) "◆")
             ((tutcode-interactive-bushu-start) "▼")
             ((tutcode-postfix-bushu-start) "▲")
+            ((tutcode-selection-mazegaki-start) "△s")
+            ((tutcode-selection-mazegaki-inflection-start) "―s")
             ((tutcode-postfix-mazegaki-start) "△")
             ((tutcode-postfix-mazegaki-1-start) "△1")
             ((tutcode-postfix-mazegaki-2-start) "△2")
@@ -1956,6 +1972,7 @@
             ((tutcode-postfix-mazegaki-inflection-7-start) "―7")
             ((tutcode-postfix-mazegaki-inflection-8-start) "―8")
             ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
+            ((tutcode-selection-katakana-start) "カs")
             ((tutcode-postfix-katakana-start) "カ")
             ((tutcode-postfix-katakana-1-start) "カ1")
             ((tutcode-postfix-katakana-2-start) "カ2")
@@ -1966,6 +1983,7 @@
             ((tutcode-postfix-katakana-7-start) "カ7")
             ((tutcode-postfix-katakana-8-start) "カ8")
             ((tutcode-postfix-katakana-9-start) "カ9")
+            ((tutcode-selection-kanji2seq-start) "/s")
             ((tutcode-postfix-kanji2seq-start) "/@")
             ((tutcode-postfix-kanji2seq-1-start) "/1")
             ((tutcode-postfix-kanji2seq-2-start) "/2")
@@ -1976,6 +1994,7 @@
             ((tutcode-postfix-kanji2seq-7-start) "/7")
             ((tutcode-postfix-kanji2seq-8-start) "/8")
             ((tutcode-postfix-kanji2seq-9-start) "/9")
+            ((tutcode-selection-seq2kanji-start) "漢s")
             ((tutcode-postfix-seq2kanji-start) "漢@")
             ((tutcode-postfix-seq2kanji-1-start) "漢1")
             ((tutcode-postfix-seq2kanji-2-start) "漢2")
@@ -2494,13 +2513,18 @@
                          (string-append str (string-list-concat suffix)))))
     (tutcode-context-set-child-context! pc ())
     (tutcode-context-set-child-type! pc ())
-    (if (> yomi-len 0)
-      (let ((yomi (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
-        (tutcode-postfix-commit pc commit-str yomi)
-        (tutcode-flush pc))
-      (begin
+    (cond
+      ((= yomi-len 0)
         (tutcode-flush pc)
-        (tutcode-commit pc commit-str)))
+        (tutcode-commit pc commit-str))
+      ((> yomi-len 0)
+        (let ((yomi (take (tutcode-context-mazegaki-yomi-all pc) yomi-len)))
+          (tutcode-postfix-commit pc commit-str yomi)
+          (tutcode-flush pc)))
+      (else
+        (tutcode-selection-commit pc commit-str
+          (tutcode-context-mazegaki-yomi-all pc))
+        (tutcode-flush pc)))
     (tutcode-update-preedit pc)))
 
 ;;; 補完候補を検索して候補ウィンドウに表示する
@@ -3064,6 +3088,16 @@
                 (tutcode-begin-postfix-seq2kanji-conversion pc 8))
               ((eq? res 'tutcode-postfix-seq2kanji-9-start)
                 (tutcode-begin-postfix-seq2kanji-conversion pc 9))
+              ((eq? res 'tutcode-selection-mazegaki-start)
+                (tutcode-begin-selection-mazegaki-conversion pc))
+              ((eq? res 'tutcode-selection-mazegaki-inflection-start)
+                (tutcode-begin-selection-mazegaki-inflection-conversion pc))
+              ((eq? res 'tutcode-selection-katakana-start)
+                (tutcode-begin-selection-katakana-conversion pc))
+              ((eq? res 'tutcode-selection-kanji2seq-start)
+                (tutcode-begin-selection-kanji2seq-conversion pc))
+              ((eq? res 'tutcode-selection-seq2kanji-start)
+                (tutcode-begin-selection-seq2kanji-conversion pc))
               ((eq? res 'tutcode-history-start)
                 (tutcode-begin-history pc))
               ((eq? res 'tutcode-undo)
@@ -3490,6 +3524,82 @@
                 (apply string-append
                   (make-list len tutcode-fallback-backspace-string))
                 #t #t))))))))
+
+;;; selectionに対して交ぜ書き変換を開始する
+(define (tutcode-begin-selection-mazegaki-conversion pc)
+  (let ((sel (tutcode-selection-acquire-text-wo-nl pc)))
+    (if (pair? sel)
+      (let ((sel-len (length sel)))
+        (tutcode-context-set-mazegaki-yomi-len-specified! pc sel-len)
+        (tutcode-context-set-postfix-yomi-len! pc (- sel-len)) ; 負:selection
+        (tutcode-context-set-mazegaki-yomi-all! pc sel)
+        (tutcode-begin-conversion pc sel () #t
+          tutcode-use-recursive-learning?)))))
+
+;;; selectionに対して活用する語として交ぜ書き変換を開始する
+(define (tutcode-begin-selection-mazegaki-inflection-conversion pc)
+  (let ((sel (tutcode-selection-acquire-text-wo-nl pc)))
+    (if (pair? sel)
+      (let ((sel-len (length sel)))
+        (tutcode-context-set-mazegaki-yomi-len-specified! pc sel-len)
+        (tutcode-context-set-postfix-yomi-len! pc (- sel-len)) ; 負:selection
+        (tutcode-context-set-mazegaki-yomi-all! pc sel)
+        (if (tutcode-mazegaki-inflection? sel)
+          (tutcode-begin-conversion pc sel () #t
+            tutcode-use-recursive-learning?)
+          (tutcode-mazegaki-inflection-relimit-right pc
+            sel-len sel-len #f))))))
+
+;;; selectionに対してカタカナ変換を開始する
+(define (tutcode-begin-selection-katakana-conversion pc)
+  (let ((sel (tutcode-selection-acquire-text pc)))
+    (if (pair? sel)
+      (let* ((katakana (tutcode-katakana-convert sel
+                        (not (tutcode-context-katakana-mode? pc))))
+             (str (string-list-concat katakana)))
+        (tutcode-selection-commit pc str sel)
+        (if (= (length katakana) 1) ; 1文字の場合、自動ヘルプ表示(tc2と同様)
+          (tutcode-check-auto-help-window-begin pc katakana ()))))))
+
+;;; selectionに対して漢字→入力シーケンス変換を開始する
+(define (tutcode-begin-selection-kanji2seq-conversion pc)
+  (let ((sel (tutcode-selection-acquire-text pc)))
+    (if (pair? sel)
+      (tutcode-selection-commit pc
+        (string-list-concat (tutcode-kanji-list->sequence pc sel)) sel))))
+
+;;; selectionに対して入力シーケンス→漢字変換を開始する
+(define (tutcode-begin-selection-seq2kanji-conversion pc)
+  (let ((sel (tutcode-selection-acquire-text pc)))
+    (if (pair? sel)
+      (tutcode-selection-commit pc
+        (string-list-concat (tutcode-sequence->kanji-list pc sel)) sel))))
+
+;;; selectionに対する変換を確定する
+;;; @param str 確定する文字列
+;;; @param yomi-list 変換元の文字列(読み/部首)のリスト(逆順)
+(define (tutcode-selection-commit pc str yomi-list)
+  ;; commitするとselectionが上書きされるのでdelete-textは不要
+  ;(im-delete-text pc 'selection 'beginning 0 'full)
+  (tutcode-commit pc str)
+  (tutcode-undo-prepare pc 'tutcode-state-off str yomi-list))
+
+;;; selection文字列を改行を除いて取得する
+;;; @return 取得した文字列のリスト(逆順)
+(define (tutcode-selection-acquire-text-wo-nl pc)
+  (let ((latter-seq (tutcode-selection-acquire-text pc)))
+    (and (pair? latter-seq)
+         (delete "\n" latter-seq))))
+
+;;; selection文字列を取得する
+;;; @return 取得した文字列のリスト(逆順)
+(define (tutcode-selection-acquire-text pc)
+  (and-let*
+    ((ustr (im-acquire-text pc 'selection 'beginning 0 'full))
+     (latter (ustr-latter-seq ustr))
+     (latter-seq (and (pair? latter) (string-to-list (car latter)))))
+    (and (not (null? latter-seq))
+         latter-seq)))
 
 ;;; 後置型カタカナ変換を確定する
 ;;; @param yomi 読み
@@ -4591,14 +4701,27 @@
 ;;; 交ぜ書き変換の候補選択状態から、読み入力状態に戻す。
 ;;; @param pc コンテキストリスト
 (define (tutcode-back-to-yomi-state pc)
-  (if (> (tutcode-context-postfix-yomi-len pc) 0) ; 後置型?
-    (tutcode-flush pc)
-    (begin
-      (tutcode-reset-candidate-window pc)
-      (tutcode-context-set-state! pc 'tutcode-state-yomi)
-      (tutcode-context-set-head! pc (tutcode-context-mazegaki-yomi-all pc))
-      (tutcode-context-set-mazegaki-suffix! pc ())
-      (tutcode-context-set-nr-candidates! pc 0))))
+  (let ((postfix-yomi-len (tutcode-context-postfix-yomi-len pc)))
+    (cond
+      ((= postfix-yomi-len 0)
+        (tutcode-reset-candidate-window pc)
+        (tutcode-context-set-state! pc 'tutcode-state-yomi)
+        (tutcode-context-set-head! pc (tutcode-context-mazegaki-yomi-all pc))
+        (tutcode-context-set-mazegaki-suffix! pc ())
+        (tutcode-context-set-nr-candidates! pc 0))
+      ((> postfix-yomi-len 0)
+        (tutcode-flush pc))
+      (else ; selection
+        (im-clear-preedit pc)
+        (im-update-preedit pc)
+        ;; Firefoxやqt4の場合、preedit表示時にselectionが上書きされるようで、
+        ;; cancelしても消えたままになるので、取得済のselection内容を書き戻す。
+        ;; (selection状態が解除されるためFirefoxやqt4以外(leafpad等)ではうれし
+        ;; くないが、消えるデメリットの方がselection解除のデメリットより大きい)
+        ;; (再度acquire-textしての判定はFirefoxの場合pairが返るため判定不能)
+        (tutcode-commit pc
+          (string-list-concat (tutcode-context-mazegaki-yomi-all pc)) #t #t)
+        (tutcode-flush pc)))))
 
 ;;; 交ぜ書き変換の辞書登録状態から、候補選択状態に戻す。
 ;;; @param pc コンテキストリスト
@@ -4669,13 +4792,17 @@
         (tutcode-commit-by-label-key pc (charcode->string key)))
       (else
         (let* ((postfix-yomi-len (tutcode-context-postfix-yomi-len pc))
-               (yomi (and (> postfix-yomi-len 0)
+               (yomi (and (not (zero? postfix-yomi-len))
                           (take (tutcode-context-mazegaki-yomi-all pc)
-                                postfix-yomi-len)))
+                                (abs postfix-yomi-len))))
                (commit-str (tutcode-prepare-commit-string pc)))
-          (if (> postfix-yomi-len 0)
-            (tutcode-postfix-commit pc commit-str yomi)
-            (tutcode-commit pc commit-str)))
+          (cond
+            ((= postfix-yomi-len 0)
+              (tutcode-commit pc commit-str))
+            ((> postfix-yomi-len 0)
+              (tutcode-postfix-commit pc commit-str yomi))
+            (else
+              (tutcode-selection-commit pc commit-str yomi))))
         (tutcode-proc-state-on pc key key-state)))))
 
 ;;; 部首合成変換を行う。
@@ -5965,6 +6092,16 @@
               '(tutcode-interactive-bushu-start)))
           (make-subrule tutcode-postfix-bushu-start-sequence
             '(tutcode-postfix-bushu-start))
+          (make-subrule tutcode-selection-mazegaki-start-sequence
+            '(tutcode-selection-mazegaki-start))
+          (make-subrule tutcode-selection-mazegaki-inflection-start-sequence
+            '(tutcode-selection-mazegaki-inflection-start))
+          (make-subrule tutcode-selection-katakana-start-sequence
+            '(tutcode-selection-katakana-start))
+          (make-subrule tutcode-selection-kanji2seq-start-sequence
+            '(tutcode-selection-kanji2seq-start))
+          (make-subrule tutcode-selection-seq2kanji-start-sequence
+            '(tutcode-selection-seq2kanji-start))
           (make-subrule tutcode-postfix-mazegaki-start-sequence
             '(tutcode-postfix-mazegaki-start))
           (make-subrule tutcode-postfix-mazegaki-1-start-sequence
