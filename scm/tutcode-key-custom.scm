@@ -41,6 +41,10 @@
 		     (N_ "TUT-Code key bindings 2")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'tutcode-keys3
+		     (N_ "TUT-Code key bindings 3")
+		     (N_ "long description will be here."))
+
 (define-custom 'tutcode-on-key '("<Control>\\" generic-on-key)
                '(tutcode-keys1 mode-transition)
 	       '(key)
@@ -89,342 +93,6 @@
 	       (N_ "[TUT-Code] interactive bushu conversion mode")
 	       (N_ "long description will be here"))
 
-(define-custom 'tutcode-postfix-bushu-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix bushu conversion")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-selection-mazegaki-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] mazegaki conversion on selection")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-selection-mazegaki-inflection-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] mazegaki conversion with inflection on selection")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-selection-katakana-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] katakana conversion on selection")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-selection-kanji2seq-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] kanji to sequence conversion on selection")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-selection-seq2kanji-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] sequence to kanji conversion on selection")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-1-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 1 character")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-2-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 2 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-3-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 3 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-4-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 4 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-5-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 5 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-6-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 6 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-7-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 7 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-8-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 8 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-9-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion of 9 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-1-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 1 character")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-2-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-3-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-4-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-5-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-6-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-7-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-8-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-mazegaki-inflection-9-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-1-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 1 character")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-2-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 2 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-3-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 3 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-4-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 4 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-5-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 5 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-6-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 6 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-7-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 7 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-8-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 8 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-katakana-9-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix katakana conversion of 9 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-1-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 1 character")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-2-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 2 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-3-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 3 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-4-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 4 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-5-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 5 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-6-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 6 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-7-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 7 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-8-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 8 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-kanji2seq-9-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 9 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-1-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 1 character")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-2-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 2 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-3-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 3 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-4-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 4 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-5-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 5 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-6-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 6 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-7-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 7 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-8-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 8 characters")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-postfix-seq2kanji-9-start-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 9 characters")
-	       (N_ "long description will be here"))
-
 (define-custom 'tutcode-latin-conv-start-sequence "al/"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")
@@ -447,24 +115,6 @@
                '(tutcode-keys1)
 	       '(string ".*")
 	       (N_ "[TUT-Code] display last auto help")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-help-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] display help for char at current position")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-help-clipboard-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] display help for string on clipboard")
-	       (N_ "long description will be here"))
-
-(define-custom 'tutcode-undo-sequence ""
-               '(tutcode-keys1)
-	       '(string ".*")
-	       (N_ "[TUT-Code] undo last commit")
 	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-katakana-commit-key '()
@@ -503,12 +153,6 @@
 	       (N_ "[TUT-Code] cancel")
 	       (N_ "long description will be here"))
 
-(define-custom 'tutcode-paste-key '()
-               '(tutcode-keys1)
-	       '(key)
-	       (N_ "[TUT-Code] paste from clipboard")
-	       (N_ "long description will be here"))
-
 (define-custom 'tutcode-next-candidate-key '(generic-next-candidate-key)
                '(tutcode-keys1)
 	       '(key)
@@ -519,6 +163,60 @@
                '(tutcode-keys1)
 	       '(key)
 	       (N_ "[TUT-Code] previous candidate")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-undo-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] undo last commit")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-help-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] display help for char at current position")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-help-clipboard-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] display help for string on clipboard")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-paste-key '()
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] paste from clipboard")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-mazegaki-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] mazegaki conversion on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-mazegaki-inflection-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] mazegaki conversion with inflection on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-katakana-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] katakana conversion on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-kanji2seq-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] kanji to sequence conversion on selection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-selection-seq2kanji-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] sequence to kanji conversion on selection")
 	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-next-page-key '(generic-next-page-key)
@@ -579,4 +277,310 @@
 	       '(tutcode-keys2)
 	       '(key)
 	       (N_ "[TUT-Code] insert pending key strokes")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-bushu-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix bushu conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-1-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 1 character")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-2-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 2 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-3-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 3 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-4-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 4 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-5-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 5 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-6-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 6 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-7-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 7 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-8-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 8 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-9-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion of 9 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-1-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 1 character")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-2-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-3-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-4-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-5-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-6-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-7-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-8-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-inflection-9-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-1-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 1 character")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-2-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 2 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-3-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 3 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-4-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 4 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-5-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 5 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-6-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 6 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-7-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 7 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-8-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 8 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-9-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion of 9 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-1-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 1 character")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-2-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 2 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-3-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 3 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-4-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 4 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-5-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 5 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-6-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 6 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-7-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 7 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-8-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 8 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-kanji2seq-9-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix kanji to sequence conversion of 9 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-1-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 1 character")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-2-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 2 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-3-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 3 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-4-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 4 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-5-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 5 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-6-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 6 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-7-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 7 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-8-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 8 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-seq2kanji-9-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix sequence to kanji conversion of 9 characters")
 	       (N_ "long description will be here"))
