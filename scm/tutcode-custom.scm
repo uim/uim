@@ -214,9 +214,15 @@
   (N_ "Key layout of table style candidate window")
   (N_ "long description will be here."))
 
-(define-custom 'tutcode-commit-candidate-by-label-key? #t
+(define-custom 'tutcode-commit-candidate-by-label-key 'always
   '(tutcode candwin)
-  '(boolean)
+  (list 'choice
+	(list 'always (N_ "always") (N_ "All keys as label key"))
+	(list 'havecand (N_ "which have candidate")
+          (N_ "Enable keys which have candidate"))
+	(list 'candwin (N_ "while candidate window is shown")
+          (N_ "Enable while candidate window is shown"))
+	(list 'never (N_ "never") (N_ "Never")))
   (N_ "Commit candidate by heading label keys")
   (N_ "long description will be here."))
 

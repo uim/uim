@@ -419,6 +419,9 @@
 (if (and (symbol-bound? 'tutcode-use-table-style-candidate-window?)
          tutcode-use-table-style-candidate-window?)
   (set! candidate-window-style 'table))
+(if (and (symbol-bound? 'tutcode-commit-candidate-by-label-key?)
+         tutcode-commit-candidate-by-label-key?)
+  (set! tutcode-commit-candidate-by-label-key 'always))
 
 ;;; 表形式の候補ウィンドウ上の各ボタンとキーの対応表(13列8行)。
 ;;; 表形式候補ウィンドウが参照して使用する。
@@ -1416,6 +1419,7 @@
 
 ;;; 交ぜ書き変換の候補選択時に、指定されたラベル文字に対応する候補を確定する
 ;;; @param ch 入力されたラベル文字
+;;; @return 確定した場合#t
 (define (tutcode-commit-by-label-key pc ch)
   ;; 現在候補ウィンドウに表示されていないラベル文字を入力した場合、
   ;; 現在以降の候補内において入力ラベル文字に対応する候補を確定する。
@@ -1431,7 +1435,9 @@
              (< idx nr))
       (begin
         (tutcode-context-set-nth! pc idx)
-        (tutcode-commit-with-auto-help pc)))))
+        (tutcode-commit-with-auto-help pc)
+        #t)
+      (eq? tutcode-commit-candidate-by-label-key 'always))))
 
 ;;; 候補選択時に、指定されたラベル文字に対応する候補番号を計算する
 ;;; @param ch 入力されたラベル文字
@@ -1464,6 +1470,7 @@
     idx))
 
 ;;; 記号入力モード時に、指定されたラベル文字に対応する候補を確定する
+;;; @return 確定した場合#t
 (define (tutcode-commit-by-label-key-for-kigou-mode pc ch)
   ;; 交ぜ書き変換時と異なり、現在より前の候補を確定する場合あり
   ;; (全角英数入力モードとして使えるようにするため)。
@@ -1487,10 +1494,13 @@
       (begin
         (tutcode-context-set-nth! pc idx)
         (tutcode-commit pc
-          (tutcode-prepare-commit-string-for-kigou-mode pc))))))
+          (tutcode-prepare-commit-string-for-kigou-mode pc))
+        #t)
+      (eq? tutcode-commit-candidate-by-label-key 'always))))
 
 ;;; ヒストリ入力の候補選択時に、指定されたラベル文字に対応する候補を確定する
 ;;; @param ch 入力されたラベル文字
+;;; @return 確定した場合#t
 (define (tutcode-commit-by-label-key-for-history pc ch)
   (let* ((nr (tutcode-context-nr-candidates pc))
          (nth (tutcode-context-nth pc))
@@ -1506,11 +1516,14 @@
         (let ((str (tutcode-prepare-commit-string-for-history pc)))
           (tutcode-commit pc str)
           (tutcode-flush pc)
-          (tutcode-check-auto-help-window-begin pc (string-to-list str) ()))))))
+          (tutcode-check-auto-help-window-begin pc (string-to-list str) ()))
+        #t)
+      (eq? tutcode-commit-candidate-by-label-key 'always))))
 
 ;;; 補完/予測入力候補表示時に、指定されたラベル文字に対応する候補を確定する
 ;;; @param ch 入力されたラベル文字
 ;;; @param mode tutcode-context-predictingの値
+;;; @return 確定した場合#t
 (define (tutcode-commit-by-label-key-for-prediction pc ch mode)
   (let*
     ((nth (tutcode-context-prediction-index pc))
@@ -1520,17 +1533,22 @@
       (tutcode-get-idx-by-label-key ch nth page-limit nr-in-page
         tutcode-heading-label-char-list-for-prediction))
      (nr (tutcode-lib-get-nr-predictions pc))
+     ;; XXX:熟語ガイドのページ数の方が多い場合、
+     ;;     補完候補はループして2順目以降の可能性あり(表形式candwinでない場合)
      (i (remainder idx nr)))
     (if (>= i 0)
-      (case mode
-        ((tutcode-predicting-bushu)
-          (tutcode-do-commit-prediction-for-bushu pc i))
-        ((tutcode-predicting-interactive-bushu)
-          (tutcode-do-commit-prediction-for-interactive-bushu pc i))
-        ((tutcode-predicting-completion)
-          (tutcode-do-commit-prediction pc i #t))
-        (else
-          (tutcode-do-commit-prediction pc i #f))))))
+      (begin
+        (case mode
+          ((tutcode-predicting-bushu)
+            (tutcode-do-commit-prediction-for-bushu pc i))
+          ((tutcode-predicting-interactive-bushu)
+            (tutcode-do-commit-prediction-for-interactive-bushu pc i))
+          ((tutcode-predicting-completion)
+            (tutcode-do-commit-prediction pc i #t))
+          (else
+            (tutcode-do-commit-prediction pc i #f)))
+        #t)
+      (eq? tutcode-commit-candidate-by-label-key 'always))))
 
 (define (tutcode-get-prediction-string pc idx)
   (tutcode-lib-get-nth-prediction pc idx))
@@ -2933,9 +2951,10 @@
            (rk-commit-flush)
            (tutcode-commit-raw pc key key-state))
           ;; 補完候補用ラベルキー?
-          ((and completing? (tutcode-heading-label-char-for-prediction? key))
-            (tutcode-commit-by-label-key-for-prediction pc
-              (charcode->string key) 'tutcode-predicting-completion))
+          ((and completing?
+                (tutcode-heading-label-char-for-prediction? key)
+                (tutcode-commit-by-label-key-for-prediction pc
+                  (charcode->string key) 'tutcode-predicting-completion)))
           ;; 正しくないキーシーケンスは全て捨てる(tc2に合わせた動作)。
           ;; (rk-push-key!すると、途中までのシーケンスは捨てられるが、
           ;; 間違ったキーは残ってしまうので、rk-push-key!は使えない)
@@ -4000,8 +4019,9 @@
       ;; next-candidate-key?のチェックより前にheading-label-char?をチェック
       ((and (not (and (modifier-key-mask key-state)
                       (not (shift-key-mask key-state))))
-            (tutcode-heading-label-char-for-kigou-mode? key))
-        (tutcode-commit-by-label-key-for-kigou-mode pc (charcode->string key))
+            (tutcode-heading-label-char-for-kigou-mode? key)
+            (tutcode-commit-by-label-key-for-kigou-mode pc
+              (charcode->string key)))
         (if (eq? (tutcode-context-candidate-window pc)
                  'tutcode-candidate-window-kigou)
           (tutcode-select-candidate pc (tutcode-context-nth pc))))
@@ -4020,12 +4040,6 @@
           (- tutcode-nr-candidate-max-for-kigou-mode)))
       ((tutcode-commit-key? key key-state) ; return-keyはアプリに渡す
         (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc)))
-      ((or
-        (symbol? key)
-        (and
-          (modifier-key-mask key-state)
-          (not (shift-key-mask key-state))))
-        (tutcode-commit-raw pc key key-state))
       (else
         (tutcode-commit-raw pc key key-state)))))
 
@@ -4049,8 +4063,9 @@
         (tutcode-flush pc))
       ((and (not (and (modifier-key-mask key-state)
                       (not (shift-key-mask key-state))))
-            (tutcode-heading-label-char-for-history? key))
-        (tutcode-commit-by-label-key-for-history pc (charcode->string key)))
+            (tutcode-heading-label-char-for-history? key)
+            (tutcode-commit-by-label-key-for-history pc
+              (charcode->string key))))
       ((or (tutcode-commit-key? key key-state)
            (tutcode-return-key? key key-state))
         (let ((str (tutcode-prepare-commit-string-for-history pc)))
@@ -4185,9 +4200,10 @@
                (tutcode-flush pc)
                (tutcode-proc-state-on pc key key-state))))
           ;; 予測入力候補用ラベルキー?
-          ((and predicting? (tutcode-heading-label-char-for-prediction? key))
-            (tutcode-commit-by-label-key-for-prediction pc
-              (charcode->string key) 'tutcode-predicting-prediction))
+          ((and predicting?
+                (tutcode-heading-label-char-for-prediction? key)
+                (tutcode-commit-by-label-key-for-prediction pc
+                  (charcode->string key) 'tutcode-predicting-prediction)))
           ((tutcode-context-latin-conv pc)
            (if (tutcode-begin-conv-key? key key-state) ; spaceキーでの変換開始?
              (if (not (null? head))
@@ -4407,9 +4423,10 @@
        (tutcode-flush pc)
        (tutcode-proc-state-on pc key key-state))
       ;; 予測入力候補用ラベルキー?
-      ((and predicting? (tutcode-heading-label-char-for-prediction? key))
-        (tutcode-commit-by-label-key-for-prediction pc
-          (charcode->string key) 'tutcode-predicting-bushu))
+      ((and predicting?
+            (tutcode-heading-label-char-for-prediction? key)
+            (tutcode-commit-by-label-key-for-prediction pc
+              (charcode->string key) 'tutcode-predicting-bushu)))
       ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
@@ -4561,9 +4578,10 @@
            (tutcode-flush pc)
            (tutcode-proc-state-on pc key key-state))
           ((and (tutcode-heading-label-char-for-prediction? key)
-                (= (length (rk-context-seq rkc)) 0))
-            (tutcode-commit-by-label-key-for-prediction pc
-              (charcode->string key) 'tutcode-predicting-interactive-bushu))
+                (= (length (rk-context-seq rkc)) 0)
+                (tutcode-commit-by-label-key-for-prediction pc
+                  (charcode->string key)
+                  'tutcode-predicting-interactive-bushu)))
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
              (rk-flush rkc)
@@ -4784,12 +4802,17 @@
         (tutcode-mazegaki-proc-relimit-right pc))
       ((tutcode-mazegaki-relimit-left-key? key key-state)
         (tutcode-mazegaki-proc-relimit-left pc))
-      ((and tutcode-commit-candidate-by-label-key?
+      ((and (or (eq? tutcode-commit-candidate-by-label-key 'always)
+                (eq? tutcode-commit-candidate-by-label-key 'havecand)
+                (and (eq? tutcode-commit-candidate-by-label-key 'candwin)
+                     (not (eq? (tutcode-context-candidate-window pc)
+                               'tutcode-candidate-window-off))
+                     (not (tutcode-context-candwin-delay-waiting pc))))
             (not (and (modifier-key-mask key-state)
                       (not (shift-key-mask key-state))))
             (> (tutcode-context-nr-candidates pc) 1)
-            (tutcode-heading-label-char? key))
-        (tutcode-commit-by-label-key pc (charcode->string key)))
+            (tutcode-heading-label-char? key)
+            (tutcode-commit-by-label-key pc (charcode->string key))))
       (else
         (let* ((postfix-yomi-len (tutcode-context-postfix-yomi-len pc))
                (yomi (and (not (zero? postfix-yomi-len))
