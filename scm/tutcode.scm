@@ -311,8 +311,8 @@
 ;;;  * クリップボード内の文字列を以下のpreeditに貼り付け(tutcode-paste-key)
 ;;;   + 辞書登録時
 ;;;   + 交ぜ書き変換の読み入力時
-;;;   + 部首合成変換時(クリップボード内の文字列の先頭1文字のみ)
-;;;   + 対話的な部首合成変換時(クリップボード内の文字列の先頭1文字のみ)
+;;;   + 部首合成変換時("言▲▲西一早"のような部首合成シーケンスにも対応)
+;;;   + 対話的な部首合成変換時
 ;;;   + 漢字コード入力時
 ;;;
 ;;; 【設定例】
@@ -4411,10 +4411,24 @@
       ((and predicting? (tutcode-prev-page-key? key key-state))
        (tutcode-change-bushu-prediction-page pc #f))
       ((tutcode-paste-key? key key-state)
-        ;; XXX:1文字のみ取得。▲を含む文字列をペーストできるとうれしいかも
-        (let ((latter-seq (tutcode-clipboard-acquire-text pc 1)))
+        (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
           (if (pair? latter-seq)
-            (set! res (car latter-seq)))))
+            (let* ((head (tutcode-context-head pc))
+                   (paste-res
+                    (tutcode-bushu-convert-on-list
+                      (reverse (append latter-seq head)) ())))
+              (if (string? paste-res)
+                (begin
+                  (tutcode-commit pc paste-res)
+                  (tutcode-flush pc)
+                  (tutcode-undo-prepare pc 'tutcode-state-bushu paste-res head)
+                  (tutcode-check-auto-help-window-begin pc (list paste-res) ()))
+                (begin
+                  (tutcode-context-set-head! pc paste-res)
+                  (if (and tutcode-use-bushu-prediction?
+                           (pair? paste-res)
+                           (not (string=? (car paste-res) "▲")))
+                    (tutcode-check-bushu-prediction pc (car paste-res)))))))))
       ((or
         (symbol? key)
         (and
@@ -4492,6 +4506,31 @@
     ;; (合成した文字が2文字目ならば、連続して部首合成変換)
     (tutcode-begin-bushu-conversion pc convchar)))
 
+;;; 部首合成変換をリストに対して適用する
+;;; @param bushu-list 部首合成シーケンスのリスト。
+;;;  例:("▲" "▲" "木" "▲" "人" "人" "条" "夫")
+;;; @param conv-list 変換中のリスト(逆順)
+;;; @return 合成完了時は変換後文字列。合成途中の場合は変換中リスト(逆順)。
+;;;  例:"麩"
+(define (tutcode-bushu-convert-on-list bushu-list conv-list)
+  (if (null? bushu-list)
+    conv-list
+    (let ((bushu (car bushu-list))
+          (prevchar (safe-car conv-list)))
+      (if (or (not prevchar) (string=? prevchar "▲") (string=? bushu "▲"))
+        ;; 1文字目 or 再帰開始
+        (tutcode-bushu-convert-on-list (cdr bushu-list) (cons bushu conv-list))
+        ;; 直前の文字が部首合成マーカでない→2文字目→変換開始
+        (let ((convchar (tutcode-bushu-convert prevchar bushu)))
+          (if (string? convchar) ; 合成成功?
+            (if (or (null? (cdr conv-list)) (null? (cddr conv-list)))
+              convchar ; 合成終了(bushu-listの残りは無視)
+              (tutcode-bushu-convert-on-list
+                (cons convchar (cdr bushu-list))
+                (cddr conv-list))) ; 再帰的に合成
+            ;; 合成失敗時は次の部首で試す
+            (tutcode-bushu-convert-on-list (cdr bushu-list) conv-list)))))))
+
 ;;; 対話的部首合成変換のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
@@ -4566,10 +4605,11 @@
           ((tutcode-stroke-help-toggle-key? key key-state)
            (tutcode-toggle-stroke-help pc))
           ((tutcode-paste-key? key key-state)
-            ;; XXX:1文字のみ取得。複数の部首を一度にpasteできるとうれしいかも
-            (let ((latter-seq (tutcode-clipboard-acquire-text pc 1)))
+            (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
               (if (pair? latter-seq)
-                (set! res (car latter-seq)))))
+                (begin
+                  (tutcode-context-set-head! pc (append latter-seq head))
+                  (tutcode-begin-interactive-bushu-conversion pc)))))
           ((or
             (symbol? key)
             (and
@@ -4623,7 +4663,9 @@
               (tutcode-context-prediction-nr-all pc)
               (tutcode-context-prediction-page-limit pc))
             (tutcode-select-candidate pc
-              (tutcode-context-prediction-index pc)))))
+              (tutcode-context-prediction-index pc)))
+          ;; pasteされた複数の部首を全て使うと合成不能→1部首を削って再検索
+          (tutcode-begin-interactive-bushu-conversion pc)))
       (else
         (let ((nr (length res)))
           (tutcode-context-set-prediction-word! pc ())
