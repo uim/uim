@@ -419,9 +419,11 @@
 (if (and (symbol-bound? 'tutcode-use-table-style-candidate-window?)
          tutcode-use-table-style-candidate-window?)
   (set! candidate-window-style 'table))
-(if (and (symbol-bound? 'tutcode-commit-candidate-by-label-key?)
-         tutcode-commit-candidate-by-label-key?)
-  (set! tutcode-commit-candidate-by-label-key 'always))
+(if (symbol-bound? 'tutcode-commit-candidate-by-label-key?)
+  (set! tutcode-commit-candidate-by-label-key
+    (if tutcode-commit-candidate-by-label-key?
+      'always
+      'never)))
 
 ;;; 表形式の候補ウィンドウ上の各ボタンとキーの対応表(13列8行)。
 ;;; 表形式候補ウィンドウが参照して使用する。
