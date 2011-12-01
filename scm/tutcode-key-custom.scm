@@ -189,6 +189,12 @@
 	       (N_ "[TUT-Code] paste from clipboard")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-clipboard-seq2kanji-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] sequence to kanji conversion on clipboard")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-selection-mazegaki-start-sequence ""
                '(tutcode-keys1)
 	       '(string ".*")

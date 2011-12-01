@@ -2015,6 +2015,7 @@
             ((tutcode-postfix-kanji2seq-8-start) "/8")
             ((tutcode-postfix-kanji2seq-9-start) "/9")
             ((tutcode-selection-seq2kanji-start) "漢s")
+            ((tutcode-clipboard-seq2kanji-start) "漢c")
             ((tutcode-postfix-seq2kanji-start) "漢@")
             ((tutcode-postfix-seq2kanji-1-start) "漢1")
             ((tutcode-postfix-seq2kanji-2-start) "漢2")
@@ -2174,9 +2175,25 @@
 (define (tutcode-help-clipboard pc)
   (let*
     ((len (length tutcode-auto-help-cand-str-list))
-     (latter-seq (tutcode-clipboard-acquire-text pc len)))
+     (latter-seq (tutcode-clipboard-acquire-text-wo-nl pc len)))
     (if (pair? latter-seq)
       (tutcode-check-auto-help-window-begin pc latter-seq () #t))))
+
+;;; clipboardに対して入力シーケンス→漢字変換を開始する
+(define (tutcode-begin-clipboard-seq2kanji-conversion pc)
+  (let ((lst (tutcode-clipboard-acquire-text pc 'full)))
+    (if (pair? lst)
+      (let ((str (string-list-concat (tutcode-sequence->kanji-list pc lst))))
+        (tutcode-commit pc str)
+        (tutcode-undo-prepare pc 'tutcode-state-off str ())))))
+
+;;; クリップボードから文字列を改行を除いて取得する
+;;; @param len 取得する文字数
+;;; @return 取得した文字列のリスト(逆順)
+(define (tutcode-clipboard-acquire-text-wo-nl pc len)
+  (let ((latter-seq (tutcode-clipboard-acquire-text pc len)))
+    (and (pair? latter-seq)
+         (delete "\n" latter-seq))))
 
 ;;; surrounding text APIを使ってクリップボードから文字を取得
 ;;; @param len 取得する文字数
@@ -2185,10 +2202,9 @@
   (and-let*
     ((ustr (im-acquire-text pc 'clipboard 'beginning 0 len))
      (latter (ustr-latter-seq ustr))
-     (latter-seq (and (pair? latter) (string-to-list (car latter))))
-     (latter-seq-wo-nl (delete "\n" latter-seq)))
-    (and (not (null? latter-seq-wo-nl))
-         latter-seq-wo-nl)))
+     (latter-seq (and (pair? latter) (string-to-list (car latter)))))
+    (and (not (null? latter-seq))
+         latter-seq)))
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
@@ -2942,7 +2958,7 @@
              (tutcode-check-completion pc #t 0)))
           ((and (tutcode-paste-key? key key-state)
                 (pair? (tutcode-context-parent-context pc)))
-            (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+            (let ((latter-seq (tutcode-clipboard-acquire-text-wo-nl pc 'full)))
               (if (pair? latter-seq)
                 (tutcode-commit pc (string-list-concat latter-seq)))))
           ((or
@@ -3119,6 +3135,8 @@
                 (tutcode-begin-selection-kanji2seq-conversion pc))
               ((eq? res 'tutcode-selection-seq2kanji-start)
                 (tutcode-begin-selection-seq2kanji-conversion pc))
+              ((eq? res 'tutcode-clipboard-seq2kanji-start)
+                (tutcode-begin-clipboard-seq2kanji-conversion pc))
               ((eq? res 'tutcode-history-start)
                 (tutcode-begin-history pc))
               ((eq? res 'tutcode-undo)
@@ -4184,7 +4202,7 @@
           ((tutcode-katakana-commit-key? key key-state)
             (katakana-commit))
           ((tutcode-paste-key? key key-state)
-            (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+            (let ((latter-seq (tutcode-clipboard-acquire-text-wo-nl pc 'full)))
               (if (pair? latter-seq)
                 (tutcode-context-set-head! pc (append latter-seq head)))))
           ((symbol? key)
@@ -4317,7 +4335,7 @@
         (tutcode-commit pc (string-list-concat head))
         (tutcode-flush pc))
       ((tutcode-paste-key? key key-state)
-        (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+        (let ((latter-seq (tutcode-clipboard-acquire-text-wo-nl pc 'full)))
           (if (pair? latter-seq)
             (tutcode-context-set-head! pc (append latter-seq head)))))
       ((symbol? key)
@@ -4413,7 +4431,7 @@
       ((and predicting? (tutcode-prev-page-key? key key-state))
        (tutcode-change-bushu-prediction-page pc #f))
       ((tutcode-paste-key? key key-state)
-        (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+        (let ((latter-seq (tutcode-clipboard-acquire-text-wo-nl pc 'full)))
           (if (pair? latter-seq)
             (let* ((head (tutcode-context-head pc))
                    (paste-res
@@ -4607,7 +4625,7 @@
           ((tutcode-stroke-help-toggle-key? key key-state)
            (tutcode-toggle-stroke-help pc))
           ((tutcode-paste-key? key key-state)
-            (let ((latter-seq (tutcode-clipboard-acquire-text pc 'full)))
+            (let ((latter-seq (tutcode-clipboard-acquire-text-wo-nl pc 'full)))
               (if (pair? latter-seq)
                 (begin
                   (tutcode-context-set-head! pc (append latter-seq head))
@@ -6169,6 +6187,8 @@
             '(tutcode-selection-kanji2seq-start))
           (make-subrule tutcode-selection-seq2kanji-start-sequence
             '(tutcode-selection-seq2kanji-start))
+          (make-subrule tutcode-clipboard-seq2kanji-start-sequence
+            '(tutcode-clipboard-seq2kanji-start))
           (make-subrule tutcode-postfix-mazegaki-start-sequence
             '(tutcode-postfix-mazegaki-start))
           (make-subrule tutcode-postfix-mazegaki-1-start-sequence
