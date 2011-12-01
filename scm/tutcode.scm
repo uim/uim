@@ -302,6 +302,7 @@
 ;;;   + 部首合成変換: 2文字目の部首入力により変換・確定開始(特に再帰的な場合)
 ;;;   + 漢字コード入力
 ;;;   + 交ぜ書き変換: 候補数が1個の時の自動確定
+;;;   + 読み入力時のカタカナ確定、漢字→入力シーケンス確定
 ;;;
 ;;; 【クリップボード】
 ;;;  クリップボード内の文字列に対する以下の機能を追加しました。
@@ -3175,6 +3176,9 @@
           ((tutcode-state-bushu)
             (tutcode-context-set-head! pc data)
             (tutcode-context-set-state! pc 'tutcode-state-bushu))
+          ((tutcode-state-yomi)
+            (tutcode-context-set-head! pc data)
+            (tutcode-context-set-state! pc 'tutcode-state-yomi))
           ((tutcode-state-code)
             (tutcode-context-set-head! pc data)
             (tutcode-context-set-state! pc 'tutcode-state-code))
@@ -4122,11 +4126,13 @@
      (res #f)
      (katakana-commit
       (lambda ()
-        (tutcode-commit pc
-          (string-list-concat
-            (tutcode-katakana-convert head
-              (not (tutcode-context-katakana-mode? pc)))))
-        (tutcode-flush pc)))
+        (let ((str
+                (string-list-concat
+                  (tutcode-katakana-convert head
+                    (not (tutcode-context-katakana-mode? pc))))))
+          (tutcode-commit pc str)
+          (tutcode-flush pc)
+          (tutcode-undo-prepare pc 'tutcode-state-yomi str head))))
      (rk-append-flush
       (lambda ()
         (if tutcode-keep-illegal-sequence?
@@ -4293,11 +4299,12 @@
             ((eq? res 'tutcode-postfix-kanji2seq-start)
               (set! res #f)
               (if (not (null? head))
-                (begin
-                  (tutcode-commit pc
-                    (string-list-concat
-                      (tutcode-kanji-list->sequence pc head)))
-                  (tutcode-flush pc))
+                (let ((str
+                        (string-list-concat
+                          (tutcode-kanji-list->sequence pc head))))
+                  (tutcode-commit pc str)
+                  (tutcode-flush pc)
+                  (tutcode-undo-prepare pc 'tutcode-state-yomi str head))
                 (begin
                   (tutcode-flush pc)
                   (tutcode-begin-postfix-kanji2seq-conversion pc #f))))
