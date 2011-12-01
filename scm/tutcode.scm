@@ -4289,6 +4289,18 @@
                 (begin
                   (tutcode-flush pc)
                   (tutcode-begin-postfix-katakana-conversion pc #f))))
+            ;; 漢字→入力シーケンス変換。主にclipboardからのpaste時用
+            ((eq? res 'tutcode-postfix-kanji2seq-start)
+              (set! res #f)
+              (if (not (null? head))
+                (begin
+                  (tutcode-commit pc
+                    (string-list-concat
+                      (tutcode-kanji-list->sequence pc head)))
+                  (tutcode-flush pc))
+                (begin
+                  (tutcode-flush pc)
+                  (tutcode-begin-postfix-kanji2seq-conversion pc #f))))
             ((symbol? res)
               (set! res #f)))))
         (if res
