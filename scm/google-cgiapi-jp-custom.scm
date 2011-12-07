@@ -321,7 +321,7 @@
   (N_ "Google-CGIAPI-Jp server address")
   (N_ "long description will be here."))
 
-(define-custom 'google-cgiapi-jp-use-ssl? #t
+(define-custom 'google-cgiapi-jp-use-ssl? (provided? "openssl")
   '(google-cgiapi-jp-advanced google-cgiapi-jp-server)
   '(boolean)
   (N_ "Use SSL")
