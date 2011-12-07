@@ -58,7 +58,7 @@ IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 hangul2.svg hangul3.svg romaja.svg \
                 viqr.svg ipa-x-sampa.svg latin.svg elatin.svg \
                 look.svg scim.svg sj3.svg wnn.svg \
-                social-ime.svg ajax-ime.svg yahoo-jp.svg
+                social-ime.svg ajax-ime.svg yahoo-jp.svg google-cgiapi-jp.svg
 GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg trycode_dark_background.svg
 SVGS += im_subst.svg $(GENERATED_SVGS)
 
@@ -67,7 +67,7 @@ IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 hangul2.png hangul3.png romaja.png \
                 viqr.png ipa-x-sampa.png latin.png elatin.png \
                 look.png scim.png sj3.png wnn.png \
-                social-ime.png ajax-ime.png yahoo-jp.png
+                social-ime.png ajax-ime.png yahoo-jp.png google-cgiapi-jp.png
 
 SVG_PNGS = unknown.png \
            direct.png skk.png tcode.png tutcode.png trycode.png byeoru.png \
