@@ -55,6 +55,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  sqlite3.scm \
  lolevel.scm \
  input-parse.scm match.scm pregexp.scm \
+ packrat.scm \
+ json.scm json-parser-expanded.scm \
  http-client.scm http-server.scm \
  sxml-tools.scm sxpathlib.scm \
  annotation.scm annotation-custom.scm annotation-dict.scm annotation-eb.scm \
@@ -63,7 +65,10 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  ct.scm \
  dict-socket.scm
 
-OTHER_SCM_FILES = wb86.scm zm.scm
+OTHER_SCM_FILES = \
+ wb86.scm zm.scm \
+ macro-expander.scm macro-expander-chicken.scm \
+ json-parser-expander.scm json.scm.in packrat.scm.in
 EXTRA_DIST = $(OTHER_SCM_FILES)
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
@@ -124,3 +129,6 @@ installed-modules.scm: $(SCM_FILES)
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \
 	$(UIM_MODULE_MANAGER_ENV) $(UIM_MODULE_MANAGER) \
 	    --path $(top_builddir)/scm --register $(module_names)
+
+json-parser-expanded.scm: macro-expander.scm json-parser-expander.scm packrat.scm.in
+	csi -R syntax-case -q json-parser-expander.scm > json-parser-expanded.scm
