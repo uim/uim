@@ -293,11 +293,11 @@
 ;;;   漢字コード入力で確定した文字列を再入力するモード。
 ;;;   tutcode-history-sizeを1以上に設定すると有効になります。
 ;;;
-;;; 【アンドゥ】
+;;; 【確定取り消し】
+;;;   直前の確定を取り消します(tutcode-undo-sequence)。
 ;;;   以下の変換では、変換後に確定される文字列を確認する機会無しに
 ;;;   確定を行うので、意図しない漢字に確定されることがあります。
-;;;   そのような場合でも、最初から入力し直さなくてすむように、
-;;;   アンドゥ機能を追加しました。
+;;;   この場合に、最初からの入力し直しを不要するための機能です。
 ;;;   (確定済文字列を削除するため、uimのsurrounding text APIを使います)
 ;;;   + 部首合成変換: 2文字目の部首入力により変換・確定開始(特に再帰的な場合)
 ;;;   + 漢字コード入力
@@ -347,6 +347,36 @@
 ;;;  * 仮想鍵盤表示機能を追加。
 ;;;  * 自動ヘルプ表示機能を追加。
 ;;;  * 補完/予測入力・熟語ガイド機能を追加。
+;;; 【候補ウィンドウの遅延表示】
+;;; 遅延表示の目的:ユーザが入力時にヘルプや補完の処理完了を待たずにすむように。
+;;;  + 自動ヘルプの作成に少し時間がかかるため、自動ヘルプが表示されるまでの間に
+;;;    以降の文字のキー入力をしても入力した文字が表示されない問題に対処
+;;;  + 一定時間キー入力が無い場合のみヘルプ(仮想鍵盤)や補完/予測入力候補表示
+;;;    (迷わず入力している間は余計なヘルプは表示しない)
+;;; 遅延表示の流れ:
+;;; candwin                        tutcode.scm
+;;; [表示のみを遅延する場合]
+;;;                                候補リストを作成しnr,display_limitを計算
+;;;                            <-- im-delay-activate-candidate-selector
+;;;  タイマ設定して待つ
+;;;  タイマ満了
+;;;                            --> delay-activating-handler
+;;;                                nr,display_limit,indexを返す
+;;;                            --> get-candidate-handler (候補を返す)
+;;;  候補表示
+;;;
+;;; [候補リストの作成も遅延する場合]
+;;;                            <-- im-delay-activate-candidate-selector
+;;;  タイマ設定して待つ
+;;;  タイマ満了
+;;;                            --> delay-activating-handler
+;;;                                候補リストを作成し、
+;;;                                nr,display_limit,indexを返す
+;;;                            --> get-candidate-handler (候補を返す)
+;;;  候補表示
+;;;
+;;; (タイマ満了前にキー入力等によりim-{de,}activate-candidate-selector
+;;;  が呼ばれたらタイマキャンセル)
 
 (require-extension (srfi 1 2 8 69))
 (require "generic.scm")
@@ -560,36 +590,6 @@
 
 ;;; 自動ヘルプ作成時間上限[s]
 (define tutcode-auto-help-time-limit 3)
-
-;;; 遅延表示の目的:ユーザが入力時にヘルプや補完の処理完了を待たずにすむように。
-;;;  + 自動ヘルプの作成に少し時間がかかるため、自動ヘルプが表示されるまでの間に
-;;;    以降の文字のキー入力をしても入力した文字が表示されない問題に対処
-;;;  + 一定時間キー入力が無い場合のみヘルプ(仮想鍵盤)や補完/予測入力候補表示
-;;;    (迷わず入力している間は余計なヘルプは表示しない)
-;;; 遅延表示の流れ:
-;;; candwin                        tutcode.scm
-;;; [表示のみを遅延する場合]
-;;;                                候補リストを作成しnr,display_limitを計算
-;;;                            <-- im-delay-activate-candidate-selector
-;;;  タイマ設定して待つ
-;;;  タイマ満了
-;;;                            --> delay-activating-handler
-;;;                                nr,display_limit,indexを返す
-;;;                            --> get-candidate-handler (候補を返す)
-;;;  候補表示
-;;;
-;;; [候補リストの作成も遅延する場合]
-;;;                            <-- im-delay-activate-candidate-selector
-;;;  タイマ設定して待つ
-;;;  タイマ満了
-;;;                            --> delay-activating-handler
-;;;                                候補リストを作成し、
-;;;                                nr,display_limit,indexを返す
-;;;                            --> get-candidate-handler (候補を返す)
-;;;  候補表示
-;;;
-;;; (タイマ満了前にキー入力等によりim-{de,}activate-candidate-selector
-;;;  が呼ばれたらタイマキャンセル)
 
 ;;; 熟語ガイド用マーク
 (define tutcode-guide-mark "+")
@@ -5846,9 +5846,6 @@
 ;;; 遅延表示に対応している候補ウィンドウが、待ち時間満了時に
 ;;; (候補数、ページ内候補表示数、選択されたインデックス番号)を
 ;;; 取得するために呼ぶ関数
-;;; @param nr 現在候補ウィンドウが認識している候補数
-;;;  (activate時の引数で指定した値)。-1の場合は候補リストの作成が必要
-;;; @param display-limit 現在候補ウィンドウが認識しているdisplay-limit
 ;;; @return (nr display-limit selected-index)
 (define (tutcode-delay-activating-handler c)
   (let ((tc (tutcode-find-descendant-context c)))
