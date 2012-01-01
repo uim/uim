@@ -51,6 +51,8 @@
 #define DEFAULT_OLIST_WINDOW_HEIGHT   350
 #define DEFAULT_KEYCONF_WINDOW_WIDTH  280
 #define DEFAULT_KEYCONF_WINDOW_HEIGHT 220
+#define DEFAULT_TABLE_WINDOW_WIDTH    340
+#define DEFAULT_TABLE_WINDOW_HEIGHT   280
 #define OBJECT_DATA_UIM_CUSTOM_SYM    "uim-pref-gtk::uim-custom-sym"
 
 extern gboolean uim_pref_gtk_value_changed;
@@ -1915,6 +1917,365 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
 
+static void
+table_pref_dialog_response_cb(GtkDialog *dialog, gint action,
+                              gpointer user_data)
+{
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+static void
+sync_value_table(GtkLabel *label)
+{
+  const char *custom_sym;
+  struct uim_custom *custom;
+
+  g_return_if_fail(label);
+
+  custom_sym = g_object_get_data(G_OBJECT(label), OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Table);
+
+  gtk_widget_set_sensitive(gtk_widget_get_parent(GTK_WIDGET(label)),
+                           custom->is_active);
+  uim_custom_free(custom);
+}
+
+static void
+sync_value_table_from_tree_view(GtkTreeView *tree_view)
+{
+  sync_value_table(GTK_LABEL(g_object_get_data(G_OBJECT(tree_view), "label")));
+}
+
+static void
+table_pref_renderer_edited(GtkCellRendererText *renderer,
+                           gchar *path,
+                           gchar *new_text,
+                           GtkTreeView *tree_view)
+{
+  GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
+  GtkTreePath *tree_path = gtk_tree_path_new_from_string(path);
+  GtkTreeIter iter;
+  gint column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(renderer),
+                                "column"));
+  gint num = gtk_tree_model_iter_n_children(model, NULL);
+
+  if (column < 0 || column >= num) {
+    gtk_tree_path_free(tree_path);
+    return;
+  }
+
+  if (!gtk_tree_model_get_iter(model, &iter, tree_path))
+    return;
+
+  gtk_tree_path_free(tree_path);
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter, column,
+                     new_text, -1);
+  sync_value_table_from_tree_view(tree_view);
+}
+
+static GtkWidget*
+create_table_tree_view(struct uim_custom *custom)
+{
+  GtkTreeSelection *selection;
+  char ***custom_table;
+  gint n_columns;
+  GType *types;
+  GtkListStore *list_store;
+  GtkTreeIter iter;
+  int i;
+  int j;
+  struct uim_custom_choice **item;
+  GtkWidget *tree_view = gtk_tree_view_new();
+  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree_view));
+  gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
+
+  custom_table = custom->value->as_table;
+  /* the number may differ from row to row */
+  n_columns = -1;
+  for (i = 0; custom_table[i]; i++) {
+      for (j = 0; custom_table[i][j]; j++) {
+          if (n_columns < j)
+              n_columns = j;
+      }
+  }
+  n_columns++;
+
+  types = g_new0(GType, n_columns);
+  for (i = 0; i < n_columns; i++) {
+    types[i] = G_TYPE_STRING;
+  }
+  list_store = gtk_list_store_newv(n_columns, types);
+  for (i = 0; custom_table[i]; i++) {
+    gboolean expanded = FALSE;
+    gtk_list_store_append(list_store, &iter);
+    for (j = 0; j < n_columns; j++) {
+      GValue value = {0, };
+      if (!custom_table[i][j])
+        expanded = TRUE;
+      g_value_init(&value, G_TYPE_STRING);
+      g_value_set_string(&value, expanded ? "" : custom_table[i][j]);
+      gtk_list_store_set_value(list_store, &iter, j, &value);
+    }
+  }
+  gtk_tree_view_set_model(GTK_TREE_VIEW(tree_view), GTK_TREE_MODEL(list_store));
+
+  g_object_unref(list_store);
+  g_free(types);
+
+  i = 0;
+  for (item = custom->range->as_table_header.valid_items;
+          *item; item++) {
+    GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+    g_object_set (renderer,
+                  "editable", TRUE,
+                  NULL);
+    g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
+    gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(tree_view),
+                                                -1, (*item)->label,
+                                                renderer,
+                                                "text", i, NULL);
+
+    g_signal_connect(G_OBJECT(renderer), "edited",
+                     G_CALLBACK(table_pref_renderer_edited),
+                     GTK_TREE_VIEW(tree_view));
+    i++;
+  }
+  gtk_widget_show(tree_view);
+  return tree_view;
+}
+
+static void
+table_pref_add_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+
+  model = gtk_tree_view_get_model(tree_view);
+  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+                     0, "",
+                     -1);
+
+  path = gtk_tree_model_get_path(model, &iter);
+  gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
+                               FALSE, 0.0, 0.0);
+  sync_value_table_from_tree_view(tree_view);
+}
+
+static void
+table_pref_remove_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
+{
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gboolean selected;
+  GtkTreePath *path;
+  gint *indices;
+  gint num;
+
+  selection = gtk_tree_view_get_selection(tree_view);
+
+  selected = gtk_tree_selection_get_selected(selection, &model, &iter);
+  if (!selected) {
+    return;
+  }
+
+  path = gtk_tree_model_get_path(model, &iter);
+  indices = gtk_tree_path_get_indices(path);
+  num = gtk_tree_model_iter_n_children(model, NULL);
+
+  if (num < 0 || *indices >= num) {
+    gtk_tree_path_free(path);
+    return;
+  }
+
+  gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+  sync_value_table_from_tree_view(tree_view);
+
+  gtk_tree_path_free(path);
+}
+
+static void
+table_pref_move_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view,
+                                  gboolean up)
+{
+  GtkTreeSelection *selection;
+  gint num;
+  GtkTreeModel *model;
+  GList *rows = NULL;
+  GtkTreePath *path;
+  gboolean rv;
+  GtkTreeIter iter1;
+  GtkTreeIter iter2;
+
+  selection = gtk_tree_view_get_selection(tree_view);
+  num = gtk_tree_selection_count_selected_rows(selection);
+  if (num != 1)
+    return;
+
+  rows = gtk_tree_selection_get_selected_rows(selection, &model);
+  path = rows->data;
+
+  rv = gtk_tree_model_get_iter(model, &iter1, path);
+  if (!rv)
+    goto ERROR;
+
+  if (up) {
+    rv = gtk_tree_path_prev(path);
+    if (!rv)
+      goto ERROR;
+  } else {
+    gtk_tree_path_next(path);
+  }
+
+  /* sync the view */
+  rv = gtk_tree_model_get_iter(model, &iter2, path);
+  if (!rv)
+    goto ERROR;
+
+  gtk_list_store_swap(GTK_LIST_STORE(model), &iter1, &iter2);
+  path = gtk_tree_model_get_path(model, &iter1);
+  gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
+                               FALSE, 0.0, 0.0);
+  gtk_tree_path_free(path);
+  sync_value_table_from_tree_view(tree_view);
+
+ERROR:
+  g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
+  g_list_free(rows);
+
+}
+
+static void
+table_pref_up_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
+{
+  table_pref_move_button_clicked_cb(widget, tree_view, TRUE);
+}
+
+static void
+table_pref_down_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
+{
+  table_pref_move_button_clicked_cb(widget, tree_view, FALSE);
+}
+
+static void
+create_table_button(GtkWidget* vbox, const char *item,
+                    void (func)(GtkWidget *, GtkTreeView *),
+                    GtkWidget *tree_view)
+{
+  GtkWidget *button = gtk_button_new_from_stock(item);
+  gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 2);
+  g_signal_connect(G_OBJECT(button), "clicked",
+                   G_CALLBACK(func), GTK_TREE_VIEW(tree_view));
+  gtk_widget_show(button);
+}
+
+static void
+choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
+{
+  GtkWidget *dialog;
+  GtkWidget *hbox;
+  const char *custom_sym;
+  struct uim_custom *custom;
+  GtkWidget *tree_view;
+  GtkWidget *scrwin;
+  GtkWidget *vbox;
+  gchar title[256];
+
+  custom_sym = g_object_get_data(G_OBJECT(table_label),
+                                 OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+
+  g_snprintf(title, sizeof(title), _("%s"), custom->label);
+
+  dialog = gtk_dialog_new_with_buttons(
+    title,
+    GTK_WINDOW(gtk_widget_get_toplevel(table_label)),
+    GTK_DIALOG_MODAL,
+    GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+    NULL);
+  gtk_window_set_default_size(GTK_WINDOW(dialog),
+                              DEFAULT_TABLE_WINDOW_WIDTH,
+                              DEFAULT_TABLE_WINDOW_HEIGHT);
+  g_signal_connect(G_OBJECT(dialog), "response",
+                   G_CALLBACK(table_pref_dialog_response_cb), NULL);
+
+  hbox = gtk_hbox_new(FALSE, 0);
+  gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
+      hbox, TRUE, TRUE, 0);
+  gtk_widget_show(hbox);
+
+  tree_view = create_table_tree_view(custom);
+  g_object_set_data(G_OBJECT(tree_view),
+                         "label", table_label);
+
+  scrwin = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
+                                 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrwin),
+                                      GTK_SHADOW_IN);
+  gtk_box_pack_start(GTK_BOX(hbox), scrwin,
+                     TRUE, TRUE, 0);
+  gtk_widget_show(scrwin);
+
+  gtk_container_add(GTK_CONTAINER(scrwin), tree_view);
+
+  vbox = gtk_vbutton_box_new();
+  gtk_button_box_set_layout(GTK_BUTTON_BOX(vbox), GTK_BUTTONBOX_SPREAD);
+  gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 4);
+  gtk_widget_show(vbox);
+
+  create_table_button(vbox, GTK_STOCK_ADD,
+                      table_pref_add_button_clicked_cb, tree_view);
+  create_table_button(vbox, GTK_STOCK_REMOVE,
+                      table_pref_remove_button_clicked_cb, tree_view);
+  create_table_button(vbox, GTK_STOCK_GO_UP,
+                      table_pref_up_button_clicked_cb, tree_view);
+  create_table_button(vbox, GTK_STOCK_GO_DOWN,
+                      table_pref_down_button_clicked_cb, tree_view);
+
+  gtk_widget_show(dialog);
+}
+
+static void
+update_custom_type_table_cb(void *ptr, const char *custom_sym)
+{
+  sync_value_table(GTK_LABEL(ptr));
+}
+
+static void
+add_custom_type_table(GtkWidget *vbox, struct uim_custom *custom)
+{
+  GtkWidget *hbox;
+  GtkWidget *label;
+  GtkWidget *button;
+
+  hbox = gtk_hbox_new(FALSE, 8);
+
+  label = gtk_label_new(custom->label);
+  g_object_set_data_full(G_OBJECT(label),
+                         OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
+                         (GDestroyNotify) g_free);
+  uim_custom_cb_add(custom->symbol, label, update_custom_type_table_cb);
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+
+  button = gtk_button_new_with_label(_("Edit..."));
+  gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
+  g_signal_connect(G_OBJECT(button), "clicked",
+                   G_CALLBACK(choose_table_clicked_cb), label);
+
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  sync_value_table(GTK_LABEL(label));
+}
+
 
 
 void
@@ -1946,6 +2307,9 @@ uim_pref_gtk_add_custom(GtkWidget *vbox, const char *custom_sym)
       break;
     case UCustom_Key:
       add_custom_type_key(vbox, custom);
+      break;
+    case UCustom_Table:
+      add_custom_type_table(vbox, custom);
       break;
     default:
       g_printerr("Invalid custom type: %d\n", custom->type);
@@ -2039,6 +2403,8 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     }
     value->as_key[num] = NULL;
     break;
+  case UCustom_Table:
+    break;
   default:
     uim_custom_free(custom);
     return;
@@ -2073,6 +2439,9 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     break;
   case UCustom_Key:
     sync_value_key(GTK_ENTRY(widget));
+    break;
+  case UCustom_Table:
+    sync_value_table(GTK_LABEL(widget));
     break;
   default:
     break;
