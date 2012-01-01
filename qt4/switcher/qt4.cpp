@@ -73,6 +73,7 @@ int main( int argc, char **argv )
     QApplication a( argc, argv );
 
     UimImSwitcher switcher;
+    switcher.setWindowIcon( QIcon( UIM_PIXMAPSDIR "/uim-icon.png" ) );
     switcher.resize( 550, 400 );
     switcher.setWindowTitle( _( "uim input method switcher" ) );
     switcher.show();

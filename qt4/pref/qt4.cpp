@@ -739,6 +739,7 @@ int main( int argc, char **argv )
 
     UimPrefDialog *dlg = new UimPrefDialog();
     dlg->resize( DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT );
+    dlg->setWindowIcon( QIcon( UIM_PIXMAPSDIR "/uim-icon.png" ) );
     dlg->show();
 
     return a.exec();

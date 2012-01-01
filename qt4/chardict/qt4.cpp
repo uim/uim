@@ -95,6 +95,7 @@ int main( int argc, char *argv[] )
 
     KUimCharDict cdict;
     cdict.changeMode( m );
+    cdict.setWindowIcon( QIcon( UIM_PIXMAPSDIR "/uim-icon.png" ) );
     cdict.resize( 600, 400 );
     cdict.show();
 
