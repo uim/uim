@@ -1962,6 +1962,14 @@ table_pref_dialog_response_cb(GtkDialog *dialog, gint action,
 
   for (row = 0; row < n_rows; row++) {
     int n_columnsForRow = n_columns;
+    for (column = 0; column < n_columns; column++) {
+      GValue value = {0, };
+      gtk_tree_model_get_value(model, &iter, column, &value);
+      if (!g_value_get_string(&value)) {
+        n_columnsForRow = column;
+        break;
+      }
+    }
     custom_table[row]
         = (char **)malloc(sizeof(char *) * (n_columnsForRow + 1));
     custom_table[row][n_columnsForRow] = NULL;
@@ -2073,7 +2081,7 @@ create_table_tree_view(struct uim_custom *custom)
       if (!custom_table[i][j])
         expanded = TRUE;
       g_value_init(&value, G_TYPE_STRING);
-      g_value_set_string(&value, expanded ? "" : custom_table[i][j]);
+      g_value_set_string(&value, expanded ? NULL : custom_table[i][j]);
       gtk_list_store_set_value(list_store, &iter, j, &value);
     }
   }
