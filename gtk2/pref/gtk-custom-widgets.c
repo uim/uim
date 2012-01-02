@@ -1962,6 +1962,7 @@ table_pref_dialog_response_cb(GtkDialog *dialog, gint action,
 
   for (row = 0; row < n_rows; row++) {
     int n_columnsForRow = n_columns;
+    /* the number of column may differ from row to row */
     for (column = 0; column < n_columns; column++) {
       GValue value = {0, };
       gtk_tree_model_get_value(model, &iter, column, &value);
@@ -2058,7 +2059,7 @@ create_table_tree_view(struct uim_custom *custom)
   gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
 
   custom_table = custom->value->as_table;
-  /* the number may differ from row to row */
+  /* the number of column may differ from row to row */
   n_columns = -1;
   for (row = 0; custom_table[row]; row++) {
     for (column = 0; custom_table[row][column]; column++) {
@@ -2494,6 +2495,7 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
       value->as_table = custom_table;
   
       for (row = 0; default_table[row]; row++) {
+        /* the number of column may differ from row to row */
         for (column = 0; default_table[row][column]; column++)
           ;
         custom_table[row] = (char **)malloc(sizeof(char *) * (column + 1));

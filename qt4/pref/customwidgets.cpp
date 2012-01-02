@@ -1250,6 +1250,7 @@ void CustomTable::setDefault()
 
     for ( int row = 0; default_table[row]; row++ ) {
         int column;
+        // the number of column may differ from row to row
         for ( column = 0; default_table[row][column]; column++ )
             ;
         custom_table[row] = (char **)malloc( sizeof(char *) * ( column + 1 ) );
@@ -1350,7 +1351,7 @@ void TableEditForm::setTable( char ***custom_table )
 {
     if ( !custom_table )
         return;
-    // the number may differ from row to row
+    // the number of column may differ from row to row
     int max_column = -1;
     int row;
     for ( row = 0; custom_table[row]; row++ ) {
@@ -1395,6 +1396,7 @@ char ***TableEditForm::table() const
 
     for ( int row = 0; row < rowCount; row++ ) {
         int columnCountForRow = columnCount;
+        // the number of column may differ from row to row
         for ( int column = 0; column < columnCount; column++ ) {
             if ( !( m_table->item( row, column )->flags() ) ) {
                 columnCountForRow = column;
