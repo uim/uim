@@ -1944,12 +1944,6 @@ sync_value_table(GtkLabel *label)
 }
 
 static void
-sync_value_table_from_tree_view(GtkTreeView *tree_view)
-{
-  sync_value_table(GTK_LABEL(g_object_get_data(G_OBJECT(tree_view), "label")));
-}
-
-static void
 table_pref_renderer_edited(GtkCellRendererText *renderer,
                            gchar *path,
                            gchar *new_text,
@@ -1973,7 +1967,6 @@ table_pref_renderer_edited(GtkCellRendererText *renderer,
   gtk_tree_path_free(tree_path);
   gtk_list_store_set(GTK_LIST_STORE(model), &iter, column,
                      new_text, -1);
-  sync_value_table_from_tree_view(tree_view);
 }
 
 static GtkWidget*
@@ -2063,7 +2056,6 @@ table_pref_add_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
   path = gtk_tree_model_get_path(model, &iter);
   gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
                                FALSE, 0.0, 0.0);
-  sync_value_table_from_tree_view(tree_view);
 }
 
 static void
@@ -2094,7 +2086,6 @@ table_pref_remove_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
   }
 
   gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-  sync_value_table_from_tree_view(tree_view);
 
   gtk_tree_path_free(path);
 }
@@ -2142,7 +2133,6 @@ table_pref_move_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view,
   gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
                                FALSE, 0.0, 0.0);
   gtk_tree_path_free(path);
-  sync_value_table_from_tree_view(tree_view);
 
 ERROR:
   g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
@@ -2210,8 +2200,6 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
   gtk_widget_show(hbox);
 
   tree_view = create_table_tree_view(custom);
-  g_object_set_data(G_OBJECT(tree_view),
-                         "label", table_label);
 
   scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
