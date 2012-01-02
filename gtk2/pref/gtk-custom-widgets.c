@@ -1996,10 +1996,10 @@ create_table_tree_view(struct uim_custom *custom)
   /* the number may differ from row to row */
   n_columns = -1;
   for (i = 0; custom_table[i]; i++) {
-      for (j = 0; custom_table[i][j]; j++) {
-          if (n_columns < j)
-              n_columns = j;
-      }
+    for (j = 0; custom_table[i][j]; j++) {
+      if (n_columns < j)
+        n_columns = j;
+    }
   }
   n_columns++;
 
