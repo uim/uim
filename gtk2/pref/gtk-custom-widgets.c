@@ -1919,8 +1919,69 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
 
 static void
 table_pref_dialog_response_cb(GtkDialog *dialog, gint action,
-                              gpointer user_data)
+                              GtkWidget *tree_view)
 {
+  gpointer table_label = g_object_get_data(G_OBJECT(tree_view), "label");
+  const char *custom_sym;
+  struct uim_custom *custom;
+  char ***custom_table;
+  GtkTreeModel *model;
+  gint n_rows;
+  int row;
+  int column;
+  gint n_columns;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  uim_bool rv;
+
+  custom_sym = g_object_get_data(G_OBJECT(table_label),
+                                 OBJECT_DATA_UIM_CUSTOM_SYM);
+  g_return_if_fail(custom_sym);
+
+  custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Table);
+
+  custom_table = custom->value->as_table;
+  for (row = 0; custom_table[row]; row++) {
+    for (column = 0; custom_table[row][column]; column++) {
+      free(custom_table[row][column]);
+    }
+    free(custom_table[row]);
+  }
+
+  model = gtk_tree_view_get_model(GTK_TREE_VIEW(tree_view));
+  n_rows = gtk_tree_model_iter_n_children(model, NULL);
+  custom_table = (char ***)malloc(sizeof(char **) * (n_rows + 1));
+  custom_table[n_rows] = NULL;
+
+  n_columns = gtk_tree_model_get_n_columns(model);
+
+  path = gtk_tree_path_new_first();
+  gtk_tree_model_get_iter(model, &iter, path);
+  gtk_tree_path_free(path);
+
+  for (row = 0; row < n_rows; row++) {
+    int n_columnsForRow = n_columns;
+    custom_table[row]
+        = (char **)malloc(sizeof(char *) * (n_columnsForRow + 1));
+    custom_table[row][n_columnsForRow] = NULL;
+    for (column = 0; column < n_columnsForRow; column++) {
+      GValue value = {0, };
+      gtk_tree_model_get_value(model, &iter, column, &value);
+      custom_table[row][column] = strdup(g_value_get_string(&value));
+    }
+    gtk_tree_model_iter_next(model, &iter);
+  }
+  custom->value->as_table = custom_table;
+
+  rv = uim_custom_set(custom);
+
+  if (!rv) {
+    g_printerr("Failed to set table value for \"%s\".\n", custom->symbol);
+    /* FIXME! reset the widget */
+  }
+  uim_custom_free(custom);
+
   gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
@@ -1967,6 +2028,7 @@ table_pref_renderer_edited(GtkCellRendererText *renderer,
   gtk_tree_path_free(tree_path);
   gtk_list_store_set(GTK_LIST_STORE(model), &iter, column,
                      new_text, -1);
+  uim_pref_gtk_mark_value_changed();
 }
 
 static GtkWidget*
@@ -2056,6 +2118,7 @@ table_pref_add_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
   path = gtk_tree_model_get_path(model, &iter);
   gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
                                FALSE, 0.0, 0.0);
+  uim_pref_gtk_mark_value_changed();
 }
 
 static void
@@ -2088,6 +2151,7 @@ table_pref_remove_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
   gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 
   gtk_tree_path_free(path);
+  uim_pref_gtk_mark_value_changed();
 }
 
 static void
@@ -2133,6 +2197,7 @@ table_pref_move_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view,
   gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
                                FALSE, 0.0, 0.0);
   gtk_tree_path_free(path);
+  uim_pref_gtk_mark_value_changed();
 
 ERROR:
   g_list_foreach(rows, (GFunc)gtk_tree_path_free, NULL);
@@ -2190,8 +2255,6 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
   gtk_window_set_default_size(GTK_WINDOW(dialog),
                               DEFAULT_TABLE_WINDOW_WIDTH,
                               DEFAULT_TABLE_WINDOW_HEIGHT);
-  g_signal_connect(G_OBJECT(dialog), "response",
-                   G_CALLBACK(table_pref_dialog_response_cb), NULL);
 
   hbox = gtk_hbox_new(FALSE, 0);
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
@@ -2200,6 +2263,10 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
   gtk_widget_show(hbox);
 
   tree_view = create_table_tree_view(custom);
+  g_object_set_data(G_OBJECT(tree_view),
+                    "label", table_label);
+  g_signal_connect(G_OBJECT(dialog), "response",
+                   G_CALLBACK(table_pref_dialog_response_cb), tree_view);
 
   scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
