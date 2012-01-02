@@ -2184,7 +2184,6 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
   GtkWidget *tree_view;
   GtkWidget *scrwin;
   GtkWidget *vbox;
-  gchar title[256];
 
   custom_sym = g_object_get_data(G_OBJECT(table_label),
                                  OBJECT_DATA_UIM_CUSTOM_SYM);
@@ -2192,10 +2191,8 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
 
   custom = uim_custom_get(custom_sym);
 
-  g_snprintf(title, sizeof(title), _("%s"), custom->label);
-
   dialog = gtk_dialog_new_with_buttons(
-    title,
+    dgettext(GETTEXT_PACKAGE, custom->label),
     GTK_WINDOW(gtk_widget_get_toplevel(table_label)),
     GTK_DIALOG_MODAL,
     GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
