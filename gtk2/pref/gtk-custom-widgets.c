@@ -2050,8 +2050,8 @@ create_table_tree_view(struct uim_custom *custom)
   GType *types;
   GtkListStore *list_store;
   GtkTreeIter iter;
-  int i;
-  int j;
+  int row;
+  int column;
   struct uim_custom_choice **item;
   GtkWidget *tree_view = gtk_tree_view_new();
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree_view));
@@ -2060,29 +2060,29 @@ create_table_tree_view(struct uim_custom *custom)
   custom_table = custom->value->as_table;
   /* the number may differ from row to row */
   n_columns = -1;
-  for (i = 0; custom_table[i]; i++) {
-    for (j = 0; custom_table[i][j]; j++) {
-      if (n_columns < j)
-        n_columns = j;
+  for (row = 0; custom_table[row]; row++) {
+    for (column = 0; custom_table[row][column]; column++) {
+      if (n_columns < column)
+        n_columns = column;
     }
   }
   n_columns++;
 
   types = g_new0(GType, n_columns);
-  for (i = 0; i < n_columns; i++) {
-    types[i] = G_TYPE_STRING;
+  for (column = 0; column < n_columns; column++) {
+    types[column] = G_TYPE_STRING;
   }
   list_store = gtk_list_store_newv(n_columns, types);
-  for (i = 0; custom_table[i]; i++) {
+  for (row = 0; custom_table[row]; row++) {
     gboolean expanded = FALSE;
     gtk_list_store_append(list_store, &iter);
-    for (j = 0; j < n_columns; j++) {
+    for (column = 0; column < n_columns; column++) {
       GValue value = {0, };
-      if (!custom_table[i][j])
+      if (!custom_table[row][column])
         expanded = TRUE;
       g_value_init(&value, G_TYPE_STRING);
-      g_value_set_string(&value, expanded ? NULL : custom_table[i][j]);
-      gtk_list_store_set_value(list_store, &iter, j, &value);
+      g_value_set_string(&value, expanded ? NULL : custom_table[row][column]);
+      gtk_list_store_set_value(list_store, &iter, column, &value);
     }
   }
   gtk_tree_view_set_model(GTK_TREE_VIEW(tree_view), GTK_TREE_MODEL(list_store));
@@ -2090,23 +2090,23 @@ create_table_tree_view(struct uim_custom *custom)
   g_object_unref(list_store);
   g_free(types);
 
-  i = 0;
+  column = 0;
   for (item = custom->range->as_table_header.valid_items;
           *item; item++) {
     GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
     g_object_set (renderer,
                   "editable", TRUE,
                   NULL);
-    g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
+    g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(column));
     gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(tree_view),
                                                 -1, (*item)->label,
                                                 renderer,
-                                                "text", i, NULL);
+                                                "text", column, NULL);
 
     g_signal_connect(G_OBJECT(renderer), "edited",
                      G_CALLBACK(table_pref_renderer_edited),
                      GTK_TREE_VIEW(tree_view));
-    i++;
+    column++;
   }
   gtk_widget_show(tree_view);
   return tree_view;
