@@ -2245,6 +2245,7 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
   g_return_if_fail(custom_sym);
 
   custom = uim_custom_get(custom_sym);
+  g_return_if_fail(custom && custom->type == UCustom_Table);
 
   dialog = gtk_dialog_new_with_buttons(
     dgettext(GETTEXT_PACKAGE, custom->label),
