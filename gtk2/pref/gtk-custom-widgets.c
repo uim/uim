@@ -2117,13 +2117,20 @@ table_pref_add_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
+  gint n_columns;
+  int column;
   GtkTreePath *path;
 
   model = gtk_tree_view_get_model(tree_view);
   gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-                     0, "",
-                     -1);
+
+  n_columns = gtk_tree_model_get_n_columns(model);
+  for (column = 0; column < n_columns; column++) {
+    GValue value = {0, };
+    g_value_init(&value, G_TYPE_STRING);
+    g_value_set_string(&value, "");
+    gtk_list_store_set_value(GTK_LIST_STORE(model), &iter, column, &value);
+  }
 
   path = gtk_tree_model_get_path(model, &iter);
   gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
