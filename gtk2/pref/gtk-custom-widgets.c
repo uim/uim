@@ -1967,8 +1967,10 @@ table_pref_dialog_response_cb(GtkDialog *dialog, gint action,
     custom_table[row][n_columnsForRow] = NULL;
     for (column = 0; column < n_columnsForRow; column++) {
       GValue value = {0, };
+      const gchar *str;
       gtk_tree_model_get_value(model, &iter, column, &value);
-      custom_table[row][column] = strdup(g_value_get_string(&value));
+      str = g_value_get_string(&value);
+      custom_table[row][column] = strdup(str ? str : "");
     }
     gtk_tree_model_iter_next(model, &iter);
   }
