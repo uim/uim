@@ -2474,6 +2474,34 @@ uim_pref_gtk_set_default_value(GtkWidget *widget)
     value->as_key[num] = NULL;
     break;
   case UCustom_Table:
+    {
+      char ***custom_table = value->as_table;
+      char ***default_table = defval->as_table;
+      int row;
+      int column;
+      for (row = 0; custom_table[row]; row++) {
+        for (column = 0; custom_table[row][column]; column++) {
+          free(custom_table[row][column]);
+        }
+        free(custom_table[row]);
+      }
+      default_table = defval->as_table;
+      for (row = 0; default_table[row]; row++)
+        ;
+      custom_table = (char ***)malloc(sizeof(char **) * (row + 1));
+      custom_table[row] = 0;
+  
+      value->as_table = custom_table;
+  
+      for (row = 0; default_table[row]; row++) {
+        for (column = 0; default_table[row][column]; column++)
+          ;
+        custom_table[row] = (char **)malloc(sizeof(char *) * (column + 1));
+        custom_table[row][column] = 0;
+        for (column = 0; default_table[row][column]; column++)
+          custom_table[row][column] = strdup(default_table[row][column]);
+      }
+    }
     break;
   default:
     uim_custom_free(custom);
