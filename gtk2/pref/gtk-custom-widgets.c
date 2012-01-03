@@ -2129,13 +2129,14 @@ table_pref_add_button_clicked_cb(GtkWidget *widget, GtkTreeView *tree_view)
   for (column = 0; column < n_columns; column++) {
     GValue value = {0, };
     g_value_init(&value, G_TYPE_STRING);
-    g_value_set_string(&value, "");
+    g_value_set_static_string(&value, "");
     gtk_list_store_set_value(GTK_LIST_STORE(model), &iter, column, &value);
   }
 
   path = gtk_tree_model_get_path(model, &iter);
   gtk_tree_view_scroll_to_cell(tree_view, path, NULL,
                                FALSE, 0.0, 0.0);
+  gtk_tree_path_free(path);
   uim_pref_gtk_mark_value_changed();
 }
 
@@ -2313,6 +2314,8 @@ choose_table_clicked_cb(GtkWidget *widget, GtkWidget *table_label)
                       table_pref_down_button_clicked_cb, tree_view);
 
   gtk_widget_show(dialog);
+
+  uim_custom_free(custom);
 }
 
 static void
