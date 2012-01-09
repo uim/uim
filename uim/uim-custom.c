@@ -853,7 +853,8 @@ literalized_strdup(const char *str)
 static char *
 row_list_to_str(const char *const *list)
 {
-  return c_list_to_str((const void *const *)list, literalized_strdup, " ");
+  return c_list_to_str((const void *const *)list,
+                       (char *(*)(const void *))literalized_strdup, " ");
 }
 
 static char *
