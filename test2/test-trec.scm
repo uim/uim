@@ -1,6 +1,6 @@
 ;;  test-trec.scm: Unit tests for trec.scm
 ;;
-;;; Copyright (c) 2008-2011 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2008-2012 uim Project http://code.google.com/p/uim/
 ;;
 ;;  All rights reserved.
 ;;

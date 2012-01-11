@@ -1,6 +1,6 @@
 ;;; ng-action.scm: Action handling framework for uim (next generation)
 ;;;
-;;; Copyright (c) 2005-2011 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2005-2012 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

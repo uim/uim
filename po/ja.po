@@ -281,14 +281,14 @@ msgstr "uim-dict"
 #: ../gtk2/dict/word-list-win-gtk.c:589
 msgid ""
 "Copyright (C) 2003-2004 Masahito Omote\n"
-"Copyright (C) 2004-2011 uim Project\n"
+"Copyright (C) 2004-2012 uim Project\n"
 "All rights reserved."
 msgstr ""
 
 #: ../gtk2/dict/word-list-win-gtk.c:615
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-"Copyright 2004-2011 uim Project http://code.google.com/p/uim/\n"
+"Copyright 2004-2012 uim Project http://code.google.com/p/uim/\n"
 "All rights reserved."
 msgstr ""
 
@@ -4109,7 +4109,7 @@ msgid "unknown byte operator"
 msgstr "不明なバイト演算子"
 
 #.
-#. Copyright (c) 2003-2011 uim Project http://code.google.com/p/uim/
+#. Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
 #.
 #. All rights reserved.
 #.
