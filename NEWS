@@ -6,6 +6,24 @@ Overview of changes from 1.7.x to 1.8.0
 * Others
 
 
+Overview of changes from 1.7.1 to 1.7.2
+=======================================
+* Fixes
+  - libuim
+    * Fix crash in im-acquire-text with selection
+
+  - uim-pref-qt4
+    * Fix build failure when --as-needed is used (#40385, Julian Taylor)
+
+* Enhancements
+  - Qt4 bridge
+    * Support text acquisition API with QTextEdit
+
+* Others
+  - Plug very minor memory leak in uim-xim
+  - Plug very minor file descriptor leak in libuim-custom
+
+
 Overview of changes from 1.7.0 to 1.7.1
 =======================================
 * Fixes
