@@ -338,9 +338,15 @@ void CustomChoiceCombo::slotActivated( int index )
     free( m_custom->value->as_choice->label );
     free( m_custom->value->as_choice->desc );
 
-    m_custom->value->as_choice->symbol = strdup( choice->symbol );
-    m_custom->value->as_choice->label  = strdup( choice->label );
-    m_custom->value->as_choice->desc   = strdup( choice->desc );
+    if ( choice ) {
+        m_custom->value->as_choice->symbol = strdup( choice->symbol );
+        m_custom->value->as_choice->label  = strdup( choice->label );
+        m_custom->value->as_choice->desc   = strdup( choice->desc );
+    } else {
+        m_custom->value->as_choice->symbol = strdup( "" );
+        m_custom->value->as_choice->label  = strdup( "" );
+        m_custom->value->as_choice->desc   = strdup( "" );
+    }
 
     setCustom( m_custom );
 }
