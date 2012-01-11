@@ -158,6 +158,8 @@ static void parse_canna_priv_dic_buf(char *buf, uim_word **head)
   phon = strdup(buf);
 
   for (;;) {
+    if (!p)
+      break;
     q = strchr(p, ' ');
     if (q) {
       *q = '\0';
@@ -309,6 +311,8 @@ uim_dict_canna_open(const char *identifier)
 
   if (status == -2) {
     if (dict_canna_create_priv_dic() < 0) {
+      free(dict->identifier);
+      free(dict->charset);
       free(dict);
       RkFinalize();
       return NULL;
