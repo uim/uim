@@ -1,6 +1,6 @@
 ;;; process.scm: process operation functions for uim.
 ;;;
-;;; Copyright (c) 2009-2011 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2012 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

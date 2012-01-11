@@ -1,6 +1,6 @@
 ;;; action.scm: Handles user-operable actions of input methods
 ;;;
-;;; Copyright (c) 2003-2011 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
