@@ -1295,8 +1295,10 @@ uim_custom_save_group(const char *group)
     goto error;
 
   custom_syms = uim_custom_collect_by_group(group);
-  if (!custom_syms)
+  if (!custom_syms) {
+    fclose(file);
     goto error;
+  }
 
   for (sym = custom_syms; *sym; sym++) {
     def_literal = uim_custom_definition_as_literal(*sym);
@@ -1308,11 +1310,8 @@ uim_custom_save_group(const char *group)
   }
   uim_custom_symbol_list_free(custom_syms);
 
-  if (fclose(file) < 0) {
-    file = NULL;
+  if (fclose(file) < 0)
     goto error;
-  }
-  file = NULL;
 
   /* rename prepared temporary file to proper name */
   file_path = custom_file_path(group, 0);
@@ -1335,9 +1334,6 @@ uim_custom_save_group(const char *group)
 
  error:
   free(tmp_file_path);
-
-  if (file)
-    fclose(file);
 
   return succeeded;
 }
