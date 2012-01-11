@@ -835,6 +835,7 @@ uim_custom_value_internal(const char *custom_sym, const char *getter_proc)
     value->as_key = uim_custom_key_get(custom_sym, getter_proc);
     break;
   default:
+    free(value);
     value = NULL;
   }
 
@@ -1210,8 +1211,10 @@ uim_custom_save_group(const char *group)
     goto error;
 
   custom_syms = uim_custom_collect_by_group(group);
-  if (!custom_syms)
+  if (!custom_syms) {
+    fclose(file);
     goto error;
+  }
 
   for (sym = custom_syms; *sym; sym++) {
     def_literal = uim_custom_definition_as_literal(*sym);
