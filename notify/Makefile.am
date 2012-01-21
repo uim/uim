@@ -29,3 +29,15 @@ libuimnotify_growl_la_OBJCFLAGS = -x objective-c -F../../../Sources/Growl
 libuimnotify_growl_la_LDFLAGS  = -avoid-version -module -framework Cocoa -F../../../Sources/Growl -framework Growl
 libuimnotify_growl_la_LIBADD = $(top_builddir)/replace/libreplace.la
 endif
+
+if KNOTIFY4
+all cleaninstall uninstall:
+	( cd build; $(MAKE) $(AM_MAKEFLAGS) $@ )
+endif 
+
+distclean:
+	-rm -rf build/*
+
+FORCE:
+
+EXTRA_DIST = uim-knotify4.cpp CMakeLists.txt

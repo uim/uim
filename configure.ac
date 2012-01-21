@@ -1647,13 +1647,13 @@ AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
 # ****************************
 # *** Tests for uim-notify ***
 # ****************************
-notify_targets='stderr libnotify knotify3 growl'
+notify_targets='stderr libnotify knotify3 knotify4 growl'
 
 AC_ARG_ENABLE(notify,
   AS_HELP_STRING([--enable-notify@<:@=agent-list@:>@ (HIGHLY EXPERIMENTAL)],
                  [enable system message notification for users
 		  (specify comma separated notification agent list
-		  from stderr, libnotify, knotify3 and growl)]),
+		  from stderr, libnotify, knotify3, knotify4 and growl)]),
   [ enable_notify=$enableval
     have_notify_opt=yes ],
   [ enable_notify=yes
@@ -1724,6 +1724,20 @@ if test "x$use_knotify3" = "xyes"; then
   use_notify="${use_notify}knotify3 "
 fi
 
+AC_MSG_CHECKING([whether knotify4 is requested])
+if test "x$au_enable_knotify4" = xyes; then
+  if test "x$CMAKE" != "xno"; then
+    AC_MSG_RESULT([yes])
+    use_knotify4="yes"
+    use_notify="${use_notify}knotify4 "
+  else
+    AC_MSG_WARN([no CMake found])
+    use_knotify4="no"
+  fi
+else
+  AC_MSG_RESULT(no)
+fi
+
 AC_MSG_CHECKING([whether growl is requested])
 if test "x$au_enable_growl" = xyes; then
   AC_MSG_RESULT([yes])
@@ -1740,6 +1754,7 @@ fi
 AM_CONDITIONAL(NOTIFY, test "x$enable_notify" != xno)
 AM_CONDITIONAL(LIBNOTIFY, test x$use_libnotify = xyes)
 AM_CONDITIONAL(KNOTIFY3, test x$use_knotify3 = xyes)
+AM_CONDITIONAL(KNOTIFY4, test x$use_knotify4 = xyes)
 AM_CONDITIONAL(GROWL, test x$use_growl = xyes)
 
 
@@ -1973,6 +1988,18 @@ AC_CONFIG_FILES([Makefile
 
 AC_OUTPUT
 
+if test "x$CMAKE" != "xno"; then
+    if test "x$enable_debug" = xyes; then
+        cmake_build_type=Debug
+    else
+        cmake_build_type=Release
+    fi
+    # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+    cmake_option="-DCMAKE_BUILD_TYPE=${cmake_build_type}"
+    cmake_option="${cmake_option} -DCMAKE_INSTALL_PREFIX=${prefix}"
+    cmake_option="${cmake_option} -DCMAKE_SKIP_RPATH=true"
+    cmake_option="${cmake_option} -DKDE4_USE_ALWAYS_FULL_RPATH=false"
+fi
 # Generate Makefiles for Qt4 by qmake
 if test x$use_qt4 = xyes; then
     if test x$use_qt4_immodule = xyes; then
@@ -1992,19 +2019,11 @@ if test x$use_qt4 = xyes; then
 
     # Generate a Makefile for KDE4 applet by cmake
     if test x$use_applet_kde4 = xyes; then
-        if test "x$enable_debug" = xyes; then
-            cmake_build_type=Debug
-        else
-            cmake_build_type=Release
-        fi
         mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
         cd ${ac_abs_top_builddir}/qt4/toolbar/build
-        ${CMAKE} \
-            -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
-            -DCMAKE_BUILD_TYPE=${cmake_build_type} \
-            -DCMAKE_INSTALL_PREFIX=${prefix} \
-            -DCMAKE_SKIP_RPATH=true -DKDE4_USE_ALWAYS_FULL_RPATH=false \
-            ${ac_abs_top_srcdir}/qt4/toolbar
+        # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+        ${CMAKE} -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+            ${cmake_option} ${ac_abs_top_srcdir}/qt4/toolbar
         cd -
     fi
 fi
@@ -2017,6 +2036,16 @@ if test x$use_qt4_immodule = xyes; then
                 ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
                  ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+fi
+if test "x$use_knotify4" = xyes; then
+    # Generate a Makefile for KNotify plugin by cmake
+    mkdir -p ${ac_abs_top_builddir}/notify/build
+    cd ${ac_abs_top_builddir}/notify/build
+    # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+    ${CMAKE} -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+        -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
+        ${cmake_option} ${ac_abs_top_srcdir}/notify
+    cd -
 fi
 
 AC_MSG_RESULT([
