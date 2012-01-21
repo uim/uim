@@ -63,9 +63,9 @@ uim_notify_plugin_quit(void)
 }
 
 static uim_bool
-send_knotify(const char *msg, KNotification::StandardEvent)
+send_knotify(const char *msg, KNotification::StandardEvent eventId)
 {
-    KNotification::event(KNotification::Notification, msg,
+    KNotification::event(eventId, msg,
         QPixmap(UIM_PIXMAPSDIR "/uim-icon.png"));
     return UIM_TRUE;
 }
