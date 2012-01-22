@@ -34,12 +34,11 @@
 #include <kdemacros.h> // for KDE_EXPORT
 #include <knotification.h>
 
+#include "qtgettext.h"
 #include "uim.h"  // for uim_bool
 #include "uim-notify.h"
 
-/*
-  interface
- */
+//  interface
 static uim_notify_desc uim_notify_knotify4_desc = {
   "knotify4",
   "Output via knotify",
@@ -65,7 +64,7 @@ uim_notify_plugin_quit(void)
 static uim_bool
 send_knotify(const char *msg, KNotification::StandardEvent eventId)
 {
-    KNotification::event(eventId, msg,
+    KNotification::event(eventId, mygettext(msg),
         QPixmap(UIM_PIXMAPSDIR "/uim-icon.png"));
     return UIM_TRUE;
 }

@@ -2,8 +2,9 @@ project(knotify4)
 
 find_package(KDE4 REQUIRED)
 
-include_directories(${KDE4_INCLUDES} ${CMAKE_SOURCE_DIR}/../uim
-        ${CMAKE_SOURCE_DIR}/../replace)
+include_directories(${KDE4_INCLUDES} ${CMAKE_SOURCE_DIR}/..
+        ${CMAKE_SOURCE_DIR}/../uim ${CMAKE_SOURCE_DIR}/../replace
+        ${CMAKE_SOURCE_DIR}/../qt4)
 
 set(uimnotify_knotify4_SRCS
         uim-knotify4.cpp)
