@@ -31,6 +31,8 @@
 */
 #include <config.h>
 
+#include <QtGui/QApplication>
+
 #include <kdemacros.h> // for KDE_EXPORT
 #include <knotification.h>
 
@@ -64,8 +66,24 @@ uim_notify_plugin_quit(void)
 static uim_bool
 send_knotify(const char *msg, KNotification::StandardEvent eventId)
 {
+    if (QApplication::instance()) {
+        KNotification::event(eventId, mygettext(msg),
+            QPixmap(UIM_PIXMAPSDIR "/uim-icon.png"));
+        return UIM_TRUE;
+    }
+
+    // fake arguments
+    int argc = 1;
+    char *arg = strdup("uim");
+    char *argv[] = {arg};
+
+    QApplication app(argc, argv);
+
     KNotification::event(eventId, mygettext(msg),
         QPixmap(UIM_PIXMAPSDIR "/uim-icon.png"));
+
+    free(arg);
+
     return UIM_TRUE;
 }
 
