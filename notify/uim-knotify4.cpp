@@ -42,20 +42,20 @@
 
 //  interface
 static uim_notify_desc uim_notify_knotify4_desc = {
-  "knotify4",
-  "Output via knotify",
+    "knotify4",
+    "Output via knotify",
 };
 
 KDE_EXPORT const uim_notify_desc *
 uim_notify_plugin_get_desc(void)
 {
-  return &uim_notify_knotify4_desc;
+    return &uim_notify_knotify4_desc;
 }
 
 KDE_EXPORT uim_bool
 uim_notify_plugin_init(void)
 {
-  return UIM_TRUE;
+    return UIM_TRUE;
 }
 
 KDE_EXPORT void
@@ -90,11 +90,11 @@ send_knotify(const char *msg, KNotification::StandardEvent eventId)
 KDE_EXPORT uim_bool
 uim_notify_plugin_info(const char *msg)
 {
-  return send_knotify(msg, KNotification::Notification);
+    return send_knotify(msg, KNotification::Notification);
 }
 
 KDE_EXPORT uim_bool
 uim_notify_plugin_fatal(const char *msg)
 {
-  return send_knotify(msg, KNotification::Error);
+    return send_knotify(msg, KNotification::Error);
 }
