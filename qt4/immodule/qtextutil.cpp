@@ -1222,7 +1222,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
         return -1;
     }
     cursor.setPosition( start );
-    cursor.setPosition( end - start + 1, QTextCursor::KeepAnchor );
+    cursor.setPosition( end, QTextCursor::KeepAnchor );
     edit->setTextCursor( cursor );
     cursor.deleteChar();
 
