@@ -344,7 +344,7 @@ do_search_line(dic_info *di, const char *s, int min,
 {
   char buf[256];
   char *r;
-  int idx = (min + max) / 2;
+  int idx = ((unsigned int)min + (unsigned int)max) >> 1;
   int c = 0;
 
   if (abs(max - min) < 4)
