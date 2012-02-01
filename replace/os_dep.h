@@ -52,6 +52,21 @@
 #endif
 #include <limits.h>
 
+#include <sys/param.h>
+#ifndef MAXPATHLEN
+# ifdef PATH_MAX
+#  define MAXPATHLEN PATH_MAX
+# else /* PATH_MAX */
+#  define MAXPATHLEN 256	/* 64 in openssh-portable */
+# endif /* PATH_MAX */
+#endif /* MAXPATHLEN */
+
+#ifndef PATH_MAX
+# ifdef _POSIX_PATH_MAX
+# define PATH_MAX _POSIX_PATH_MAX
+# endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
