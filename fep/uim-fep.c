@@ -144,9 +144,7 @@ uim_context g_context;
 static int s_master;
 /* 起動時の端末状態 */
 static struct termios s_save_tios;
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
+
 static char s_path_setmode[MAXPATHLEN];
 static char s_path_getmode[MAXPATHLEN];
 static int s_setmode_fd = -1;

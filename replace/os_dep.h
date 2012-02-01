@@ -57,14 +57,12 @@
 # ifdef PATH_MAX
 #  define MAXPATHLEN PATH_MAX
 # else /* PATH_MAX */
-#  define MAXPATHLEN 256	/* 64 in openssh-portable */
+#  define MAXPATHLEN 1024	/* 64 in openssh-portable */
 # endif /* PATH_MAX */
 #endif /* MAXPATHLEN */
 
 #ifndef PATH_MAX
-# ifdef _POSIX_PATH_MAX
-# define PATH_MAX _POSIX_PATH_MAX
-# endif
+# define PATH_MAX 1024		/* _POSIX_PATH_MAX in openssh-portable */
 #endif
 
 #ifdef __cplusplus
