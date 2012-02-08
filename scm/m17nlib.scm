@@ -305,7 +305,10 @@
 
 (define m17nlib-release-key-handler
   (lambda (mc key key-state)
-    #f))
+    (if (or (ichar-control? key)
+            (not (m17nlib-context-on mc)))
+      ;; don't discard key release event for apps
+      (m17nlib-commit-raw mc))))
 
 (define m17nlib-reset-handler
   (lambda (mc)

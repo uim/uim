@@ -325,7 +325,8 @@ get_right_of_cursor(uim_lisp id_)
   for (i = 0; i < ic->cursor_pos ;i++)
     p = m17nlib_utf8_find_next_char(p);
 
-  buf_ = MAKE_STR_DIRECTLY(p);
+  buf_ = MAKE_STR(p);
+  free(buf);
 
   return buf_;
 }
@@ -387,7 +388,8 @@ get_selected_candidate(uim_lisp id_)
     p = m17nlib_utf8_find_next_char(p);
   *p = '\0';
 
-  buf_ = MAKE_STR_DIRECTLY(start);
+  buf_ = MAKE_STR(start);
+  free(buf);
 
   return buf_;
 }
@@ -412,7 +414,8 @@ get_right_of_candidate(uim_lisp id_)
   for (i = 0; i < ic->candidate_to ;i++)
     p = m17nlib_utf8_find_next_char(p);
 
-  buf_ = MAKE_STR_DIRECTLY(p);
+  buf_ = MAKE_STR(p);
+  free(buf);
 
   return buf_;
 }
