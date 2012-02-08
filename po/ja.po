@@ -1923,7 +1923,7 @@ msgstr "入力方式自身"
 
 #: ../scm/annotation-custom.scm:77
 msgid "Annotation agent name"
-msgstr "注釈に使用するエージェント"
+msgstr "註釈に使用するエージェント"
 
 #: ../scm/annotation-custom.scm:104
 msgid "Use EB library to search annotations"
