@@ -3351,7 +3351,7 @@ msgstr "入力方式自身"
 
 #: ../scm/im-custom.scm:605
 msgid "Annotation agent name"
-msgstr "注釈に使用するエージェント"
+msgstr "註釈に使用するエージェント"
 
 #: ../scm/im-custom.scm:632
 msgid "Use EB library to search annotations"
