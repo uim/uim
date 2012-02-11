@@ -355,13 +355,11 @@ uim_iconv_code_conv(void *obj, const char *instr)
 static void
 uim_iconv_release(void *obj)
 {
-  int err;
-
   if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   if (obj)
-    err = iconv_close((iconv_t)obj);
+    iconv_close((iconv_t)obj);
 
   UIM_CATCH_ERROR_END();
 }
