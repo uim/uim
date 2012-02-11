@@ -101,7 +101,9 @@ main(int argc, char **argv)
   printf("Hello World.\n");
   while (1) {
     char buf[32];
-    fgets(buf, 32, stdin);
+    if (fgets(buf, 32, stdin) == NULL) {
+      continue;
+    }
     if (isalpha((unsigned char)buf[0])) {
       uim_press_key(ac->uc, buf[0], 0);
     } else {
