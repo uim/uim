@@ -234,10 +234,9 @@ c_get_config_path(uim_lisp is_getenv_)
 {
   char path[MAXPATHLEN];
   int need_prepare = UIM_FALSE;
-  int exist;
 
   /* No need to check the existence of path in this function */
-  exist = uim_get_config_path_internal(path, sizeof(path), C_BOOL(is_getenv_), need_prepare);
+  uim_get_config_path_internal(path, sizeof(path), C_BOOL(is_getenv_), need_prepare);
 
   return MAKE_STR(path);
 }
