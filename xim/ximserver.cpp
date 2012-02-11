@@ -505,7 +505,10 @@ void InputContext::switch_system_global_im(const char *name)
     for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it)
 	(*it).second->changeContext(name);
 
-    asprintf(&msg, "im_change_whole_desktop\n%s\n", name);
+    if (asprintf(&msg, "im_change_whole_desktop\n%s\n", name) == -1) {
+        free(msg);
+        return;
+    }
     uim_helper_send_message(lib_uim_fd, msg);
     free(msg);
 }
@@ -1143,9 +1146,10 @@ void InputContext::update_prop_list(const char *str)
 {
     char *buf;
 
-    asprintf(&buf, "prop_list_update\ncharset=UTF-8\n%s", str);
-    if (!buf)
-	return;
+    if (asprintf(&buf, "prop_list_update\ncharset=UTF-8\n%s", str) == -1) {
+        free(buf);
+        return;
+    }
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
 
@@ -1187,9 +1191,10 @@ void InputContext::update_prop_label(const char *str)
 {
     char *buf;
 
-    asprintf(&buf, "prop_label_update\ncharset=UTF-8\n%s", str);
-    if (!buf)
-	return;
+    if (asprintf(&buf, "prop_label_update\ncharset=UTF-8\n%s", str) == -1) {
+        free(buf);
+        return;
+    }
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
 #if 0    

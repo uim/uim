@@ -470,7 +470,10 @@ init_supported_locales()
     const char *s;
     int len;
 
-    asprintf(&supported_locales, "@locale=");
+    if (asprintf(&supported_locales, "@locale=") == -1) {
+        free(supported_locales);
+        return;
+    }
     len = static_cast<int>(strlen(supported_locales));
 
     // get all locales

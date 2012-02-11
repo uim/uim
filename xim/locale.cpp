@@ -281,7 +281,10 @@ get_valid_locales(const char *locales)
     // locales is separated with ':'
     while ((locale = strsep(&tmpp, ":")) != NULL) {
 	if (setlocale(LC_CTYPE, locale) != NULL) {
-	    asprintf(&validated, "%s:", locale);
+	    if (asprintf(&validated, "%s:", locale) == -1) {
+                free(validated);
+                continue;
+            }
 	    len += static_cast<int>(strlen(validated));
 	    if (valid_locales) {
 		valid_locales = (char *)realloc(valid_locales, len + 1);
@@ -308,7 +311,10 @@ get_valid_locales(const char *locales)
 		    strcat(test_locale, encoding);
 
 		    if (setlocale(LC_CTYPE, test_locale) != NULL) {
-			asprintf(&validated, "%s:", locale);
+			if (asprintf(&validated, "%s:", locale) == -1) {
+                            free(validated);
+                            continue;
+                        }
 			len += static_cast<int>(strlen(validated));
 
 			if (valid_locales) {
@@ -364,7 +370,11 @@ all_locales(void)
 	    continue;
 	}
 
-	asprintf(&tmp, "%s:", valid_locales);
+	if (asprintf(&tmp, "%s:", valid_locales) == -1) {
+	    free((char *)valid_locales);
+            free(tmp);
+            continue;
+        }
 	free((char *)valid_locales);
 
 	if (locales == NULL) {

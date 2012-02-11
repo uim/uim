@@ -86,9 +86,10 @@ send_im_list(void)
     if (strcmp(encoding, "UTF-8"))
 	client_locale = focusedContext->get_ic()->get_lang_region();
 
-    asprintf(&buf, "im_list\ncharset=UTF-8\n");
-    if (!buf)
-	return;
+    if (asprintf(&buf, "im_list\ncharset=UTF-8\n") == -1) {
+        free(buf);
+        return;
+    }
 
     std::list<UIMInfo>::iterator it;
     for (it = uim_info.begin(); it != uim_info.end(); ++it) {
@@ -101,11 +102,12 @@ send_im_list(void)
 
 	const char *language;
 	language = uim_get_language_name_from_locale(it->lang);
-	asprintf(&tmp, "%s\t%s\t%s\t", it->name,
+	if (asprintf(&tmp, "%s\t%s\t%s\t", it->name,
 				       language ? language : "",
-				       it->desc ? it->desc : "");
-	if (!tmp)
-	    return;
+				       it->desc ? it->desc : "") == -1) {
+            free(buf);
+            return;
+        }
 	len = static_cast<int>(strlen(buf) + strlen(tmp));
 	buf = (char *)realloc(buf, sizeof(char) * len + 1);
 	if (!buf) {
@@ -116,9 +118,10 @@ send_im_list(void)
 	free(tmp);
 
 	if (!strcmp(it->name, current_im_name)) {
-	    asprintf(&tmp, "selected\n");
-	    if (!tmp)
-		return;
+	    if (asprintf(&tmp, "selected\n") == -1) {
+                free(tmp);
+                return;
+            }
 	    len = static_cast<int>(strlen(buf) + strlen(tmp));
 	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
 	    if (!buf) {
@@ -128,9 +131,10 @@ send_im_list(void)
 	    strcat(buf, tmp);
 	    free(tmp);
 	} else {
-	    asprintf(&tmp, "\n");
-	    if (!tmp)
-		return;
+	    if (asprintf(&tmp, "\n") == -1) {
+                free(tmp);
+                return;
+            }
 	    len = static_cast<int>(strlen(buf) + strlen(tmp));
 	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
 	    if (!buf) {
