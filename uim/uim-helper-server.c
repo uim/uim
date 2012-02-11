@@ -105,8 +105,11 @@ init_server_fd(char *path)
   logname = getenv("LOGNAME");
   if (logname) {
     pw = getpwnam(logname);
-    if (pw)
-      fchown(fd, pw->pw_uid, -1);
+    if (pw) {
+      if (fchown(fd, pw->pw_uid, -1) == -1) {
+        return -1;
+      }
+    }
   }
 
   if ((flag = fcntl(fd, F_GETFL)) < 0) {
