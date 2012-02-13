@@ -3,7 +3,7 @@ include(../common.pro)
 TEMPLATE = lib
 CONFIG += plugin
 
-LIBS += @X11_LIBS@ ../../uim/.libs/libuim-counted-init.a
+LIBS += @X11_LIBS@ -luim-counted-init
 
 # Input
 HEADERS += @srcdir@/abstractcandidatewindow.h \
