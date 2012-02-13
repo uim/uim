@@ -3,7 +3,21 @@ Overview of changes from 1.7.x to 1.8.0
 * New features
 * Fixes
 * Enhancements
+
+
+Overview of changes from 1.7.2 to 1.7.3
+=======================================
+* Fixes
+  - Qt4 bridge
+    * Fix im-delete-text in QTextEdit
+    * Build fix for NetBSD ([uim-ja 322])
+
+  - uim-m17nlib
+    * Don't discard key release event when input mode is off (#45734)
+    * Fix crashes with some IMs (regressed in 1.7.0-alpha).
+
 * Others
+  - Generic build fix for GNU/Hurd ([uim-ja 310])
 
 
 Overview of changes from 1.7.1 to 1.7.2
