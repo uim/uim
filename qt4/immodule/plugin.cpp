@@ -78,7 +78,7 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
     else
 #endif
     if ( key == "uim" )
-        imname = uim_get_default_im_name( setlocale( LC_ALL, 0 ) );
+        imname = uim_get_default_im_name( setlocale( LC_CTYPE, 0 ) );
 
     QUimInputContext *uic = new QUimInputContext( imname.toUtf8().data() );
 
