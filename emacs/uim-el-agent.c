@@ -630,6 +630,8 @@ main(int argc, char *argv[])
 {
   int opt;
 
+  setlocale(LC_CTYPE, "");
+
   while ((opt = getopt(argc, argv, "d")) != -1) {
 	switch (opt) {
 	case 'd':
