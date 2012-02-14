@@ -58,7 +58,7 @@ output_default_im_engine(void)
 	a_printf(" ( d \"%s\" ) ", default_engine_name);
   else
 	a_printf(" ( d \"%s\" ) ", 
-			 uim_get_default_im_name(setlocale(LC_ALL, NULL)));
+			 uim_get_default_im_name(setlocale(LC_CTYPE, NULL)));
 }
 
 

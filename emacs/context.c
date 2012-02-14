@@ -230,7 +230,7 @@ create_uim_agent_context(const char *encoding)
 
   ret->context = create_context(ret->encoding, ret);
 
-  if ((im = uim_get_default_im_name(setlocale(LC_ALL, NULL))))
+  if ((im = uim_get_default_im_name(setlocale(LC_CTYPE, NULL))))
 	ret->im = uim_strdup(im);
   else
 	ret->im = NULL;
