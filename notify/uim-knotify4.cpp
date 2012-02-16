@@ -31,9 +31,10 @@
 */
 #include <config.h>
 
+#include <cstdio> // for fprintf
+
 #include <QtGui/QApplication>
 
-#include <kdemacros.h> // for KDE_EXPORT
 #include <knotification.h>
 
 #include "qtgettext.h"
@@ -66,6 +67,8 @@ uim_notify_plugin_quit(void)
 static uim_bool
 send_knotify(const char *msg, KNotification::StandardEvent eventId)
 {
+    fprintf(stderr, "%s\n", dgettext(GETTEXT_PACKAGE, msg));
+
     if (QApplication::instance()) {
         KNotification::event(eventId, mygettext(msg),
             QPixmap(UIM_PIXMAPSDIR "/uim-icon.png"));
