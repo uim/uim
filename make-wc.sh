@@ -5,15 +5,8 @@
 #
 # Usage:
 #
-#     $ svn co http://uim.googlecode.com/svn/trunk uim-trunk
-#     $ cd uim-trunk
-#     $ ./make-wc.sh
-#     $ make
-#
-#   Or if you are an uim committer,
-#
-#     $ svn co https://uim.googlecode.com/svn/trunk uim-trunk
-#     $ cd uim-trunk
+#     $ git clone https://code.google.com/p/uim/
+#     $ cd uim
 #     $ ./make-wc.sh
 #     $ make
 #
@@ -43,26 +36,13 @@ LANG=C
 
 MAKE=make
 
-#UIM_REPOSITORY="http://uim.googlecode.com/svn"
-#UIM_REPOSITORY="https://uim.googlecode.com/svn"
-# autoselect
-UIM_REPOSITORY=`svn info | grep 'Repository Root:' | sed 's/.*: //'`
-
-SSCM_REPOSITORY="${UIM_REPOSITORY}/sigscheme-trunk"
-LIBGCROOTS_REPOSITORY="${UIM_REPOSITORY}/libgcroots-trunk"
-TAGS_REPOSITORY="${UIM_REPOSITORY}/tags"
-SSCM_URL="${SSCM_REPOSITORY}"
-#SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.7.3"
-LIBGCROOTS_URL="${LIBGCROOTS_REPOSITORY}"
-#LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.1.4"
 RELEASE_SUFFIX="-snapshot-"`date +%Y%m%d`
 
-# --enable-maintainer-mode is required to build svn trunk
+# --enable-maintainer-mode is required to build git HEAD
 CONF_COMMON="--enable-maintainer-mode --disable-warnings-into-error"
 
 
-svn co $SSCM_URL sigscheme
-svn co $LIBGCROOTS_URL sigscheme/libgcroots
+git submodule update --init --recursive 
 (cd sigscheme/libgcroots && ./autogen.sh) \
  && (cd sigscheme && ./autogen.sh) \
  && ./autogen.sh \
