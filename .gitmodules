@@ -1,0 +1,3 @@
+[submodule "sigscheme"]
+	path = sigscheme
+	url = https://code.google.com/p/uim.sigscheme/
