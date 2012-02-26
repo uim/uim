@@ -1,0 +1,445 @@
+
+# /
+/Makefile.in
+/Makefile
+/aclocal.m4
+/autom4te.cache
+/config.guess
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/install-sh
+/intltool-extract.in
+/intltool-merge.in
+/intltool-update.in
+/libtool
+/ltmain.sh
+/missing
+/uim.desktop.in
+/uim.desktop
+/uim.pc
+/uim.spec
+
+# /byeru-data/
+/byeoru-data/Makefile
+/byeoru-data/Makefile.in
+
+
+# /doc/
+/doc/Makefile.in
+/doc/Makefile
+
+# /emacs/
+/emacs/.deps
+/emacs/Makefile.in
+/emacs/Makefile
+/emacs/uim-el-agent
+/emacs/uim-el-helper-agent
+/emacs/uim-version.el
+
+# /examples/
+/examples/Makefile.in
+/examples/Makefile
+
+# /examples/uim-custom/
+/examples/uim-custom/.deps
+/examples/uim-custom/Makefile.in
+/examples/uim-custom/Makefile
+/examples/uim-custom/uim-custom-dump
+/examples/uim-custom/uim-custom-update
+/examples/uim-custom/uim-custom-variable
+
+# /fep/
+/fep/.deps
+/fep/Makefile.in
+/fep/Makefile
+/fep/uim-fep-tick
+/fep/uim-fep
+
+# /gtk2/
+/gtk2/Makefile
+/gtk2/Makefile.in
+
+# /gtk2/candwin/
+/gtk2/candwin/.deps/
+/gtk2/candwin/Makefile
+/gtk2/candwin/Makefile.in
+
+# /gtk2/dict/
+/gtk2/dict/.deps/
+/gtk2/dict/Makefile
+/gtk2/dict/Makefile.in
+/gtk2/dict/uim-dict-ui.xml
+
+# /gtk2/immodule/
+/gtk2/immodule/.deps/
+/gtk2/immodule/Makefile
+/gtk2/immodule/Makefile.in
+
+# /gtk2/pad/
+/gtk2/pad/.deps/
+/gtk2/pad/Makefile
+/gtk2/pad/Makefile.in
+
+# /gtk2/pref/
+/gtk2/pref/.deps/
+/gtk2/pref/Makefile
+/gtk2/pref/Makefile.in
+
+# /gtk2/switcher/
+/gtk2/switcher/.deps/
+/gtk2/switcher/Makefile
+/gtk2/switcher/Makefile.in
+
+# /gtk2/test/
+/gtk2/test/.deps/
+/gtk2/test/Makefile
+/gtk2/test/Makefile.in
+/gtk2/test/test.sh
+
+# /gtk2/toolbar/
+/gtk2/toolbar/.deps/
+/gtk2/toolbar/Makefile
+/gtk2/toolbar/Makefile.in
+
+# /gtk3/
+/gtk3/Makefile
+/gtk3/Makefile.in
+
+# /gtk3/candwin/
+/gtk3/candwin/.deps/
+/gtk3/candwin/Makefile
+/gtk3/candwin/Makefile.in
+
+# /gtk3/dict/
+/gtk3/dict/.deps/
+/gtk3/dict/Makefile
+/gtk3/dict/Makefile.in
+
+# /gtk3/immodule/
+/gtk3/immodule/.deps/
+/gtk3/immodule/Makefile
+/gtk3/immodule/Makefile.in
+
+# /gtk3/pad/
+/gtk3/pad/.deps/
+/gtk3/pad/Makefile
+/gtk3/pad/Makefile.in
+
+# /gtk3/pref/
+/gtk3/pref/.deps/
+/gtk3/pref/Makefile
+/gtk3/pref/Makefile.in
+
+# /gtk3/switcher/
+/gtk3/switcher/.deps/
+/gtk3/switcher/Makefile
+/gtk3/switcher/Makefile.in
+
+# /gtk3/test/
+/gtk3/test/.deps/
+/gtk3/test/Makefile
+/gtk3/test/Makefile.in
+
+# /gtk3/toolbar/
+/gtk3/toolbar/.deps/
+/gtk3/toolbar/Makefile
+/gtk3/toolbar/Makefile.in
+
+# /m4/
+/m4/Makefile.in
+/m4/Makefile
+/m4/libtool.m4
+/m4/ltoptions.m4
+/m4/ltsugar.m4
+/m4/ltversion.m4
+/m4/lt~obsolete.m4
+
+# /notify/
+/notify/.deps
+/notify/Makefile.in
+/notify/Makefile
+
+# /pixmaps/
+/pixmaps/Makefile
+/pixmaps/Makefile.in
+/pixmaps/ajax-ime.png
+/pixmaps/ajax-ime.svg
+/pixmaps/anthy-utf8.png
+/pixmaps/anthy.png
+/pixmaps/byeoru.png
+/pixmaps/canna.png
+/pixmaps/direct.png
+/pixmaps/direct_dark_background.png
+/pixmaps/direct_input.png
+/pixmaps/direct_input_dark_background.png
+/pixmaps/elatin.png
+/pixmaps/elatin.svg
+/pixmaps/google-cgiapi-jp.png
+/pixmaps/google-cgiapi-jp.svg
+/pixmaps/hangul2.png
+/pixmaps/hangul2.svg
+/pixmaps/hangul3.png
+/pixmaps/hangul3.svg
+/pixmaps/im_switcher.png
+/pixmaps/ipa-x-sampa.png
+/pixmaps/ipa-x-sampa.svg
+/pixmaps/ja_act.png
+/pixmaps/ja_act_dark_background.png
+/pixmaps/ja_azik.png
+/pixmaps/ja_azik_dark_background.png
+/pixmaps/ja_direct.png
+/pixmaps/ja_direct_dark_background.png
+/pixmaps/ja_fullwidth_alnum.png
+/pixmaps/ja_fullwidth_alnum_dark_background.png
+/pixmaps/ja_halfkana.png
+/pixmaps/ja_halfkana_dark_background.png
+/pixmaps/ja_halfwidth_alnum.png
+/pixmaps/ja_halfwidth_alnum_dark_background.png
+/pixmaps/ja_hiragana.png
+/pixmaps/ja_hiragana_dark_background.png
+/pixmaps/ja_kana.png
+/pixmaps/ja_kana_dark_background.png
+/pixmaps/ja_katakana.png
+/pixmaps/ja_katakana_dark_background.png
+/pixmaps/ja_kzik.png
+/pixmaps/ja_kzik_dark_background.png
+/pixmaps/ja_nicola.png
+/pixmaps/ja_pocketbell.png
+/pixmaps/ja_romaji.png
+/pixmaps/ja_romaji_dark_background.png
+/pixmaps/ko_direct.png
+/pixmaps/ko_direct_dark_background.png
+/pixmaps/ko_hangulchar.png
+/pixmaps/ko_hangulchar_dark_background.png
+/pixmaps/ko_hangulword.png
+/pixmaps/ko_hangulword_dark_background.png
+/pixmaps/latin.png
+/pixmaps/latin.svg
+/pixmaps/look.png
+/pixmaps/look.svg
+/pixmaps/mana.png
+/pixmaps/mana.svg
+/pixmaps/off.png
+/pixmaps/off_dark_background.png
+/pixmaps/on.png
+/pixmaps/on_dark_background.png
+/pixmaps/pinyin-big5.png
+/pixmaps/pinyin-big5.svg
+/pixmaps/prime.png
+/pixmaps/prime_mode_application.png
+/pixmaps/prime_mode_application_dark_background.png
+/pixmaps/py.png
+/pixmaps/py.svg
+/pixmaps/pyunihan.png
+/pixmaps/pyunihan.svg
+/pixmaps/romaja.png
+/pixmaps/romaja.svg
+/pixmaps/scim.png
+/pixmaps/scim.svg
+/pixmaps/sj3.png
+/pixmaps/sj3.svg
+/pixmaps/skk.png
+/pixmaps/skk_dark_background.png
+/pixmaps/social-ime.png
+/pixmaps/social-ime.svg
+/pixmaps/tcode.png
+/pixmaps/tcode_dark_background.png
+/pixmaps/trycode.png
+/pixmaps/trycode.svg
+/pixmaps/trycode_dark_background.png
+/pixmaps/trycode_dark_background.svg
+/pixmaps/tutcode.png
+/pixmaps/tutcode_dark_background.png
+/pixmaps/uim-dict.png
+/pixmaps/uim-icon.png
+/pixmaps/uim-m17nlib-relink-icons
+/pixmaps/unknown.png
+/pixmaps/unknown_dark_background.png
+/pixmaps/viqr.png
+/pixmaps/viqr.svg
+/pixmaps/wb86.png
+/pixmaps/wb86_dark_background.png
+/pixmaps/wnn.png
+/pixmaps/wnn.svg
+/pixmaps/yahoo-jp.png
+/pixmaps/yahoo-jp.svg
+/pixmaps/zm.png
+/pixmaps/zm_dark_background.png
+
+# /po/
+/po/.intltool-merge-cache
+/po/Makefile.in.in
+/po/Makefile.in
+/po/Makefile
+/po/POTFILES
+/po/stamp-it
+/po/*.gmo
+
+# /qt3/
+/qt3/Makefile
+/qt3/Makefile.in
+
+# /qt3/candwin/
+/qt3/candwin/.deps/
+/qt3/candwin/Makefile
+/qt3/candwin/Makefile.in
+
+# /qt3/chardict/
+/qt3/chardict/.deps/
+/qt3/chardict/Makefile
+/qt3/chardict/Makefile.in
+/qt3/chardict/po/Makefile
+/qt3/chardict/po/Makefile.in
+/qt3/chardict/po/Makefile.in.in
+/qt3/chardict/po/POTFILES
+/qt3/chardict/po/stamp-it
+
+# /qt3/immodule/
+/qt3/immodule/.deps/
+/qt3/immodule/Makefile
+/qt3/immodule/Makefile.in
+
+# /qt3/pref/
+/qt3/pref/.deps/
+/qt3/pref/Makefile
+/qt3/pref/Makefile.in
+
+# /qt3/switcher/
+/qt3/switcher/.deps/
+/qt3/switcher/Makefile
+/qt3/switcher/Makefile.in
+
+# /qt3/test/
+/qt3/test/.deps/
+/qt3/test/Makefile
+/qt3/test/Makefile.in
+
+# /qt3/toolbar/
+/qt3/toolbar/.deps/
+/qt3/toolbar/Makefile
+/qt3/toolbar/Makefile.in
+/qt3/toolbar/uimapplet.desktop
+
+# /qt4/
+/qt4/Makefile.in
+/qt4/Makefile
+/qt4/common.pro
+
+# /qt4/candwin/
+/qt4/candwin/Makefile
+/qt4/candwin/Makefile.in
+/qt4/candwin/Makefile.qmake
+/qt4/candwin/moc_*.cpp
+/qt4/candwin/uim-candwin-qt4
+/qt4/candwin/uim-candwin-qt4.pro
+
+# /qt4/chardict/
+/qt4/chardict/Makefile
+/qt4/chardict/Makefile.in
+/qt4/chardict/Makefile.qmake
+/qt4/chardict/moc_*.cpp
+/qt4/chardict/uim-chardict-qt4
+/qt4/chardict/uim-chardict-qt4.pro
+
+# /qt4/chardict/po/
+/qt4/chardict/po/*.gmo
+/qt4/chardict/po/Makefile
+/qt4/chardict/po/Makefile.in
+/qt4/chardict/po/Makefile.in.in
+/qt4/chardict/po/POTFILES
+/qt4/chardict/po/stamp-it
+
+# /qt4/edittest/
+/qt4/edittest/Makefile
+/qt4/edittest/Makefile.in
+/qt4/edittest/Makefile.qmake
+/qt4/edittest/edittest
+
+# /qt4/immodule/
+/qt4/immodule/Makefile
+/qt4/immodule/Makefile.in
+/qt4/immodule/Makefile.qmake
+/qt4/immodule/moc_*.cpp
+/qt4/immodule/quiminputcontextplugin.pro
+
+# /qt4/pref/
+/qt4/pref/Makefile
+/qt4/pref/Makefile.in
+/qt4/pref/Makefile.qmake
+/qt4/pref/moc_*.cpp
+/qt4/pref/ui_*.h
+/qt4/pref/uim-pref-qt4
+/qt4/pref/uim-pref-qt4.pro
+
+# /qt4/switcher/
+/qt4/switcher/Makefile
+/qt4/switcher/Makefile.in
+/qt4/switcher/Makefile.qmake
+/qt4/switcher/moc_*.cpp
+/qt4/switcher/uim-im-switcher-qt4
+/qt4/switcher/uim-im-switcher-qt4.pro
+
+# /qt4/toolbar/
+/qt4/toolbar/Makefile
+/qt4/toolbar/Makefile.in
+/qt4/toolbar/Makefile.qmake
+/qt4/toolbar/build
+/qt4/toolbar/moc_*.cpp
+/qt4/toolbar/plasma-applet-uim.desktop
+/qt4/toolbar/uim-toolbar-qt4
+/qt4/toolbar/uim-toolbar-qt4.pro
+
+# /replace/
+/replace/.deps
+/replace/.libs
+/replace/Makefile.in
+/replace/Makefile
+/replace/*.la
+/replace/*.lo
+
+# /scm/
+/scm/Makefile.in
+/scm/Makefile
+/scm/installed-modules.scm
+/scm/loader.scm
+
+# /tables/
+/tables/Makefile
+/tables/Makefile.in
+/tables/*.scm
+/tables/*.table
+
+# /test/
+/test/Makefile.in
+/test/Makefile
+
+# /test2/
+/test2/Makefile.in
+/test2/Makefile
+/test2/run-singletest.sh
+
+# /uim/
+/uim/.deps
+/uim/.libs
+/uim/Makefile.in
+/uim/Makefile
+/uim/config.h.in
+/uim/config.h
+/uim/stamp-h1
+/uim/uim-agent
+/uim/uim-helper-server
+/uim/uim-module-manager
+/uim/uim-sh
+/uim/uim-help
+/uim/*.la
+/uim/*.lo
+/uim/*.o
+
+# /xim/
+/xim/.deps
+/xim/Makefile.in
+/xim/Makefile
+/xim/uim-xim
