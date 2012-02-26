@@ -28,8 +28,8 @@ release, you have to repeat the following procedure at least three times.
 
 3. Update subpackage versions in make-dist.sh.
 
-   SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.7.2"
-   LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.1.3"
+   SSCM="sigscheme-0.7.2"
+   LIBGCROOTS="libgcroots-0.1.3"
 
    And set appropriate $RELEASE_SUFFIX.
 
@@ -37,13 +37,13 @@ release, you have to repeat the following procedure at least three times.
    RELEASE_SUFFIX="-beta"
    RELEASE_SUFFIX=""
 
-4. Export a fresh tree from svn.
+4. Export a fresh tree from the Git repository.
 
-   svn export http://uim.googlecode.com/svn/trunk
+   $ git clone https://code.google.com/p/uim/
 
 5. Do test.
 
-   gosh -I. test/run-test.scm
+   $ gosh -I. test/run-test.scm
 
 6. Do a build test with make-dist.sh
 
@@ -64,22 +64,23 @@ release, you have to repeat the following procedure at least three times.
 
    On an alpha release, branch the tree at first.
 
-   svn cp https://uim.googlecode.com/svn/trunk \
-          https://uim.googlecode.com/svn/branches/x.y
+   $ git branch x.y
+   $ git push origin x.y
 
    And then tag.
 
-   svn cp https://uim.googlecode.com/svn/branches/x.y \
-          https://uim.googlecode.com/svn/tags/uim-x.y.z-alpha
+   $ git tag -a uim-x.y.z-alpha
+   $ git push --tags
 
-10. Export the fresh tagged tree from svn.
+10. Export the fresh tagged tree from the Git repository
 
-   svn export http://uim.googlecode.com/svn/tags/uim-x.y.z-alpha
+   $ git clone https://code.google.com/p/uim/
+   $ git checkout -b uim-x.y.z
 
 11. Make the distribution.
 
-   cd uim-x.y.z
-   ./make-dist.sh
+   $ cd uim-x.y.z
+   $ ./make-dist.sh
 
    Release suffixes such as '-alpha' and '-beta' is automatically appended.
 
@@ -93,21 +94,21 @@ release, you have to repeat the following procedure at least three times.
 
    Final release:
 
-     googlecode-upload.py -u yamakenz -p uim \
-                          -s 'uim 1.5.0' -l 'Stable,Featured' \
-                          uim-1.5.0.tar.bz2
+     $ googlecode-upload.py -u yamakenz -p uim \
+                            -s 'uim 1.5.0' -l 'Stable,Featured' \
+                            uim-1.5.0.tar.bz2
 
    Alpha or beta release:
 
-     googlecode-upload.py -u yamakenz -p uim \
-                          -s 'uim 1.5.0-alpha' -l 'Unstable' \
-                          uim-1.5.0-alpha.tar.bz2
+     $ googlecode-upload.py -u yamakenz -p uim \
+                            -s 'uim 1.5.0-alpha' -l 'Unstable' \
+                            uim-1.5.0-alpha.tar.bz2
 
    Snapshot release:
 
-     googlecode-upload.py -u yamakenz -p uim \
-                          -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
-                          uim-trunk-snapshot20070703.tar.bz2
+     $ googlecode-upload.py -u yamakenz -p uim \
+                            -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
+                            uim-trunk-snapshot20070703.tar.bz2
 
    And untag 'Featured' from previous final release files by the web
    interface.
