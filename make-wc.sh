@@ -43,8 +43,8 @@ CONF_COMMON="--enable-maintainer-mode --disable-warnings-into-error"
 
 
 git submodule update --init --recursive 
-(cd sigscheme/libgcroots && ./autogen.sh) \
- && (cd sigscheme && ./autogen.sh) \
+(cd sigscheme/libgcroots && git checkout master && ./autogen.sh) \
+ && (cd sigscheme && git checkout master && ./autogen.sh) \
  && ./autogen.sh \
 || { echo 'autogen failed.' && exit 1; }
 
