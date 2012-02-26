@@ -2,14 +2,8 @@
 
 MAKE=make
 
-UIM_REPOSITORY="http://uim.googlecode.com/svn"
-SSCM_REPOSITORY="${UIM_REPOSITORY}/sigscheme-trunk"
-LIBGCROOTS_REPOSITORY="${UIM_REPOSITORY}/libgcroots-trunk"
-TAGS_REPOSITORY="${UIM_REPOSITORY}/tags"
-#SSCM_URL="${SSCM_REPOSITORY}"
-SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.8.6"
-#LIBGCROOTS_URL="${LIBGCROOTS_REPOSITORY}"
-LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.2.3"
+SSCM="sigscheme-0.8.6"
+LIBGCROOTS="libgcroots-0.2.3"
 RELEASE_SUFFIX=""
 
 CONF_MAINT="--enable-maintainer-mode"
@@ -36,10 +30,17 @@ fi
 CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-gnome3-applet --enable-kde-applet --enable-kde4-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gtk3 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=$EB_CONF --with-libedit --with-qt4 --with-qt4-immodule"
 CONF_FULL="$CONF_MAINT $CONF_FULL_WO_MAINT"
 
-svn export $SSCM_URL sigscheme
-svn export $LIBGCROOTS_URL sigscheme/libgcroots
-(cd sigscheme/libgcroots && ./autogen.sh) \
- && (cd sigscheme && ./autogen.sh) \
+git submodule update --init --recursive
+# Create a branch if a branch correspoinding to the tag doesn't exist.
+# Then check out the branch.
+(cd sigscheme/libgcroots \
+    && (git branch | grep -q "\<$LIBGCROOTS\>"  \
+        || git branch $LIBGCROOTS $LIBGCROOTS) \
+    && git checkout $LIBGCROOTS && ./autogen.sh) \
+ && (cd sigscheme \
+    && (git branch | grep -q "\<$SSCM\>" \
+        || git branch $SSCM $SSCM) \
+    && git checkout $SSCM && ./autogen.sh) \
  && ./autogen.sh \
 || { echo 'autogen failed.' && exit 1; }
 
