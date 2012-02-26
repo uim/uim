@@ -21,8 +21,8 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 # $(distdir) does work as a part of $(RELEASE_URL) when configured as a
 # subpackage.
 DIST_NAME = $(PACKAGE)-$(VERSION)$(RELEASE_SUFFIX)
-#RELEASE_BRANCH     = master
-RELEASE_BRAMCH     = $(DIST_NAME)
+#RELEASE_TAG     = master
+RELEASE_TAG     = $(DIST_NAME)
 DIST_SUM_LIST = $(DIST_NAME).sum
 
 DISTCLEANFILES = uim.pc uim.desktop \
@@ -38,7 +38,7 @@ MAINTAINERCLEANFILES = \
 FORCE:
 
 ChangeLog: FORCE
-	git log --date-order --date=short $(RELEASE_BRANCH) \
+	git log --date-order --date=short $(RELEASE_TAG) \
 	    | tools/gnuify-changelog.pl > $@
 	@if test -s $@; then                                    \
 	    echo "ChangeLog updated successfully.";             \
