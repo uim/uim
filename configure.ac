@@ -334,11 +334,13 @@ AC_PATH_XTRA
 
 use_xim="no"
 if test x"$have_x" != "xdisabled" && test x"$have_x" != "xno"; then
-   use_xim="yes"
-   AC_CXX_NAMESPACES
-   AC_CXX_HAVE_STL
-   if test $ac_cv_cxx_have_stl = no; then
-     use_xim="no"
+   PKG_CHECK_MODULES(XIM, xext, use_xim="yes", use_xim="no")
+   if test x"$use_xim" = "xyes"; then
+     AC_CXX_NAMESPACES
+     AC_CXX_HAVE_STL
+     if test $ac_cv_cxx_have_stl = no; then
+       use_xim="no"
+     fi
    fi
    AC_MSG_CHECKING([whether to have Xft support])
    AM_PATH_XFT(yes, XFT=true, XFT=false)
