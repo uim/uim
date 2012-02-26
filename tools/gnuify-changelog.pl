@@ -1,15 +1,18 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+use strict;
+use warnings;
 
-# a script to munge the output of 'svn log' into something approaching the 
+# a script to munge the output of 'git log' into something approaching the 
 # style of a GNU ChangeLog.
 #
 # to use this, just fill in the 'hackers' hash with the usernames and 
 # name/emails of the people who work on your project, go to the top level 
 # of your working copy, and run:
 #
-# $ svn log | /path/to/gnuify-changelog.pl > ChangeLog
+# $ git log --date-order --date=short | /path/to/gnuify-changelog.pl > ChangeLog
 
-%hackers = ( "tkng"     => 'TOKUNAGA Hiroyuki <tkng@xem.jp>',
+my %hackers = (
+	     "tkng"     => 'TOKUNAGA Hiroyuki <tkng@xem.jp>',
 
 	     "yusuke"   => 'Yusuke TABATA <yusuke@w5.dion.ne.jp>',
 	     "tabata.yusuke" => 'Yusuke TABATA <yusuke@w5.dion.ne.jp>',
@@ -51,23 +54,24 @@
 	     "nogu.dev\@gmail.com"   => 'Muneyuki Noguchi <nogu.dev@gmail.com>',
 );
 
-$parse_next_line = 0;
-
+my $author;
 while (<>) {
+  next if /(^commit|^Merge|git-svn-id)/;
+
   # axe windows style line endings, since we should try to be consistent, and 
   # the repos has both styles in it's log entries.
-  $_ =~ s/\r\n$/\n/;
+  s/\r\n$/\n/;
 
-  if (/^-+$/) {
-    # we're at the start of a log entry, so we need to parse the next line
-    $parse_next_line = 1;
-  } elsif ($parse_next_line) {
-    # transform from svn style to GNU style
-    $parse_next_line = 0;
-
-    @parts = split (/ /, $_);
-    print "$parts[4] $hackers{$parts[2]}\n";
-  } else {
-    print "\t$_";
+  if (/^Author/) {
+    $author = (split / /)[1];
+    next;
   }
+
+  if (/^Date/) {
+    chomp;
+    my $date = (split / +/)[1];
+    print $date . ' ' . $hackers{$author} . "\n";
+    next;
+  }
+  print;
 }
