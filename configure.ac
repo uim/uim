@@ -824,13 +824,13 @@ AC_ARG_WITH(gtk2,
         use_gtk2="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
-        PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2_4="yes",use_gtk2_4="no")
+        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0 gdk-x11-2.0, use_gtk2="yes",use_gtk2="no")
+        PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0 gdk-x11-2.0, use_gtk2_4="yes",use_gtk2_4="no")
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
-    PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2_4="yes",use_gtk2_4="no") ])
+  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0 gdk-x11-2.0, use_gtk2="yes",use_gtk2="no")
+    PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0 gdk-x11-2.0, use_gtk2_4="yes",use_gtk2_4="no") ])
 
 AC_ARG_ENABLE(gnome-applet,
   AC_HELP_STRING([--disable-gnome-applet],
