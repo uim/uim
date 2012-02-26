@@ -81,7 +81,7 @@ static const char *candwin_command(void)
 
 #ifdef NO_TOOLKIT
     return NULL;
-#endif
+#else
     /*
       Search order of candwin_command be summarized as follows
 	 1. UIM_CANDWIN_PROG -- mainly for debugging purpose
@@ -114,6 +114,7 @@ static const char *candwin_command(void)
     snprintf(candwin_prog, MAXPATHLEN, "%s%s%s", CANDWIN_PROG_PREFIX, type, CANDWIN_PROG_SUFFIX);
 
     return candwin_prog;
+#endif
 }
 
 Canddisp *canddisp_singleton()
