@@ -28,8 +28,8 @@ release, you have to repeat the following procedure at least three times.
 
 3. Update subpackage versions in make-dist.sh.
 
-   SSCM="sigscheme-0.7.2"
-   LIBGCROOTS="libgcroots-0.1.3"
+   SSCM_TAG="sigscheme-0.7.2"
+   LIBGCROOTS_TAG="libgcroots-0.1.3"
 
    And set appropriate $RELEASE_SUFFIX.
 
