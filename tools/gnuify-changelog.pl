@@ -56,7 +56,7 @@ my %hackers = (
 
 my $author;
 while (<>) {
-  next if /(^commit|^Merge|git-svn-id)/;
+  next if /(^commit|^Merge)/;
 
   # axe windows style line endings, since we should try to be consistent, and 
   # the repos has both styles in it's log entries.
