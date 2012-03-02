@@ -33,31 +33,37 @@
 /doc/Makefile
 
 # /emacs/
-/emacs/.deps
+/emacs/.deps/
+/emacs/.libs/
 /emacs/Makefile.in
 /emacs/Makefile
 /emacs/uim-el-agent
 /emacs/uim-el-helper-agent
 /emacs/uim-version.el
+/emacs/*.o
 
 # /examples/
 /examples/Makefile.in
 /examples/Makefile
 
 # /examples/uim-custom/
-/examples/uim-custom/.deps
+/examples/uim-custom/.deps/
+/examples/uim-custom/.libs/
 /examples/uim-custom/Makefile.in
 /examples/uim-custom/Makefile
 /examples/uim-custom/uim-custom-dump
 /examples/uim-custom/uim-custom-update
 /examples/uim-custom/uim-custom-variable
+/examples/uim-custom/*.o
 
 # /fep/
-/fep/.deps
+/fep/.deps/
+/fep/.libs/
 /fep/Makefile.in
 /fep/Makefile
 /fep/uim-fep-tick
 /fep/uim-fep
+/fep/*.o
 
 # /gtk2/
 /gtk2/Makefile
@@ -65,8 +71,13 @@
 
 # /gtk2/candwin/
 /gtk2/candwin/.deps/
+/gtk2/candwin/.libs/
 /gtk2/candwin/Makefile
 /gtk2/candwin/Makefile.in
+/gtk2/candwin/uim-candwin-gtk
+/gtk2/candwin/uim-candwin-horizontal-gtk
+/gtk2/candwin/uim-candwin-tbl-gtk
+/gtk2/candwin/*.o
 
 # /gtk2/dict/
 /gtk2/dict/.deps/
@@ -76,34 +87,55 @@
 
 # /gtk2/immodule/
 /gtk2/immodule/.deps/
+/gtk2/immodule/.libs/
 /gtk2/immodule/Makefile
 /gtk2/immodule/Makefile.in
+/gtk2/immodule/gtk-rc-get-immodule-file
+/gtk2/immodule/im-uim.la
+/gtk2/immodule/*.lo
+/gtk2/immodule/*.o
 
 # /gtk2/pad/
 /gtk2/pad/.deps/
+/gtk2/pad/.libs/
 /gtk2/pad/Makefile
 /gtk2/pad/Makefile.in
+/gtk2/pad/uim-input-pad-ja
+/gtk2/pad/*.o
 
 # /gtk2/pref/
 /gtk2/pref/.deps/
+/gtk2/pref/.libs/
 /gtk2/pref/Makefile
 /gtk2/pref/Makefile.in
+/gtk2/pref/uim-pref-gtk
+/gtk2/pref/*.o
 
 # /gtk2/switcher/
 /gtk2/switcher/.deps/
+/gtk2/switcher/.libs/
 /gtk2/switcher/Makefile
 /gtk2/switcher/Makefile.in
+/gtk2/switcher/uim-im-switcher-gtk
+/gtk2/switcher/*.o
 
 # /gtk2/test/
 /gtk2/test/.deps/
+/gtk2/test/.libs/
 /gtk2/test/Makefile
 /gtk2/test/Makefile.in
+/gtk2/test/gtk-entry
+/gtk2/test/*.o
 /gtk2/test/test.sh
 
 # /gtk2/toolbar/
 /gtk2/toolbar/.deps/
+/gtk2/toolbar/.libs/
 /gtk2/toolbar/Makefile
 /gtk2/toolbar/Makefile.in
+/gtk2/toolbar/uim-toolbar-gtk
+/gtk2/toolbar/uim-toolbar-gtk-systray
+/gtk2/toolbar/*.o
 
 # /gtk3/
 /gtk3/Makefile
@@ -111,43 +143,76 @@
 
 # /gtk3/candwin/
 /gtk3/candwin/.deps/
+/gtk3/candwin/.libs/
 /gtk3/candwin/Makefile
 /gtk3/candwin/Makefile.in
+/gtk3/candwin/uim-candwin-gtk3
+/gtk3/candwin/uim-candwin-horizontal-gtk3
+/gtk3/candwin/uim-candwin-tbl-gtk3
+/gtk3/candwin/*.o
 
 # /gtk3/dict/
 /gtk3/dict/.deps/
 /gtk3/dict/Makefile
 /gtk3/dict/Makefile.in
+/gtk3/dict/uim-dict-ui.xml
 
 # /gtk3/immodule/
 /gtk3/immodule/.deps/
+/gtk3/immodule/.libs/
 /gtk3/immodule/Makefile
 /gtk3/immodule/Makefile.in
+/gtk3/immodule/gtk3-rc-get-immodule-file
+/gtk3/immodule/im-uim.la
+/gtk3/immodule/*.lo
+/gtk3/immodule/*.o
 
 # /gtk3/pad/
 /gtk3/pad/.deps/
+/gtk3/pad/.libs/
 /gtk3/pad/Makefile
 /gtk3/pad/Makefile.in
+/gtk3/pad/uim-input-pad-ja-gtk3
+/gtk3/pad/*.o
 
 # /gtk3/pref/
 /gtk3/pref/.deps/
+/gtk3/pref/.libs/
 /gtk3/pref/Makefile
 /gtk3/pref/Makefile.in
+/gtk3/pref/uim-pref-gtk3
+/gtk3/pref/*.o
 
 # /gtk3/switcher/
 /gtk3/switcher/.deps/
+/gtk3/switcher/.libs/
 /gtk3/switcher/Makefile
 /gtk3/switcher/Makefile.in
+/gtk3/switcher/uim-im-switcher-gtk3
+/gtk3/switcher/*.o
 
 # /gtk3/test/
 /gtk3/test/.deps/
+/gtk3/test/.libs/
 /gtk3/test/Makefile
 /gtk3/test/Makefile.in
+/gtk3/test/gtk3-entry
+/gtk3/test/*.o
+/gtk3/test/test.sh
 
 # /gtk3/toolbar/
 /gtk3/toolbar/.deps/
+/gtk3/toolbar/.libs/
 /gtk3/toolbar/Makefile
 /gtk3/toolbar/Makefile.in
+/gtk3/toolbar/UimApplet.panel-applet
+/gtk3/toolbar/UimApplet.panel-applet.in
+/gtk3/toolbar/UimApplet.panel-applet.in.tmp
+/gtk3/toolbar/org.gnome.panel.applet.UimAppletFactory.service
+/gtk3/toolbar/uim-toolbar-applet-gnome3
+/gtk3/toolbar/uim-toolbar-gtk3
+/gtk3/toolbar/uim-toolbar-gtk3-systray
+/gtk3/toolbar/*.o
 
 # /m4/
 /m4/Makefile.in
@@ -159,7 +224,7 @@
 /m4/lt~obsolete.m4
 
 # /notify/
-/notify/.deps
+/notify/.deps/
 /notify/Makefile.in
 /notify/Makefile
 
@@ -394,8 +459,8 @@
 /qt4/toolbar/uim-toolbar-qt4.pro
 
 # /replace/
-/replace/.deps
-/replace/.libs
+/replace/.deps/
+/replace/.libs/
 /replace/Makefile.in
 /replace/Makefile
 /replace/*.la
@@ -423,8 +488,8 @@
 /test2/run-singletest.sh
 
 # /uim/
-/uim/.deps
-/uim/.libs
+/uim/.deps/
+/uim/.libs/
 /uim/Makefile.in
 /uim/Makefile
 /uim/config.h.in
@@ -440,7 +505,9 @@
 /uim/*.o
 
 # /xim/
-/xim/.deps
+/xim/.deps/
+/xim/.libs/
 /xim/Makefile.in
 /xim/Makefile
 /xim/uim-xim
+/xim/*.o
