@@ -132,4 +132,6 @@ installed-modules.scm: $(SCM_FILES)
 	    --path $(top_builddir)/scm --register $(module_names)
 
 json-parser-expanded.scm: macro-expander.scm json-parser-expander.scm packrat.scm.in
-	csi -R syntax-case -q json-parser-expander.scm > json-parser-expanded.scm
+	if test -n "$(CSI)"; then \
+	    $(CSI) -R syntax-case -q json-parser-expander.scm > json-parser-expanded.scm; \
+	fi
