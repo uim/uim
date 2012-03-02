@@ -401,6 +401,7 @@
 /qt4/candwin/moc_*.cpp
 /qt4/candwin/uim-candwin-qt4
 /qt4/candwin/uim-candwin-qt4.pro
+/qt4/candwin/*.o
 
 # /qt4/chardict/
 /qt4/chardict/Makefile
@@ -409,6 +410,7 @@
 /qt4/chardict/moc_*.cpp
 /qt4/chardict/uim-chardict-qt4
 /qt4/chardict/uim-chardict-qt4.pro
+/qt4/chardict/*.o
 
 # /qt4/chardict/po/
 /qt4/chardict/po/*.gmo
@@ -423,13 +425,16 @@
 /qt4/edittest/Makefile.in
 /qt4/edittest/Makefile.qmake
 /qt4/edittest/edittest
+/qt4/edittest/*.o
 
 # /qt4/immodule/
 /qt4/immodule/Makefile
 /qt4/immodule/Makefile.in
 /qt4/immodule/Makefile.qmake
+/qt4/immodule/libuiminputcontextplugin.so
 /qt4/immodule/moc_*.cpp
 /qt4/immodule/quiminputcontextplugin.pro
+/qt4/immodule/*.o
 
 # /qt4/pref/
 /qt4/pref/Makefile
@@ -439,6 +444,7 @@
 /qt4/pref/ui_*.h
 /qt4/pref/uim-pref-qt4
 /qt4/pref/uim-pref-qt4.pro
+/qt4/pref/*.o
 
 # /qt4/switcher/
 /qt4/switcher/Makefile
@@ -447,6 +453,7 @@
 /qt4/switcher/moc_*.cpp
 /qt4/switcher/uim-im-switcher-qt4
 /qt4/switcher/uim-im-switcher-qt4.pro
+/qt4/switcher/*.o
 
 # /qt4/toolbar/
 /qt4/toolbar/Makefile
@@ -457,6 +464,7 @@
 /qt4/toolbar/plasma-applet-uim.desktop
 /qt4/toolbar/uim-toolbar-qt4
 /qt4/toolbar/uim-toolbar-qt4.pro
+/qt4/toolbar/*.o
 
 # /replace/
 /replace/.deps/
