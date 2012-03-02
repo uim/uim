@@ -312,10 +312,8 @@ void UimImSwitcher::parseHelperStrImList( const QString &message )
             if (iminfoList[1].isEmpty())
                 lang = QString("-");
             else
-                lang = QString::fromUtf8(
-                    gettext(iminfoList[1].toUtf8().data()));
-            short_desc = QString::fromUtf8(
-                gettext(iminfoList[2].toUtf8().data()));
+                lang = mygettext(iminfoList[1].toUtf8().data());
+            short_desc = mygettext(iminfoList[2].toUtf8().data());
 
             // add new item to listview
             int row = listview->rowCount();
