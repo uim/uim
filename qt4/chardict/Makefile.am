@@ -25,7 +25,6 @@ EXTRA_DIST = uim-chardict-qt4.pro.in \
 	     bushuviewwidget.h \
 	     chargridview.h \
 	     qt4.h \
-	     qtgettext.h \
 	     unicodeviewwidget.h \
 	     bushuviewwidget.cpp \
 	     chargridview.cpp \
