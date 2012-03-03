@@ -66,9 +66,9 @@ int main( int argc, char *argv[] )
 {
 
     setlocale(LC_ALL, "");
-    bindtextdomain(PACKAGE "-chardict-qt", LOCALEDIR);
-    textdomain(PACKAGE "-chardict-qt");
-    bind_textdomain_codeset(PACKAGE "-chardict-qt", "UTF-8");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+    bind_textdomain_codeset(PACKAGE);
 
     QApplication a( argc, argv );
 
