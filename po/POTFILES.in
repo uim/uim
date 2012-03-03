@@ -16,10 +16,16 @@ gtk2/toolbar/applet-gnome.c
 gtk2/toolbar/common-gtk.c
 gtk2/toolbar/standalone-gtk.c
 gtk3/toolbar/applet-gnome3.c
+qt3/chardict/bushuviewwidget.cpp
+qt3/chardict/qt.cpp
+qt3/chardict/unicodeviewwidget.cpp
 qt3/pref/customwidgets.cpp
 qt3/pref/qt.cpp
 qt3/switcher/qt.cpp
 qt3/toolbar/common-quimhelpertoolbar.cpp
+qt4/chardict/bushuviewwidget.cpp
+qt4/chardict/qt4.cpp
+qt4/chardict/unicodeviewwidget.cpp
 qt4/pref/customwidgets.cpp
 qt4/pref/qt4.cpp
 qt4/pref/keyeditformbase.cpp

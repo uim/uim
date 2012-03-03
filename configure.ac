@@ -1273,14 +1273,7 @@ AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 AM_CONDITIONAL(GCC, test x$ac_cv_c_compiler_gnu = xyes)
 AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
 
-# To get qt3/chardict/po working, 0.35.2 is required. 0.35.[01] has a hard-coded
-# $(top_builddir) bug.  -- YamaKen 2006-12-28
-#
-# 0.36.3 or later is required to resolve a 'make check' problem ([uim-ja 87]).
 IT_PROG_INTLTOOL([0.36.3], [no-xml])
-IT_PO_SUBDIR([qt3/chardict/po])
-IT_PO_SUBDIR([qt4/chardict/po])
-
 
 GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
 GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
@@ -1945,7 +1938,6 @@ AC_CONFIG_FILES([Makefile
 		 qt3/Makefile
 		 qt3/candwin/Makefile
 		 qt3/chardict/Makefile
-		 qt3/chardict/po/Makefile.in
 		 qt3/immodule/Makefile
 		 qt3/pref/Makefile
 		 qt3/switcher/Makefile
@@ -1958,7 +1950,6 @@ AC_CONFIG_FILES([Makefile
 		 qt4/candwin/uim-candwin-qt4.pro
 		 qt4/chardict/Makefile
 		 qt4/chardict/uim-chardict-qt4.pro
-		 qt4/chardict/po/Makefile.in
 		 qt4/edittest/Makefile
 		 qt4/immodule/quiminputcontextplugin.pro
 		 qt4/immodule/Makefile

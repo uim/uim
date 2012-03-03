@@ -2,7 +2,6 @@
 
 # Makefile.qmake is only exist when --enable-qt4
 if QT4
-SUBDIRS = po
 
 all clean mocclean install uninstall:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake INSTALL_ROOT=$(DESTDIR) $@

@@ -1,12 +1,13 @@
 include(../common.pro)
 
+# to include qtgettext.h
+INCLUDEPATH += @srcdir@/..
 LIBS += @LIBINTL@ @X11_LIBS@
 
 # Input
 HEADERS += @srcdir@/bushuviewwidget.h \
            @srcdir@/chargridview.h \
            @srcdir@/qt4.h \
-           @srcdir@/qtgettext.h \
            @srcdir@/unicodeviewwidget.h
 SOURCES += @srcdir@/bushuviewwidget.cpp \
            @srcdir@/chargridview.cpp \

@@ -1,9 +1,7 @@
 EXTRA_DIST = bushu.t
 
 if QT
-SUBDIRS = po
-
-INCLUDES += -I$(top_srcdir) -I$(top_builddir)
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I..
 
 HEADER_FILES = \
 	bushuviewwidget.h \
@@ -27,8 +25,7 @@ uim_chardict_qt_SOURCES = \
 	bushuviewwidget.cpp bushuviewwidget.h \
 	chargridview.cpp chargridview.h \
 	kseparator.cpp kseparator.h \
-	unicodeviewwidget.cpp unicodeviewwidget.h \
-	qtgettext.h
+	unicodeviewwidget.cpp unicodeviewwidget.h
 uim_chardict_qt_CXXFLAGS = @UIM_QT_CXXFLAGS@ -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 
 uim_chardict_qt_LDFLAGS  = @UIM_QT_LDFLAGS@

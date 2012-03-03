@@ -99,10 +99,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2011-07-11 13:03+0900\n"
+"POT-Creation-Date: 2012-03-03 15:57+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -325,11 +326,11 @@ msgstr "追加項目"
 msgid "continuance"
 msgstr "連続"
 
-#: ../gtk2/dict/word-win-gtk.c:194 ../qt4/pref/keyeditformbase.cpp:54
+#: ../gtk2/dict/word-win-gtk.c:194 ../qt4/pref/customwidgets.cpp:1302
 msgid "Add"
 msgstr "追加"
 
-#: ../gtk2/dict/word-win-gtk.c:200
+#: ../gtk2/dict/word-win-gtk.c:200 ../qt4/chardict/qt4.cpp:158
 msgid "Clear"
 msgstr "消去"
 
@@ -439,60 +440,63 @@ msgstr "ロシア語"
 msgid "line"
 msgstr "罫線"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:451
+#: ../gtk2/pref/gtk-custom-widgets.c:453 ../qt4/pref/customwidgets.cpp:243
 msgid "Specify file"
 msgstr "ファイルを指定して下さい"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:499 ../gtk2/pref/gtk-custom-widgets.c:503
+#: ../gtk2/pref/gtk-custom-widgets.c:501 ../gtk2/pref/gtk-custom-widgets.c:505
 #: ../qt3/pref/customwidgets.cpp:183 ../qt3/pref/customwidgets.cpp:187
-#: ../qt4/pref/customwidgets.cpp:196 ../qt4/pref/customwidgets.cpp:200
+#: ../qt4/pref/customwidgets.cpp:198 ../qt4/pref/customwidgets.cpp:202
 msgid "Select..."
 msgstr "選択..."
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1209
+#: ../gtk2/pref/gtk-custom-widgets.c:1211
 msgid "Enabled"
 msgstr "有効"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1235
+#: ../gtk2/pref/gtk-custom-widgets.c:1237
 msgid "Enabled items"
 msgstr "有効なアイテム"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1313
+#: ../gtk2/pref/gtk-custom-widgets.c:1315
 msgid "Disabled"
 msgstr "無効"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1339
+#: ../gtk2/pref/gtk-custom-widgets.c:1341
 msgid "Disabled items"
 msgstr "無効なアイテム"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1377
-#: ../gtk2/pref/gtk-custom-widgets.c:1909
+#: ../gtk2/pref/gtk-custom-widgets.c:1379
+#: ../gtk2/pref/gtk-custom-widgets.c:1911
+#: ../gtk2/pref/gtk-custom-widgets.c:2343 ../qt4/pref/customwidgets.cpp:368
+#: ../qt4/pref/customwidgets.cpp:647 ../qt4/pref/customwidgets.cpp:1210
+#: ../qt4/pref/keyeditformbase.cpp:58
 msgid "Edit..."
 msgstr "編集..."
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1529 ../qt3/pref/customwidgets.cpp:878
-#: ../qt4/pref/customwidgets.cpp:888
+#: ../gtk2/pref/gtk-custom-widgets.c:1531 ../qt3/pref/customwidgets.cpp:884
+#: ../qt4/pref/customwidgets.cpp:899
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1530
+#: ../gtk2/pref/gtk-custom-widgets.c:1532
 msgid "Grabbing keys"
 msgstr "キーを取得中"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1751
+#: ../gtk2/pref/gtk-custom-widgets.c:1753
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - キー設定"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1790
+#: ../gtk2/pref/gtk-custom-widgets.c:1792
 msgid "Key preference"
 msgstr "キー設定"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1837
+#: ../gtk2/pref/gtk-custom-widgets.c:1839
 msgid "Key:"
 msgstr "キー:"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:1854
+#: ../gtk2/pref/gtk-custom-widgets.c:1856
 msgid "Grab..."
 msgstr "取得..."
 
@@ -554,45 +558,45 @@ msgstr ""
 "(このダイアログ表示を止めるには、~/.uimに次行を追加して下さい)\n"
 "(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 
-#: ../gtk2/switcher/gtk.c:306 ../qt3/switcher/qt.cpp:112
-#: ../qt4/switcher/qt4.cpp:117
+#: ../gtk2/switcher/gtk.c:307 ../qt3/switcher/qt.cpp:112
+#: ../qt4/switcher/qt4.cpp:118
 msgid "InputMethodName"
 msgstr "入力方式名"
 
-#: ../gtk2/switcher/gtk.c:315 ../qt3/switcher/qt.cpp:113
-#: ../qt4/switcher/qt4.cpp:117 ../scm/predict-custom.scm:188
+#: ../gtk2/switcher/gtk.c:316 ../qt3/switcher/qt.cpp:113
+#: ../qt4/switcher/qt4.cpp:118 ../scm/predict-custom.scm:188
 msgid "Language"
 msgstr "言語名"
 
-#: ../gtk2/switcher/gtk.c:324 ../qt3/switcher/qt.cpp:114
-#: ../qt4/switcher/qt4.cpp:117
+#: ../gtk2/switcher/gtk.c:325 ../qt3/switcher/qt.cpp:114
+#: ../qt4/switcher/qt4.cpp:118
 msgid "Description"
 msgstr "説明"
 
-#: ../gtk2/switcher/gtk.c:355 ../qt3/switcher/qt.cpp:74
-#: ../qt4/switcher/qt4.cpp:77
+#: ../gtk2/switcher/gtk.c:356 ../qt3/switcher/qt.cpp:74
+#: ../qt4/switcher/qt4.cpp:78
 msgid "uim input method switcher"
 msgstr "uim 入力方式切り換え"
 
-#: ../gtk2/switcher/gtk.c:384 ../qt3/switcher/qt.cpp:118
-#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:485
+#: ../gtk2/switcher/gtk.c:385 ../qt3/switcher/qt.cpp:118
+#: ../qt4/switcher/qt4.cpp:134 ../scm/im-custom.scm:485
 msgid "Effective coverage"
 msgstr "変更の適用範囲"
 
 #. radio buttons for the switcher coverage
-#: ../gtk2/switcher/gtk.c:392 ../qt3/switcher/qt.cpp:119
-#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:477
+#: ../gtk2/switcher/gtk.c:393 ../qt3/switcher/qt.cpp:119
+#: ../qt4/switcher/qt4.cpp:124 ../scm/im-custom.scm:477
 msgid "whole desktop"
 msgstr "デスクトップ全体"
 
 #. default is "whole desktop"
-#: ../gtk2/switcher/gtk.c:393 ../qt3/switcher/qt.cpp:122
-#: ../qt4/switcher/qt4.cpp:124
+#: ../gtk2/switcher/gtk.c:394 ../qt3/switcher/qt.cpp:122
+#: ../qt4/switcher/qt4.cpp:125
 msgid "current application only"
 msgstr "現在のアプリケーションのみ"
 
-#: ../gtk2/switcher/gtk.c:394 ../qt3/switcher/qt.cpp:124
-#: ../qt4/switcher/qt4.cpp:125
+#: ../gtk2/switcher/gtk.c:395 ../qt3/switcher/qt.cpp:124
+#: ../qt4/switcher/qt4.cpp:126
 msgid "current text area only"
 msgstr "現在のテキスト領域のみ"
 
@@ -709,13 +713,826 @@ msgstr "ジオメトリ文字列 '%s' を解析できません"
 msgid "About"
 msgstr "このプログラムについて"
 
-#: ../qt3/pref/customwidgets.cpp:349 ../qt3/pref/customwidgets.cpp:632
-#: ../qt4/pref/customwidgets.cpp:360 ../qt4/pref/customwidgets.cpp:638
-#: ../qt4/pref/keyeditformbase.cpp:60
+#: ../qt3/chardict/bushuviewwidget.cpp:72
+#: ../qt4/chardict/bushuviewwidget.cpp:74
+msgid "Bushu List"
+msgstr ""
+
+#: ../qt3/chardict/qt.cpp:113 ../qt4/chardict/qt4.cpp:142
+#, fuzzy
+msgid "Mode:"
+msgstr " モード"
+
+#: ../qt3/chardict/qt.cpp:115 ../qt4/chardict/qt4.cpp:144
+msgid "Bushu Search"
+msgstr ""
+
+#: ../qt3/chardict/qt.cpp:116 ../qt4/chardict/qt4.cpp:145
+msgid "Unicode Search"
+msgstr ""
+
+#: ../qt3/chardict/qt.cpp:122 ../qt4/chardict/qt4.cpp:149
+#, fuzzy
+msgid "Select Font"
+msgstr "選択..."
+
+#: ../qt3/chardict/qt.cpp:126 ../qt4/chardict/qt4.cpp:153
+msgid "Chars:"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:68
+#: ../qt4/chardict/unicodeviewwidget.cpp:69
+#, fuzzy
+msgctxt "chardict"
+msgid "Basic Latin"
+msgstr "ラテン語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:69
+#: ../qt4/chardict/unicodeviewwidget.cpp:70
+#, fuzzy
+msgctxt "chardict"
+msgid "Latin-1 Supplement"
+msgstr "Latin-1文字集合 (前置修飾)"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:70
+#: ../qt4/chardict/unicodeviewwidget.cpp:71
+msgctxt "chardict"
+msgid "Latin Extended-A"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:71
+#: ../qt4/chardict/unicodeviewwidget.cpp:72
+msgctxt "chardict"
+msgid "Latin Extended-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:72
+#: ../qt4/chardict/unicodeviewwidget.cpp:73
+msgctxt "chardict"
+msgid "IPA Extensions"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:73
+#: ../qt4/chardict/unicodeviewwidget.cpp:74
+msgctxt "chardict"
+msgid "Spacing Modifier Letters"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:74
+#: ../qt4/chardict/unicodeviewwidget.cpp:75
+msgctxt "chardict"
+msgid "Combining Diacritical Marks"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:75
+#: ../qt4/chardict/unicodeviewwidget.cpp:76
+#, fuzzy
+msgctxt "chardict"
+msgid "Greek and Coptic"
+msgstr "グリーンランド語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:76
+#: ../qt4/chardict/unicodeviewwidget.cpp:77
+#, fuzzy
+msgctxt "chardict"
+msgid "Cyrillic"
+msgstr "ロシア語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:77
+#: ../qt4/chardict/unicodeviewwidget.cpp:78
+#, fuzzy
+msgctxt "chardict"
+msgid "Cyrillic Supplement"
+msgstr "Latin-1文字集合 (前置修飾)"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:78
+#: ../qt4/chardict/unicodeviewwidget.cpp:79
+#, fuzzy
+msgctxt "chardict"
+msgid "Armenian"
+msgstr "アルメニア語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:79
+#: ../qt4/chardict/unicodeviewwidget.cpp:80
+#, fuzzy
+msgctxt "chardict"
+msgid "Hebrew"
+msgstr "ヘブライ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:80
+#: ../qt4/chardict/unicodeviewwidget.cpp:81
+#, fuzzy
+msgctxt "chardict"
+msgid "Arabic"
+msgstr "アラビア語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:81
+#: ../qt4/chardict/unicodeviewwidget.cpp:82
+#, fuzzy
+msgctxt "chardict"
+msgid "Syriac"
+msgstr "シリア語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:82
+#: ../qt4/chardict/unicodeviewwidget.cpp:83
+msgctxt "chardict"
+msgid "Thaana"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:83
+#: ../qt4/chardict/unicodeviewwidget.cpp:84
+msgctxt "chardict"
+msgid "Devanagari"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:84
+#: ../qt4/chardict/unicodeviewwidget.cpp:85
+#, fuzzy
+msgctxt "chardict"
+msgid "Bengali"
+msgstr "ベンガル語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:85
+#: ../qt4/chardict/unicodeviewwidget.cpp:86
+msgctxt "chardict"
+msgid "Gurmukhi"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:86
+#: ../qt4/chardict/unicodeviewwidget.cpp:87
+#, fuzzy
+msgctxt "chardict"
+msgid "Gujarati"
+msgstr "グジャラート語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:87
+#: ../qt4/chardict/unicodeviewwidget.cpp:88
+#, fuzzy
+msgctxt "chardict"
+msgid "Oriya"
+msgstr "オリヤ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:88
+#: ../qt4/chardict/unicodeviewwidget.cpp:89
+#, fuzzy
+msgctxt "chardict"
+msgid "Tamil"
+msgstr "タミル語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:89
+#: ../qt4/chardict/unicodeviewwidget.cpp:90
+#, fuzzy
+msgctxt "chardict"
+msgid "Telugu"
+msgstr "テルグ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:90
+#: ../qt4/chardict/unicodeviewwidget.cpp:91
+#, fuzzy
+msgctxt "chardict"
+msgid "Kannada"
+msgstr "カンナダ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:91
+#: ../qt4/chardict/unicodeviewwidget.cpp:92
+#, fuzzy
+msgctxt "chardict"
+msgid "Malayalam"
+msgstr "マラヤラム語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:92
+#: ../qt4/chardict/unicodeviewwidget.cpp:93
+#, fuzzy
+msgctxt "chardict"
+msgid "Sinhala"
+msgstr "シンハラ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:93
+#: ../qt4/chardict/unicodeviewwidget.cpp:94
+#, fuzzy
+msgctxt "chardict"
+msgid "Thai"
+msgstr "タイ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:94
+#: ../qt4/chardict/unicodeviewwidget.cpp:95
+msgctxt "chardict"
+msgid "Lao"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:95
+#: ../qt4/chardict/unicodeviewwidget.cpp:96
+#, fuzzy
+msgctxt "chardict"
+msgid "Tibetan"
+msgstr "チベット語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:96
+#: ../qt4/chardict/unicodeviewwidget.cpp:97
+#, fuzzy
+msgctxt "chardict"
+msgid "Myanmar"
+msgstr "ミャンマー語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:97
+#: ../qt4/chardict/unicodeviewwidget.cpp:98
+#, fuzzy
+msgctxt "chardict"
+msgid "Georgian"
+msgstr "グルジア語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:98
+#: ../qt4/chardict/unicodeviewwidget.cpp:99
+#, fuzzy
+msgctxt "chardict"
+msgid "Hangul Jamo"
+msgstr "ハングルローマ字式"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:99
+#: ../qt4/chardict/unicodeviewwidget.cpp:100
+msgctxt "chardict"
+msgid "Ethiopic"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:100
+#: ../qt4/chardict/unicodeviewwidget.cpp:101
+msgctxt "chardict"
+msgid "Cherokee"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:101
+#: ../qt4/chardict/unicodeviewwidget.cpp:102
+msgctxt "chardict"
+msgid "Unified Canadian Aboriginal Syllabics"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:102
+#: ../qt4/chardict/unicodeviewwidget.cpp:103
+msgctxt "chardict"
+msgid "Ogham"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:103
+#: ../qt4/chardict/unicodeviewwidget.cpp:104
+msgctxt "chardict"
+msgid "Runic"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:104
+#: ../qt4/chardict/unicodeviewwidget.cpp:105
+#, fuzzy
+msgctxt "chardict"
+msgid "Tagalog"
+msgstr "タガログ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:105
+#: ../qt4/chardict/unicodeviewwidget.cpp:106
+msgctxt "chardict"
+msgid "Hanunoo"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:106
+#: ../qt4/chardict/unicodeviewwidget.cpp:107
+msgctxt "chardict"
+msgid "Buhid"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:107
+#: ../qt4/chardict/unicodeviewwidget.cpp:108
+msgctxt "chardict"
+msgid "Tagbanwa"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:108
+#: ../qt4/chardict/unicodeviewwidget.cpp:109
+msgctxt "chardict"
+msgid "Khmer"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:109
+#: ../qt4/chardict/unicodeviewwidget.cpp:110
+#, fuzzy
+msgctxt "chardict"
+msgid "Mongolian"
+msgstr "モンゴル語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:110
+#: ../qt4/chardict/unicodeviewwidget.cpp:111
+msgctxt "chardict"
+msgid "Limbu"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:111
+#: ../qt4/chardict/unicodeviewwidget.cpp:112
+msgctxt "chardict"
+msgid "Tai Letters"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:112
+#: ../qt4/chardict/unicodeviewwidget.cpp:113
+msgctxt "chardict"
+msgid "Khmer Symbols"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:113
+#: ../qt4/chardict/unicodeviewwidget.cpp:114
+msgctxt "chardict"
+msgid "Phonetic Extensions"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:114
+#: ../qt4/chardict/unicodeviewwidget.cpp:115
+msgctxt "chardict"
+msgid "Latin Extended Additional"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:115
+#: ../qt4/chardict/unicodeviewwidget.cpp:116
+msgctxt "chardict"
+msgid "Greek Extended-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:116
+#: ../qt4/chardict/unicodeviewwidget.cpp:117
+#, fuzzy
+msgctxt "chardict"
+msgid "General Punctuation"
+msgstr "註釈を有効にする"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:117
+#: ../qt4/chardict/unicodeviewwidget.cpp:118
+msgctxt "chardict"
+msgid "Superscripts and Subscripts"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:118
+#: ../qt4/chardict/unicodeviewwidget.cpp:119
+msgctxt "chardict"
+msgid "Currency Symbols"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:119
+#: ../qt4/chardict/unicodeviewwidget.cpp:120
+msgctxt "chardict"
+msgid "Combining Diacritical Marks for Symbols"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:120
+#: ../qt4/chardict/unicodeviewwidget.cpp:121
+msgctxt "chardict"
+msgid "Letterlike Symbols"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:121
+#: ../qt4/chardict/unicodeviewwidget.cpp:122
+msgctxt "chardict"
+msgid "Number Forms"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:122
+#: ../qt4/chardict/unicodeviewwidget.cpp:123
+msgctxt "chardict"
+msgid "Arrows"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:123
+#: ../qt4/chardict/unicodeviewwidget.cpp:124
+msgctxt "chardict"
+msgid "Mathematical Operators"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:124
+#: ../qt4/chardict/unicodeviewwidget.cpp:125
+msgctxt "chardict"
+msgid "Miscellaneous Technical"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:125
+#: ../qt4/chardict/unicodeviewwidget.cpp:126
+msgctxt "chardict"
+msgid "Control Pictures"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:126
+#: ../qt4/chardict/unicodeviewwidget.cpp:127
+msgctxt "chardict"
+msgid "Optical Character Recognition"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:127
+#: ../qt4/chardict/unicodeviewwidget.cpp:128
+#, fuzzy
+msgctxt "chardict"
+msgid "Enclosed Alphanumerics"
+msgstr "半角英数"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:128
+#: ../qt4/chardict/unicodeviewwidget.cpp:129
+msgctxt "chardict"
+msgid "Box Drawing"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:129
+#: ../qt4/chardict/unicodeviewwidget.cpp:130
+msgctxt "chardict"
+msgid "Block Elements"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:130
+#: ../qt4/chardict/unicodeviewwidget.cpp:131
+msgctxt "chardict"
+msgid "Geometric Shapes"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:131
+#: ../qt4/chardict/unicodeviewwidget.cpp:132
+msgctxt "chardict"
+msgid "Miscellaneous Symbols"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:132
+#: ../qt4/chardict/unicodeviewwidget.cpp:133
+msgctxt "chardict"
+msgid "Dingbats"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:133
+#: ../qt4/chardict/unicodeviewwidget.cpp:134
+msgctxt "chardict"
+msgid "Miscellaneous Mathematical Symbols-A"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:134
+#: ../qt4/chardict/unicodeviewwidget.cpp:135
+msgctxt "chardict"
+msgid "Supplemental Arrows-A"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:135
+#: ../qt4/chardict/unicodeviewwidget.cpp:136
+msgctxt "chardict"
+msgid "Braille Patterns"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:136
+#: ../qt4/chardict/unicodeviewwidget.cpp:137
+msgctxt "chardict"
+msgid "Supplemental Arrows-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:137
+#: ../qt4/chardict/unicodeviewwidget.cpp:138
+msgctxt "chardict"
+msgid "Miscellaneous Mathematical Symbols-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:138
+#: ../qt4/chardict/unicodeviewwidget.cpp:139
+msgctxt "chardict"
+msgid "Supplemental Mathematical Operators"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:139
+#: ../qt4/chardict/unicodeviewwidget.cpp:140
+msgctxt "chardict"
+msgid "Miscellaneous Symbols and Arrows-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:140
+#: ../qt4/chardict/unicodeviewwidget.cpp:141
+#, fuzzy
+msgctxt "chardict"
+msgid "CJK Radicals Supplemental"
+msgstr "Latin-1文字集合 (前置修飾)"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:141
+#: ../qt4/chardict/unicodeviewwidget.cpp:142
+msgctxt "chardict"
+msgid "Kangxi Radicals"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:142
+#: ../qt4/chardict/unicodeviewwidget.cpp:143
+msgctxt "chardict"
+msgid "Ideographic Description Characters"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:143
+#: ../qt4/chardict/unicodeviewwidget.cpp:144
+msgctxt "chardict"
+msgid "CJK Symbols and Punctuation"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:144
+#: ../qt4/chardict/unicodeviewwidget.cpp:145
+#, fuzzy
+msgctxt "chardict"
+msgid "Hiragana"
+msgstr "ひらがな"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:145
+#: ../qt4/chardict/unicodeviewwidget.cpp:146
+#, fuzzy
+msgctxt "chardict"
+msgid "Katakana"
+msgstr "カタカナ"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:146
+#: ../qt4/chardict/unicodeviewwidget.cpp:147
+msgctxt "chardict"
+msgid "Bopomofo"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:147
+#: ../qt4/chardict/unicodeviewwidget.cpp:148
+#, fuzzy
+msgctxt "chardict"
+msgid "Hangul Compatibility Jamo"
+msgstr "ハングルローマ字式"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:148
+#: ../qt4/chardict/unicodeviewwidget.cpp:149
+msgctxt "chardict"
+msgid "Kanbun"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:149
+#: ../qt4/chardict/unicodeviewwidget.cpp:150
+msgctxt "chardict"
+msgid "Bopomofo Extended-B 1F00"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:150
+#: ../qt4/chardict/unicodeviewwidget.cpp:151
+msgctxt "chardict"
+msgid "Katakana Phonetic Extensions"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:151
+#: ../qt4/chardict/unicodeviewwidget.cpp:152
+msgctxt "chardict"
+msgid "Enclosed CJK Letters and Months"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:152
+#: ../qt4/chardict/unicodeviewwidget.cpp:153
+msgctxt "chardict"
+msgid "CJK Compatibility"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:153
+#: ../qt4/chardict/unicodeviewwidget.cpp:154
+msgctxt "chardict"
+msgid "CJK Unified Ideographs Extension and"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:154
+#: ../qt4/chardict/unicodeviewwidget.cpp:155
+msgctxt "chardict"
+msgid "Yijing Hexagram Symbols-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:155
+#: ../qt4/chardict/unicodeviewwidget.cpp:156
+msgctxt "chardict"
+msgid "CJK Unified Ideographs"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:156
+#: ../qt4/chardict/unicodeviewwidget.cpp:157
+msgctxt "chardict"
+msgid "Yi Syllables"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:157
+#: ../qt4/chardict/unicodeviewwidget.cpp:158
+msgctxt "chardict"
+msgid "Yi Radicals"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:158
+#: ../qt4/chardict/unicodeviewwidget.cpp:159
+msgctxt "chardict"
+msgid "Hangul Syllables"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:159
+#: ../qt4/chardict/unicodeviewwidget.cpp:160
+msgctxt "chardict"
+msgid "High Surrogates"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:160
+#: ../qt4/chardict/unicodeviewwidget.cpp:161
+msgctxt "chardict"
+msgid "High Private Use Surrogates"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:161
+#: ../qt4/chardict/unicodeviewwidget.cpp:162
+msgctxt "chardict"
+msgid "Low Surrogates"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:162
+#: ../qt4/chardict/unicodeviewwidget.cpp:163
+msgctxt "chardict"
+msgid "Private Use Area"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:163
+#: ../qt4/chardict/unicodeviewwidget.cpp:164
+msgctxt "chardict"
+msgid "CJK Compatibility Ideographs"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:164
+#: ../qt4/chardict/unicodeviewwidget.cpp:165
+msgctxt "chardict"
+msgid "Alphabetic Presentation Forms"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:165
+#: ../qt4/chardict/unicodeviewwidget.cpp:166
+msgctxt "chardict"
+msgid "Arabic Presentation Forms-A"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:166
+#: ../qt4/chardict/unicodeviewwidget.cpp:167
+msgctxt "chardict"
+msgid "Variation Selectors"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:167
+#: ../qt4/chardict/unicodeviewwidget.cpp:168
+msgctxt "chardict"
+msgid "Combining Half Marks"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:168
+#: ../qt4/chardict/unicodeviewwidget.cpp:169
+msgctxt "chardict"
+msgid "CJK Compatibility Forms-A"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:169
+#: ../qt4/chardict/unicodeviewwidget.cpp:170
+msgctxt "chardict"
+msgid "Small Form Variants"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:170
+#: ../qt4/chardict/unicodeviewwidget.cpp:171
+msgctxt "chardict"
+msgid "Arabic Presentation Forms-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:171
+#: ../qt4/chardict/unicodeviewwidget.cpp:172
+msgctxt "chardict"
+msgid "Halfwidth and Fullwidth Forms-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:172
+#: ../qt4/chardict/unicodeviewwidget.cpp:173
+#, fuzzy
+msgctxt "chardict"
+msgid "Specials"
+msgstr "ファイルを指定して下さい"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:173
+#: ../qt4/chardict/unicodeviewwidget.cpp:174
+msgctxt "chardict"
+msgid "Linear B Syllabary"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:174
+#: ../qt4/chardict/unicodeviewwidget.cpp:175
+msgctxt "chardict"
+msgid "Linear B Ideograms"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:175
+#: ../qt4/chardict/unicodeviewwidget.cpp:176
+#, fuzzy
+msgctxt "chardict"
+msgid "Aegean Numbers"
+msgstr "数字"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:176
+#: ../qt4/chardict/unicodeviewwidget.cpp:177
+msgctxt "chardict"
+msgid "Old Italic"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:177
+#: ../qt4/chardict/unicodeviewwidget.cpp:178
+msgctxt "chardict"
+msgid "Gothic"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:178
+#: ../qt4/chardict/unicodeviewwidget.cpp:179
+msgctxt "chardict"
+msgid "Ugaritic"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:179
+#: ../qt4/chardict/unicodeviewwidget.cpp:180
+msgctxt "chardict"
+msgid "Deseret"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:180
+#: ../qt4/chardict/unicodeviewwidget.cpp:181
+#, fuzzy
+msgctxt "chardict"
+msgid "Shavian"
+msgstr "モルドバ語"
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:181
+#: ../qt4/chardict/unicodeviewwidget.cpp:182
+msgctxt "chardict"
+msgid "Osmanya"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:182
+#: ../qt4/chardict/unicodeviewwidget.cpp:183
+msgctxt "chardict"
+msgid "Cypriot Syllabary"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:183
+#: ../qt4/chardict/unicodeviewwidget.cpp:184
+msgctxt "chardict"
+msgid "Byzantine Musical Symbols-B 4DC0"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:184
+#: ../qt4/chardict/unicodeviewwidget.cpp:185
+msgctxt "chardict"
+msgid "Musical Symbols-B 4DC0 1D000"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:185
+#: ../qt4/chardict/unicodeviewwidget.cpp:186
+msgctxt "chardict"
+msgid "Tai Xuan Jing Symbols-B 4DC0 1D000 1D100"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:186
+#: ../qt4/chardict/unicodeviewwidget.cpp:187
+msgctxt "chardict"
+msgid "Mathematical Alphanumeric Symbols-B 4DC0 1D000 1D100 1D300"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:187
+#: ../qt4/chardict/unicodeviewwidget.cpp:188
+msgctxt "chardict"
+msgid "CJK Unified Ideographs Extension B 4DC0 1D000 1D100 1D300 1D400"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:188
+#: ../qt4/chardict/unicodeviewwidget.cpp:189
+msgctxt "chardict"
+msgid "CJK Compatibility Ideographs Supplemental 2E80"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:189
+#: ../qt4/chardict/unicodeviewwidget.cpp:190
+msgctxt "chardict"
+msgid "Tags"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:190
+#: ../qt4/chardict/unicodeviewwidget.cpp:191
+msgctxt "chardict"
+msgid "Variation Selectors Supplemental 2E80 2F800"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:191
+#: ../qt4/chardict/unicodeviewwidget.cpp:192
+msgctxt "chardict"
+msgid "Supplementary Private Use Area-A"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:192
+#: ../qt4/chardict/unicodeviewwidget.cpp:193
+msgctxt "chardict"
+msgid "Supplementary Private Use Area-B"
+msgstr ""
+
+#: ../qt3/chardict/unicodeviewwidget.cpp:216
+#: ../qt4/chardict/unicodeviewwidget.cpp:217
+msgid "UnicodeBlock List"
+msgstr ""
+
+#: ../qt3/pref/customwidgets.cpp:355 ../qt3/pref/customwidgets.cpp:638
 msgid "Edit"
 msgstr "編集"
 
-#: ../qt3/pref/customwidgets.cpp:881 ../qt4/pref/customwidgets.cpp:893
+#: ../qt3/pref/customwidgets.cpp:887 ../qt4/pref/customwidgets.cpp:904
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
@@ -740,20 +1557,21 @@ msgid "Defaults"
 msgstr "標準"
 
 #: ../qt3/pref/qt.cpp:166 ../qt3/pref/qt.cpp:257 ../qt3/pref/qt.cpp:364
-#: ../qt3/switcher/qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
-#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/keyeditformbase.cpp:66
-#: ../qt4/pref/olisteditformbase.cpp:65 ../qt4/switcher/qt4.cpp:138
+#: ../qt3/switcher/qt.cpp:129 ../qt4/pref/customwidgets.cpp:1325
+#: ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261 ../qt4/pref/qt4.cpp:371
+#: ../qt4/pref/keyeditformbase.cpp:64 ../qt4/pref/olisteditformbase.cpp:63
+#: ../qt4/switcher/qt4.cpp:139
 msgid "OK"
 msgstr "OK"
 
-#: ../qt3/pref/qt.cpp:169 ../qt4/pref/qt4.cpp:164 ../qt4/switcher/qt4.cpp:143
+#: ../qt3/pref/qt.cpp:169 ../qt4/pref/qt4.cpp:164 ../qt4/switcher/qt4.cpp:144
 msgid "Apply"
 msgstr "適用"
 
 #: ../qt3/pref/qt.cpp:173 ../qt3/pref/qt.cpp:258 ../qt3/switcher/qt.cpp:134
-#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
-#: ../qt4/pref/keyeditformbase.cpp:70 ../qt4/pref/olisteditformbase.cpp:69
-#: ../qt4/switcher/qt4.cpp:148
+#: ../qt4/pref/customwidgets.cpp:1329 ../qt4/pref/qt4.cpp:168
+#: ../qt4/pref/qt4.cpp:262 ../qt4/pref/keyeditformbase.cpp:68
+#: ../qt4/pref/olisteditformbase.cpp:67 ../qt4/switcher/qt4.cpp:149
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -785,33 +1603,35 @@ msgstr "いいえ"
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
-#: ../qt4/pref/keyeditformbase.cpp:47
-msgid "Edit Keys"
-msgstr "キーを編集"
+#: ../qt4/pref/customwidgets.cpp:740
+#, fuzzy
+msgid "%1 - key configuration"
+msgstr "%s - キー設定"
 
-#: ../qt4/pref/keyeditformbase.cpp:51
-msgid "Key Combination"
-msgstr "キー"
-
-#: ../qt4/pref/keyeditformbase.cpp:57
+#: ../qt4/pref/customwidgets.cpp:1308 ../qt4/pref/keyeditformbase.cpp:55
 msgid "Remove"
 msgstr "削除"
 
-#: ../qt4/pref/olisteditformbase.cpp:47
-msgid "Edit Ordered List"
-msgstr "順序付きリストを編集"
-
-#: ../qt4/pref/olisteditformbase.cpp:53
-msgid "Available Items"
-msgstr "利用可能なアイテム"
-
-#: ../qt4/pref/olisteditformbase.cpp:56
+#: ../qt4/pref/customwidgets.cpp:1314 ../qt4/pref/olisteditformbase.cpp:54
 msgid "Up"
 msgstr "上げる"
 
-#: ../qt4/pref/olisteditformbase.cpp:59
+#: ../qt4/pref/customwidgets.cpp:1320 ../qt4/pref/olisteditformbase.cpp:57
 msgid "Down"
 msgstr "下げる"
+
+#: ../qt4/pref/keyeditformbase.cpp:49
+msgid "Key Combination"
+msgstr "キー"
+
+#: ../qt4/pref/keyeditformbase.cpp:52
+#, fuzzy
+msgid "Add..."
+msgstr "追加(_D)..."
+
+#: ../qt4/pref/olisteditformbase.cpp:51
+msgid "Available Items"
+msgstr "利用可能なアイテム"
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
 msgid "Cannot launch '%1'."
@@ -973,8 +1793,9 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/im-custom.scm:573 ../scm/im-custom.scm:575 ../scm/im-custom.scm:603
 #: ../scm/im-custom.scm:609 ../scm/im-custom.scm:624 ../scm/im-custom.scm:651
 #: ../scm/im-custom.scm:657 ../scm/im-custom.scm:669
-#: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
-#: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
+#: ../scm/japanese-custom.scm:473 ../scm/japanese-custom.scm:477
+#: ../scm/japanese-custom.scm:485 ../scm/japanese-custom.scm:495
+#: ../scm/japanese-custom.scm:501 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
 #: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
 #: ../scm/look-custom.scm:77 ../scm/look-custom.scm:83
@@ -1023,14 +1844,15 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/skk-custom.scm:299 ../scm/skk-custom.scm:308
 #: ../scm/skk-custom.scm:351 ../scm/skk-custom.scm:357
 #: ../scm/skk-custom.scm:368 ../scm/skk-custom.scm:379
-#: ../scm/skk-custom.scm:395 ../scm/skk-custom.scm:407
-#: ../scm/skk-custom.scm:414 ../scm/skk-custom.scm:421
-#: ../scm/skk-custom.scm:438 ../scm/skk-custom.scm:444
-#: ../scm/skk-custom.scm:450 ../scm/skk-custom.scm:456
-#: ../scm/skk-custom.scm:462 ../scm/skk-custom.scm:468
-#: ../scm/skk-custom.scm:480 ../scm/skk-custom.scm:495
-#: ../scm/skk-custom.scm:501 ../scm/skk-custom.scm:522
-#: ../scm/skk-custom.scm:528 ../scm/skk-custom.scm:535
+#: ../scm/skk-custom.scm:390 ../scm/skk-custom.scm:401
+#: ../scm/skk-custom.scm:417 ../scm/skk-custom.scm:429
+#: ../scm/skk-custom.scm:436 ../scm/skk-custom.scm:443
+#: ../scm/skk-custom.scm:460 ../scm/skk-custom.scm:466
+#: ../scm/skk-custom.scm:472 ../scm/skk-custom.scm:478
+#: ../scm/skk-custom.scm:484 ../scm/skk-custom.scm:490
+#: ../scm/skk-custom.scm:502 ../scm/skk-custom.scm:517
+#: ../scm/skk-custom.scm:523 ../scm/skk-custom.scm:544
+#: ../scm/skk-custom.scm:550 ../scm/skk-custom.scm:557
 #: ../scm/skk-key-custom.scm:65 ../scm/skk-key-custom.scm:69
 #: ../scm/skk-key-custom.scm:73 ../scm/skk-key-custom.scm:78
 #: ../scm/skk-key-custom.scm:82 ../scm/skk-key-custom.scm:86
@@ -1057,22 +1879,29 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/tutcode-custom.scm:117 ../scm/tutcode-custom.scm:123
 #: ../scm/tutcode-custom.scm:129 ../scm/tutcode-custom.scm:135
 #: ../scm/tutcode-custom.scm:141 ../scm/tutcode-custom.scm:147
-#: ../scm/tutcode-custom.scm:154 ../scm/tutcode-custom.scm:161
-#: ../scm/tutcode-custom.scm:171 ../scm/tutcode-custom.scm:177
-#: ../scm/tutcode-custom.scm:186 ../scm/tutcode-custom.scm:192
-#: ../scm/tutcode-custom.scm:198 ../scm/tutcode-custom.scm:204
-#: ../scm/tutcode-custom.scm:210 ../scm/tutcode-custom.scm:216
-#: ../scm/tutcode-custom.scm:222 ../scm/tutcode-custom.scm:228
-#: ../scm/tutcode-custom.scm:234 ../scm/tutcode-custom.scm:240
-#: ../scm/tutcode-custom.scm:246 ../scm/tutcode-custom.scm:252
-#: ../scm/tutcode-custom.scm:259 ../scm/tutcode-custom.scm:265
-#: ../scm/tutcode-custom.scm:271 ../scm/tutcode-custom.scm:277
-#: ../scm/tutcode-custom.scm:283 ../scm/tutcode-custom.scm:289
-#: ../scm/tutcode-custom.scm:298 ../scm/tutcode-custom.scm:304
+#: ../scm/tutcode-custom.scm:153 ../scm/tutcode-custom.scm:159
+#: ../scm/tutcode-custom.scm:170 ../scm/tutcode-custom.scm:176
+#: ../scm/tutcode-custom.scm:183 ../scm/tutcode-custom.scm:190
+#: ../scm/tutcode-custom.scm:196 ../scm/tutcode-custom.scm:206
+#: ../scm/tutcode-custom.scm:215 ../scm/tutcode-custom.scm:227
+#: ../scm/tutcode-custom.scm:233 ../scm/tutcode-custom.scm:239
+#: ../scm/tutcode-custom.scm:245 ../scm/tutcode-custom.scm:251
+#: ../scm/tutcode-custom.scm:257 ../scm/tutcode-custom.scm:263
+#: ../scm/tutcode-custom.scm:269 ../scm/tutcode-custom.scm:275
+#: ../scm/tutcode-custom.scm:281 ../scm/tutcode-custom.scm:287
+#: ../scm/tutcode-custom.scm:293 ../scm/tutcode-custom.scm:299
+#: ../scm/tutcode-custom.scm:305 ../scm/tutcode-custom.scm:311
+#: ../scm/tutcode-custom.scm:317 ../scm/tutcode-custom.scm:323
+#: ../scm/tutcode-custom.scm:329 ../scm/tutcode-custom.scm:335
+#: ../scm/tutcode-custom.scm:342 ../scm/tutcode-custom.scm:348
+#: ../scm/tutcode-custom.scm:354 ../scm/tutcode-custom.scm:360
+#: ../scm/tutcode-custom.scm:366 ../scm/tutcode-custom.scm:372
+#: ../scm/tutcode-custom.scm:381 ../scm/tutcode-custom.scm:387
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
-#: ../scm/wnn-custom.scm:44 ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52
-#: ../scm/wnn-custom.scm:62 ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83
-#: ../scm/wnn-custom.scm:89 ../scm/wnn-custom.scm:95 ../scm/wnn-custom.scm:101
+#: ../scm/tutcode-key-custom.scm:46 ../scm/wnn-custom.scm:44
+#: ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52 ../scm/wnn-custom.scm:62
+#: ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83 ../scm/wnn-custom.scm:89
+#: ../scm/wnn-custom.scm:95 ../scm/wnn-custom.scm:101
 #: ../scm/wnn-custom.scm:200 ../scm/wnn-custom.scm:219
 #: ../scm/wnn-custom.scm:228 ../scm/wnn-custom.scm:270
 #: ../scm/wnn-custom.scm:279 ../scm/wnn-custom.scm:322
@@ -1133,7 +1962,7 @@ msgstr "文節区切り"
 #: ../scm/anthy-utf8-custom.scm:85 ../scm/canna-custom.scm:82
 #: ../scm/generic-custom.scm:42 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:170
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:205
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
@@ -1142,7 +1971,7 @@ msgstr "候補ウィンドウを使用する"
 #: ../scm/anthy-utf8-custom.scm:91 ../scm/canna-custom.scm:88
 #: ../scm/generic-custom.scm:48 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:197
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:232
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
@@ -1152,7 +1981,7 @@ msgstr "候補ウィンドウを表示するために変換キーを押す回数
 #: ../scm/generic-custom.scm:54 ../scm/mana-custom.scm:86
 #: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
-#: ../scm/tutcode-custom.scm:203 ../scm/wnn-custom.scm:94
+#: ../scm/tutcode-custom.scm:238 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
@@ -1428,8 +2257,8 @@ msgstr "接続に関する警告を表示する"
 #: ../scm/ajax-ime-custom.scm:334 ../scm/anthy-custom.scm:361
 #: ../scm/anthy-utf8-custom.scm:368 ../scm/canna-custom.scm:401
 #: ../scm/mana-custom.scm:307 ../scm/prime-custom.scm:207
-#: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:521
-#: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:98
+#: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:543
+#: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:104
 #: ../scm/wnn-custom.scm:345 ../scm/yahoo-jp-custom.scm:350
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
@@ -1437,7 +2266,7 @@ msgstr "vi協調モードを有効にする"
 #: ../scm/ajax-ime-custom.scm:340 ../scm/anthy-custom.scm:367
 #: ../scm/anthy-utf8-custom.scm:374 ../scm/canna-custom.scm:407
 #: ../scm/mana-custom.scm:313 ../scm/sj3-custom.scm:362
-#: ../scm/skk-custom.scm:455 ../scm/social-ime-custom.scm:350
+#: ../scm/skk-custom.scm:477 ../scm/social-ime-custom.scm:350
 #: ../scm/yahoo-jp-custom.scm:356
 msgid "Enable auto conversion with punctuation marks"
 msgstr "句読点での自動変換を有効にする"
@@ -1480,7 +2309,7 @@ msgstr "予測候補キャッシュ数"
 #: ../scm/ajax-ime-custom.scm:377 ../scm/anthy-custom.scm:329
 #: ../scm/anthy-utf8-custom.scm:336 ../scm/canna-custom.scm:444
 #: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
-#: ../scm/tutcode-custom.scm:282 ../scm/wnn-custom.scm:382
+#: ../scm/tutcode-custom.scm:365 ../scm/wnn-custom.scm:382
 #: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr "予測入力が有効になる文字数"
@@ -1645,60 +2474,81 @@ msgstr "[Ajax-IME] 次文節"
 #: ../scm/skk-key-custom.scm:111 ../scm/skk-key-custom.scm:117
 #: ../scm/skk-key-custom.scm:123 ../scm/skk-key-custom.scm:129
 #: ../scm/skk-key-custom.scm:135 ../scm/skk-key-custom.scm:141
-#: ../scm/skk-key-custom.scm:151 ../scm/skk-key-custom.scm:157
+#: ../scm/skk-key-custom.scm:147 ../scm/skk-key-custom.scm:157
 #: ../scm/skk-key-custom.scm:163 ../scm/skk-key-custom.scm:169
 #: ../scm/skk-key-custom.scm:175 ../scm/skk-key-custom.scm:181
 #: ../scm/skk-key-custom.scm:187 ../scm/skk-key-custom.scm:193
 #: ../scm/skk-key-custom.scm:199 ../scm/skk-key-custom.scm:205
 #: ../scm/skk-key-custom.scm:211 ../scm/skk-key-custom.scm:217
-#: ../scm/skk-key-custom.scm:229 ../scm/skk-key-custom.scm:247
+#: ../scm/skk-key-custom.scm:223 ../scm/skk-key-custom.scm:235
 #: ../scm/skk-key-custom.scm:253 ../scm/skk-key-custom.scm:259
 #: ../scm/skk-key-custom.scm:265 ../scm/skk-key-custom.scm:271
 #: ../scm/skk-key-custom.scm:277 ../scm/skk-key-custom.scm:283
-#: ../scm/social-ime-key-custom.scm:54 ../scm/social-ime-key-custom.scm:60
-#: ../scm/social-ime-key-custom.scm:66 ../scm/social-ime-key-custom.scm:72
-#: ../scm/social-ime-key-custom.scm:78 ../scm/social-ime-key-custom.scm:84
-#: ../scm/social-ime-key-custom.scm:90 ../scm/social-ime-key-custom.scm:96
-#: ../scm/social-ime-key-custom.scm:102 ../scm/social-ime-key-custom.scm:108
-#: ../scm/social-ime-key-custom.scm:117 ../scm/social-ime-key-custom.scm:124
-#: ../scm/social-ime-key-custom.scm:130 ../scm/social-ime-key-custom.scm:136
-#: ../scm/social-ime-key-custom.scm:142 ../scm/social-ime-key-custom.scm:148
-#: ../scm/social-ime-key-custom.scm:154 ../scm/social-ime-key-custom.scm:160
-#: ../scm/social-ime-key-custom.scm:166 ../scm/social-ime-key-custom.scm:175
-#: ../scm/social-ime-key-custom.scm:181 ../scm/social-ime-key-custom.scm:187
-#: ../scm/social-ime-key-custom.scm:193 ../scm/social-ime-key-custom.scm:199
-#: ../scm/social-ime-key-custom.scm:205 ../scm/social-ime-key-custom.scm:211
-#: ../scm/social-ime-key-custom.scm:217 ../scm/social-ime-key-custom.scm:223
-#: ../scm/social-ime-key-custom.scm:233 ../scm/social-ime-key-custom.scm:239
-#: ../scm/social-ime-key-custom.scm:245 ../scm/social-ime-key-custom.scm:251
-#: ../scm/social-ime-key-custom.scm:257 ../scm/social-ime-key-custom.scm:263
-#: ../scm/social-ime-key-custom.scm:269 ../scm/social-ime-key-custom.scm:275
-#: ../scm/social-ime-key-custom.scm:281 ../scm/tutcode-key-custom.scm:48
-#: ../scm/tutcode-key-custom.scm:54 ../scm/tutcode-key-custom.scm:60
-#: ../scm/tutcode-key-custom.scm:66 ../scm/tutcode-key-custom.scm:72
-#: ../scm/tutcode-key-custom.scm:78 ../scm/tutcode-key-custom.scm:84
-#: ../scm/tutcode-key-custom.scm:90 ../scm/tutcode-key-custom.scm:96
-#: ../scm/tutcode-key-custom.scm:102 ../scm/tutcode-key-custom.scm:108
-#: ../scm/tutcode-key-custom.scm:114 ../scm/tutcode-key-custom.scm:120
-#: ../scm/tutcode-key-custom.scm:126 ../scm/tutcode-key-custom.scm:132
-#: ../scm/tutcode-key-custom.scm:138 ../scm/tutcode-key-custom.scm:144
-#: ../scm/tutcode-key-custom.scm:150 ../scm/tutcode-key-custom.scm:156
-#: ../scm/tutcode-key-custom.scm:162 ../scm/tutcode-key-custom.scm:168
-#: ../scm/tutcode-key-custom.scm:174 ../scm/tutcode-key-custom.scm:180
-#: ../scm/tutcode-key-custom.scm:186 ../scm/tutcode-key-custom.scm:192
-#: ../scm/tutcode-key-custom.scm:198 ../scm/tutcode-key-custom.scm:204
-#: ../scm/tutcode-key-custom.scm:210 ../scm/tutcode-key-custom.scm:216
-#: ../scm/tutcode-key-custom.scm:222 ../scm/tutcode-key-custom.scm:228
-#: ../scm/tutcode-key-custom.scm:234 ../scm/tutcode-key-custom.scm:240
-#: ../scm/tutcode-key-custom.scm:246 ../scm/tutcode-key-custom.scm:252
-#: ../scm/tutcode-key-custom.scm:258 ../scm/tutcode-key-custom.scm:264
-#: ../scm/tutcode-key-custom.scm:270 ../scm/tutcode-key-custom.scm:276
-#: ../scm/tutcode-key-custom.scm:282 ../scm/tutcode-key-custom.scm:288
-#: ../scm/tutcode-key-custom.scm:294 ../scm/tutcode-key-custom.scm:300
-#: ../scm/tutcode-key-custom.scm:306 ../scm/tutcode-key-custom.scm:312
-#: ../scm/tutcode-key-custom.scm:318 ../scm/tutcode-key-custom.scm:324
-#: ../scm/tutcode-key-custom.scm:330 ../scm/tutcode-key-custom.scm:336
-#: ../scm/tutcode-key-custom.scm:342 ../scm/wnn-key-custom.scm:54
+#: ../scm/skk-key-custom.scm:289 ../scm/social-ime-key-custom.scm:54
+#: ../scm/social-ime-key-custom.scm:60 ../scm/social-ime-key-custom.scm:66
+#: ../scm/social-ime-key-custom.scm:72 ../scm/social-ime-key-custom.scm:78
+#: ../scm/social-ime-key-custom.scm:84 ../scm/social-ime-key-custom.scm:90
+#: ../scm/social-ime-key-custom.scm:96 ../scm/social-ime-key-custom.scm:102
+#: ../scm/social-ime-key-custom.scm:108 ../scm/social-ime-key-custom.scm:117
+#: ../scm/social-ime-key-custom.scm:124 ../scm/social-ime-key-custom.scm:130
+#: ../scm/social-ime-key-custom.scm:136 ../scm/social-ime-key-custom.scm:142
+#: ../scm/social-ime-key-custom.scm:148 ../scm/social-ime-key-custom.scm:154
+#: ../scm/social-ime-key-custom.scm:160 ../scm/social-ime-key-custom.scm:166
+#: ../scm/social-ime-key-custom.scm:175 ../scm/social-ime-key-custom.scm:181
+#: ../scm/social-ime-key-custom.scm:187 ../scm/social-ime-key-custom.scm:193
+#: ../scm/social-ime-key-custom.scm:199 ../scm/social-ime-key-custom.scm:205
+#: ../scm/social-ime-key-custom.scm:211 ../scm/social-ime-key-custom.scm:217
+#: ../scm/social-ime-key-custom.scm:223 ../scm/social-ime-key-custom.scm:233
+#: ../scm/social-ime-key-custom.scm:239 ../scm/social-ime-key-custom.scm:245
+#: ../scm/social-ime-key-custom.scm:251 ../scm/social-ime-key-custom.scm:257
+#: ../scm/social-ime-key-custom.scm:263 ../scm/social-ime-key-custom.scm:269
+#: ../scm/social-ime-key-custom.scm:275 ../scm/social-ime-key-custom.scm:281
+#: ../scm/tutcode-key-custom.scm:52 ../scm/tutcode-key-custom.scm:58
+#: ../scm/tutcode-key-custom.scm:64 ../scm/tutcode-key-custom.scm:70
+#: ../scm/tutcode-key-custom.scm:76 ../scm/tutcode-key-custom.scm:82
+#: ../scm/tutcode-key-custom.scm:88 ../scm/tutcode-key-custom.scm:94
+#: ../scm/tutcode-key-custom.scm:100 ../scm/tutcode-key-custom.scm:106
+#: ../scm/tutcode-key-custom.scm:112 ../scm/tutcode-key-custom.scm:118
+#: ../scm/tutcode-key-custom.scm:124 ../scm/tutcode-key-custom.scm:130
+#: ../scm/tutcode-key-custom.scm:136 ../scm/tutcode-key-custom.scm:142
+#: ../scm/tutcode-key-custom.scm:148 ../scm/tutcode-key-custom.scm:154
+#: ../scm/tutcode-key-custom.scm:160 ../scm/tutcode-key-custom.scm:166
+#: ../scm/tutcode-key-custom.scm:172 ../scm/tutcode-key-custom.scm:178
+#: ../scm/tutcode-key-custom.scm:184 ../scm/tutcode-key-custom.scm:190
+#: ../scm/tutcode-key-custom.scm:196 ../scm/tutcode-key-custom.scm:202
+#: ../scm/tutcode-key-custom.scm:208 ../scm/tutcode-key-custom.scm:214
+#: ../scm/tutcode-key-custom.scm:220 ../scm/tutcode-key-custom.scm:226
+#: ../scm/tutcode-key-custom.scm:232 ../scm/tutcode-key-custom.scm:238
+#: ../scm/tutcode-key-custom.scm:244 ../scm/tutcode-key-custom.scm:250
+#: ../scm/tutcode-key-custom.scm:256 ../scm/tutcode-key-custom.scm:262
+#: ../scm/tutcode-key-custom.scm:268 ../scm/tutcode-key-custom.scm:274
+#: ../scm/tutcode-key-custom.scm:280 ../scm/tutcode-key-custom.scm:286
+#: ../scm/tutcode-key-custom.scm:292 ../scm/tutcode-key-custom.scm:298
+#: ../scm/tutcode-key-custom.scm:304 ../scm/tutcode-key-custom.scm:310
+#: ../scm/tutcode-key-custom.scm:316 ../scm/tutcode-key-custom.scm:322
+#: ../scm/tutcode-key-custom.scm:328 ../scm/tutcode-key-custom.scm:334
+#: ../scm/tutcode-key-custom.scm:340 ../scm/tutcode-key-custom.scm:346
+#: ../scm/tutcode-key-custom.scm:352 ../scm/tutcode-key-custom.scm:358
+#: ../scm/tutcode-key-custom.scm:364 ../scm/tutcode-key-custom.scm:370
+#: ../scm/tutcode-key-custom.scm:376 ../scm/tutcode-key-custom.scm:382
+#: ../scm/tutcode-key-custom.scm:388 ../scm/tutcode-key-custom.scm:394
+#: ../scm/tutcode-key-custom.scm:400 ../scm/tutcode-key-custom.scm:406
+#: ../scm/tutcode-key-custom.scm:412 ../scm/tutcode-key-custom.scm:418
+#: ../scm/tutcode-key-custom.scm:424 ../scm/tutcode-key-custom.scm:430
+#: ../scm/tutcode-key-custom.scm:436 ../scm/tutcode-key-custom.scm:442
+#: ../scm/tutcode-key-custom.scm:448 ../scm/tutcode-key-custom.scm:454
+#: ../scm/tutcode-key-custom.scm:460 ../scm/tutcode-key-custom.scm:466
+#: ../scm/tutcode-key-custom.scm:472 ../scm/tutcode-key-custom.scm:478
+#: ../scm/tutcode-key-custom.scm:484 ../scm/tutcode-key-custom.scm:490
+#: ../scm/tutcode-key-custom.scm:496 ../scm/tutcode-key-custom.scm:502
+#: ../scm/tutcode-key-custom.scm:508 ../scm/tutcode-key-custom.scm:514
+#: ../scm/tutcode-key-custom.scm:520 ../scm/tutcode-key-custom.scm:526
+#: ../scm/tutcode-key-custom.scm:532 ../scm/tutcode-key-custom.scm:538
+#: ../scm/tutcode-key-custom.scm:544 ../scm/tutcode-key-custom.scm:550
+#: ../scm/tutcode-key-custom.scm:556 ../scm/tutcode-key-custom.scm:562
+#: ../scm/tutcode-key-custom.scm:568 ../scm/tutcode-key-custom.scm:574
+#: ../scm/tutcode-key-custom.scm:580 ../scm/tutcode-key-custom.scm:586
+#: ../scm/tutcode-key-custom.scm:592 ../scm/wnn-key-custom.scm:54
 #: ../scm/wnn-key-custom.scm:60 ../scm/wnn-key-custom.scm:66
 #: ../scm/wnn-key-custom.scm:72 ../scm/wnn-key-custom.scm:78
 #: ../scm/wnn-key-custom.scm:84 ../scm/wnn-key-custom.scm:90
@@ -2331,11 +3181,11 @@ msgstr "履歴サイズ"
 msgid "Conversion history file"
 msgstr "履歴ファイル"
 
-#: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:413
+#: ../scm/byeoru-custom.scm:185 ../scm/skk-custom.scm:435
 msgid "Personal dictionary file"
 msgstr "個人辞書ファイル"
 
-#: ../scm/byeoru-custom.scm:192 ../scm/skk-custom.scm:406
+#: ../scm/byeoru-custom.scm:192 ../scm/skk-custom.scm:428
 msgid "System dictionary file"
 msgstr "システム辞書ファイル"
 
@@ -2607,19 +3457,19 @@ msgstr "初期化失敗"
 msgid "An internal composer"
 msgstr "内部コンポーザ"
 
-#: ../scm/custom.scm:748
+#: ../scm/custom.scm:775
 msgid "-"
 msgstr "-"
 
-#: ../scm/custom.scm:749
+#: ../scm/custom.scm:776
 msgid "Main settings of this group"
 msgstr "このグループのメイン設定"
 
-#: ../scm/custom.scm:752
+#: ../scm/custom.scm:779
 msgid "Hidden settings"
 msgstr "隠し設定"
 
-#: ../scm/custom.scm:753
+#: ../scm/custom.scm:780
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
@@ -3004,7 +3854,7 @@ msgstr "ELatin変換 オン"
 msgid "unexpected terminate string."
 msgstr ""
 
-#: ../scm/fileio.scm:238
+#: ../scm/fileio.scm:240
 msgid "poll error"
 msgstr "pollエラー"
 
@@ -3153,7 +4003,7 @@ msgstr "サーバに接続できません。"
 msgid "Invalid header: ~a"
 msgstr "ヘッダが不正です。~a"
 
-#: ../scm/im.scm:139
+#: ../scm/im.scm:140
 msgid "invalid IM name"
 msgstr "不正なIM名"
 
@@ -3269,12 +4119,14 @@ msgstr "一時切り換えキー"
 msgid "Alternative input method"
 msgstr "副入力方式"
 
-#: ../scm/im-custom.scm:392 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:436
+#: ../scm/im-custom.scm:392 ../scm/japanese-custom.scm:482
+#: ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:458
 #: ../scm/social-ime-custom.scm:370 ../scm/yahoo-jp-custom.scm:376
 msgid "uim"
 msgstr "uim"
 
-#: ../scm/im-custom.scm:392 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:436
+#: ../scm/im-custom.scm:392 ../scm/japanese-custom.scm:482
+#: ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:458
 msgid "uim native"
 msgstr "uimネイティブ"
 
@@ -4076,15 +4928,44 @@ msgstr "ヨルバ語"
 msgid "Zulu"
 msgstr "ズール語"
 
-#: ../scm/japanese-custom.scm:32
+#: ../scm/japanese-custom.scm:472
 msgid "Japanese Romaji-Kana"
 msgstr "ローマ字‐かな変換"
 
-#: ../scm/japanese-custom.scm:36
+#: ../scm/japanese-custom.scm:476
 msgid "Composing rule"
 msgstr "対応規則"
 
-#: ../scm/japanese-custom.scm:42
+#: ../scm/japanese-custom.scm:483
+#, fuzzy
+msgid "Custom"
+msgstr "カスタムフィルタ"
+
+#: ../scm/japanese-custom.scm:484
+#, fuzzy
+msgid "Composing rule type"
+msgstr "対応規則"
+
+#: ../scm/japanese-custom.scm:491
+#, fuzzy
+msgid "Input"
+msgstr "入力パッド"
+
+#: ../scm/japanese-custom.scm:492
+#, fuzzy
+msgid "Next input"
+msgstr "直接入力"
+
+#: ../scm/japanese-custom.scm:493
+msgid "Output"
+msgstr ""
+
+#: ../scm/japanese-custom.scm:494
+#, fuzzy
+msgid "Custom composing rule"
+msgstr "対応規則"
+
+#: ../scm/japanese-custom.scm:500
 msgid "Keep consonant Romaji not convertible to Kana"
 msgstr "かなに対応しない子音をローマ字として残す"
 
@@ -5290,7 +6171,7 @@ msgstr "SKK サーバ"
 msgid "Dictionary files"
 msgstr "辞書ファイル"
 
-#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:191
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:226
 msgid "Commit candidate by heading label keys"
 msgstr "見出し表示のキーで候補を確定する"
 
@@ -5298,7 +6179,7 @@ msgstr "見出し表示のキーで候補を確定する"
 msgid "ddskk-like"
 msgstr "ddskk風"
 
-#: ../scm/skk-custom.scm:81 ../scm/skk-custom.scm:435
+#: ../scm/skk-custom.scm:81 ../scm/skk-custom.scm:457
 msgid "Similar to ddskk"
 msgstr "ddskk風"
 
@@ -5315,86 +6196,96 @@ msgid "Use skkserv instead of SKK-JISYO"
 msgstr "辞書ファイルの代わりにSKKサーバを使用"
 
 #: ../scm/skk-custom.scm:356
+#, fuzzy
+msgid "Enable skkserv completion"
+msgstr "補完を有効にする"
+
+#: ../scm/skk-custom.scm:367
+#, fuzzy
+msgid "Timeout for skkserv completion (msec)"
+msgstr "Http通信のタイムアウト時間 (msec)"
+
+#: ../scm/skk-custom.scm:378
 msgid "Use value of environment variable SKKSERVER"
 msgstr "環境変数SKKSERVERを使用"
 
-#: ../scm/skk-custom.scm:367
+#: ../scm/skk-custom.scm:389
 msgid "Hostname of skkserv"
 msgstr "SKKサーバのホスト名"
 
-#: ../scm/skk-custom.scm:378
+#: ../scm/skk-custom.scm:400
 msgid "Port number of skkserv"
 msgstr "SKKサーバのポート番号"
 
-#: ../scm/skk-custom.scm:389
+#: ../scm/skk-custom.scm:411
 msgid "Auto"
 msgstr "自動"
 
-#: ../scm/skk-custom.scm:390
+#: ../scm/skk-custom.scm:412
 msgid "IPv4"
 msgstr "IPv4"
 
-#: ../scm/skk-custom.scm:391
+#: ../scm/skk-custom.scm:413
 msgid "Forces skkserv to use IPv4 addresses only"
 msgstr "SKKサーバとの接続にIPv4のみを使う"
 
-#: ../scm/skk-custom.scm:392
+#: ../scm/skk-custom.scm:414
 msgid "IPv6"
 msgstr "IPv6"
 
-#: ../scm/skk-custom.scm:393
+#: ../scm/skk-custom.scm:415
 msgid "Forces skkserv to use IPv6 addresses only"
 msgstr "SKKサーバとの接続にIPv6のみを使う"
 
-#: ../scm/skk-custom.scm:394
+#: ../scm/skk-custom.scm:416
 msgid "Address family of skkserv"
 msgstr "SKKサーバのアドレスファミリ"
 
-#: ../scm/skk-custom.scm:420
+#: ../scm/skk-custom.scm:442
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr "個人辞書ファイル (uim専用)"
 
-#: ../scm/skk-custom.scm:435
+#: ../scm/skk-custom.scm:457
 msgid "ddskk"
 msgstr "ddskk"
 
-#: ../scm/skk-custom.scm:437
+#: ../scm/skk-custom.scm:459
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: ../scm/skk-custom.scm:443 ../scm/tutcode-custom.scm:92
+#: ../scm/skk-custom.scm:465 ../scm/tutcode-custom.scm:98
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
-#: ../scm/skk-custom.scm:449
+#: ../scm/skk-custom.scm:471
 msgid "Use numeric conversion"
 msgstr "数値変換を使用する"
 
-#: ../scm/skk-custom.scm:461
+#: ../scm/skk-custom.scm:483
 msgid "Enable dynamic completion"
 msgstr "動的補完を有効にする"
 
-#: ../scm/skk-custom.scm:467
+#: ../scm/skk-custom.scm:489
 msgid "Use UNIX look command for completion"
 msgstr "アルファベット変換時の補完にlookコマンドを使用"
 
-#: ../scm/skk-custom.scm:479
+#: ../scm/skk-custom.scm:501
 msgid "Use UNIX look dictionary file"
 msgstr "UNIX look辞書ファイル"
 
-#: ../scm/skk-custom.scm:494
+#: ../scm/skk-custom.scm:516
 msgid "Show annotation of candidate word"
 msgstr "候補の註釈を表示する"
 
-#: ../scm/skk-custom.scm:500
+#: ../scm/skk-custom.scm:522
 msgid "Show annotation also in preedit area"
 msgstr "編集領域内にも註釈を表示する"
 
-#: ../scm/skk-custom.scm:527
+#: ../scm/skk-custom.scm:549
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
-#: ../scm/skk-custom.scm:534
+#: ../scm/skk-custom.scm:556
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "改行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
@@ -5431,114 +6322,119 @@ msgid "[SKK] wide-latin mode"
 msgstr "[SKK] 全角英数入力モード"
 
 #: ../scm/skk-key-custom.scm:110
+#, fuzzy
+msgid "[SKK] kanji code input mode"
+msgstr "[TUT-Code] 漢字コード入力モード"
+
+#: ../scm/skk-key-custom.scm:116
 msgid "[SKK] kanji mode"
 msgstr "[SKK] 漢字入力モード"
 
-#: ../scm/skk-key-custom.scm:116
+#: ../scm/skk-key-custom.scm:122
 msgid "[SKK] halfwidth katakana mode"
 msgstr "[SKK] 半角カタカナ入力モード"
 
-#: ../scm/skk-key-custom.scm:122
+#: ../scm/skk-key-custom.scm:128
 msgid "[SKK] toggle hiragana/katakana mode"
 msgstr "[SKK] ひらがな/カタカナ入力モードを反転"
 
-#: ../scm/skk-key-custom.scm:128
+#: ../scm/skk-key-custom.scm:134
 msgid "[SKK] begin conversion"
 msgstr "[SKK] 変換開始"
 
-#: ../scm/skk-key-custom.scm:134
+#: ../scm/skk-key-custom.scm:140
 msgid "[SKK] commit"
 msgstr "[SKK] 確定"
 
-#: ../scm/skk-key-custom.scm:140
+#: ../scm/skk-key-custom.scm:146
 msgid "[SKK] cancel"
 msgstr "[SKK] キャンセル"
 
-#: ../scm/skk-key-custom.scm:150
+#: ../scm/skk-key-custom.scm:156
 msgid "[SKK] return"
 msgstr "[SKK] リターン"
 
-#: ../scm/skk-key-custom.scm:156
+#: ../scm/skk-key-custom.scm:162
 msgid "[SKK] begin latin conversion"
 msgstr "[SKK] アルファベット変換開始"
 
-#: ../scm/skk-key-custom.scm:162
+#: ../scm/skk-key-custom.scm:168
 msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr "[SKK] 全角英数字として確定"
 
-#: ../scm/skk-key-custom.scm:168
+#: ../scm/skk-key-custom.scm:174
 msgid "[SKK] commit as opposite case in latin conversion"
 msgstr "[SKK] 大文字/小文字を反転して確定"
 
-#: ../scm/skk-key-custom.scm:174
+#: ../scm/skk-key-custom.scm:180
 msgid "[SKK] begin completion"
 msgstr "[SKK] 補完開始"
 
-#: ../scm/skk-key-custom.scm:180
+#: ../scm/skk-key-custom.scm:186
 msgid "[SKK] next completion candidate"
 msgstr "[SKK] 次の補完候補"
 
-#: ../scm/skk-key-custom.scm:186
+#: ../scm/skk-key-custom.scm:192
 msgid "[SKK] previous completion candidate"
 msgstr "[SKK] 前の補完候補"
 
-#: ../scm/skk-key-custom.scm:192
+#: ../scm/skk-key-custom.scm:198
 msgid "[SKK] new completion using current completion"
 msgstr "[SKK] 現在の補完候補から新規に補完"
 
-#: ../scm/skk-key-custom.scm:198
+#: ../scm/skk-key-custom.scm:204
 msgid "[SKK] begin conversion with completion"
 msgstr "[SKK] 動的補完された語を変換開始"
 
-#: ../scm/skk-key-custom.scm:204
+#: ../scm/skk-key-custom.scm:210
 msgid "[SKK] commit the first candidate with completion"
 msgstr "[SKK] 動的補完された語を変換、確定"
 
-#: ../scm/skk-key-custom.scm:210
+#: ../scm/skk-key-custom.scm:216
 msgid "[SKK] join prefix or suffix"
 msgstr "[SKK] 接頭辞、接尾辞の入力"
 
-#: ../scm/skk-key-custom.scm:216
+#: ../scm/skk-key-custom.scm:222
 msgid "[SKK] ESC keys on vi-cooperative mode"
 msgstr "[SKK] vi協調モードでESCとして扱うキー"
 
-#: ../scm/skk-key-custom.scm:222
+#: ../scm/skk-key-custom.scm:228
 msgid "[SKK] no-operation on no-preedit state"
 msgstr "[SKK] 編集領域がない時に何もせず消費するキー"
 
-#: ../scm/skk-key-custom.scm:223
+#: ../scm/skk-key-custom.scm:229
 msgid "See [Anthy-dev 1616] and related messages for further information"
 msgstr "詳細は[Anthy-dev 1616]とそれに連なる投稿を参照してください"
 
-#: ../scm/skk-key-custom.scm:228
+#: ../scm/skk-key-custom.scm:234
 msgid "[SKK] purge the entry from dictionary"
 msgstr "[SKK] 個人辞書中の単語を削除"
 
-#: ../scm/skk-key-custom.scm:246
+#: ../scm/skk-key-custom.scm:252
 msgid "[SKK] next candidate"
 msgstr "[SKK] 次候補"
 
-#: ../scm/skk-key-custom.scm:252
+#: ../scm/skk-key-custom.scm:258
 msgid "[SKK] previous candidate"
 msgstr "[SKK] 前候補"
 
-#: ../scm/skk-key-custom.scm:258
+#: ../scm/skk-key-custom.scm:264
 msgid "[SKK] next page of candidate window"
 msgstr "[SKK] 候補ウィンドウの次ページ"
 
-#: ../scm/skk-key-custom.scm:264
+#: ../scm/skk-key-custom.scm:270
 msgid "[SKK] previous page of candidate window"
 msgstr "[SKK] 候補ウィンドウの前ページ"
 
-#: ../scm/skk-key-custom.scm:270
+#: ../scm/skk-key-custom.scm:276
 msgid "[SKK] backspace"
 msgstr "[SKK] バックスペース"
 
-#: ../scm/skk-key-custom.scm:276
+#: ../scm/skk-key-custom.scm:282
 msgid "[SKK] go left"
 msgstr "[SKK] 左に移動"
 
-#: ../scm/skk-key-custom.scm:282
+#: ../scm/skk-key-custom.scm:288
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
 
@@ -5821,149 +6717,256 @@ msgstr ""
 msgid "Enable learning in mazegaki conversion"
 msgstr "交ぜ書き変換の学習を有効にする"
 
-#: ../scm/tutcode-custom.scm:104
+#: ../scm/tutcode-custom.scm:92
+msgid "Number of candidates to be excluded from mazegaki learning"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:110
 msgid "Use Dvorak keyboard"
 msgstr "Dvorakキーボードを使用する"
 
-#: ../scm/tutcode-custom.scm:110
+#: ../scm/tutcode-custom.scm:116
 msgid "Enable two stroke kigou mode"
 msgstr "2ストローク記号入力モードを有効にする"
 
-#: ../scm/tutcode-custom.scm:116
+#: ../scm/tutcode-custom.scm:122
 msgid "Enable fallback of surrounding text API"
 msgstr "surrounding text APIの代替方法を有効にする"
 
-#: ../scm/tutcode-custom.scm:122
+#: ../scm/tutcode-custom.scm:128
+#, fuzzy
+msgid "Keep key sequence not convertible to Kanji"
+msgstr "かなに対応しない子音をローマ字として残す"
+
+#: ../scm/tutcode-custom.scm:134
+msgid "Delete leading delimiter on postfix kanji to sequence conversion"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:140
 msgid "History size"
 msgstr "確定文字列の履歴サイズ"
 
-#: ../scm/tutcode-custom.scm:128
+#: ../scm/tutcode-custom.scm:146
 msgid "Maximum length of yomi for postfix mazegaki conversion"
 msgstr "後置型交ぜ書き変換の読みの最大文字数"
 
-#: ../scm/tutcode-custom.scm:134
+#: ../scm/tutcode-custom.scm:152
 msgid "Enable inflection in mazegaki conversion"
 msgstr "交ぜ書き変換での活用する語の変換を有効にする"
 
-#: ../scm/tutcode-custom.scm:140
+#: ../scm/tutcode-custom.scm:158
 msgid "Maximum length of yomi suffix for mazegaki conversion"
 msgstr "交ぜ書き変換での読みの中の活用語尾の最大文字数"
 
-#: ../scm/tutcode-custom.scm:146
+#: ../scm/tutcode-custom.scm:165
+msgid "tc-2.1+[tcode-ml:1925]"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:167
+msgid "Kanchoku Win YAMANOBE"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:168
+msgid "tc-2.3.1-22.6"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:169
+#, fuzzy
+msgid "Bushu conversion algorithm"
+msgstr "部首合成変換"
+
+#: ../scm/tutcode-custom.scm:175
 msgid "Enable interactive bushu conversion"
 msgstr "対話的な部首合成変換を有効にする"
 
-#: ../scm/tutcode-custom.scm:153
+#: ../scm/tutcode-custom.scm:182
 msgid "bushu.index2 file"
 msgstr "bushu.index2ファイル"
 
-#: ../scm/tutcode-custom.scm:160
+#: ../scm/tutcode-custom.scm:189
 msgid "bushu.expand file"
 msgstr "bushu.expandファイル"
 
-#: ../scm/tutcode-custom.scm:176
-msgid "Use table style candidate window"
-msgstr "表形式の候補ウィンドウを使用する"
+#: ../scm/tutcode-custom.scm:195
+#, fuzzy
+msgid "bushu.help file"
+msgstr "bushu.expandファイル"
 
-#: ../scm/tutcode-custom.scm:182
+#: ../scm/tutcode-custom.scm:211
 msgid "qwerty-jis"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:182
+#: ../scm/tutcode-custom.scm:211
 msgid "Qwerty JIS"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:183
+#: ../scm/tutcode-custom.scm:212
 msgid "qwerty-us"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:183
+#: ../scm/tutcode-custom.scm:212
 msgid "Qwerty US"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:184
+#: ../scm/tutcode-custom.scm:213
 msgid "dvorak"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:184
+#: ../scm/tutcode-custom.scm:213
 msgid "Dvorak"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:185
+#: ../scm/tutcode-custom.scm:214
 msgid "Key layout of table style candidate window"
 msgstr "表形式の候補ウィンドウのキー配列"
 
-#: ../scm/tutcode-custom.scm:209
+#: ../scm/tutcode-custom.scm:220
+msgid "always"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:220
+msgid "All keys as label key"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:221
+#, fuzzy
+msgid "which have candidate"
+msgstr "[ELatin] 候補を選択"
+
+#: ../scm/tutcode-custom.scm:222
+msgid "Enable keys which have candidate"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:223
+#, fuzzy
+msgid "while candidate window is shown"
+msgstr "候補ウィンドウを使用する"
+
+#: ../scm/tutcode-custom.scm:224
+#, fuzzy
+msgid "Enable while candidate window is shown"
+msgstr "表形式の候補ウィンドウを使用する"
+
+#: ../scm/tutcode-custom.scm:225
+msgid "never"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:225
+msgid "Never"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:244
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:215
+#: ../scm/tutcode-custom.scm:250
 msgid "Number of candidates in candidate window at a time for prediction"
 msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:221
+#: ../scm/tutcode-custom.scm:256
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
 msgstr "熟語ガイドにおいて候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:227
+#: ../scm/tutcode-custom.scm:262
 msgid "Number of candidates in candidate window at a time for history"
 msgstr "ヒストリ入力において候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:233
+#: ../scm/tutcode-custom.scm:268
 msgid "Use stroke help window"
 msgstr "仮想鍵盤ウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:239
+#: ../scm/tutcode-custom.scm:274
+#, fuzzy
+msgid "Show stroke help window on no input"
+msgstr "仮想鍵盤ウィンドウを使用する"
+
+#: ../scm/tutcode-custom.scm:280
 msgid "Use auto help window"
 msgstr "自動ヘルプウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:245
+#: ../scm/tutcode-custom.scm:286
 msgid "Show real keys on auto help window"
 msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
-#: ../scm/tutcode-custom.scm:251
-msgid "bushu.help file for auto help"
-msgstr "自動ヘルプ用bushu.helpファイル"
+#: ../scm/tutcode-custom.scm:292
+#, fuzzy
+msgid "Use delay showing candidate window"
+msgstr "常に候補ウィンドウを表示する"
 
-#: ../scm/tutcode-custom.scm:258
+#: ../scm/tutcode-custom.scm:298
+#, fuzzy
+msgid "Delay before showing candidate window for mazegaki [s]"
+msgstr "常に候補ウィンドウを表示する"
+
+#: ../scm/tutcode-custom.scm:304
+#, fuzzy
+msgid "Delay before showing candidate window for stroke help [s]"
+msgstr "常に候補ウィンドウを表示する"
+
+#: ../scm/tutcode-custom.scm:310
+#, fuzzy
+msgid "Delay before showing candidate window for auto help [s]"
+msgstr "常に候補ウィンドウを表示する"
+
+#: ../scm/tutcode-custom.scm:316
+#, fuzzy
+msgid "Delay before showing candidate window for completion [s]"
+msgstr "常に候補ウィンドウを表示する"
+
+#: ../scm/tutcode-custom.scm:322
+#, fuzzy
+msgid "Delay before showing candidate window for prediction [s]"
+msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
+
+#: ../scm/tutcode-custom.scm:328
+#, fuzzy
+msgid "Delay before showing candidate window for bushu prediction [s]"
+msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
+
+#: ../scm/tutcode-custom.scm:334
+msgid ""
+"Delay before showing candidate window for interactive bushu conversion [s]"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:341
 msgid "Enable completion"
 msgstr "補完を有効にする"
 
-#: ../scm/tutcode-custom.scm:264
+#: ../scm/tutcode-custom.scm:347
 msgid "Minimum character length for completion"
 msgstr "補完の際に考慮する文字数の最小値"
 
-#: ../scm/tutcode-custom.scm:270
+#: ../scm/tutcode-custom.scm:353
 msgid "Maximum character length for completion"
 msgstr "補完の際に考慮する文字数の最大値"
 
-#: ../scm/tutcode-custom.scm:276
+#: ../scm/tutcode-custom.scm:359
 msgid "Enable input prediction for mazegaki conversion"
 msgstr "交ぜ書き変換中の予測入力を有効にする"
 
-#: ../scm/tutcode-custom.scm:288
+#: ../scm/tutcode-custom.scm:371
 msgid "Enable Kanji combination guide"
 msgstr "熟語ガイドを有効にする"
 
-#: ../scm/tutcode-custom.scm:294
+#: ../scm/tutcode-custom.scm:377
 msgid "Full stroke help"
 msgstr "仮想鍵盤"
 
-#: ../scm/tutcode-custom.scm:295
+#: ../scm/tutcode-custom.scm:378
 msgid "Guide only"
 msgstr "熟語ガイドのみ"
 
-#: ../scm/tutcode-custom.scm:296
+#: ../scm/tutcode-custom.scm:379
 msgid "Disable"
 msgstr "無効"
 
-#: ../scm/tutcode-custom.scm:297
+#: ../scm/tutcode-custom.scm:380
 msgid "Show stroke help temporarily by keys in kanji combination guide"
 msgstr "熟語ガイドに従って入力する際に一時的に仮想鍵盤を表示する"
 
-#: ../scm/tutcode-custom.scm:303
+#: ../scm/tutcode-custom.scm:386
 msgid "Enable input prediction for bushu conversion"
 msgstr "部首合成変換中の予測入力を有効にする"
 
@@ -5975,207 +6978,417 @@ msgstr "TUT-Code キー設定1"
 msgid "TUT-Code key bindings 2"
 msgstr "TUT-Code キー設定2"
 
-#: ../scm/tutcode-key-custom.scm:47
+#: ../scm/tutcode-key-custom.scm:45
+#, fuzzy
+msgid "TUT-Code key bindings 3"
+msgstr "TUT-Code キー設定1"
+
+#: ../scm/tutcode-key-custom.scm:51
 msgid "[TUT-Code] on"
 msgstr "[TUT-Code] オン"
 
-#: ../scm/tutcode-key-custom.scm:53
+#: ../scm/tutcode-key-custom.scm:57
 msgid "[TUT-Code] off"
 msgstr "[TUT-Code] オフ"
 
-#: ../scm/tutcode-key-custom.scm:59
+#: ../scm/tutcode-key-custom.scm:63
 msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
 
-#: ../scm/tutcode-key-custom.scm:65
+#: ../scm/tutcode-key-custom.scm:69
 msgid "[TUT-Code] toggle kigou mode"
 msgstr "[TUT-Code] 記号入力モードを反転"
 
-#: ../scm/tutcode-key-custom.scm:71
+#: ../scm/tutcode-key-custom.scm:75
 msgid "[TUT-Code] toggle two stroke kigou mode"
 msgstr "[TUT-Code] 2ストローク記号入力モードを反転"
 
-#: ../scm/tutcode-key-custom.scm:77
+#: ../scm/tutcode-key-custom.scm:81
 msgid "[TUT-Code] mazegaki conversion mode"
 msgstr "[TUT-Code] 交ぜ書き変換モード"
 
-#: ../scm/tutcode-key-custom.scm:83
+#: ../scm/tutcode-key-custom.scm:87
 msgid "[TUT-Code] bushu conversion mode"
 msgstr "[TUT-Code] 部首合成変換モード"
 
-#: ../scm/tutcode-key-custom.scm:89
+#: ../scm/tutcode-key-custom.scm:93
 msgid "[TUT-Code] interactive bushu conversion mode"
 msgstr "[TUT-Code] 対話的な部首合成変換モード"
 
-#: ../scm/tutcode-key-custom.scm:95
-msgid "[TUT-Code] postfix bushu conversion"
-msgstr "[TUT-Code] 後置型部首合成変換"
-
-#: ../scm/tutcode-key-custom.scm:101
-msgid "[TUT-Code] postfix mazegaki conversion"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用しない語)"
-
-#: ../scm/tutcode-key-custom.scm:107
-msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
-
-#: ../scm/tutcode-key-custom.scm:113
-msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
-
-#: ../scm/tutcode-key-custom.scm:119
-msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
-
-#: ../scm/tutcode-key-custom.scm:125
-msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
-
-#: ../scm/tutcode-key-custom.scm:131
-msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
-
-#: ../scm/tutcode-key-custom.scm:137
-msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
-
-#: ../scm/tutcode-key-custom.scm:143
-msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
-
-#: ../scm/tutcode-key-custom.scm:149
-msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
-
-#: ../scm/tutcode-key-custom.scm:155
-msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
-
-#: ../scm/tutcode-key-custom.scm:161
-msgid "[TUT-Code] postfix mazegaki conversion with inflection"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
-
-#: ../scm/tutcode-key-custom.scm:167
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み1文字)"
-
-#: ../scm/tutcode-key-custom.scm:173
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み2文字)"
-
-#: ../scm/tutcode-key-custom.scm:179
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み3文字)"
-
-#: ../scm/tutcode-key-custom.scm:185
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み4文字)"
-
-#: ../scm/tutcode-key-custom.scm:191
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み5文字)"
-
-#: ../scm/tutcode-key-custom.scm:197
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み6文字)"
-
-#: ../scm/tutcode-key-custom.scm:203
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み7文字)"
-
-#: ../scm/tutcode-key-custom.scm:209
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み8文字)"
-
-#: ../scm/tutcode-key-custom.scm:215
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み9文字)"
-
-#: ../scm/tutcode-key-custom.scm:221
+#: ../scm/tutcode-key-custom.scm:99
 msgid "[TUT-Code] latin conversion mode"
 msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
 
-#: ../scm/tutcode-key-custom.scm:227
+#: ../scm/tutcode-key-custom.scm:105
 msgid "[TUT-Code] kanji code input mode"
 msgstr "[TUT-Code] 漢字コード入力モード"
 
-#: ../scm/tutcode-key-custom.scm:233
+#: ../scm/tutcode-key-custom.scm:111
 msgid "[TUT-Code] history"
 msgstr "[TUT-Code] ヒストリ入力モード"
 
-#: ../scm/tutcode-key-custom.scm:239
+#: ../scm/tutcode-key-custom.scm:117
 msgid "[TUT-Code] display last auto help"
 msgstr "[TUT-Code] 直近の自動ヘルプを表示"
 
-#: ../scm/tutcode-key-custom.scm:245
+#: ../scm/tutcode-key-custom.scm:123
 msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
 msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
 
-#: ../scm/tutcode-key-custom.scm:251
+#: ../scm/tutcode-key-custom.scm:129
 msgid "[TUT-Code] toggle use of stroke help window"
 msgstr "[TUT-Code] 仮想鍵盤ウィンドウの表示を反転"
 
-#: ../scm/tutcode-key-custom.scm:257
+#: ../scm/tutcode-key-custom.scm:135
 msgid "[TUT-Code] begin completion"
 msgstr "[TUT-Code] 補完開始"
 
-#: ../scm/tutcode-key-custom.scm:263
+#: ../scm/tutcode-key-custom.scm:141
 msgid "[TUT-Code] begin conversion"
 msgstr "[TUT-Code] 変換開始"
 
-#: ../scm/tutcode-key-custom.scm:269
+#: ../scm/tutcode-key-custom.scm:147
 msgid "[TUT-Code] commit"
 msgstr "[TUT-Code] 確定"
 
-#: ../scm/tutcode-key-custom.scm:275
+#: ../scm/tutcode-key-custom.scm:153
 msgid "[TUT-Code] cancel"
 msgstr "[TUT-Code] キャンセル"
 
-#: ../scm/tutcode-key-custom.scm:281
+#: ../scm/tutcode-key-custom.scm:159
 msgid "[TUT-Code] next candidate"
 msgstr "[TUT-Code] 次候補"
 
-#: ../scm/tutcode-key-custom.scm:287
+#: ../scm/tutcode-key-custom.scm:165
 msgid "[TUT-Code] previous candidate"
 msgstr "[TUT-Code] 前候補"
 
-#: ../scm/tutcode-key-custom.scm:293
+#: ../scm/tutcode-key-custom.scm:171
+#, fuzzy
+msgid "[TUT-Code] undo last commit"
+msgstr "[TUT-Code] 確定"
+
+#: ../scm/tutcode-key-custom.scm:177
+#, fuzzy
+msgid "[TUT-Code] display help for char at current position"
+msgstr "[TUT-Code] 直近の自動ヘルプを表示"
+
+#: ../scm/tutcode-key-custom.scm:183
+#, fuzzy
+msgid "[TUT-Code] display help for string on clipboard"
+msgstr "[TUT-Code] 直近の自動ヘルプを表示"
+
+#: ../scm/tutcode-key-custom.scm:189
+#, fuzzy
+msgid "[TUT-Code] paste from clipboard"
+msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
+
+#: ../scm/tutcode-key-custom.scm:195
+#, fuzzy
+msgid "[TUT-Code] sequence to kanji conversion on clipboard"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:201
+#, fuzzy
+msgid "[TUT-Code] mazegaki conversion on selection"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:207
+#, fuzzy
+msgid "[TUT-Code] mazegaki conversion with inflection on selection"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
+
+#: ../scm/tutcode-key-custom.scm:213
+#, fuzzy
+msgid "[TUT-Code] katakana conversion on selection"
+msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
+
+#: ../scm/tutcode-key-custom.scm:219
+#, fuzzy
+msgid "[TUT-Code] kanji to sequence conversion on selection"
+msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
+
+#: ../scm/tutcode-key-custom.scm:225
+#, fuzzy
+msgid "[TUT-Code] sequence to kanji conversion on selection"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
+
+#: ../scm/tutcode-key-custom.scm:231
 msgid "[TUT-Code] next page of candidate window"
 msgstr "[TUT-Code] 候補ウィンドウの次ページ"
 
-#: ../scm/tutcode-key-custom.scm:299
+#: ../scm/tutcode-key-custom.scm:237
 msgid "[TUT-Code] previous page of candidate window"
 msgstr "[TUT-Code] 候補ウィンドウの前ページ"
 
-#: ../scm/tutcode-key-custom.scm:305
+#: ../scm/tutcode-key-custom.scm:243
 msgid "[TUT-Code] backspace"
 msgstr "[TUT-Code] バックスペース"
 
-#: ../scm/tutcode-key-custom.scm:311
+#: ../scm/tutcode-key-custom.scm:249
 msgid "[TUT-Code] return"
 msgstr "[TUT-Code] リターン"
 
-#: ../scm/tutcode-key-custom.scm:317
+#: ../scm/tutcode-key-custom.scm:255
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr "[TUT-Code] vi協調モードでESCとして扱うキー"
 
-#: ../scm/tutcode-key-custom.scm:323
+#: ../scm/tutcode-key-custom.scm:261
 msgid "[TUT-Code] register new entry to dictionary"
 msgstr "[TUT-Code] 交ぜ書き変換個人辞書に単語を登録"
 
-#: ../scm/tutcode-key-custom.scm:329
+#: ../scm/tutcode-key-custom.scm:267
 msgid "[TUT-Code] purge the entry from dictionary"
 msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
 
-#: ../scm/tutcode-key-custom.scm:335
+#: ../scm/tutcode-key-custom.scm:273
 msgid "[TUT-Code] relimit yomi to left in mazegaki"
 msgstr "[TUT-Code] 交ぜ書き変換で読みを伸ばす"
 
-#: ../scm/tutcode-key-custom.scm:341
+#: ../scm/tutcode-key-custom.scm:279
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr "[TUT-Code] 交ぜ書き変換で読みを縮める"
 
-#: ../scm/tutcode.scm:774
+#: ../scm/tutcode-key-custom.scm:285
+#, fuzzy
+msgid "[TUT-Code] insert pending key strokes"
+msgstr "[TUT-Code] 次候補"
+
+#: ../scm/tutcode-key-custom.scm:291
+msgid "[TUT-Code] postfix bushu conversion"
+msgstr "[TUT-Code] 後置型部首合成変換"
+
+#: ../scm/tutcode-key-custom.scm:297
+msgid "[TUT-Code] postfix mazegaki conversion"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用しない語)"
+
+#: ../scm/tutcode-key-custom.scm:303
+msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+
+#: ../scm/tutcode-key-custom.scm:309
+msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+
+#: ../scm/tutcode-key-custom.scm:315
+msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+
+#: ../scm/tutcode-key-custom.scm:321
+msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+
+#: ../scm/tutcode-key-custom.scm:327
+msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+
+#: ../scm/tutcode-key-custom.scm:333
+msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+
+#: ../scm/tutcode-key-custom.scm:339
+msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+
+#: ../scm/tutcode-key-custom.scm:345
+msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+
+#: ../scm/tutcode-key-custom.scm:351
+msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+
+#: ../scm/tutcode-key-custom.scm:357
+msgid "[TUT-Code] postfix mazegaki conversion with inflection"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
+
+#: ../scm/tutcode-key-custom.scm:363
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み1文字)"
+
+#: ../scm/tutcode-key-custom.scm:369
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み2文字)"
+
+#: ../scm/tutcode-key-custom.scm:375
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み3文字)"
+
+#: ../scm/tutcode-key-custom.scm:381
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み4文字)"
+
+#: ../scm/tutcode-key-custom.scm:387
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み5文字)"
+
+#: ../scm/tutcode-key-custom.scm:393
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み6文字)"
+
+#: ../scm/tutcode-key-custom.scm:399
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み7文字)"
+
+#: ../scm/tutcode-key-custom.scm:405
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み8文字)"
+
+#: ../scm/tutcode-key-custom.scm:411
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み9文字)"
+
+#: ../scm/tutcode-key-custom.scm:417
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用しない語)"
+
+#: ../scm/tutcode-key-custom.scm:423
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 1 character"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+
+#: ../scm/tutcode-key-custom.scm:429
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 2 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+
+#: ../scm/tutcode-key-custom.scm:435
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 3 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+
+#: ../scm/tutcode-key-custom.scm:441
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 4 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+
+#: ../scm/tutcode-key-custom.scm:447
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 5 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+
+#: ../scm/tutcode-key-custom.scm:453
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 6 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+
+#: ../scm/tutcode-key-custom.scm:459
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 7 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+
+#: ../scm/tutcode-key-custom.scm:465
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 8 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+
+#: ../scm/tutcode-key-custom.scm:471
+#, fuzzy
+msgid "[TUT-Code] postfix katakana conversion of 9 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+
+#: ../scm/tutcode-key-custom.scm:477
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion"
+msgstr "[TUT-Code] 後置型部首合成変換"
+
+#: ../scm/tutcode-key-custom.scm:483
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+
+#: ../scm/tutcode-key-custom.scm:489
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+
+#: ../scm/tutcode-key-custom.scm:495
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+
+#: ../scm/tutcode-key-custom.scm:501
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+
+#: ../scm/tutcode-key-custom.scm:507
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+
+#: ../scm/tutcode-key-custom.scm:513
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+
+#: ../scm/tutcode-key-custom.scm:519
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+
+#: ../scm/tutcode-key-custom.scm:525
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+
+#: ../scm/tutcode-key-custom.scm:531
+#, fuzzy
+msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+
+#: ../scm/tutcode-key-custom.scm:537
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion"
+msgstr "[TUT-Code] 後置型部首合成変換"
+
+#: ../scm/tutcode-key-custom.scm:543
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+
+#: ../scm/tutcode-key-custom.scm:549
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+
+#: ../scm/tutcode-key-custom.scm:555
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+
+#: ../scm/tutcode-key-custom.scm:561
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+
+#: ../scm/tutcode-key-custom.scm:567
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+
+#: ../scm/tutcode-key-custom.scm:573
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+
+#: ../scm/tutcode-key-custom.scm:579
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+
+#: ../scm/tutcode-key-custom.scm:585
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+
+#: ../scm/tutcode-key-custom.scm:591
+#, fuzzy
+msgid "[TUT-Code] postfix sequence to kanji conversion of 9 characters"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+
+#: ../scm/tutcode.scm:905
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr "libuim-skk.soが利用不可能なため、交ぜ書き変換は無効"
 
@@ -6604,11 +7817,11 @@ msgstr "入力メソッド環境 (uim) を設定します"
 msgid "Input Method"
 msgstr "入力メソッド"
 
-#: ../uim/m17nlib.c:479
+#: ../uim/m17nlib.c:482
 msgid "m17n library IM open error"
 msgstr "m17nライブラリ IMオープンエラー"
 
-#: ../uim/m17nlib.c:518
+#: ../uim/m17nlib.c:521
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
@@ -6640,18 +7853,31 @@ msgid "uim-openssl: DTLSv1_client_method() is not supported on this system"
 msgstr ""
 "uim-openssl: DTLSv1_client_method()はこのシステムではサポートされていません"
 
-#: ../uim/skk.c:1043
+#: ../uim/skk.c:1054
 msgid "uim-skk: error in expand_str"
 msgstr "uim-skk: expand_strでエラー。"
 
-#: ../uim/skk.c:1058
+#: ../uim/skk.c:1069
 msgid "uim-skk: too long word"
 msgstr "uim-skk: 語が長すぎます。"
 
-#: ../uim/skk.c:3696
+#: ../uim/skk.c:1967
+#, fuzzy
+msgid "SKK server without completion capability\n"
+msgstr "[SKK] 前の補完候補"
+
+#: ../uim/skk.c:3830
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: ポート%sへ接続できませんでした。"
+
+#: ../uim/uim.c:769
+msgid "builtin"
+msgstr ""
+
+#: ../uim/uim.c:769
+msgid "libuim builtin"
+msgstr ""
 
 #: ../uim/uim-eb.c:100
 #, c-format
@@ -6690,6 +7916,15 @@ msgid ""
 msgstr ""
 "uim-wnn: \"%s\"は存在しません。uim-prefを起動して、\"Wnn設定ファイル\"を設定"
 "してください(おそらくファイル名は\"wnnenvrc\"です)。"
+
+#~ msgid "Edit Keys"
+#~ msgstr "キーを編集"
+
+#~ msgid "Edit Ordered List"
+#~ msgstr "順序付きリストを編集"
+
+#~ msgid "bushu.help file for auto help"
+#~ msgstr "自動ヘルプ用bushu.helpファイル"
 
 #~ msgid "Danish alternative postfix"
 #~ msgstr "デンマーク語 (亜流後置修飾)"
