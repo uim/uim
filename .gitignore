@@ -1,5 +1,6 @@
 
 # /
+/ChangeLog
 /Makefile.in
 /Makefile
 /aclocal.m4
@@ -22,6 +23,9 @@
 /uim.desktop
 /uim.pc
 /uim.spec
+/uim-*.*.tar.bz2
+/uim-*.tar.gz
+/uim-*/
 
 # /byeru-data/
 /byeoru-data/Makefile
