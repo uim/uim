@@ -87,6 +87,7 @@
 /gtk2/dict/.deps/
 /gtk2/dict/Makefile
 /gtk2/dict/Makefile.in
+/gtk2/dict/uim-dict-gtk
 /gtk2/dict/uim-dict-ui.xml
 
 # /gtk2/immodule/
@@ -159,6 +160,7 @@
 /gtk3/dict/.deps/
 /gtk3/dict/Makefile
 /gtk3/dict/Makefile.in
+/gtk3/dict/uim-dict-gtk3
 /gtk3/dict/uim-dict-ui.xml
 
 # /gtk3/immodule/
@@ -346,6 +348,7 @@
 /po/Makefile
 /po/POTFILES
 /po/stamp-it
+/po/uim.pot
 /po/*.gmo
 
 # /qt3/
@@ -354,8 +357,12 @@
 
 # /qt3/candwin/
 /qt3/candwin/.deps/
+/qt3/candwin/.libs/
+/qt3/candwin/uim-candwin-qt
 /qt3/candwin/Makefile
 /qt3/candwin/Makefile.in
+/qt3/candwin/*.moc
+/qt3/candwin/*.o
 
 # /qt3/chardict/
 /qt3/chardict/.deps/
@@ -366,32 +373,59 @@
 /qt3/chardict/po/Makefile.in.in
 /qt3/chardict/po/POTFILES
 /qt3/chardict/po/stamp-it
+/qt3/chardict/uim-chardict-qt
+/qt3/chardict/*.moc
+/qt3/chardict/*.o
 
 # /qt3/immodule/
 /qt3/immodule/.deps/
+/qt3/immodule/.libs/
 /qt3/immodule/Makefile
 /qt3/immodule/Makefile.in
+/qt3/immodule/*.la
+/qt3/immodule/*.lo
+/qt3/immodule/*.moc
 
 # /qt3/pref/
 /qt3/pref/.deps/
+/qt3/pref/.libs/
 /qt3/pref/Makefile
 /qt3/pref/Makefile.in
+/qt3/pref/keyeditformbase.cpp
+/qt3/pref/keyeditformbase.h
+/qt3/pref/olisteditformbase.cpp
+/qt3/pref/olisteditformbase.h
+/qt3/pref/uim-pref-qt
+/qt3/pref/*.moc
+/qt3/pref/*.o
 
 # /qt3/switcher/
 /qt3/switcher/.deps/
+/qt3/switcher/.libs/
 /qt3/switcher/Makefile
 /qt3/switcher/Makefile.in
+/qt3/switcher/uim-im-switcher-qt
+/qt3/switcher/*.moc
+/qt3/switcher/*.o
 
 # /qt3/test/
 /qt3/test/.deps/
 /qt3/test/Makefile
 /qt3/test/Makefile.in
+/qt3/test/qedittest
+/qt3/test/*.o
 
 # /qt3/toolbar/
 /qt3/toolbar/.deps/
+/qt3/toolbar/.libs/
 /qt3/toolbar/Makefile
 /qt3/toolbar/Makefile.in
 /qt3/toolbar/uimapplet.desktop
+/qt3/toolbar/uim-toolbar-qt
+/qt3/toolbar/*.la
+/qt3/toolbar/*.lo
+/qt3/toolbar/*.moc
+/qt3/toolbar/*.o
 
 # /qt4/
 /qt4/Makefile.in
