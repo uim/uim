@@ -38,6 +38,7 @@
 
 #include <uim/uim.h>
 
+// enable per page candidates handling
 #define UIM_QT_USE_NEW_PAGE_HANDLING 1
 
 class QLabel;
