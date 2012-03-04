@@ -176,6 +176,11 @@ uim_context QUimInputContext::createUimContext( const char *imname )
                                  QUimTextUtil::acquire_text_cb,
                                  QUimTextUtil::delete_text_cb);
 
+#if UIM_QT_USE_DELAY
+    uim_set_delay_candidate_selector_cb( uc,
+        QUimInputContext::cand_activate_with_delay_cb );
+#endif /* !UIM_QT_USE_DELAY */
+
     uim_prop_list_update( uc );
 
     return uc;
@@ -629,6 +634,14 @@ void QUimInputContext::switch_system_global_im_cb( void *ptr, const char *name )
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->switch_system_global_im( name );
 }
+
+#if UIM_QT_USE_DELAY
+void QUimInputContext::cand_activate_with_delay_cb( void *ptr, int delay )
+{
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
+    ic->cwin->candidateActivateWithDelay( delay );
+}
+#endif /* !UIM_QT_USE_DELAY */
 
 void QUimInputContext::commitString( const QString& str )
 {

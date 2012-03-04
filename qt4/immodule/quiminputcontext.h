@@ -137,6 +137,8 @@ private:
     //imsw
     static void switch_app_global_im_cb( void *ptr, const char *str );
     static void switch_system_global_im_cb( void *ptr, const char *str );
+    //delay
+    static void cand_activate_with_delay_cb( void *ptr, int delay );
     /* real functions for callbacks (correspond order) */
     //preedit
     void clearPreedit();

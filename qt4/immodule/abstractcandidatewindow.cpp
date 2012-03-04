@@ -32,6 +32,7 @@
 */
 #include "abstractcandidatewindow.h"
 
+#include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QLabel>
@@ -57,6 +58,12 @@ AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
     // setup NumberLabel
     numLabel = new QLabel;
     numLabel->adjustSize();
+
+#ifdef UIM_QT_USE_DELAY
+    m_delayTimer = new QTimer(this);
+    m_delayTimer->setSingleShot(true);
+    connect(m_delayTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
+#endif /* !UIM_QT_USE_DELAY */
 }
 
 AbstractCandidateWindow::~AbstractCandidateWindow()
@@ -71,6 +78,10 @@ AbstractCandidateWindow::~AbstractCandidateWindow()
 
 void AbstractCandidateWindow::deactivateCandwin()
 {
+#ifdef UIM_QT_USE_DELAY
+    m_delayTimer->stop();
+#endif /* !UIM_QT_USE_DELAY */
+
     hide();
     clearCandidates();
 }
@@ -124,6 +135,10 @@ void AbstractCandidateWindow::layoutWindow(const QPoint &point,
 
 void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
 {
+#ifdef UIM_QT_USE_DELAY
+    m_delayTimer->stop();
+#endif /* !UIM_QT_USE_DELAY */
+
     QList<uim_candidate> list;
 
 #if !UIM_QT_USE_NEW_PAGE_HANDLING
@@ -153,6 +168,14 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
 #endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
     popup();
 }
+
+#ifdef UIM_QT_USE_DELAY
+void AbstractCandidateWindow::candidateActivateWithDelay(int delay)
+{
+    m_delayTimer->stop();
+    (delay > 0) ?  m_delayTimer->start(delay * 1000) : timerDone();
+}
+#endif /* !UIM_QT_USE_DELAY */
 
 void AbstractCandidateWindow::candidateSelect(int index)
 {
@@ -270,6 +293,25 @@ void AbstractCandidateWindow::setNrCandidates(int nrCands, int dLimit)
     }
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
+
+#ifdef UIM_QT_USE_DELAY 
+void AbstractCandidateWindow::timerDone()
+{
+    int nr = -1;
+    int display_limit = -1;
+    int selected_index = -1;
+    uim_delay_activating(ic->uimContext(), &nr, &display_limit,
+        &selected_index);
+    if (nr <= 0) {
+        return;
+    }
+    candidateActivate(nr, display_limit);
+    // TODO: ic->candwinIsActive = true;
+    if (selected_index >= 0) {
+        candidateSelect(selected_index);
+    }
+}
+#endif /* !UIM_QT_USE_DELAY */
 
 void AbstractCandidateWindow::setCandidates(int dl,
         const QList<uim_candidate> &candidates)

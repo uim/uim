@@ -40,8 +40,11 @@
 
 // enable per page candidates handling
 #define UIM_QT_USE_NEW_PAGE_HANDLING 1
+// enable delay showing candidate window
+#define UIM_QT_USE_DELAY 1
 
 class QLabel;
+class QTimer;
 
 class QUimInputContext;
 
@@ -65,6 +68,9 @@ class AbstractCandidateWindow : public QFrame
         void setQUimInputContext(QUimInputContext *m_ic) { ic = m_ic; }
 
         void candidateActivate(int nr, int displayLimit);
+#ifdef UIM_QT_USE_DELAY
+        void candidateActivateWithDelay(int delay);
+#endif /* !UIM_QT_USE_DELAY */
         void candidateSelect(int index);
         void candidateShiftPage(bool forward);
 
@@ -95,6 +101,11 @@ class AbstractCandidateWindow : public QFrame
         QList<bool> pageFilled;
 #endif
 
+#ifdef UIM_QT_USE_DELAY
+    private slots:
+        void timerDone();
+#endif /* !UIM_QT_USE_DELAY */
+
     private:
         void setCandidates(int displayLimit,
                 const QList<uim_candidate> &candidates);
@@ -115,6 +126,11 @@ class AbstractCandidateWindow : public QFrame
 #endif
         // config
         bool isAlwaysLeft;
+
+#ifdef UIM_QT_USE_DELAY
+        // timer for delay API
+        QTimer *m_delayTimer;
+#endif /* !UIM_QT_USE_DELAY */
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H */
