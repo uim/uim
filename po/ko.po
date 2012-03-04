@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2012-03-03 15:57+0900\n"
+"POT-Creation-Date: 2012-03-04 11:32+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -239,7 +239,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ../gtk2/dict/word-win-gtk.c:200 ../qt4/chardict/qt4.cpp:158
+#: ../gtk2/dict/word-win-gtk.c:200 ../qt4/chardict/qt4.cpp:157
 msgid "Clear"
 msgstr ""
 

@@ -47,8 +47,6 @@
 #undef _
 #endif
 #define _(String) mygettext(String)
-#define Q_(Context,String) \
-    QString::fromUtf8( dpgettext(GETTEXT_PACKAGE,Context,String) )
 /* undef original N_(String) macro for handling encoding */
 #ifdef N_
 #undef N_
@@ -63,5 +61,7 @@
 
 #define mygettext(String) QString::fromLocal8Bit( (const char *)(String) )
 #endif /* ENABLE_NLS */
+
+#define NC_(Context,String) N_(String)
 
 #endif /* Not def: UIM_QT_QTGETTEXT_H */
