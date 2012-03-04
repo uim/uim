@@ -33,8 +33,6 @@ SUCH DAMAGE.
 #include "unicodeviewwidget.h"
 #include "chargridview.h"
 
-#include <locale.h>
-
 #include <qlayout.h>
 #include <qvbox.h>
 #include <qlabel.h>
