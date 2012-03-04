@@ -167,6 +167,7 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     setPage(0);
 #endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
     popup();
+    ic->setActive();
 }
 
 #ifdef UIM_QT_USE_DELAY
@@ -306,7 +307,6 @@ void AbstractCandidateWindow::timerDone()
         return;
     }
     candidateActivate(nr, display_limit);
-    // TODO: ic->candwinIsActive = true;
     if (selected_index >= 0) {
         candidateSelect(selected_index);
     }

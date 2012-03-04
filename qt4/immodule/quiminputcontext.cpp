@@ -589,7 +589,6 @@ void QUimInputContext::cand_activate_cb( void *ptr, int nr, int displayLimit )
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->cwin->candidateActivate( nr, displayLimit );
-    ic->candwinIsActive = true;
 }
 
 void QUimInputContext::cand_select_cb( void *ptr, int index )
