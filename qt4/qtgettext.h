@@ -67,7 +67,6 @@
 #define _(String) mygettext(String)
 #endif /* ENABLE_NLS */
 
-#define GETTEXT_CONTEXT_GLUE "\004"
 #define NC_(Context,String) N_(String)
 
 #endif /* Not def: UIM_QT4_QTGETTEXT_H */
