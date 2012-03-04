@@ -62,6 +62,7 @@
 #define mygettext(String) QString::fromLocal8Bit( (const char *)(String) )
 #endif /* ENABLE_NLS */
 
+#define GETTEXT_CONTEXT_GLUE "\004"
 #define NC_(Context,String) N_(String)
 
 #endif /* Not def: UIM_QT_QTGETTEXT_H */
