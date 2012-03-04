@@ -227,9 +227,9 @@ void UnicodeViewWidget::setupWidgets()
     for ( int i = UBLOCK_SIZE - 1; i >= 0; i-- )
     {
         const QString uBlockName = uBlocks[ i ].getName();
-        QString originalStr;
-        originalStr += "chardict" GETTEXT_CONTEXT_GLUE + uBlockName;
-        const char *original = originalStr.toAscii().constData();
+        QByteArray originalArray;
+        originalArray += "chardict" GETTEXT_CONTEXT_GLUE + uBlockName.toAscii();
+        const char *original = originalArray.constData();
         QString translation = mygettext( original );
         if ( translation == original )
             translation = uBlockName;
