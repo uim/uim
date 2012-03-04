@@ -108,7 +108,7 @@ public:
 
     void updateIndicator( const QString &str );
 
-    void setActive() { candwinIsActive = true; }
+    void setCandwinActive() { candwinIsActive = true; }
 
 protected:
     uim_context createUimContext( const char *imname );

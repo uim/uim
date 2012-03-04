@@ -167,7 +167,7 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     setPage(0);
 #endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
     popup();
-    ic->setActive();
+    ic->setCandwinActive();
 }
 
 #ifdef UIM_QT_USE_DELAY
