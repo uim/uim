@@ -31,7 +31,7 @@ libuimnotify_growl_la_LIBADD = $(top_builddir)/replace/libreplace.la
 endif
 
 if KNOTIFY4
-all cleaninstall uninstall:
+all cleaninstall install uninstall:
 	( cd build; $(MAKE) $(AM_MAKEFLAGS) $@ )
 endif 
 
