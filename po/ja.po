@@ -1569,9 +1569,8 @@ msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
 #: ../qt4/pref/customwidgets.cpp:740
-#, fuzzy
 msgid "%1 - key configuration"
-msgstr "%s - キー設定"
+msgstr "%1 - キー設定"
 
 #: ../qt4/pref/customwidgets.cpp:1308 ../qt4/pref/keyeditformbase.cpp:55
 msgid "Remove"
@@ -1590,9 +1589,8 @@ msgid "Key Combination"
 msgstr "キー"
 
 #: ../qt4/pref/keyeditformbase.cpp:52
-#, fuzzy
 msgid "Add..."
-msgstr "追加(_D)..."
+msgstr "追加..."
 
 #: ../qt4/pref/olisteditformbase.cpp:51
 msgid "Available Items"
@@ -4902,33 +4900,28 @@ msgid "Composing rule"
 msgstr "対応規則"
 
 #: ../scm/japanese-custom.scm:483
-#, fuzzy
 msgid "Custom"
-msgstr "カスタムフィルタ"
+msgstr "カスタム"
 
 #: ../scm/japanese-custom.scm:484
-#, fuzzy
 msgid "Composing rule type"
-msgstr "対応規則"
+msgstr "対応規則の種類"
 
 #: ../scm/japanese-custom.scm:491
-#, fuzzy
 msgid "Input"
-msgstr "入力パッド"
+msgstr "入力"
 
 #: ../scm/japanese-custom.scm:492
-#, fuzzy
 msgid "Next input"
-msgstr "直接入力"
+msgstr "次の入力"
 
 #: ../scm/japanese-custom.scm:493
 msgid "Output"
-msgstr ""
+msgstr "出力"
 
 #: ../scm/japanese-custom.scm:494
-#, fuzzy
 msgid "Custom composing rule"
-msgstr "対応規則"
+msgstr "カスタム対応規則"
 
 #: ../scm/japanese-custom.scm:500
 msgid "Keep consonant Romaji not convertible to Kana"
@@ -6161,14 +6154,12 @@ msgid "Use skkserv instead of SKK-JISYO"
 msgstr "辞書ファイルの代わりにSKKサーバを使用"
 
 #: ../scm/skk-custom.scm:356
-#, fuzzy
 msgid "Enable skkserv completion"
-msgstr "補完を有効にする"
+msgstr "skkserv補完を有効にする"
 
 #: ../scm/skk-custom.scm:367
-#, fuzzy
 msgid "Timeout for skkserv completion (msec)"
-msgstr "Http通信のタイムアウト時間 (msec)"
+msgstr "skkserv補完のタイムアウト時間 (msec)"
 
 #: ../scm/skk-custom.scm:378
 msgid "Use value of environment variable SKKSERVER"
@@ -6287,9 +6278,8 @@ msgid "[SKK] wide-latin mode"
 msgstr "[SKK] 全角英数入力モード"
 
 #: ../scm/skk-key-custom.scm:110
-#, fuzzy
 msgid "[SKK] kanji code input mode"
-msgstr "[TUT-Code] 漢字コード入力モード"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:116
 msgid "[SKK] kanji mode"
@@ -6699,9 +6689,8 @@ msgid "Enable fallback of surrounding text API"
 msgstr "surrounding text APIの代替方法を有効にする"
 
 #: ../scm/tutcode-custom.scm:128
-#, fuzzy
 msgid "Keep key sequence not convertible to Kanji"
-msgstr "かなに対応しない子音をローマ字として残す"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:134
 msgid "Delete leading delimiter on postfix kanji to sequence conversion"
@@ -6736,9 +6725,8 @@ msgid "tc-2.3.1-22.6"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:169
-#, fuzzy
 msgid "Bushu conversion algorithm"
-msgstr "部首合成変換"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:175
 msgid "Enable interactive bushu conversion"
@@ -6753,9 +6741,8 @@ msgid "bushu.expand file"
 msgstr "bushu.expandファイル"
 
 #: ../scm/tutcode-custom.scm:195
-#, fuzzy
 msgid "bushu.help file"
-msgstr "bushu.expandファイル"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:211
 msgid "qwerty-jis"
@@ -6794,23 +6781,20 @@ msgid "All keys as label key"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:221
-#, fuzzy
 msgid "which have candidate"
-msgstr "[ELatin] 候補を選択"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:222
 msgid "Enable keys which have candidate"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:223
-#, fuzzy
 msgid "while candidate window is shown"
-msgstr "候補ウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:224
-#, fuzzy
 msgid "Enable while candidate window is shown"
-msgstr "表形式の候補ウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:225
 msgid "never"
@@ -6843,9 +6827,8 @@ msgid "Use stroke help window"
 msgstr "仮想鍵盤ウィンドウを使用する"
 
 #: ../scm/tutcode-custom.scm:274
-#, fuzzy
 msgid "Show stroke help window on no input"
-msgstr "仮想鍵盤ウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:280
 msgid "Use auto help window"
@@ -6856,39 +6839,32 @@ msgid "Show real keys on auto help window"
 msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
 #: ../scm/tutcode-custom.scm:292
-#, fuzzy
 msgid "Use delay showing candidate window"
-msgstr "常に候補ウィンドウを表示する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:298
-#, fuzzy
 msgid "Delay before showing candidate window for mazegaki [s]"
-msgstr "常に候補ウィンドウを表示する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:304
-#, fuzzy
 msgid "Delay before showing candidate window for stroke help [s]"
-msgstr "常に候補ウィンドウを表示する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:310
-#, fuzzy
 msgid "Delay before showing candidate window for auto help [s]"
-msgstr "常に候補ウィンドウを表示する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:316
-#, fuzzy
 msgid "Delay before showing candidate window for completion [s]"
-msgstr "常に候補ウィンドウを表示する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:322
-#, fuzzy
 msgid "Delay before showing candidate window for prediction [s]"
-msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:328
-#, fuzzy
 msgid "Delay before showing candidate window for bushu prediction [s]"
-msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:334
 msgid ""
@@ -6944,9 +6920,8 @@ msgid "TUT-Code key bindings 2"
 msgstr "TUT-Code キー設定2"
 
 #: ../scm/tutcode-key-custom.scm:45
-#, fuzzy
 msgid "TUT-Code key bindings 3"
-msgstr "TUT-Code キー設定1"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:51
 msgid "[TUT-Code] on"
@@ -7029,54 +7004,44 @@ msgid "[TUT-Code] previous candidate"
 msgstr "[TUT-Code] 前候補"
 
 #: ../scm/tutcode-key-custom.scm:171
-#, fuzzy
 msgid "[TUT-Code] undo last commit"
-msgstr "[TUT-Code] 確定"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:177
-#, fuzzy
 msgid "[TUT-Code] display help for char at current position"
-msgstr "[TUT-Code] 直近の自動ヘルプを表示"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:183
-#, fuzzy
 msgid "[TUT-Code] display help for string on clipboard"
-msgstr "[TUT-Code] 直近の自動ヘルプを表示"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:189
-#, fuzzy
 msgid "[TUT-Code] paste from clipboard"
-msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:195
-#, fuzzy
 msgid "[TUT-Code] sequence to kanji conversion on clipboard"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:201
-#, fuzzy
 msgid "[TUT-Code] mazegaki conversion on selection"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:207
-#, fuzzy
 msgid "[TUT-Code] mazegaki conversion with inflection on selection"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:213
-#, fuzzy
 msgid "[TUT-Code] katakana conversion on selection"
-msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:219
-#, fuzzy
 msgid "[TUT-Code] kanji to sequence conversion on selection"
-msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:225
-#, fuzzy
 msgid "[TUT-Code] sequence to kanji conversion on selection"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:231
 msgid "[TUT-Code] next page of candidate window"
@@ -7115,9 +7080,8 @@ msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr "[TUT-Code] 交ぜ書き変換で読みを縮める"
 
 #: ../scm/tutcode-key-custom.scm:285
-#, fuzzy
 msgid "[TUT-Code] insert pending key strokes"
-msgstr "[TUT-Code] 次候補"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:291
 msgid "[TUT-Code] postfix bushu conversion"
@@ -7204,154 +7168,124 @@ msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
 msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み9文字)"
 
 #: ../scm/tutcode-key-custom.scm:417
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用しない語)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:423
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 1 character"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:429
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 2 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:435
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 3 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:441
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 4 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:447
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 5 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:453
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 6 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:459
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 7 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:465
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 8 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:471
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion of 9 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:477
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion"
-msgstr "[TUT-Code] 後置型部首合成変換"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:483
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:489
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:495
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:501
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:507
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:513
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:519
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:525
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:531
-#, fuzzy
 msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:537
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion"
-msgstr "[TUT-Code] 後置型部首合成変換"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:543
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:549
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:555
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:561
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:567
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:573
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:579
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:585
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:591
-#, fuzzy
 msgid "[TUT-Code] postfix sequence to kanji conversion of 9 characters"
-msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
+msgstr ""
 
 #: ../scm/tutcode.scm:905
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
@@ -7827,9 +7761,8 @@ msgid "uim-skk: too long word"
 msgstr "uim-skk: 語が長すぎます。"
 
 #: ../uim/skk.c:1967
-#, fuzzy
 msgid "SKK server without completion capability\n"
-msgstr "[SKK] 前の補完候補"
+msgstr ""
 
 #: ../uim/skk.c:3830
 #, c-format

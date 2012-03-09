@@ -624,9 +624,8 @@ msgid "Bushu List"
 msgstr ""
 
 #: ../qt3/chardict/qt.cpp:113 ../qt4/chardict/qt4.cpp:142
-#, fuzzy
 msgid "Mode:"
-msgstr " 모드"
+msgstr ""
 
 #: ../qt3/chardict/qt.cpp:115 ../qt4/chardict/qt4.cpp:144
 msgid "Bushu Search"
@@ -637,9 +636,8 @@ msgid "Unicode Search"
 msgstr ""
 
 #: ../qt3/chardict/qt.cpp:122 ../qt4/chardict/qt4.cpp:149
-#, fuzzy
 msgid "Select Font"
-msgstr "선택..."
+msgstr ""
 
 #: ../qt3/chardict/qt.cpp:126 ../qt4/chardict/qt4.cpp:153
 msgid "Chars:"
@@ -827,10 +825,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:98
 #: ../qt4/chardict/unicodeviewwidget.cpp:99
-#, fuzzy
 msgctxt "chardict"
 msgid "Hangul Jamo"
-msgstr "로마자"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:99
 #: ../qt4/chardict/unicodeviewwidget.cpp:100
@@ -936,10 +933,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:116
 #: ../qt4/chardict/unicodeviewwidget.cpp:117
-#, fuzzy
 msgctxt "chardict"
 msgid "General Punctuation"
-msgstr "주석을 사용"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:117
 #: ../qt4/chardict/unicodeviewwidget.cpp:118
@@ -1123,10 +1119,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:147
 #: ../qt4/chardict/unicodeviewwidget.cpp:148
-#, fuzzy
 msgctxt "chardict"
 msgid "Hangul Compatibility Jamo"
-msgstr "로마자"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:148
 #: ../qt4/chardict/unicodeviewwidget.cpp:149
@@ -1274,10 +1269,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:172
 #: ../qt4/chardict/unicodeviewwidget.cpp:173
-#, fuzzy
 msgctxt "chardict"
 msgid "Specials"
-msgstr "파일을 지정하십시오"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:173
 #: ../qt4/chardict/unicodeviewwidget.cpp:174
@@ -1480,9 +1474,8 @@ msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
 
 #: ../qt4/pref/customwidgets.cpp:740
-#, fuzzy
 msgid "%1 - key configuration"
-msgstr "%s - 키 설정"
+msgstr ""
 
 #: ../qt4/pref/customwidgets.cpp:1308 ../qt4/pref/keyeditformbase.cpp:55
 msgid "Remove"
@@ -4795,14 +4788,12 @@ msgid "Composing rule type"
 msgstr ""
 
 #: ../scm/japanese-custom.scm:491
-#, fuzzy
 msgid "Input"
-msgstr "입력 패드"
+msgstr ""
 
 #: ../scm/japanese-custom.scm:492
-#, fuzzy
 msgid "Next input"
-msgstr "직접 입력"
+msgstr ""
 
 #: ../scm/japanese-custom.scm:493
 msgid "Output"
@@ -6167,9 +6158,8 @@ msgid "[SKK] wide-latin mode"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:110
-#, fuzzy
 msgid "[SKK] kanji code input mode"
-msgstr "입력 모드 표시"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:116
 msgid "[SKK] kanji mode"
@@ -6674,14 +6664,12 @@ msgid "Enable keys which have candidate"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:223
-#, fuzzy
 msgid "while candidate window is shown"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:224
-#, fuzzy
 msgid "Enable while candidate window is shown"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:225
 msgid "never"
@@ -6726,9 +6714,8 @@ msgid "Show real keys on auto help window"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:292
-#, fuzzy
 msgid "Use delay showing candidate window"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:298
 msgid "Delay before showing candidate window for mazegaki [s]"
@@ -6808,9 +6795,8 @@ msgid "TUT-Code key bindings 2"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:45
-#, fuzzy
 msgid "TUT-Code key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:51
 msgid "[TUT-Code] on"

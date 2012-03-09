@@ -634,10 +634,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:68
 #: ../qt4/chardict/unicodeviewwidget.cpp:69
-#, fuzzy
 msgctxt "chardict"
 msgid "Basic Latin"
-msgstr "Latin"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:69
 #: ../qt4/chardict/unicodeviewwidget.cpp:70
@@ -677,10 +676,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:75
 #: ../qt4/chardict/unicodeviewwidget.cpp:76
-#, fuzzy
 msgctxt "chardict"
 msgid "Greek and Coptic"
-msgstr "Groenlandais"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:76
 #: ../qt4/chardict/unicodeviewwidget.cpp:77
@@ -696,31 +694,27 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:78
 #: ../qt4/chardict/unicodeviewwidget.cpp:79
-#, fuzzy
 msgctxt "chardict"
 msgid "Armenian"
-msgstr "Arménien"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:79
 #: ../qt4/chardict/unicodeviewwidget.cpp:80
-#, fuzzy
 msgctxt "chardict"
 msgid "Hebrew"
-msgstr "Hébreu"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:80
 #: ../qt4/chardict/unicodeviewwidget.cpp:81
-#, fuzzy
 msgctxt "chardict"
 msgid "Arabic"
-msgstr "Arabe"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:81
 #: ../qt4/chardict/unicodeviewwidget.cpp:82
-#, fuzzy
 msgctxt "chardict"
 msgid "Syriac"
-msgstr "Syriaque"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:82
 #: ../qt4/chardict/unicodeviewwidget.cpp:83
@@ -748,59 +742,51 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:86
 #: ../qt4/chardict/unicodeviewwidget.cpp:87
-#, fuzzy
 msgctxt "chardict"
 msgid "Gujarati"
-msgstr "Gujarati"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:87
 #: ../qt4/chardict/unicodeviewwidget.cpp:88
-#, fuzzy
 msgctxt "chardict"
 msgid "Oriya"
-msgstr "Oriya"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:88
 #: ../qt4/chardict/unicodeviewwidget.cpp:89
-#, fuzzy
 msgctxt "chardict"
 msgid "Tamil"
-msgstr "Tamoul"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:89
 #: ../qt4/chardict/unicodeviewwidget.cpp:90
-#, fuzzy
 msgctxt "chardict"
 msgid "Telugu"
-msgstr "Telugu"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:90
 #: ../qt4/chardict/unicodeviewwidget.cpp:91
-#, fuzzy
 msgctxt "chardict"
 msgid "Kannada"
-msgstr "Kannada"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:91
 #: ../qt4/chardict/unicodeviewwidget.cpp:92
-#, fuzzy
 msgctxt "chardict"
 msgid "Malayalam"
-msgstr "Malayalam"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:92
 #: ../qt4/chardict/unicodeviewwidget.cpp:93
-#, fuzzy
 msgctxt "chardict"
 msgid "Sinhala"
-msgstr "Sinhalese"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:93
 #: ../qt4/chardict/unicodeviewwidget.cpp:94
-#, fuzzy
 msgctxt "chardict"
 msgid "Thai"
-msgstr "Thaïlandais"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:94
 #: ../qt4/chardict/unicodeviewwidget.cpp:95
@@ -810,10 +796,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:95
 #: ../qt4/chardict/unicodeviewwidget.cpp:96
-#, fuzzy
 msgctxt "chardict"
 msgid "Tibetan"
-msgstr "Tibétain"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:96
 #: ../qt4/chardict/unicodeviewwidget.cpp:97
@@ -823,17 +808,15 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:97
 #: ../qt4/chardict/unicodeviewwidget.cpp:98
-#, fuzzy
 msgctxt "chardict"
 msgid "Georgian"
-msgstr "Georgien"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:98
 #: ../qt4/chardict/unicodeviewwidget.cpp:99
-#, fuzzy
 msgctxt "chardict"
 msgid "Hangul Jamo"
-msgstr "Hangul (Romaja)"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:99
 #: ../qt4/chardict/unicodeviewwidget.cpp:100
@@ -867,10 +850,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:104
 #: ../qt4/chardict/unicodeviewwidget.cpp:105
-#, fuzzy
 msgctxt "chardict"
 msgid "Tagalog"
-msgstr "Tagalog"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:105
 #: ../qt4/chardict/unicodeviewwidget.cpp:106
@@ -898,10 +880,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:109
 #: ../qt4/chardict/unicodeviewwidget.cpp:110
-#, fuzzy
 msgctxt "chardict"
 msgid "Mongolian"
-msgstr "Mongol"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:110
 #: ../qt4/chardict/unicodeviewwidget.cpp:111
@@ -1127,10 +1108,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:147
 #: ../qt4/chardict/unicodeviewwidget.cpp:148
-#, fuzzy
 msgctxt "chardict"
 msgid "Hangul Compatibility Jamo"
-msgstr "Hangul (Romaja)"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:148
 #: ../qt4/chardict/unicodeviewwidget.cpp:149
@@ -1296,10 +1276,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:175
 #: ../qt4/chardict/unicodeviewwidget.cpp:176
-#, fuzzy
 msgctxt "chardict"
 msgid "Aegean Numbers"
-msgstr "numéro"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:176
 #: ../qt4/chardict/unicodeviewwidget.cpp:177
@@ -1327,10 +1306,9 @@ msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:180
 #: ../qt4/chardict/unicodeviewwidget.cpp:181
-#, fuzzy
 msgctxt "chardict"
 msgid "Shavian"
-msgstr "Moldave"
+msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:181
 #: ../qt4/chardict/unicodeviewwidget.cpp:182
@@ -1499,9 +1477,8 @@ msgid "Key Combination"
 msgstr ""
 
 #: ../qt4/pref/keyeditformbase.cpp:52
-#, fuzzy
 msgid "Add..."
-msgstr "A_jouter ..."
+msgstr ""
 
 #: ../qt4/pref/olisteditformbase.cpp:51
 msgid "Available Items"
@@ -6164,9 +6141,8 @@ msgid "[SKK] wide-latin mode"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:110
-#, fuzzy
 msgid "[SKK] kanji code input mode"
-msgstr "[SKK] mode kanji"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:116
 msgid "[SKK] kanji mode"
@@ -6671,9 +6647,8 @@ msgid "Enable keys which have candidate"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:223
-#, fuzzy
 msgid "while candidate window is shown"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:224
 msgid "Enable while candidate window is shown"
@@ -6722,9 +6697,8 @@ msgid "Show real keys on auto help window"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:292
-#, fuzzy
 msgid "Use delay showing candidate window"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:298
 msgid "Delay before showing candidate window for mazegaki [s]"
