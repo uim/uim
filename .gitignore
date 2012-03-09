@@ -231,8 +231,12 @@
 
 # /notify/
 /notify/.deps/
+/notify/.libs/
+/notify/build/
 /notify/Makefile.in
 /notify/Makefile
+/notify/*.la
+/notify/*.lo
 
 # /pixmaps/
 /pixmaps/Makefile
@@ -368,11 +372,6 @@
 /qt3/chardict/.deps/
 /qt3/chardict/Makefile
 /qt3/chardict/Makefile.in
-/qt3/chardict/po/Makefile
-/qt3/chardict/po/Makefile.in
-/qt3/chardict/po/Makefile.in.in
-/qt3/chardict/po/POTFILES
-/qt3/chardict/po/stamp-it
 /qt3/chardict/uim-chardict-qt
 /qt3/chardict/*.moc
 /qt3/chardict/*.o
@@ -449,14 +448,6 @@
 /qt4/chardict/uim-chardict-qt4
 /qt4/chardict/uim-chardict-qt4.pro
 /qt4/chardict/*.o
-
-# /qt4/chardict/po/
-/qt4/chardict/po/*.gmo
-/qt4/chardict/po/Makefile
-/qt4/chardict/po/Makefile.in
-/qt4/chardict/po/Makefile.in.in
-/qt4/chardict/po/POTFILES
-/qt4/chardict/po/stamp-it
 
 # /qt4/edittest/
 /qt4/edittest/Makefile
