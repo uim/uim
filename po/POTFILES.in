@@ -28,6 +28,8 @@ scm/action.scm
 scm/ajax-ime-custom.scm
 scm/ajax-ime-key-custom.scm
 scm/ajax-ime.scm
+scm/annotation-filter.scm
+scm/annotation.scm
 scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy-utf8-custom.scm
@@ -45,6 +47,7 @@ scm/elatin.scm
 scm/fileio.scm
 scm/generic-custom.scm
 scm/generic-key-custom.scm
+scm/generic-predict.scm
 scm/generic.scm
 scm/hangul.scm
 scm/http-client.scm
@@ -61,6 +64,7 @@ scm/look.scm
 scm/m17nlib.scm
 scm/mana-custom.scm
 scm/mana-key-custom.scm
+scm/ng-action.scm
 scm/predict-custom.scm
 scm/predict-sqlite3.scm
 scm/prime-custom.scm
