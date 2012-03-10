@@ -85,10 +85,12 @@
 
 # /gtk2/dict/
 /gtk2/dict/.deps/
+/gtk2/dict/.libs/
 /gtk2/dict/Makefile
 /gtk2/dict/Makefile.in
 /gtk2/dict/uim-dict-gtk
 /gtk2/dict/uim-dict-ui.xml
+/gtk2/dict/*.o
 
 # /gtk2/immodule/
 /gtk2/immodule/.deps/
@@ -158,10 +160,12 @@
 
 # /gtk3/dict/
 /gtk3/dict/.deps/
+/gtk3/dict/.libs/
 /gtk3/dict/Makefile
 /gtk3/dict/Makefile.in
 /gtk3/dict/uim-dict-gtk3
 /gtk3/dict/uim-dict-ui.xml
+/gtk3/dict/*.o
 
 # /gtk3/immodule/
 /gtk3/immodule/.deps/
