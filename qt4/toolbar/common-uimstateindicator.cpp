@@ -180,8 +180,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
                 const QString append = isDarkBg ? "_dark_background" : "";
                 QString fileName = ICONDIR + '/' + fields[1] + append + ".png";
-                if ( isDarkBg && !QFile::exists( fileName ) )
-		{
+                if ( isDarkBg && !QFile::exists( fileName ) ) {
                   fileName = ICONDIR + '/' + fields[1] + ".png";
                 }
                 if ( fields[1] == "off" || fields[1].endsWith( "_direct" ) 
