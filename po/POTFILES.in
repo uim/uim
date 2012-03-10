@@ -94,7 +94,6 @@ scm/skk-key-custom.scm
 scm/social-ime-custom.scm
 scm/social-ime-key-custom.scm
 scm/social-ime.scm
-scm/spellcheck-custom.scm
 scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-custom.scm
