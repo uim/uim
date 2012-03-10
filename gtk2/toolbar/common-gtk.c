@@ -725,7 +725,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   const gchar *action_id, *is_selected;
   GList *prop_buttons, *tool_buttons;
   GtkSizeGroup *sg;
-  gboolean is_direct = FALSE;
+  char *display_time;
+  gboolean is_hidden;
   GtkWidget *toplevel;
 
   if (prop_menu_showing)
@@ -749,6 +750,9 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     g_object_set_data(G_OBJECT(widget), OBJECT_DATA_TOOL_BUTTONS, NULL);
   }
 
+  display_time
+        = uim_scm_c_symbol( uim_scm_symbol_value( "toolbar-display-time" ) );
+  is_hidden = strcmp(display_time, "mode");
   for (i = 0; lines[i] && strcmp("", lines[i]); i++) {
     gchar *utf8_str = convert_charset(charset, lines[i]);
 
@@ -768,10 +772,10 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 				    indication_id, iconic_label, tooltip_str);
 	append_prop_button(widget, button);
 
-        if (!strcmp(indication_id, "off")
+        if (!is_hidden && (!strcmp(indication_id, "off")
             || g_str_has_suffix(indication_id, "_direct")
-            || g_str_has_suffix(indication_id, "_alnum")) {
-          is_direct = TRUE;
+            || g_str_has_suffix(indication_id, "_alnum"))) {
+          is_hidden = TRUE;
         }
       } else if (!strcmp("leaf", cols[0]) && has_n_strs(cols, 7)) {
 	indication_id = cols[1];
@@ -788,7 +792,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     }
   }
   toplevel = gtk_widget_get_toplevel(widget);
-  if (is_direct) {
+  is_hidden = (is_hidden && strcmp(display_time, "always"));
+  if (is_hidden) {
     gtk_widget_hide(toplevel);
   } else {
     gint x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),

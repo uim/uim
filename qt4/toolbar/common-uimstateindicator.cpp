@@ -157,7 +157,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         }
     }
 
-    bool isDirect = false;
+    char *display_time
+        = uim_scm_c_symbol( uim_scm_symbol_value( "toolbar-display-time" ) );
+    bool isHidden = strcmp( display_time, "mode" );
     foreach ( const QString &line, lines )
     {
         const QStringList fields = line.split( '\t', QString::SkipEmptyParts );
@@ -184,9 +186,11 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 if ( isDarkBg && !QFile::exists( fileName ) ) {
                   fileName = ICONDIR + '/' + fields[1] + ".png";
                 }
-                if ( fields[1] == "off" || fields[1].endsWith( "_direct" ) 
-                        || fields[1].endsWith( "_alnum" ) )
-                    isDirect = true;
+                if ( !isHidden
+                    && (fields[1] == "off" || fields[1].endsWith( "_direct" ) 
+                        || fields[1].endsWith( "_alnum" ) ) ) {
+                    isHidden = true;
+                }
                 QPixmap icon = QPixmap( fileName );
                 if (!icon.isNull()) {
                     QPixmap scaledIcon = icon.scaled( ICON_SIZE, ICON_SIZE,
@@ -235,7 +239,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
     }
     foreach ( QWidget *widget, QApplication::topLevelWidgets() ) {
         if ( widget->isAncestorOf( this ) ) {
-           widget->setVisible( !isDirect );
+           widget->setHidden( isHidden && strcmp( display_time, "always" ) );
            break;
         }
     }

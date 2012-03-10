@@ -136,6 +136,11 @@
                      (N_ "long description will be here."))
 
 ;; subgroup
+(define-custom-group 'toolbar-display
+                     (N_ "Display behavior")
+                     (N_ "long description will be here."))
+
+;; subgroup
 (define-custom-group 'toolbar-widget
                      (N_ "Toolbar")
                      (N_ "long description will be here."))
@@ -441,6 +446,21 @@
 		 (lambda ()
 		   (if enable-lazy-loading?
 		       (require "lazy-load.scm"))))
+
+(define-custom 'toolbar-display-time 'always
+  '(toolbar toolbar-display)
+  (list 'choice
+        (list 'always
+              (N_ "Always")
+              (N_ "long description will be here."))
+        (list 'mode
+              (N_ "Based on mode")
+              (N_ "long description will be here."))
+        (list 'never
+              (N_ "Never")
+              (N_ "long description will be here.")))
+  (N_ "Display")
+  (N_ "long description will be here."))
 
 ;;
 ;; toolbar buttons
