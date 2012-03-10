@@ -773,8 +773,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 	append_prop_button(widget, button);
 
         if (!is_hidden && (!strcmp(indication_id, "off")
-            || g_str_has_suffix(indication_id, "_direct")
-            || g_str_has_suffix(indication_id, "_alnum"))) {
+            || g_str_has_suffix(indication_id, "_direct"))) {
           is_hidden = TRUE;
         }
       } else if (!strcmp("leaf", cols[0]) && has_n_strs(cols, 7)) {

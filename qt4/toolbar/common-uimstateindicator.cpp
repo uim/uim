@@ -186,9 +186,8 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 if ( isDarkBg && !QFile::exists( fileName ) ) {
                   fileName = ICONDIR + '/' + fields[1] + ".png";
                 }
-                if ( !isHidden
-                    && (fields[1] == "off" || fields[1].endsWith( "_direct" ) 
-                        || fields[1].endsWith( "_alnum" ) ) ) {
+                if ( !isHidden && (fields[1] == "off" 
+                        || fields[1].endsWith( "_direct" ) ) ) {
                     isHidden = true;
                 }
                 QPixmap icon = QPixmap( fileName );
