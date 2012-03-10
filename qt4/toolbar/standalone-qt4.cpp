@@ -72,10 +72,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
     toolbar = new QUimHelperToolbar( this );
     toolbar->adjustSize();
     toolbar->show();
-    connect( toolbar, SIGNAL( toolbarResized() ),
-        this, SLOT( slotToolbarResized() ) );
-    connect( toolbar, SIGNAL( modeChanged( bool ) ),
-        this, SLOT( setVisible( bool ) ) );
+    connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
     toolbar->setMargin(TOOLBAR_MARGIN_SIZE);
 
     // Move

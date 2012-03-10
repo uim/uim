@@ -81,7 +81,6 @@ signals:
     void quitToolbar();
     void toolbarResized();
     void menuRequested( QMenu *menu );
-    void modeChanged( bool mode );
 
 protected:
     UimStateIndicator *m_indicator;

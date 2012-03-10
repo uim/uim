@@ -40,6 +40,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
+#include <QtGui/QApplication>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPixmap>
@@ -232,7 +233,12 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
             }
         }
     }
-    emit modeChanged( !isDirect );
+    foreach ( QWidget *widget, QApplication::topLevelWidgets() ) {
+        if ( widget->isAncestorOf( this ) ) {
+           widget->setVisible( !isDirect );
+           break;
+        }
+    }
 
 #ifdef PLASMA_APPLET_UIM
     if ( m_layout->count() != prevCount )
