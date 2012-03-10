@@ -71,6 +71,7 @@ protected:
 signals:
     void indicatorResized();
     void menuRequested( QMenu *menu );
+    void modeChanged( bool mode );
 
 public slots:
     void slotStdinActivated();

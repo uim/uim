@@ -156,6 +156,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         }
     }
 
+    bool isDirect = false;
     foreach ( const QString &line, lines )
     {
         const QStringList fields = line.split( '\t', QString::SkipEmptyParts );
@@ -183,6 +184,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
 		{
                   fileName = ICONDIR + '/' + fields[1] + ".png";
                 }
+                if ( fields[1] == "off" || fields[1].endsWith( "_direct" ) 
+                        || fields[1].endsWith( "_alnum" ) )
+                    isDirect = true;
                 QPixmap icon = QPixmap( fileName );
                 if (!icon.isNull()) {
                     QPixmap scaledIcon = icon.scaled( ICON_SIZE, ICON_SIZE,
@@ -229,6 +233,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
             }
         }
     }
+    emit modeChanged( !isDirect );
 
 #ifdef PLASMA_APPLET_UIM
     if ( m_layout->count() != prevCount )

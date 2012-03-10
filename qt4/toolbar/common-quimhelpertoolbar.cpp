@@ -67,6 +67,8 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
         this, SLOT( slotIndicatorResized() ) );
     connect( m_indicator, SIGNAL( menuRequested( QMenu* ) ),
         this, SIGNAL( menuRequested( QMenu* ) ) );
+    connect( m_indicator, SIGNAL( modeChanged( bool ) ),
+        this, SIGNAL( modeChanged( bool ) ) );
 
     const QString ICONDIR = UIM_PIXMAPSDIR;
     const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/16x16/actions";
