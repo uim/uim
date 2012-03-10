@@ -1,7 +1,5 @@
 if QT
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I..
-QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
-QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
 
 HEADER_FILES = qt.h
 
@@ -13,8 +11,8 @@ bin_PROGRAMS = uim-im-switcher-qt
 
 # Switcher
 uim_im_switcher_qt_SOURCES  = qt.cpp qt.h ../qtgettext.h
-uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
-uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
+uim_im_switcher_qt_CXXFLAGS = $(UIM_QT_CXXFLAGS)
+uim_im_switcher_qt_LDFLAGS  = $(UIM_QT_LDFLAGS)
 uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim-scm.la \
 			      $(top_builddir)/uim/libuim.la \
 			      $(top_builddir)/uim/libuim-custom.la

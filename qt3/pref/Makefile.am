@@ -2,8 +2,6 @@ EXTRA_DIST = keyeditformbase.ui  olisteditformbase.ui
 
 if QT
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I..
-QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
-QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
 
 if PREF
 HEADER_FILES = \
@@ -39,8 +37,8 @@ uim_pref_qt_SOURCES = \
 	../qtgettext.h qt.h \
 	customwidgets.h kseparator.h
 
-uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
-uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
+uim_pref_qt_CXXFLAGS = $(UIM_QT_CXXFLAGS)
+uim_pref_qt_LDFLAGS  = $(UIM_QT_LDFLAGS)
 uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-counted-init.la \
 		       $(top_builddir)/uim/libuim-custom.la \
 		       $(top_builddir)/uim/libuim-scm.la \
