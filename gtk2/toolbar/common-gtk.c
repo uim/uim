@@ -725,6 +725,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   const gchar *action_id, *is_selected;
   GList *prop_buttons, *tool_buttons;
   GtkSizeGroup *sg;
+  gboolean is_direct = FALSE;
+  GtkWidget *toplevel;
 
   if (prop_menu_showing)
     return;
@@ -765,6 +767,12 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 	button = prop_button_create(widget,
 				    indication_id, iconic_label, tooltip_str);
 	append_prop_button(widget, button);
+
+        if (!strcmp(indication_id, "off")
+            || g_str_has_suffix(indication_id, "_direct")
+            || g_str_has_suffix(indication_id, "_alnum")) {
+          is_direct = TRUE;
+        }
       } else if (!strcmp("leaf", cols[0]) && has_n_strs(cols, 7)) {
 	indication_id = cols[1];
 	iconic_label  = safe_gettext(cols[2]);
@@ -778,6 +786,17 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
       }
       g_strfreev(cols);
     }
+  }
+  toplevel = gtk_widget_get_toplevel(widget);
+  if (is_direct) {
+    gtk_widget_hide(toplevel);
+  } else {
+    gint x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),
+                                               "position_x"));
+    gint y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),
+                                               "position_y"));
+    gtk_window_move(GTK_WINDOW(toplevel), x, y);
+    gtk_widget_show(toplevel);
   }
 
   /* create tool buttons */

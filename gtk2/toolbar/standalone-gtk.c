@@ -344,6 +344,12 @@ main(int argc, char *argv[])
     y = sc_h - h - panel_height; /* FIXME! */
     helper_win_set_position(window, x, y);
   }
+  {
+    gint x, y;
+    gtk_window_get_position(GTK_WINDOW(window), &x, &y);
+    g_object_set_data(G_OBJECT(window), "position_x", GINT_TO_POINTER(x));
+    g_object_set_data(G_OBJECT(window), "position_y", GINT_TO_POINTER(y));
+  }
 
   gtk_main();
 
