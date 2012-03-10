@@ -58,6 +58,8 @@ scm/generic-custom.scm
 scm/generic-key-custom.scm
 scm/generic-predict.scm
 scm/generic.scm
+scm/google-cgiapi-jp-custom.scm
+scm/google-cgiapi-jp-key-custom.scm
 scm/hangul.scm
 scm/http-client.scm
 scm/http-server.scm
@@ -92,6 +94,7 @@ scm/skk-key-custom.scm
 scm/social-ime-custom.scm
 scm/social-ime-key-custom.scm
 scm/social-ime.scm
+scm/spellcheck-custom.scm
 scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-custom.scm
