@@ -43,6 +43,7 @@
     (anthy            . "An")
     (anthy-utf8       . "An")
     (byeoru           . "B")
+    (baidu-olime-jp   . "Bj")
     (canna            . "Ca")
     (chewing          . "Ch")
     (elatin           . "E")

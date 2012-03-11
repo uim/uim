@@ -50,6 +50,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
  yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
  google-cgiapi-jp.scm google-cgiapi-jp-custom.scm google-cgiapi-jp-key-custom.scm \
+ baidu-olime-jp.scm baidu-olime-jp-custom.scm baidu-olime-jp-key-custom.scm \
  uim-module-manager.scm \
  fileio.scm socket.scm process.scm \
  openssl.scm \
@@ -112,7 +113,7 @@ if SCIM
   module_names += "scim"
 endif
 # web based IMs
-  module_names += "ajax-ime" "social-ime" "google-cgiapi-jp"
+  module_names += "ajax-ime" "social-ime" "google-cgiapi-jp" "baidu-olime-jp"
 if EXPAT
   module_names += "yahoo-jp"
 endif
