@@ -32,7 +32,7 @@
 (require "i18n.scm")
 (require "openssl.scm")
 
-(define google-cgiapi-jp-im-name-label (N_ "Google-Jp"))
+(define google-cgiapi-jp-im-name-label (N_ "Google-CGIAPI-Jp"))
 (define google-cgiapi-jp-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'google-cgiapi-jp
