@@ -431,8 +431,8 @@
   (sj3-lib-study *sj3-lib-socket* stdy))
 
 (define (sj3-lib-gakusyuu2 yomi1 yomi2 stdy)
-  (let ((new-yomi1 (and yomi1 ""))
-        (new-yomi2 (and yomi2 "")))
+  (let ((new-yomi1 (or yomi1 ""))
+        (new-yomi2 (or yomi2 "")))
     (sj3-lib-clstudy-euc *sj3-lib-socket*
                          new-yomi1 new-yomi2
                          stdy)))
