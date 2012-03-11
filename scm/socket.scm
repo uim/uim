@@ -155,22 +155,77 @@
                             s)))))
               res)))))))
 
-(define (tcp-accept sockets)
-  (let ((fds (file-ready? sockets -1)))
-    (map (lambda (pfd)
-           (call-with-sockaddr-storage
-            (lambda (ss)
-              (accept (car pfd) ss))))
-         fds)))
+(define (unix-domain-listen path)
+  (let ((s (socket (addrinfo-ai-family-number '$PF_LOCAL)
+                   (addrinfo-ai-socktype-number '$SOCK_STREAM)
+                   0)))
+    (if (< s 0)
+        #f
+        (call-with-sockaddr-un (addrinfo-ai-family-number '$PF_LOCAL)
+                               path
+                               (lambda (un)
+                                 (if (< (bind s un (sun-len un))
+                                        0)
+                                     (begin
+                                       (file-close s)
+                                       #f)
+                                     (begin
+                                       (listen s *tcp-listen:backlog-length*)
+                                       ;; same as tcp socket
+                                       (list s))))))))
+
+(define (make-socket-server thunk accept-pred)
+  (lambda (socks)
+    (let loop ((cs '()))
+      (let* ((fds (file-ready? (append socks cs) -1))
+             (results (map (lambda (pfd)
+                             (cond ((or (not pfd)
+                                        (null? pfd))
+                                    #f) ;; what to do?
+                                   ;; closed by peer
+                                   ((not (= (cdr pfd)
+                                            (assq-cdr '$POLLIN file-poll-flags-alist)))
+                                    (file-close (car pfd))
+                                    (cons 'delete (car pfd)))
+                                   ;; start new session
+                                   ((find (lambda (s)
+                                            (= s (car pfd)))
+                                          socks)
+                                    (let ((cs (accept-pred (car pfd))))
+                                      (if (= -1 cs)
+                                          #f ;; XXX
+                                          (cons 'new cs))))
+                                   ;; in session
+                                   (else
+                                    (if (not (thunk (car pfd)))
+                                        (begin
+                                          (shutdown (car pfd)
+                                                    (assq-cdr '$SHUT_RDWR shutdown-how-alist))
+                                          (file-close (car pfd))
+                                          (cons 'delete (car pfd)))
+                                        ;; keep state
+                                        (car pfd)))))
+                           fds))
+             (new-cs    (map cdr (filter (lambda (x) (and (pair? x) (eq? (car x) 'new)))    results)))
+             (delete-cs (map cdr (filter (lambda (x) (and (pair? x) (eq? (car x) 'delete))) results))))
+        (loop (remove (lambda (x)
+                        (find (lambda (d) (= x d))
+                              delete-cs))
+                      (append cs new-cs)))))))
 
 (define (make-tcp-server thunk)
-  (lambda (sockets)
-    (let loop ()
-      (let ((fds (file-ready? sockets -1)))
-        (for-each (lambda (pfd)
-                    (call-with-sockaddr-storage
-                     (lambda (ss)
-                       (let ((socket (accept (car pfd) ss)))
-                         (thunk socket)))))
-                  fds)
-        (loop)))))
+  (make-socket-server thunk
+                      (lambda (s)
+                        (call-with-sockaddr-storage
+                         (lambda (ss)
+                           (accept s ss))))))
+
+
+(define (make-unix-domain-server thunk)
+  (make-socket-server thunk
+                      (lambda (s)
+                        (call-with-sockaddr-un
+                         (addrinfo-ai-family-number '$PF_LOCAL)
+                         ""
+                         (lambda (ss)
+                           (accept s ss))))))
