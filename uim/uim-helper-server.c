@@ -106,9 +106,7 @@ init_server_fd(char *path)
   if (logname) {
     pw = getpwnam(logname);
     if (pw) {
-      if (fchown(fd, pw->pw_uid, -1) == -1) {
-        return -1;
-      }
+      fchown(fd, pw->pw_uid, -1);
     }
   }
 
