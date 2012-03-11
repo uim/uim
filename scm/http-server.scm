@@ -108,18 +108,6 @@
              pqs))
       '()))
 
-(define (http-server:make-server thunk)
-  (lambda (sockets)
-    (let loop ()
-      (let ((fds (file-ready? sockets -1)))
-        (for-each (lambda (pfd)
-                    (call-with-sockaddr-storage
-                     (lambda (ss)
-                       (let ((socket (accept (car pfd) ss)))
-                         (thunk socket)))))
-                  fds)
-        (loop)))))
-
 (define (http-server:header-field-search l h)
   (alist-cdr h l (lambda (x y)
                    (and (string? x)
@@ -209,7 +197,7 @@
      (tcp-listen hostname servname))
     (http-server-set-server!
      self
-     (http-server:make-server
+     (make-tcp-server
       (lambda (s)
         (call-with-open-file-port
          s
