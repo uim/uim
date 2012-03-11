@@ -264,7 +264,7 @@
   (let ((yx-ctx (yahoo-jp-context-yx-ctx yc)))
     (yahoo-jp-internal-context-prediction-nr yx-ctx)))
 (define (yahoo-jp-lib-get-nth-word yc nth)
-  (let* ((yx-ctx (yahoo-jp-context-yx-ctx sc))
+  (let* ((yx-ctx (yahoo-jp-context-yx-ctx yc))
          (word (yahoo-jp-internal-context-prediction-word yx-ctx)))
     (list-ref word nth)))
 (define (yahoo-jp-lib-get-nth-prediction yc nth)
@@ -1195,8 +1195,8 @@
       yahoo-jp-auto-start-henkan?
       (string-find japanese-auto-start-henkan-keyword-list str)
       (begin
-	(ajax-ime-reset-prediction-window ac)
-	(ajax-ime-begin-conv ac))))
+	(yahoo-jp-reset-prediction-window yc)
+	(yahoo-jp-begin-conv yc))))
   (let ((preconv-str (yahoo-jp-context-preconv-ustr yc))
 	(raw-str (yahoo-jp-context-raw-ustr yc))
 	(rkc (yahoo-jp-context-rkc yc))
