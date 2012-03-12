@@ -6656,7 +6656,7 @@ msgstr "[SKK] 全角英数入力モード"
 
 #: ../scm/skk-key-custom.scm:110
 msgid "[SKK] kanji code input mode"
-msgstr ""
+msgstr "[SKK] 漢字コード入力モード"
 
 #: ../scm/skk-key-custom.scm:116
 msgid "[SKK] kanji mode"
@@ -7064,7 +7064,7 @@ msgstr "交ぜ書き変換の学習を有効にする"
 
 #: ../scm/tutcode-custom.scm:92
 msgid "Number of candidates to be excluded from mazegaki learning"
-msgstr ""
+msgstr "交ぜ書き変換の学習から除外する候補数"
 
 #: ../scm/tutcode-custom.scm:110
 msgid "Use Dvorak keyboard"
@@ -7080,11 +7080,11 @@ msgstr "surrounding text APIの代替方法を有効にする"
 
 #: ../scm/tutcode-custom.scm:128
 msgid "Keep key sequence not convertible to Kanji"
-msgstr ""
+msgstr "漢字に対応しないキーシーケンスを残す"
 
 #: ../scm/tutcode-custom.scm:134
 msgid "Delete leading delimiter on postfix kanji to sequence conversion"
-msgstr ""
+msgstr "後置型漢字→シーケンス変換時に直前の区切り文字を削除する"
 
 #: ../scm/tutcode-custom.scm:140
 msgid "History size"
@@ -7108,7 +7108,7 @@ msgstr ""
 
 #: ../scm/tutcode-custom.scm:167
 msgid "Kanchoku Win YAMANOBE"
-msgstr ""
+msgstr "漢直Win 山辺アルゴリズム"
 
 #: ../scm/tutcode-custom.scm:168
 msgid "tc-2.3.1-22.6"
@@ -7116,7 +7116,7 @@ msgstr ""
 
 #: ../scm/tutcode-custom.scm:169
 msgid "Bushu conversion algorithm"
-msgstr ""
+msgstr "部首合成変換アルゴリズム"
 
 #: ../scm/tutcode-custom.scm:175
 msgid "Enable interactive bushu conversion"
@@ -7132,7 +7132,7 @@ msgstr "bushu.expandファイル"
 
 #: ../scm/tutcode-custom.scm:195
 msgid "bushu.help file"
-msgstr ""
+msgstr "bushu.helpファイル"
 
 #: ../scm/tutcode-custom.scm:211
 msgid "qwerty-jis"
@@ -7164,31 +7164,31 @@ msgstr "表形式の候補ウィンドウのキー配列"
 
 #: ../scm/tutcode-custom.scm:220
 msgid "always"
-msgstr ""
+msgstr "常に"
 
 #: ../scm/tutcode-custom.scm:220
 msgid "All keys as label key"
-msgstr ""
+msgstr "全キーをラベルキーとして扱う"
 
 #: ../scm/tutcode-custom.scm:221
 msgid "which have candidate"
-msgstr ""
+msgstr "候補のあるキーのみ"
 
 #: ../scm/tutcode-custom.scm:222
 msgid "Enable keys which have candidate"
-msgstr ""
+msgstr "候補のあるキーのみ有効"
 
 #: ../scm/tutcode-custom.scm:223
 msgid "while candidate window is shown"
-msgstr ""
+msgstr "候補ウィンドウ表示中"
 
 #: ../scm/tutcode-custom.scm:224
 msgid "Enable while candidate window is shown"
-msgstr ""
+msgstr "候補ウィンドウ表示中は有効"
 
 #: ../scm/tutcode-custom.scm:225
 msgid "never"
-msgstr ""
+msgstr "無効"
 
 #: ../scm/tutcode-custom.scm:244
 msgid "Number of candidates in candidate window at a time for kigou mode"
@@ -7214,7 +7214,7 @@ msgstr "仮想鍵盤ウィンドウを使用する"
 
 #: ../scm/tutcode-custom.scm:274
 msgid "Show stroke help window on no input"
-msgstr ""
+msgstr "何も入力していない時に仮想鍵盤ウィンドウを表示する"
 
 #: ../scm/tutcode-custom.scm:280
 msgid "Use auto help window"
@@ -7226,36 +7226,36 @@ msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
 #: ../scm/tutcode-custom.scm:292
 msgid "Use delay showing candidate window"
-msgstr ""
+msgstr "候補ウィンドウの遅延表示を使用する"
 
 #: ../scm/tutcode-custom.scm:298
 msgid "Delay before showing candidate window for mazegaki [s]"
-msgstr ""
+msgstr "交ぜ書き変換候補ウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:304
 msgid "Delay before showing candidate window for stroke help [s]"
-msgstr ""
+msgstr "仮想鍵盤ウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:310
 msgid "Delay before showing candidate window for auto help [s]"
-msgstr ""
+msgstr "自動ヘルプウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:316
 msgid "Delay before showing candidate window for completion [s]"
-msgstr ""
+msgstr "補完候補ウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:322
 msgid "Delay before showing candidate window for prediction [s]"
-msgstr ""
+msgstr "予測入力候補ウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:328
 msgid "Delay before showing candidate window for bushu prediction [s]"
-msgstr ""
+msgstr "部首合成変換中の予測入力候補ウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:334
 msgid ""
 "Delay before showing candidate window for interactive bushu conversion [s]"
-msgstr ""
+msgstr "対話的な部首合成変換候補ウィンドウ表示遅延時間[s]"
 
 #: ../scm/tutcode-custom.scm:341
 msgid "Enable completion"
@@ -7307,7 +7307,7 @@ msgstr "TUT-Code キー設定2"
 
 #: ../scm/tutcode-key-custom.scm:45
 msgid "TUT-Code key bindings 3"
-msgstr ""
+msgstr "TUT-Code キー設定3"
 
 #: ../scm/tutcode-key-custom.scm:51
 msgid "[TUT-Code] on"
@@ -7391,43 +7391,43 @@ msgstr "[TUT-Code] 前候補"
 
 #: ../scm/tutcode-key-custom.scm:171
 msgid "[TUT-Code] undo last commit"
-msgstr ""
+msgstr "[TUT-Code] 確定取り消し"
 
 #: ../scm/tutcode-key-custom.scm:177
 msgid "[TUT-Code] display help for char at current position"
-msgstr ""
+msgstr "[TUT-Code] 現在位置の文字のヘルプを表示"
 
 #: ../scm/tutcode-key-custom.scm:183
 msgid "[TUT-Code] display help for string on clipboard"
-msgstr ""
+msgstr "[TUT-Code] クリップボード内文字列のヘルプを表示"
 
 #: ../scm/tutcode-key-custom.scm:189
 msgid "[TUT-Code] paste from clipboard"
-msgstr ""
+msgstr "[TUT-Code] クリップボードから貼り付け"
 
 #: ../scm/tutcode-key-custom.scm:195
 msgid "[TUT-Code] sequence to kanji conversion on clipboard"
-msgstr ""
+msgstr "[TUT-Code] クリップボード内文字列をシーケンス→漢字変換"
 
 #: ../scm/tutcode-key-custom.scm:201
 msgid "[TUT-Code] mazegaki conversion on selection"
-msgstr ""
+msgstr "[TUT-Code] セレクションを交ぜ書き変換"
 
 #: ../scm/tutcode-key-custom.scm:207
 msgid "[TUT-Code] mazegaki conversion with inflection on selection"
-msgstr ""
+msgstr "[TUT-Code] セレクションを交ぜ書き変換 (活用する語)"
 
 #: ../scm/tutcode-key-custom.scm:213
 msgid "[TUT-Code] katakana conversion on selection"
-msgstr ""
+msgstr "[TUT-Code] セレクションをカタカナ変換"
 
 #: ../scm/tutcode-key-custom.scm:219
 msgid "[TUT-Code] kanji to sequence conversion on selection"
-msgstr ""
+msgstr "[TUT-Code] セレクションを漢字→シーケンス変換"
 
 #: ../scm/tutcode-key-custom.scm:225
 msgid "[TUT-Code] sequence to kanji conversion on selection"
-msgstr ""
+msgstr "[TUT-Code] セレクションをシーケンス→漢字変換"
 
 #: ../scm/tutcode-key-custom.scm:231
 msgid "[TUT-Code] next page of candidate window"
@@ -7467,7 +7467,7 @@ msgstr "[TUT-Code] 交ぜ書き変換で読みを縮める"
 
 #: ../scm/tutcode-key-custom.scm:285
 msgid "[TUT-Code] insert pending key strokes"
-msgstr ""
+msgstr "[TUT-Code] 入力途中のキーストロークを挿入"
 
 #: ../scm/tutcode-key-custom.scm:291
 msgid "[TUT-Code] postfix bushu conversion"
@@ -7555,123 +7555,123 @@ msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み9文
 
 #: ../scm/tutcode-key-custom.scm:417
 msgid "[TUT-Code] postfix katakana conversion"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換"
 
 #: ../scm/tutcode-key-custom.scm:423
 msgid "[TUT-Code] postfix katakana conversion of 1 character"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (1文字)"
 
 #: ../scm/tutcode-key-custom.scm:429
 msgid "[TUT-Code] postfix katakana conversion of 2 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (2文字)"
 
 #: ../scm/tutcode-key-custom.scm:435
 msgid "[TUT-Code] postfix katakana conversion of 3 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (3文字)"
 
 #: ../scm/tutcode-key-custom.scm:441
 msgid "[TUT-Code] postfix katakana conversion of 4 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (4文字)"
 
 #: ../scm/tutcode-key-custom.scm:447
 msgid "[TUT-Code] postfix katakana conversion of 5 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (5文字)"
 
 #: ../scm/tutcode-key-custom.scm:453
 msgid "[TUT-Code] postfix katakana conversion of 6 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (6文字)"
 
 #: ../scm/tutcode-key-custom.scm:459
 msgid "[TUT-Code] postfix katakana conversion of 7 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (7文字)"
 
 #: ../scm/tutcode-key-custom.scm:465
 msgid "[TUT-Code] postfix katakana conversion of 8 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (8文字)"
 
 #: ../scm/tutcode-key-custom.scm:471
 msgid "[TUT-Code] postfix katakana conversion of 9 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型カタカナ変換 (9文字)"
 
 #: ../scm/tutcode-key-custom.scm:477
 msgid "[TUT-Code] postfix kanji to sequence conversion"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換"
 
 #: ../scm/tutcode-key-custom.scm:483
 msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (1文字)"
 
 #: ../scm/tutcode-key-custom.scm:489
 msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (2文字)"
 
 #: ../scm/tutcode-key-custom.scm:495
 msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (3文字)"
 
 #: ../scm/tutcode-key-custom.scm:501
 msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (4文字)"
 
 #: ../scm/tutcode-key-custom.scm:507
 msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (5文字)"
 
 #: ../scm/tutcode-key-custom.scm:513
 msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (6文字)"
 
 #: ../scm/tutcode-key-custom.scm:519
 msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (7文字)"
 
 #: ../scm/tutcode-key-custom.scm:525
 msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (8文字)"
 
 #: ../scm/tutcode-key-custom.scm:531
 msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型漢字→シーケンス変換 (9文字)"
 
 #: ../scm/tutcode-key-custom.scm:537
 msgid "[TUT-Code] postfix sequence to kanji conversion"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換"
 
 #: ../scm/tutcode-key-custom.scm:543
 msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (1文字)"
 
 #: ../scm/tutcode-key-custom.scm:549
 msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (2文字)"
 
 #: ../scm/tutcode-key-custom.scm:555
 msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (3文字)"
 
 #: ../scm/tutcode-key-custom.scm:561
 msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (4文字)"
 
 #: ../scm/tutcode-key-custom.scm:567
 msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (5文字)"
 
 #: ../scm/tutcode-key-custom.scm:573
 msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (6文字)"
 
 #: ../scm/tutcode-key-custom.scm:579
 msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (7文字)"
 
 #: ../scm/tutcode-key-custom.scm:585
 msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (8文字)"
 
 #: ../scm/tutcode-key-custom.scm:591
 msgid "[TUT-Code] postfix sequence to kanji conversion of 9 characters"
-msgstr ""
+msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (9文字)"
 
 #: ../scm/tutcode.scm:905
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
