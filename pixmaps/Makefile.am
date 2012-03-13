@@ -153,8 +153,8 @@ trycode_dark_background.svg: tcode_dark_background.svg
 	cp $< $@
 
 .svg.png:
-	if test -n "$(RSVG)"; then		\
-	    $(RSVG) -w48 -h48 -fpng $< $@;	\
+	if test -n "$(RSVG)"; then		 \
+	    $(RSVG) -w 48 -h 48 -f png $< -o $@; \
 	fi
 endif
 
