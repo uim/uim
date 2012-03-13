@@ -3,6 +3,40 @@ Overview of changes from 1.7.3 to 1.8.0
 * New features
 * Fixes
 * Enhancements
+  - libuim
+  - Gtk+ bridge
+  - Qt4 bridge
+  - XIM bridge (uim-xim)
+    * New API for delay showing candidate window
+
+  - uim-candwin-gtk
+    * Add previous and next page buttons
+
+  - uim-skk
+    * Kanji code (JIS/Kuten/Unicode) input mode
+
+  - uim-tutcode
+    * Delay showing candidate window
+    * New postfix conversions: katakana,
+      kanji to key sequence and key sequence to kanji
+    * Conversion on selection: mazegaki, katakana,
+      kanji to key sequence and key sequence to kanji
+    * New help functions: for character at current position
+      and for string in clipboard
+    * Clipboard support
+      - Paste from clipboard to preedit
+      - Key sequence to kanji conversion from clipboard
+    * Undo last commit
+    * Treat button click on stroke help window as key press
+    * New customs
+      - Add choice of bushu conversion algorithm:
+	tc-2.3.1 and Kanchoku Win
+      - New custom to exclude specified number of candidates
+	from mazegaki learning
+      - New custom to keep key sequence not convertible to kanji
+      - Add choice about behavior of commit candidate by label key
+      - Support binding user defined procedure to key sequence
+    * Updated trycode composition table retrieved 2012-02-18
 
 
 Overview of changes from 1.7.2 to 1.7.3
