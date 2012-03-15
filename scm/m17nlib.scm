@@ -29,6 +29,7 @@
 ;;;;
 
 (require-custom "generic-key-custom.scm")
+(require-custom "m17nlib-custom.scm")
 
 ;;; user configs
 
@@ -37,20 +38,6 @@
 ;; key defs
 (define-key m17nlib-on-key? 'generic-on-key?)
 (define-key m17nlib-off-key? 'generic-off-key?)
-
-;; widgets and actions
-
-;; widgets
-(define m17nlib-widgets '(widget_m17nlib_input_mode))
-
-;; default activity for each widgets
-(define default-widget_m17nlib_input_mode 'action_m17nlib_off)
-
-;; actions of widget_m17nlib_input_mode
-(define m17nlib-input-mode-actions
-  '(action_m17nlib_off
-    action_m17nlib_on))
-
 
 ;;; implementations
 
