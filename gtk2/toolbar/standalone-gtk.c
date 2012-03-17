@@ -149,6 +149,8 @@ helper_win_set_position(GtkWidget *window, gint x, gint y)
   else if (wy > sc_h - h)
     wy = sc_h -h;
 
+  g_object_set_data(G_OBJECT(window), "position_x", GINT_TO_POINTER(wx));
+  g_object_set_data(G_OBJECT(window), "position_y", GINT_TO_POINTER(wy));
   gtk_window_move(GTK_WINDOW(window), wx, wy);
 }
 
@@ -324,6 +326,7 @@ main(int argc, char *argv[])
   gtk_widget_show_all(GTK_WIDGET(window));
 
   if (argc > 1) {
+    gint x, y;
     if (!gtk_window_parse_geometry(GTK_WINDOW(window), argv[1])) {
 
 #if GLIB_CHECK_VERSION(2, 6, 0)
@@ -332,6 +335,9 @@ main(int argc, char *argv[])
       g_warning(_("Unable to parse the geometry string '%s'"), argv[1]);
 #endif
     }
+    gtk_window_get_position(GTK_WINDOW(window), &x, &y);
+    g_object_set_data(G_OBJECT(window), "position_x", GINT_TO_POINTER(x));
+    g_object_set_data(G_OBJECT(window), "position_y", GINT_TO_POINTER(y));
   } else {
     gint x, y, w, h, sc_w, sc_h;
     gint panel_height = 32; /* FIXME! */
@@ -343,12 +349,6 @@ main(int argc, char *argv[])
     x = sc_w - w;
     y = sc_h - h - panel_height; /* FIXME! */
     helper_win_set_position(window, x, y);
-  }
-  {
-    gint x, y;
-    gtk_window_get_position(GTK_WINDOW(window), &x, &y);
-    g_object_set_data(G_OBJECT(window), "position_x", GINT_TO_POINTER(x));
-    g_object_set_data(G_OBJECT(window), "position_y", GINT_TO_POINTER(y));
   }
 
   gtk_main();
