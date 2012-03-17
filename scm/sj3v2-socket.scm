@@ -88,7 +88,7 @@
     (53  . ,(N_ "Too small study area."))     ;; SJ3_TooSmallStdyArea
     (61  . ,(N_ "Locked by other."))          ;; SJ3_LockedByOther
     (62  . ,(N_ "Not locked."))               ;; SJ3_NotLocked
-    (71  . ,(N_ "No such dictiona2y."))       ;; SJ3_NoSuchDict
+    (71  . ,(N_ "No such dictionary."))       ;; SJ3_NoSuchDict
     (72  . ,(N_ "Dictionary is read only."))  ;; SJ3_ReadOnlyDict
     (73  . ,(N_ "Dictionary is locked."))     ;; SJ3_DictLocked
     (74  . ,(N_ "Yomi string is bad."))       ;; SJ3_BadYomiString
