@@ -63,14 +63,16 @@ while (<>) {
   s/\r\n$/\n/;
 
   if (/^Author/) {
+    chomp;
     $author = (split / /)[1];
+    $author = exists($hackers{$author}) ? $hackers{$author} : (split /: /)[1];
     next;
   }
 
   if (/^Date/) {
     chomp;
     my $date = (split / +/)[1];
-    print $date . ' ' . $hackers{$author} . "\n";
+    print $date . ' ' . $author . "\n";
     next;
   }
   print;
