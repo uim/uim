@@ -792,15 +792,21 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   }
   toplevel = gtk_widget_get_toplevel(widget);
   is_hidden = (is_hidden && strcmp(display_time, "always"));
-  if (is_hidden) {
-    gtk_widget_hide(toplevel);
-  } else {
-    gint x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),
-                                               "position_x"));
-    gint y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),
-                                               "position_y"));
-    gtk_window_move(GTK_WINDOW(toplevel), x, y);
-    gtk_widget_show(toplevel);
+#if GTK_CHECK_VERSION(2, 18, 0)
+  if (gtk_widget_get_visible(toplevel) == is_hidden) {
+#else
+  if (GTK_WIDGET_VISIBLE(toplevel) == is_hidden) {
+#endif
+    if (is_hidden) {
+      gtk_widget_hide(toplevel);
+    } else {
+      gint x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),
+                                                 "position_x"));
+      gint y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(toplevel),
+                                                 "position_y"));
+      gtk_window_move(GTK_WINDOW(toplevel), x, y);
+      gtk_widget_show(toplevel);
+    }
   }
 
   /* create tool buttons */

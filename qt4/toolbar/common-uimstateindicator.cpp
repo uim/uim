@@ -238,7 +238,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
     }
     foreach ( QWidget *widget, QApplication::topLevelWidgets() ) {
         if ( widget->isAncestorOf( this ) ) {
-           widget->setHidden( isHidden && strcmp( display_time, "always" ) );
+           isHidden = ( isHidden &&  strcmp( display_time, "always" ) );
+           if ( isHidden != widget->isHidden() )
+               widget->setHidden( isHidden );
            break;
         }
     }
