@@ -159,7 +159,11 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
 
     char *display_time
         = uim_scm_c_symbol( uim_scm_symbol_value( "toolbar-display-time" ) );
+#ifdef PLASMA_APPLET_UIM
+    bool isHidden = true;
+#else
     bool isHidden = strcmp( display_time, "mode" );
+#endif
     foreach ( const QString &line, lines )
     {
         const QStringList fields = line.split( '\t', QString::SkipEmptyParts );
@@ -236,14 +240,16 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
             }
         }
     }
+#ifndef PLASMA_APPLET_UIM
     foreach ( QWidget *widget, QApplication::topLevelWidgets() ) {
         if ( widget->isAncestorOf( this ) ) {
-           isHidden = ( isHidden &&  strcmp( display_time, "always" ) );
+           isHidden = ( isHidden && strcmp( display_time, "always" ) );
            if ( isHidden != widget->isHidden() )
                widget->setHidden( isHidden );
            break;
         }
     }
+#endif
 
 #ifdef PLASMA_APPLET_UIM
     if ( m_layout->count() != prevCount )
