@@ -33,10 +33,10 @@ endif
 if KNOTIFY4
 all cleaninstall install uninstall:
 	( cd build; $(MAKE) $(AM_MAKEFLAGS) $@ )
-endif 
 
-distclean:
+distclean-local:
 	-rm -rf build/*
+endif 
 
 FORCE:
 
