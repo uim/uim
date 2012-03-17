@@ -43,7 +43,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  latin.scm \
  elatin.scm elatin-rules.scm elatin-custom.scm \
  look.scm look-custom.scm \
- m17nlib.scm \
+ m17nlib.scm m17nlib-custom.scm \
  zaurus.scm \
  scim.scm \
  social-ime.scm social-ime-custom.scm social-ime-key-custom.scm \
