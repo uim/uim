@@ -38,7 +38,7 @@ MAINTAINERCLEANFILES = \
 FORCE:
 
 ChangeLog: FORCE
-	git log --date-order --date=short $(RELEASE_TAG) \
+	git log --date-order --date=short $(RELEASE_TAG) --     \
 	    | tools/gnuify-changelog.pl > $@
 	@if test -s $@; then                                    \
 	    echo "ChangeLog updated successfully.";             \
