@@ -1,8 +1,29 @@
 Overview of changes from 1.7.3 to 1.8.0
 =======================================
 * New features
+  - uim-google-cgiapi-jp (new IM)
+    * A web-based Japanese multi-segment input method
+  - uim-baidu-olime-jp (new IM)
+    * A web-based Japanese multi-segment input method
+  - osx-dcs
+    * OS X Dictionary Services support
+  - uim-knotify4
+    * notify agent for KDE4
+
 * Fixes
+  - uim-xim
+    * Check if libXext is installed at configure
+  - uim-gtk2
+    * Check if gdk-x11-2.0 is installed at configure (#36024)
+  - po
+    * Fix build failure with intltool 0.50 (#58097)
+  - pixmaps
+    * Use rsvg-convert instead of rsvg (#47204)
+
 * Enhancements
+  - libuim
+    * New custom type "table"
+
   - libuim
   - Gtk+ bridge
   - Qt4 bridge
@@ -12,8 +33,22 @@ Overview of changes from 1.7.3 to 1.8.0
   - uim-candwin-gtk
     * Add previous and next page buttons
 
+  - uim-chardict-qt
+  - uim-chardict-qt4
+    * Merge translation files for chardict into the main translation file
+
+  - uim-m17nlib
+    * Make toolbar settings configurable in uim-pref
+
+  - uim-pref-gtk
+  - uim-pref-gtk3
+  - uim-pref-qt4
+    * Support custom type "table"
+    * Make Japanese Romaji-Kana composing rule configurable
+
   - uim-skk
     * Kanji code (JIS/Kuten/Unicode) input mode
+    * Add skkserver completion feature (by @eagletmt)
 
   - uim-tutcode
     * Delay showing candidate window
