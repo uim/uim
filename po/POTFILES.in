@@ -72,6 +72,7 @@ scm/latin.scm
 scm/lolevel.scm
 scm/look-custom.scm
 scm/look.scm
+scm/m17nlib-custom.scm
 scm/m17nlib.scm
 scm/mana-custom.scm
 scm/mana-key-custom.scm
