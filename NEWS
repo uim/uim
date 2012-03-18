@@ -30,6 +30,11 @@ Overview of changes from 1.7.3 to 1.8.0
   - XIM bridge (uim-xim)
     * New API for delay showing candidate window
 
+  - Gtk+ bridge
+  - Qt4 bridge
+  - XIM bridge (uim-xim)
+    * Add horizontal candidate window
+
   - uim-candwin-gtk
     * Add previous and next page buttons
 
