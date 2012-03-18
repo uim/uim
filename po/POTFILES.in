@@ -42,6 +42,8 @@ scm/annotation.scm
 scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy-utf8-custom.scm
+scm/baidu-olime-jp-custom.scm
+scm/baidu-olime-jp-key-custom.scm
 scm/byeoru-custom.scm
 scm/byeoru-key-custom.scm
 scm/canna-custom.scm
