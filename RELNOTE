@@ -4,7 +4,10 @@ uim 1.7.3 Release Note
 About This Release
 ------------------
 
-This distribution of uim 1.7.3 is the latest stable release of uim.
+This distribution of uim 1.8.0-alpha is a preview release for testing
+purpose. Since it may contain serious unknown problems, it should not be
+used for important work. For such situations, use our latest stable
+release uim 1.7.3.
 
 Please report us if you find a problem.
 
@@ -16,37 +19,14 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
- - Fix behavior of text deletion API with QTextEdit of Qt4
- - Bug fixes for uim-m17nlib
+See NEWS for the fully detailed changes.
 
- See NEWS for the fully detailed changes.
-
-
-What's New in 1.7.2
--------------------
-
- - Fix crash when text acquisition is invoked with selected text
- - Support text acquisition API with QTextEdit of Qt4
-
-What's New in 1.7.1
--------------------
-
- - Improvement of uim-byeoru and uim-tutcode input methods
- - gnome-shell support of system tray toolbar
- - several (very minor) bug fixes.
-
-What's New in 1.7.0
--------------------
-
- - Fix regression in Wubi86 and ZhengMa tables in 1.7.0-alpha
-
-What's New in 1.7.0-alpha
--------------------------
-
- - GTK+3 bridge
- - GTK+3 and GNOME3 tools
- - Improved uim-tutcode
- - Generic completion support with Google Suggest
+ - New IM uim-google-cgiapi-jp
+ - New IM uim-baidu-olime-jp
+ - Delay showing candidate window
+ - Horizontal candidate window
+ - Japanese Romaji-Kana composing rule in uim-pref
+ - Many new features in uim-tutcode
 
 
 Notes for Packagers and System Integrators
@@ -74,7 +54,7 @@ Notes for Packagers and System Integrators
 Roadmap
 -------
 
-  - uim 1.8.0 and later
+  - uim 1.9.0 and later
 
     The time for drastic reconstruction. Many user-visible changes.
 
