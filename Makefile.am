@@ -18,8 +18,6 @@ desktop_in_files = uim.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
-# $(distdir) does work as a part of $(RELEASE_URL) when configured as a
-# subpackage.
 DIST_NAME = $(PACKAGE)-$(VERSION)
 #RELEASE_TAG     = master
 RELEASE_TAG     = $(DIST_NAME)
