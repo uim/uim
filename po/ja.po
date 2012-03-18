@@ -97,7 +97,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 1.5.0\n"
+"Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2012-03-17 21:51+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
