@@ -109,7 +109,8 @@
                       #f ;; focus-out-handler
                       #f ;; place-handler
                       #f ;; displace-handler
-                      "pyload")
+                      "pyload"
+                      #f) ;; delay-activating-handler
                     '(retrieve-im 'py))
   (uim-eval '(im-set-init-handler! (retrieve-im 'py) init-handler))
 

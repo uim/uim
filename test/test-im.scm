@@ -170,7 +170,7 @@
    (assert-equal 'test-im
 		 (uim '(im-name (retrieve-im 'test-im))))
    (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im))))
-   (assert-equal 21
+   (assert-equal 22
 		 (uim '(length (retrieve-im 'test-im))))
    (uim '(im-set-module-name! (retrieve-im 'test-im) "foo"))
    (assert-equal "foo"
@@ -201,6 +201,7 @@
 		   #f
 		   #f
 		   #f
+		   #f
 		   #f)
 		 (uim '(retrieve-im 'test-im)))
    ;; subsequent registration that has different im-name will be
@@ -226,6 +227,7 @@
 		   alt-set-candidate-index-handler
 		   alt-prop-activate-handler
 		   ;; replace with #f for R5RS compliant interpreter
+		   #f
 		   #f
 		   #f
 		   #f
