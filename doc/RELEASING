@@ -26,65 +26,55 @@ release, you have to repeat the following procedure at least three times.
    ChangeLog is hard work. Therefore a committer should send details of their
    commit. Maybe we sould prepare a better way.
 
-3. Update subpackage versions in make-dist.sh.
+3. Update NEWS and RELNOTE
 
-   SSCM_TAG="sigscheme-0.7.2"
-   LIBGCROOTS_TAG="libgcroots-0.1.3"
+4. Increment the version numbers in:
 
-   And set appropriate $RELEASE_SUFFIX.
+   - configure.ac
+   - uim.h
 
-   RELEASE_SUFFIX="-alpha"
-   RELEASE_SUFFIX="-beta"
-   RELEASE_SUFFIX=""
+   And increment libtool-version.mk too if ABI is updated.
 
-4. Export a fresh tree from the Git repository.
+5. Export a fresh tree from the Git repository.
 
    $ git clone https://code.google.com/p/uim/
-
-5. Do test.
-
-   $ gosh -I. test/run-test.scm
 
 6. Do a build test with make-dist.sh
 
    This test is not enough, but worth doing. It is especially useful when a
-   new file is added. As a TODO, we should do unit testing at this point.
+   new file is added. We should also do unit testing at this point.
 
-7. Increment the version numbers in:
+7. Tag to tags/uim-x.y.z
 
-   - configure.ac
-   - uim.h
-   - Project-Id-Version in po/*.po
-
-   And increment libtool-version.mk too if ABI is updated.
-
-8. Update NEWS and RELNOTE
-
-9. Tag to tags/uim-x.y.z
-
-   On an alpha release, branch the tree at first.
+   On an alpha release, create a branch at first.
 
    $ git branch x.y
    $ git push origin x.y
 
-   And then tag.
+   Then tag and push the tag.
 
-   $ git tag -a uim-x.y.z-alpha
+   On an alpha release
+   $ git tag uim-x.y.z-alpha
    $ git push --tags
 
-10. Export the fresh tagged tree from the Git repository
+   On a beta release
+   $ git tag uim-x.y.z-beta
+   $ git push --tags
 
-   $ git clone https://code.google.com/p/uim/
-   $ git checkout -b uim-x.y.z
+   On a final release
+   $ git tag uim-x.y.z
+   $ git push --tags
 
-11. Make the distribution.
+8. Create the source tarball
 
-   $ cd uim-x.y.z
-   $ ./make-dist.sh
+   On an alpha or a beta release
+   $ make distcheck distdir=uim-x.y.z-alpha
+   $ make sum distdir=uim-x.y.z-alpha
 
-   Release suffixes such as '-alpha' and '-beta' is automatically appended.
+   $ make distcheck distdir=uim-x.y.z-beta
+   $ make sum distdir=uim-x.y.z-beta
 
-12. Copy the source tarball to the download site.
+9. Copy the source tarball to the download site.
 
    Upload the file by the official uploading script:
 
@@ -113,7 +103,7 @@ release, you have to repeat the following procedure at least three times.
    And untag 'Featured' from previous final release files by the web
    interface.
 
-13. Update the web pages.
+10. Update the web pages.
 
    http://code.google.com/p/uim/
    http://code.google.com/p/uim/wiki/FrontPage
@@ -127,7 +117,7 @@ release, you have to repeat the following procedure at least three times.
    release announce which contain the checksum information.
    </obsolete>
 
-14. Send a message to uim-en@googlegroups.com
+11. Send a message to uim-en@googlegroups.com
 
    <write announcement here>
    
@@ -140,6 +130,6 @@ release, you have to repeat the following procedure at least three times.
 
    <append RELNOTE here>
 
-15. Update Freshmeat entry
+12. Update Freshmeat entry
 
    http://freshmeat.net/projects/uim-inputmethod/
