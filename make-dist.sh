@@ -4,7 +4,6 @@ MAKE=make
 
 SSCM_TAG="sigscheme-0.8.6"
 LIBGCROOTS_TAG="libgcroots-0.2.3"
-RELEASE_SUFFIX=""
 
 CONF_MAINT="--enable-maintainer-mode"
 CONF_NOWERROR="--disable-warnings-into-error"
@@ -43,19 +42,6 @@ git submodule update --init --recursive
     && git checkout $SSCM_TAG && ./autogen.sh) \
  && ./autogen.sh \
 || { echo 'autogen failed.' && exit 1; }
-
-if test -n "$RELEASE_SUFFIX"; then
-    ed Makefile.in <<EOT
-/^distdir =
-d
-i
-RELEASE_SUFFIX = ${RELEASE_SUFFIX}
-#distdir = \$(PACKAGE)-\$(VERSION)
-distdir = \$(PACKAGE)-\$(VERSION)\$(RELEASE_SUFFIX)
-.
-wq
-EOT
-fi
 
 for conf_args in "$CONF_NONE" "$CONF_DEFAULT"; do
     echo "configure $conf_args"

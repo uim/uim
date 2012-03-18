@@ -36,30 +36,14 @@ LANG=C
 
 MAKE=make
 
-RELEASE_SUFFIX="-snapshot-"`date +%Y%m%d`
-
 # --enable-maintainer-mode is required to build git HEAD
 CONF_COMMON="--enable-maintainer-mode --disable-warnings-into-error"
-
 
 git submodule update --init --recursive 
 (cd sigscheme/libgcroots && git checkout master && ./autogen.sh) \
  && (cd sigscheme && git checkout master && ./autogen.sh) \
  && ./autogen.sh \
 || { echo 'autogen failed.' && exit 1; }
-
-if test -n "$RELEASE_SUFFIX"; then
-    ed Makefile.in <<EOT
-/^distdir =
-d
-i
-RELEASE_SUFFIX = ${RELEASE_SUFFIX}
-#distdir = \$(PACKAGE)-\$(VERSION)
-distdir = \$(PACKAGE)-\$(VERSION)\$(RELEASE_SUFFIX)
-.
-wq
-EOT
-fi
 
 echo "configure $CONF_COMMON $@"
 ./configure $CONF_COMMON $@

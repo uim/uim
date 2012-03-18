@@ -20,7 +20,7 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 # $(distdir) does work as a part of $(RELEASE_URL) when configured as a
 # subpackage.
-DIST_NAME = $(PACKAGE)-$(VERSION)$(RELEASE_SUFFIX)
+DIST_NAME = $(PACKAGE)-$(VERSION)
 #RELEASE_TAG     = master
 RELEASE_TAG     = $(DIST_NAME)
 DIST_SUM_LIST = $(DIST_NAME).sum
