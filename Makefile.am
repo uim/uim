@@ -36,8 +36,7 @@ MAINTAINERCLEANFILES = \
 FORCE:
 
 ChangeLog: FORCE
-	git log --date-order --date=short $(RELEASE_TAG) --     \
-	    | tools/gnuify-changelog.pl > $@
+	git log uim-1.8.0-alpha^.. > $@
 	@if test -s $@; then                                    \
 	    echo "ChangeLog updated successfully.";             \
 	else                                                    \
