@@ -772,7 +772,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 				    indication_id, iconic_label, tooltip_str);
 	append_prop_button(widget, button);
 
-        if (!is_hidden && (!strcmp(indication_id, "off")
+        if (!is_hidden && (!strcmp(indication_id, "direct")
             || g_str_has_suffix(indication_id, "_direct"))) {
           is_hidden = TRUE;
         }
