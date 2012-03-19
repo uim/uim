@@ -6,7 +6,7 @@ SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
 SUBDIRS += qt4
 SUBDIRS += xim fep emacs po pixmaps examples tables byeoru-data
 
-EXTRA_DIST = RELNOTE ChangeLog.old autogen.sh make-dist.sh \
+EXTRA_DIST = RELNOTE ChangeLog.old ChangeLog.old.2 autogen.sh make-dist.sh \
 	uim.pc.in uim.desktop uim.spec.in uim.spec \
 	intltool-extract.in intltool-merge.in intltool-update.in
 
