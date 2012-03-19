@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2012-03-17 21:51+0900\n"
+"POT-Creation-Date: 2012-03-18 23:59+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -1620,10 +1620,10 @@ msgstr "Ajax-IME"
 
 #: ../scm/ajax-ime-custom.scm:36 ../scm/anthy-custom.scm:36
 #: ../scm/anthy-utf8-custom.scm:36 ../scm/anthy-utf8-custom.scm:39
-#: ../scm/canna-custom.scm:36 ../scm/google-cgiapi-jp-custom.scm:36
-#: ../scm/mana-custom.scm:36 ../scm/sj3-custom.scm:36
-#: ../scm/social-ime-custom.scm:36 ../scm/wnn-custom.scm:36
-#: ../scm/yahoo-jp-custom.scm:36
+#: ../scm/baidu-olime-jp-custom.scm:36 ../scm/canna-custom.scm:36
+#: ../scm/google-cgiapi-jp-custom.scm:36 ../scm/mana-custom.scm:36
+#: ../scm/sj3-custom.scm:36 ../scm/social-ime-custom.scm:36
+#: ../scm/wnn-custom.scm:36 ../scm/yahoo-jp-custom.scm:36
 msgid "A multi-segment kana-kanji conversion engine"
 msgstr "連文節かな漢字変換エンジン"
 
@@ -1674,7 +1674,23 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/anthy-utf8-custom.scm:319 ../scm/anthy-utf8-custom.scm:325
 #: ../scm/anthy-utf8-custom.scm:331 ../scm/anthy-utf8-custom.scm:337
 #: ../scm/anthy-utf8-custom.scm:369 ../scm/anthy-utf8-custom.scm:375
-#: ../scm/anthy-utf8-custom.scm:381 ../scm/byeoru-custom.scm:83
+#: ../scm/anthy-utf8-custom.scm:381 ../scm/baidu-olime-jp-custom.scm:44
+#: ../scm/baidu-olime-jp-custom.scm:48 ../scm/baidu-olime-jp-custom.scm:52
+#: ../scm/baidu-olime-jp-custom.scm:62 ../scm/baidu-olime-jp-custom.scm:68
+#: ../scm/baidu-olime-jp-custom.scm:83 ../scm/baidu-olime-jp-custom.scm:89
+#: ../scm/baidu-olime-jp-custom.scm:95 ../scm/baidu-olime-jp-custom.scm:101
+#: ../scm/baidu-olime-jp-custom.scm:200 ../scm/baidu-olime-jp-custom.scm:219
+#: ../scm/baidu-olime-jp-custom.scm:228 ../scm/baidu-olime-jp-custom.scm:270
+#: ../scm/baidu-olime-jp-custom.scm:279 ../scm/baidu-olime-jp-custom.scm:322
+#: ../scm/baidu-olime-jp-custom.scm:328 ../scm/baidu-olime-jp-custom.scm:341
+#: ../scm/baidu-olime-jp-custom.scm:347 ../scm/baidu-olime-jp-custom.scm:353
+#: ../scm/baidu-olime-jp-custom.scm:360 ../scm/baidu-olime-jp-custom.scm:366
+#: ../scm/baidu-olime-jp-custom.scm:372 ../scm/baidu-olime-jp-custom.scm:389
+#: ../scm/baidu-olime-jp-custom.scm:395
+#: ../scm/baidu-olime-jp-key-custom.scm:36
+#: ../scm/baidu-olime-jp-key-custom.scm:40
+#: ../scm/baidu-olime-jp-key-custom.scm:44
+#: ../scm/baidu-olime-jp-key-custom.scm:48 ../scm/byeoru-custom.scm:83
 #: ../scm/byeoru-custom.scm:87 ../scm/byeoru-custom.scm:91
 #: ../scm/byeoru-custom.scm:95 ../scm/byeoru-custom.scm:110
 #: ../scm/byeoru-custom.scm:117 ../scm/byeoru-custom.scm:120
@@ -1927,265 +1943,279 @@ msgid "Ajax-IME (advanced)"
 msgstr "Ajax-IME (高度)"
 
 #: ../scm/ajax-ime-custom.scm:51 ../scm/anthy-custom.scm:47
-#: ../scm/anthy-utf8-custom.scm:54 ../scm/canna-custom.scm:51
-#: ../scm/google-cgiapi-jp-custom.scm:51 ../scm/sj3-custom.scm:51
-#: ../scm/social-ime-custom.scm:51 ../scm/tutcode-custom.scm:55
-#: ../scm/wnn-custom.scm:51 ../scm/yahoo-jp-custom.scm:51
+#: ../scm/anthy-utf8-custom.scm:54 ../scm/baidu-olime-jp-custom.scm:51
+#: ../scm/canna-custom.scm:51 ../scm/google-cgiapi-jp-custom.scm:51
+#: ../scm/sj3-custom.scm:51 ../scm/social-ime-custom.scm:51
+#: ../scm/tutcode-custom.scm:55 ../scm/wnn-custom.scm:51
+#: ../scm/yahoo-jp-custom.scm:51
 msgid "Prediction"
 msgstr "予測入力"
 
 #: ../scm/ajax-ime-custom.scm:61 ../scm/anthy-custom.scm:57
-#: ../scm/anthy-utf8-custom.scm:64 ../scm/canna-custom.scm:61
-#: ../scm/google-cgiapi-jp-custom.scm:61 ../scm/mana-custom.scm:53
-#: ../scm/sj3-custom.scm:61 ../scm/social-ime-custom.scm:60
-#: ../scm/wnn-custom.scm:61 ../scm/yahoo-jp-custom.scm:61
+#: ../scm/anthy-utf8-custom.scm:64 ../scm/baidu-olime-jp-custom.scm:61
+#: ../scm/canna-custom.scm:61 ../scm/google-cgiapi-jp-custom.scm:61
+#: ../scm/mana-custom.scm:53 ../scm/sj3-custom.scm:61
+#: ../scm/social-ime-custom.scm:60 ../scm/wnn-custom.scm:61
+#: ../scm/yahoo-jp-custom.scm:61
 msgid "Show segment separator"
 msgstr "文節区切りを表示"
 
 #: ../scm/ajax-ime-custom.scm:67 ../scm/anthy-custom.scm:63
-#: ../scm/anthy-utf8-custom.scm:70 ../scm/canna-custom.scm:67
-#: ../scm/google-cgiapi-jp-custom.scm:67 ../scm/im-custom.scm:95
-#: ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:67
+#: ../scm/anthy-utf8-custom.scm:70 ../scm/baidu-olime-jp-custom.scm:67
+#: ../scm/canna-custom.scm:67 ../scm/google-cgiapi-jp-custom.scm:67
+#: ../scm/im-custom.scm:95 ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:67
 #: ../scm/social-ime-custom.scm:66 ../scm/wnn-custom.scm:67
 #: ../scm/yahoo-jp-custom.scm:67
 msgid "Segment separator"
 msgstr "文節区切り"
 
 #: ../scm/ajax-ime-custom.scm:82 ../scm/anthy-custom.scm:78
-#: ../scm/anthy-utf8-custom.scm:85 ../scm/canna-custom.scm:82
-#: ../scm/generic-custom.scm:42 ../scm/google-cgiapi-jp-custom.scm:82
-#: ../scm/mana-custom.scm:74 ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
+#: ../scm/anthy-utf8-custom.scm:85 ../scm/baidu-olime-jp-custom.scm:82
+#: ../scm/canna-custom.scm:82 ../scm/generic-custom.scm:42
+#: ../scm/google-cgiapi-jp-custom.scm:82 ../scm/mana-custom.scm:74
+#: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
 #: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:205
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
 #: ../scm/ajax-ime-custom.scm:88 ../scm/anthy-custom.scm:84
-#: ../scm/anthy-utf8-custom.scm:91 ../scm/canna-custom.scm:88
-#: ../scm/generic-custom.scm:48 ../scm/google-cgiapi-jp-custom.scm:88
-#: ../scm/mana-custom.scm:80 ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
+#: ../scm/anthy-utf8-custom.scm:91 ../scm/baidu-olime-jp-custom.scm:88
+#: ../scm/canna-custom.scm:88 ../scm/generic-custom.scm:48
+#: ../scm/google-cgiapi-jp-custom.scm:88 ../scm/mana-custom.scm:80
+#: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
 #: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:232
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
 
 #: ../scm/ajax-ime-custom.scm:94 ../scm/anthy-custom.scm:90
-#: ../scm/anthy-utf8-custom.scm:97 ../scm/canna-custom.scm:94
-#: ../scm/generic-custom.scm:54 ../scm/google-cgiapi-jp-custom.scm:94
-#: ../scm/mana-custom.scm:86 ../scm/prime-custom.scm:152
-#: ../scm/sj3-custom.scm:94 ../scm/skk-custom.scm:100
-#: ../scm/social-ime-custom.scm:93 ../scm/tutcode-custom.scm:238
-#: ../scm/wnn-custom.scm:94 ../scm/yahoo-jp-custom.scm:94
+#: ../scm/anthy-utf8-custom.scm:97 ../scm/baidu-olime-jp-custom.scm:94
+#: ../scm/canna-custom.scm:94 ../scm/generic-custom.scm:54
+#: ../scm/google-cgiapi-jp-custom.scm:94 ../scm/mana-custom.scm:86
+#: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
+#: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
+#: ../scm/tutcode-custom.scm:238 ../scm/wnn-custom.scm:94
+#: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
 
 #: ../scm/ajax-ime-custom.scm:100 ../scm/anthy-custom.scm:96
-#: ../scm/anthy-utf8-custom.scm:103 ../scm/canna-custom.scm:100
-#: ../scm/elatin-custom.scm:264 ../scm/generic-custom.scm:60
-#: ../scm/google-cgiapi-jp-custom.scm:100 ../scm/mana-custom.scm:92
-#: ../scm/prime-custom.scm:201 ../scm/sj3-custom.scm:100
-#: ../scm/social-ime-custom.scm:99 ../scm/wnn-custom.scm:100
-#: ../scm/yahoo-jp-custom.scm:100
+#: ../scm/anthy-utf8-custom.scm:103 ../scm/baidu-olime-jp-custom.scm:100
+#: ../scm/canna-custom.scm:100 ../scm/elatin-custom.scm:264
+#: ../scm/generic-custom.scm:60 ../scm/google-cgiapi-jp-custom.scm:100
+#: ../scm/mana-custom.scm:92 ../scm/prime-custom.scm:201
+#: ../scm/sj3-custom.scm:100 ../scm/social-ime-custom.scm:99
+#: ../scm/wnn-custom.scm:100 ../scm/yahoo-jp-custom.scm:100
 msgid "Select candidate by numeral keys"
 msgstr "数字キーで候補を選択する"
 
 #: ../scm/ajax-ime-custom.scm:130 ../scm/anthy-custom.scm:126
-#: ../scm/anthy-utf8-custom.scm:133 ../scm/canna-custom.scm:130
-#: ../scm/google-cgiapi-jp-custom.scm:130 ../scm/mana-custom.scm:122
-#: ../scm/prime-custom.scm:238 ../scm/sj3-custom.scm:130
-#: ../scm/skk-custom.scm:178 ../scm/social-ime-custom.scm:129
-#: ../scm/wnn-custom.scm:130 ../scm/yahoo-jp-custom.scm:130
+#: ../scm/anthy-utf8-custom.scm:133 ../scm/baidu-olime-jp-custom.scm:130
+#: ../scm/canna-custom.scm:130 ../scm/google-cgiapi-jp-custom.scm:130
+#: ../scm/mana-custom.scm:122 ../scm/prime-custom.scm:238
+#: ../scm/sj3-custom.scm:130 ../scm/skk-custom.scm:178
+#: ../scm/social-ime-custom.scm:129 ../scm/wnn-custom.scm:130
+#: ../scm/yahoo-jp-custom.scm:130
 msgid "Direct input"
 msgstr "直接入力"
 
 #: ../scm/ajax-ime-custom.scm:131 ../scm/anthy-custom.scm:127
-#: ../scm/anthy-utf8-custom.scm:134 ../scm/canna-custom.scm:131
-#: ../scm/google-cgiapi-jp-custom.scm:131 ../scm/m17nlib-custom.scm:49
-#: ../scm/mana-custom.scm:123 ../scm/sj3-custom.scm:131
-#: ../scm/skk-custom.scm:179 ../scm/social-ime-custom.scm:130
-#: ../scm/wnn-custom.scm:131 ../scm/yahoo-jp-custom.scm:131
+#: ../scm/anthy-utf8-custom.scm:134 ../scm/baidu-olime-jp-custom.scm:131
+#: ../scm/canna-custom.scm:131 ../scm/google-cgiapi-jp-custom.scm:131
+#: ../scm/m17nlib-custom.scm:49 ../scm/mana-custom.scm:123
+#: ../scm/sj3-custom.scm:131 ../scm/skk-custom.scm:179
+#: ../scm/social-ime-custom.scm:130 ../scm/wnn-custom.scm:131
+#: ../scm/yahoo-jp-custom.scm:131
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
 #: ../scm/ajax-ime-custom.scm:135 ../scm/anthy-custom.scm:131
-#: ../scm/anthy-utf8-custom.scm:138 ../scm/canna-custom.scm:135
-#: ../scm/google-cgiapi-jp-custom.scm:135 ../scm/mana-custom.scm:127
-#: ../scm/sj3-custom.scm:135 ../scm/skk-custom.scm:183
-#: ../scm/social-ime-custom.scm:134 ../scm/wnn-custom.scm:135
-#: ../scm/yahoo-jp-custom.scm:135
+#: ../scm/anthy-utf8-custom.scm:138 ../scm/baidu-olime-jp-custom.scm:135
+#: ../scm/canna-custom.scm:135 ../scm/google-cgiapi-jp-custom.scm:135
+#: ../scm/mana-custom.scm:127 ../scm/sj3-custom.scm:135
+#: ../scm/skk-custom.scm:183 ../scm/social-ime-custom.scm:134
+#: ../scm/wnn-custom.scm:135 ../scm/yahoo-jp-custom.scm:135
 msgid "Hiragana"
 msgstr "ひらがな"
 
 #: ../scm/ajax-ime-custom.scm:136 ../scm/anthy-custom.scm:132
-#: ../scm/anthy-utf8-custom.scm:139 ../scm/canna-custom.scm:136
-#: ../scm/google-cgiapi-jp-custom.scm:136 ../scm/mana-custom.scm:128
-#: ../scm/sj3-custom.scm:136 ../scm/skk-custom.scm:184
-#: ../scm/social-ime-custom.scm:135 ../scm/wnn-custom.scm:136
-#: ../scm/yahoo-jp-custom.scm:136
+#: ../scm/anthy-utf8-custom.scm:139 ../scm/baidu-olime-jp-custom.scm:136
+#: ../scm/canna-custom.scm:136 ../scm/google-cgiapi-jp-custom.scm:136
+#: ../scm/mana-custom.scm:128 ../scm/sj3-custom.scm:136
+#: ../scm/skk-custom.scm:184 ../scm/social-ime-custom.scm:135
+#: ../scm/wnn-custom.scm:136 ../scm/yahoo-jp-custom.scm:136
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
 
 #: ../scm/ajax-ime-custom.scm:140 ../scm/anthy-custom.scm:136
-#: ../scm/anthy-utf8-custom.scm:143 ../scm/canna-custom.scm:140
-#: ../scm/google-cgiapi-jp-custom.scm:140 ../scm/mana-custom.scm:132
-#: ../scm/sj3-custom.scm:140 ../scm/skk-custom.scm:188
-#: ../scm/social-ime-custom.scm:139 ../scm/wnn-custom.scm:140
-#: ../scm/yahoo-jp-custom.scm:140
+#: ../scm/anthy-utf8-custom.scm:143 ../scm/baidu-olime-jp-custom.scm:140
+#: ../scm/canna-custom.scm:140 ../scm/google-cgiapi-jp-custom.scm:140
+#: ../scm/mana-custom.scm:132 ../scm/sj3-custom.scm:140
+#: ../scm/skk-custom.scm:188 ../scm/social-ime-custom.scm:139
+#: ../scm/wnn-custom.scm:140 ../scm/yahoo-jp-custom.scm:140
 msgid "Katakana"
 msgstr "カタカナ"
 
 #: ../scm/ajax-ime-custom.scm:141 ../scm/anthy-custom.scm:137
-#: ../scm/anthy-utf8-custom.scm:144 ../scm/canna-custom.scm:141
-#: ../scm/google-cgiapi-jp-custom.scm:141 ../scm/mana-custom.scm:133
-#: ../scm/sj3-custom.scm:141 ../scm/skk-custom.scm:189
-#: ../scm/social-ime-custom.scm:140 ../scm/wnn-custom.scm:141
-#: ../scm/yahoo-jp-custom.scm:141
+#: ../scm/anthy-utf8-custom.scm:144 ../scm/baidu-olime-jp-custom.scm:141
+#: ../scm/canna-custom.scm:141 ../scm/google-cgiapi-jp-custom.scm:141
+#: ../scm/mana-custom.scm:133 ../scm/sj3-custom.scm:141
+#: ../scm/skk-custom.scm:189 ../scm/social-ime-custom.scm:140
+#: ../scm/wnn-custom.scm:141 ../scm/yahoo-jp-custom.scm:141
 msgid "Katakana input mode"
 msgstr "カタカナ入力モード"
 
 #: ../scm/ajax-ime-custom.scm:145 ../scm/anthy-custom.scm:141
-#: ../scm/anthy-utf8-custom.scm:148 ../scm/canna-custom.scm:145
-#: ../scm/google-cgiapi-jp-custom.scm:145 ../scm/mana-custom.scm:137
-#: ../scm/sj3-custom.scm:145 ../scm/skk-custom.scm:193
-#: ../scm/social-ime-custom.scm:144 ../scm/wnn-custom.scm:145
-#: ../scm/yahoo-jp-custom.scm:145
+#: ../scm/anthy-utf8-custom.scm:148 ../scm/baidu-olime-jp-custom.scm:145
+#: ../scm/canna-custom.scm:145 ../scm/google-cgiapi-jp-custom.scm:145
+#: ../scm/mana-custom.scm:137 ../scm/sj3-custom.scm:145
+#: ../scm/skk-custom.scm:193 ../scm/social-ime-custom.scm:144
+#: ../scm/wnn-custom.scm:145 ../scm/yahoo-jp-custom.scm:145
 msgid "Halfwidth Katakana"
 msgstr "半角カタカナ"
 
 #: ../scm/ajax-ime-custom.scm:146 ../scm/anthy-custom.scm:142
-#: ../scm/anthy-utf8-custom.scm:149 ../scm/canna-custom.scm:146
-#: ../scm/google-cgiapi-jp-custom.scm:146 ../scm/mana-custom.scm:138
-#: ../scm/sj3-custom.scm:146 ../scm/skk-custom.scm:194
-#: ../scm/social-ime-custom.scm:145 ../scm/wnn-custom.scm:146
-#: ../scm/yahoo-jp-custom.scm:146
+#: ../scm/anthy-utf8-custom.scm:149 ../scm/baidu-olime-jp-custom.scm:146
+#: ../scm/canna-custom.scm:146 ../scm/google-cgiapi-jp-custom.scm:146
+#: ../scm/mana-custom.scm:138 ../scm/sj3-custom.scm:146
+#: ../scm/skk-custom.scm:194 ../scm/social-ime-custom.scm:145
+#: ../scm/wnn-custom.scm:146 ../scm/yahoo-jp-custom.scm:146
 msgid "Halfwidth Katakana input mode"
 msgstr "半角カタカナ入力モード"
 
 #: ../scm/ajax-ime-custom.scm:150 ../scm/anthy-custom.scm:146
-#: ../scm/anthy-utf8-custom.scm:153 ../scm/canna-custom.scm:150
-#: ../scm/google-cgiapi-jp-custom.scm:150 ../scm/mana-custom.scm:142
-#: ../scm/sj3-custom.scm:150 ../scm/social-ime-custom.scm:149
-#: ../scm/wnn-custom.scm:150 ../scm/yahoo-jp-custom.scm:150
+#: ../scm/anthy-utf8-custom.scm:153 ../scm/baidu-olime-jp-custom.scm:150
+#: ../scm/canna-custom.scm:150 ../scm/google-cgiapi-jp-custom.scm:150
+#: ../scm/mana-custom.scm:142 ../scm/sj3-custom.scm:150
+#: ../scm/social-ime-custom.scm:149 ../scm/wnn-custom.scm:150
+#: ../scm/yahoo-jp-custom.scm:150
 msgid "Halfwidth Alphanumeric"
 msgstr "半角英数"
 
 #: ../scm/ajax-ime-custom.scm:151 ../scm/anthy-custom.scm:147
-#: ../scm/anthy-utf8-custom.scm:154 ../scm/canna-custom.scm:151
-#: ../scm/google-cgiapi-jp-custom.scm:151 ../scm/mana-custom.scm:143
-#: ../scm/sj3-custom.scm:151 ../scm/social-ime-custom.scm:150
-#: ../scm/wnn-custom.scm:151 ../scm/yahoo-jp-custom.scm:151
+#: ../scm/anthy-utf8-custom.scm:154 ../scm/baidu-olime-jp-custom.scm:151
+#: ../scm/canna-custom.scm:151 ../scm/google-cgiapi-jp-custom.scm:151
+#: ../scm/mana-custom.scm:143 ../scm/sj3-custom.scm:151
+#: ../scm/social-ime-custom.scm:150 ../scm/wnn-custom.scm:151
+#: ../scm/yahoo-jp-custom.scm:151
 msgid "Halfwidth Alphanumeric input mode"
 msgstr "半額英数字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:156 ../scm/anthy-custom.scm:151
-#: ../scm/anthy-utf8-custom.scm:158 ../scm/canna-custom.scm:156
-#: ../scm/google-cgiapi-jp-custom.scm:156 ../scm/mana-custom.scm:147
-#: ../scm/prime-custom.scm:253 ../scm/sj3-custom.scm:156
-#: ../scm/skk-custom.scm:198 ../scm/social-ime-custom.scm:155
-#: ../scm/wnn-custom.scm:156 ../scm/yahoo-jp-custom.scm:156
+#: ../scm/anthy-utf8-custom.scm:158 ../scm/baidu-olime-jp-custom.scm:156
+#: ../scm/canna-custom.scm:156 ../scm/google-cgiapi-jp-custom.scm:156
+#: ../scm/mana-custom.scm:147 ../scm/prime-custom.scm:253
+#: ../scm/sj3-custom.scm:156 ../scm/skk-custom.scm:198
+#: ../scm/social-ime-custom.scm:155 ../scm/wnn-custom.scm:156
+#: ../scm/yahoo-jp-custom.scm:156
 msgid "Fullwidth Alphanumeric"
 msgstr "全角英数"
 
 #: ../scm/ajax-ime-custom.scm:157 ../scm/anthy-custom.scm:152
-#: ../scm/anthy-utf8-custom.scm:159 ../scm/canna-custom.scm:157
-#: ../scm/google-cgiapi-jp-custom.scm:157 ../scm/mana-custom.scm:148
-#: ../scm/prime-custom.scm:254 ../scm/sj3-custom.scm:157
-#: ../scm/skk-custom.scm:199 ../scm/social-ime-custom.scm:156
-#: ../scm/wnn-custom.scm:157 ../scm/yahoo-jp-custom.scm:157
+#: ../scm/anthy-utf8-custom.scm:159 ../scm/baidu-olime-jp-custom.scm:157
+#: ../scm/canna-custom.scm:157 ../scm/google-cgiapi-jp-custom.scm:157
+#: ../scm/mana-custom.scm:148 ../scm/prime-custom.scm:254
+#: ../scm/sj3-custom.scm:157 ../scm/skk-custom.scm:199
+#: ../scm/social-ime-custom.scm:156 ../scm/wnn-custom.scm:157
+#: ../scm/yahoo-jp-custom.scm:157
 msgid "Fullwidth Alphanumeric input mode"
 msgstr "全角英数字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:164 ../scm/anthy-custom.scm:159
-#: ../scm/anthy-utf8-custom.scm:166 ../scm/canna-custom.scm:164
-#: ../scm/google-cgiapi-jp-custom.scm:164 ../scm/mana-custom.scm:155
-#: ../scm/sj3-custom.scm:164 ../scm/skk-custom.scm:206
-#: ../scm/social-ime-custom.scm:163 ../scm/wnn-custom.scm:164
-#: ../scm/yahoo-jp-custom.scm:164
+#: ../scm/anthy-utf8-custom.scm:166 ../scm/baidu-olime-jp-custom.scm:164
+#: ../scm/canna-custom.scm:164 ../scm/google-cgiapi-jp-custom.scm:164
+#: ../scm/mana-custom.scm:155 ../scm/sj3-custom.scm:164
+#: ../scm/skk-custom.scm:206 ../scm/social-ime-custom.scm:163
+#: ../scm/wnn-custom.scm:164 ../scm/yahoo-jp-custom.scm:164
 msgid "Romaji"
 msgstr "ローマ字"
 
 #: ../scm/ajax-ime-custom.scm:165 ../scm/anthy-custom.scm:160
-#: ../scm/anthy-utf8-custom.scm:167 ../scm/canna-custom.scm:165
-#: ../scm/google-cgiapi-jp-custom.scm:165 ../scm/mana-custom.scm:156
-#: ../scm/sj3-custom.scm:165 ../scm/skk-custom.scm:207
-#: ../scm/social-ime-custom.scm:164 ../scm/wnn-custom.scm:165
-#: ../scm/yahoo-jp-custom.scm:165
+#: ../scm/anthy-utf8-custom.scm:167 ../scm/baidu-olime-jp-custom.scm:165
+#: ../scm/canna-custom.scm:165 ../scm/google-cgiapi-jp-custom.scm:165
+#: ../scm/mana-custom.scm:156 ../scm/sj3-custom.scm:165
+#: ../scm/skk-custom.scm:207 ../scm/social-ime-custom.scm:164
+#: ../scm/wnn-custom.scm:165 ../scm/yahoo-jp-custom.scm:165
 msgid "Romaji input mode"
 msgstr "ローマ字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:169 ../scm/anthy-custom.scm:164
-#: ../scm/anthy-utf8-custom.scm:171 ../scm/canna-custom.scm:169
-#: ../scm/google-cgiapi-jp-custom.scm:169 ../scm/mana-custom.scm:160
-#: ../scm/sj3-custom.scm:169 ../scm/social-ime-custom.scm:168
-#: ../scm/wnn-custom.scm:169 ../scm/yahoo-jp-custom.scm:169
+#: ../scm/anthy-utf8-custom.scm:171 ../scm/baidu-olime-jp-custom.scm:169
+#: ../scm/canna-custom.scm:169 ../scm/google-cgiapi-jp-custom.scm:169
+#: ../scm/mana-custom.scm:160 ../scm/sj3-custom.scm:169
+#: ../scm/social-ime-custom.scm:168 ../scm/wnn-custom.scm:169
+#: ../scm/yahoo-jp-custom.scm:169
 msgid "Kana"
 msgstr "かな"
 
 #: ../scm/ajax-ime-custom.scm:170 ../scm/anthy-custom.scm:165
-#: ../scm/anthy-utf8-custom.scm:172 ../scm/canna-custom.scm:170
-#: ../scm/google-cgiapi-jp-custom.scm:170 ../scm/mana-custom.scm:161
-#: ../scm/sj3-custom.scm:170 ../scm/social-ime-custom.scm:169
-#: ../scm/wnn-custom.scm:170 ../scm/yahoo-jp-custom.scm:170
+#: ../scm/anthy-utf8-custom.scm:172 ../scm/baidu-olime-jp-custom.scm:170
+#: ../scm/canna-custom.scm:170 ../scm/google-cgiapi-jp-custom.scm:170
+#: ../scm/mana-custom.scm:161 ../scm/sj3-custom.scm:170
+#: ../scm/social-ime-custom.scm:169 ../scm/wnn-custom.scm:170
+#: ../scm/yahoo-jp-custom.scm:170
 msgid "Kana input mode"
 msgstr "かな入力モード"
 
 #: ../scm/ajax-ime-custom.scm:174 ../scm/anthy-custom.scm:169
-#: ../scm/anthy-utf8-custom.scm:176 ../scm/canna-custom.scm:174
-#: ../scm/google-cgiapi-jp-custom.scm:174 ../scm/mana-custom.scm:165
-#: ../scm/sj3-custom.scm:174 ../scm/skk-custom.scm:212
-#: ../scm/social-ime-custom.scm:173 ../scm/wnn-custom.scm:174
-#: ../scm/yahoo-jp-custom.scm:174
+#: ../scm/anthy-utf8-custom.scm:176 ../scm/baidu-olime-jp-custom.scm:174
+#: ../scm/canna-custom.scm:174 ../scm/google-cgiapi-jp-custom.scm:174
+#: ../scm/mana-custom.scm:165 ../scm/sj3-custom.scm:174
+#: ../scm/skk-custom.scm:212 ../scm/social-ime-custom.scm:173
+#: ../scm/wnn-custom.scm:174 ../scm/yahoo-jp-custom.scm:174
 msgid "AZIK"
 msgstr "AZIK"
 
 #: ../scm/ajax-ime-custom.scm:175 ../scm/anthy-custom.scm:170
-#: ../scm/anthy-utf8-custom.scm:177 ../scm/canna-custom.scm:175
-#: ../scm/google-cgiapi-jp-custom.scm:175 ../scm/mana-custom.scm:166
-#: ../scm/sj3-custom.scm:175 ../scm/skk-custom.scm:213
-#: ../scm/social-ime-custom.scm:174 ../scm/wnn-custom.scm:175
-#: ../scm/yahoo-jp-custom.scm:175
+#: ../scm/anthy-utf8-custom.scm:177 ../scm/baidu-olime-jp-custom.scm:175
+#: ../scm/canna-custom.scm:175 ../scm/google-cgiapi-jp-custom.scm:175
+#: ../scm/mana-custom.scm:166 ../scm/sj3-custom.scm:175
+#: ../scm/skk-custom.scm:213 ../scm/social-ime-custom.scm:174
+#: ../scm/wnn-custom.scm:175 ../scm/yahoo-jp-custom.scm:175
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:179 ../scm/anthy-custom.scm:174
-#: ../scm/anthy-utf8-custom.scm:181 ../scm/canna-custom.scm:179
-#: ../scm/google-cgiapi-jp-custom.scm:179 ../scm/mana-custom.scm:170
-#: ../scm/sj3-custom.scm:179 ../scm/skk-custom.scm:218
-#: ../scm/social-ime-custom.scm:178 ../scm/wnn-custom.scm:179
-#: ../scm/yahoo-jp-custom.scm:179
+#: ../scm/anthy-utf8-custom.scm:181 ../scm/baidu-olime-jp-custom.scm:179
+#: ../scm/canna-custom.scm:179 ../scm/google-cgiapi-jp-custom.scm:179
+#: ../scm/mana-custom.scm:170 ../scm/sj3-custom.scm:179
+#: ../scm/skk-custom.scm:218 ../scm/social-ime-custom.scm:178
+#: ../scm/wnn-custom.scm:179 ../scm/yahoo-jp-custom.scm:179
 msgid "ACT"
 msgstr "ACT"
 
 #: ../scm/ajax-ime-custom.scm:180 ../scm/anthy-custom.scm:175
-#: ../scm/anthy-utf8-custom.scm:182 ../scm/canna-custom.scm:180
-#: ../scm/google-cgiapi-jp-custom.scm:180 ../scm/mana-custom.scm:171
-#: ../scm/sj3-custom.scm:180 ../scm/skk-custom.scm:219
-#: ../scm/social-ime-custom.scm:179 ../scm/wnn-custom.scm:180
-#: ../scm/yahoo-jp-custom.scm:180
+#: ../scm/anthy-utf8-custom.scm:182 ../scm/baidu-olime-jp-custom.scm:180
+#: ../scm/canna-custom.scm:180 ../scm/google-cgiapi-jp-custom.scm:180
+#: ../scm/mana-custom.scm:171 ../scm/sj3-custom.scm:180
+#: ../scm/skk-custom.scm:219 ../scm/social-ime-custom.scm:179
+#: ../scm/wnn-custom.scm:180 ../scm/yahoo-jp-custom.scm:180
 msgid "ACT extended romaji input mode"
 msgstr "ACT拡張ローマ字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:184 ../scm/anthy-custom.scm:179
-#: ../scm/anthy-utf8-custom.scm:186 ../scm/canna-custom.scm:184
-#: ../scm/google-cgiapi-jp-custom.scm:184 ../scm/mana-custom.scm:175
-#: ../scm/sj3-custom.scm:184 ../scm/skk-custom.scm:224
-#: ../scm/social-ime-custom.scm:183 ../scm/wnn-custom.scm:184
-#: ../scm/yahoo-jp-custom.scm:184
+#: ../scm/anthy-utf8-custom.scm:186 ../scm/baidu-olime-jp-custom.scm:184
+#: ../scm/canna-custom.scm:184 ../scm/google-cgiapi-jp-custom.scm:184
+#: ../scm/mana-custom.scm:175 ../scm/sj3-custom.scm:184
+#: ../scm/skk-custom.scm:224 ../scm/social-ime-custom.scm:183
+#: ../scm/wnn-custom.scm:184 ../scm/yahoo-jp-custom.scm:184
 msgid "KZIK"
 msgstr "KZIK"
 
 #: ../scm/ajax-ime-custom.scm:185 ../scm/anthy-custom.scm:180
-#: ../scm/anthy-utf8-custom.scm:187 ../scm/canna-custom.scm:185
-#: ../scm/google-cgiapi-jp-custom.scm:185 ../scm/mana-custom.scm:176
-#: ../scm/sj3-custom.scm:185 ../scm/skk-custom.scm:225
-#: ../scm/social-ime-custom.scm:184 ../scm/wnn-custom.scm:185
-#: ../scm/yahoo-jp-custom.scm:185
+#: ../scm/anthy-utf8-custom.scm:187 ../scm/baidu-olime-jp-custom.scm:185
+#: ../scm/canna-custom.scm:185 ../scm/google-cgiapi-jp-custom.scm:185
+#: ../scm/mana-custom.scm:176 ../scm/sj3-custom.scm:185
+#: ../scm/skk-custom.scm:225 ../scm/social-ime-custom.scm:184
+#: ../scm/wnn-custom.scm:185 ../scm/yahoo-jp-custom.scm:185
 msgid "KZIK extended romaji input mode"
 msgstr "KZIK拡張ローマ字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:194 ../scm/ajax-ime-custom.scm:195
 #: ../scm/anthy-custom.scm:189 ../scm/anthy-custom.scm:190
 #: ../scm/anthy-utf8-custom.scm:196 ../scm/anthy-utf8-custom.scm:197
+#: ../scm/baidu-olime-jp-custom.scm:194 ../scm/baidu-olime-jp-custom.scm:195
 #: ../scm/canna-custom.scm:194 ../scm/canna-custom.scm:195
 #: ../scm/google-cgiapi-jp-custom.scm:194
 #: ../scm/google-cgiapi-jp-custom.scm:195 ../scm/m17nlib-custom.scm:62
@@ -2202,6 +2232,7 @@ msgstr "入力モード"
 #: ../scm/ajax-ime-custom.scm:197 ../scm/ajax-ime-custom.scm:198
 #: ../scm/anthy-custom.scm:192 ../scm/anthy-custom.scm:193
 #: ../scm/anthy-utf8-custom.scm:199 ../scm/anthy-utf8-custom.scm:200
+#: ../scm/baidu-olime-jp-custom.scm:197 ../scm/baidu-olime-jp-custom.scm:198
 #: ../scm/canna-custom.scm:197 ../scm/canna-custom.scm:198
 #: ../scm/google-cgiapi-jp-custom.scm:197
 #: ../scm/google-cgiapi-jp-custom.scm:198 ../scm/mana-custom.scm:188
@@ -2217,47 +2248,50 @@ msgstr "かな入力方式"
 # 「ツールバー上に表示するボタン」だと単に「ツールバー上への表示用途」というカテ
 # ゴリの限定の意に誤読されるので採用しない
 #: ../scm/ajax-ime-custom.scm:199 ../scm/anthy-custom.scm:194
-#: ../scm/anthy-utf8-custom.scm:201 ../scm/canna-custom.scm:199
-#: ../scm/google-cgiapi-jp-custom.scm:199 ../scm/m17nlib-custom.scm:64
-#: ../scm/mana-custom.scm:190 ../scm/sj3-custom.scm:199
-#: ../scm/skk-custom.scm:239 ../scm/social-ime-custom.scm:198
-#: ../scm/wnn-custom.scm:199 ../scm/yahoo-jp-custom.scm:199
+#: ../scm/anthy-utf8-custom.scm:201 ../scm/baidu-olime-jp-custom.scm:199
+#: ../scm/canna-custom.scm:199 ../scm/google-cgiapi-jp-custom.scm:199
+#: ../scm/m17nlib-custom.scm:64 ../scm/mana-custom.scm:190
+#: ../scm/sj3-custom.scm:199 ../scm/skk-custom.scm:239
+#: ../scm/social-ime-custom.scm:198 ../scm/wnn-custom.scm:199
+#: ../scm/yahoo-jp-custom.scm:199
 msgid "Enabled toolbar buttons"
 msgstr "有効にするボタン"
 
 #: ../scm/ajax-ime-custom.scm:218 ../scm/anthy-custom.scm:213
-#: ../scm/anthy-utf8-custom.scm:220 ../scm/canna-custom.scm:218
-#: ../scm/google-cgiapi-jp-custom.scm:218 ../scm/m17nlib-custom.scm:82
-#: ../scm/mana-custom.scm:209 ../scm/sj3-custom.scm:218
-#: ../scm/skk-custom.scm:258 ../scm/social-ime-custom.scm:217
-#: ../scm/wnn-custom.scm:218 ../scm/yahoo-jp-custom.scm:218
+#: ../scm/anthy-utf8-custom.scm:220 ../scm/baidu-olime-jp-custom.scm:218
+#: ../scm/canna-custom.scm:218 ../scm/google-cgiapi-jp-custom.scm:218
+#: ../scm/m17nlib-custom.scm:82 ../scm/mana-custom.scm:209
+#: ../scm/sj3-custom.scm:218 ../scm/skk-custom.scm:258
+#: ../scm/social-ime-custom.scm:217 ../scm/wnn-custom.scm:218
+#: ../scm/yahoo-jp-custom.scm:218
 msgid "Default input mode"
 msgstr "標準の入力モード"
 
 #: ../scm/ajax-ime-custom.scm:227 ../scm/anthy-custom.scm:222
-#: ../scm/anthy-utf8-custom.scm:229 ../scm/canna-custom.scm:227
-#: ../scm/google-cgiapi-jp-custom.scm:227 ../scm/m17nlib-custom.scm:91
-#: ../scm/mana-custom.scm:218 ../scm/sj3-custom.scm:227
-#: ../scm/skk-custom.scm:267 ../scm/social-ime-custom.scm:226
-#: ../scm/wnn-custom.scm:227 ../scm/yahoo-jp-custom.scm:227
+#: ../scm/anthy-utf8-custom.scm:229 ../scm/baidu-olime-jp-custom.scm:227
+#: ../scm/canna-custom.scm:227 ../scm/google-cgiapi-jp-custom.scm:227
+#: ../scm/m17nlib-custom.scm:91 ../scm/mana-custom.scm:218
+#: ../scm/sj3-custom.scm:227 ../scm/skk-custom.scm:267
+#: ../scm/social-ime-custom.scm:226 ../scm/wnn-custom.scm:227
+#: ../scm/yahoo-jp-custom.scm:227
 msgid "Input mode menu items"
 msgstr "入力モードのメニュー項目"
 
 #: ../scm/ajax-ime-custom.scm:269 ../scm/anthy-custom.scm:264
-#: ../scm/anthy-utf8-custom.scm:271 ../scm/canna-custom.scm:269
-#: ../scm/google-cgiapi-jp-custom.scm:269 ../scm/mana-custom.scm:260
-#: ../scm/sj3-custom.scm:269 ../scm/skk-custom.scm:298
-#: ../scm/social-ime-custom.scm:268 ../scm/wnn-custom.scm:269
-#: ../scm/yahoo-jp-custom.scm:269
+#: ../scm/anthy-utf8-custom.scm:271 ../scm/baidu-olime-jp-custom.scm:269
+#: ../scm/canna-custom.scm:269 ../scm/google-cgiapi-jp-custom.scm:269
+#: ../scm/mana-custom.scm:260 ../scm/sj3-custom.scm:269
+#: ../scm/skk-custom.scm:298 ../scm/social-ime-custom.scm:268
+#: ../scm/wnn-custom.scm:269 ../scm/yahoo-jp-custom.scm:269
 msgid "Default kana input method"
 msgstr "標準のかな入力方式"
 
 #: ../scm/ajax-ime-custom.scm:278 ../scm/anthy-custom.scm:273
-#: ../scm/anthy-utf8-custom.scm:280 ../scm/canna-custom.scm:278
-#: ../scm/google-cgiapi-jp-custom.scm:278 ../scm/mana-custom.scm:269
-#: ../scm/sj3-custom.scm:278 ../scm/skk-custom.scm:307
-#: ../scm/social-ime-custom.scm:277 ../scm/wnn-custom.scm:278
-#: ../scm/yahoo-jp-custom.scm:278
+#: ../scm/anthy-utf8-custom.scm:280 ../scm/baidu-olime-jp-custom.scm:278
+#: ../scm/canna-custom.scm:278 ../scm/google-cgiapi-jp-custom.scm:278
+#: ../scm/mana-custom.scm:269 ../scm/sj3-custom.scm:278
+#: ../scm/skk-custom.scm:307 ../scm/social-ime-custom.scm:277
+#: ../scm/wnn-custom.scm:278 ../scm/yahoo-jp-custom.scm:278
 msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
@@ -2274,67 +2308,70 @@ msgid "Show caveat for the connection"
 msgstr "接続に関する警告を表示する"
 
 #: ../scm/ajax-ime-custom.scm:334 ../scm/anthy-custom.scm:361
-#: ../scm/anthy-utf8-custom.scm:368 ../scm/canna-custom.scm:401
-#: ../scm/google-cgiapi-jp-custom.scm:338 ../scm/mana-custom.scm:307
-#: ../scm/prime-custom.scm:207 ../scm/sj3-custom.scm:356
-#: ../scm/skk-custom.scm:543 ../scm/social-ime-custom.scm:344
-#: ../scm/tutcode-custom.scm:104 ../scm/wnn-custom.scm:345
-#: ../scm/yahoo-jp-custom.scm:350
+#: ../scm/anthy-utf8-custom.scm:368 ../scm/baidu-olime-jp-custom.scm:340
+#: ../scm/canna-custom.scm:401 ../scm/google-cgiapi-jp-custom.scm:338
+#: ../scm/mana-custom.scm:307 ../scm/prime-custom.scm:207
+#: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:543
+#: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:104
+#: ../scm/wnn-custom.scm:345 ../scm/yahoo-jp-custom.scm:350
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
 
 #: ../scm/ajax-ime-custom.scm:340 ../scm/anthy-custom.scm:367
-#: ../scm/anthy-utf8-custom.scm:374 ../scm/canna-custom.scm:407
-#: ../scm/google-cgiapi-jp-custom.scm:344 ../scm/mana-custom.scm:313
-#: ../scm/sj3-custom.scm:362 ../scm/skk-custom.scm:477
-#: ../scm/social-ime-custom.scm:350 ../scm/yahoo-jp-custom.scm:356
+#: ../scm/anthy-utf8-custom.scm:374 ../scm/baidu-olime-jp-custom.scm:346
+#: ../scm/canna-custom.scm:407 ../scm/google-cgiapi-jp-custom.scm:344
+#: ../scm/mana-custom.scm:313 ../scm/sj3-custom.scm:362
+#: ../scm/skk-custom.scm:477 ../scm/social-ime-custom.scm:350
+#: ../scm/yahoo-jp-custom.scm:356
 msgid "Enable auto conversion with punctuation marks"
 msgstr "句読点での自動変換を有効にする"
 
 #: ../scm/ajax-ime-custom.scm:346 ../scm/anthy-custom.scm:373
-#: ../scm/anthy-utf8-custom.scm:380 ../scm/canna-custom.scm:413
-#: ../scm/google-cgiapi-jp-custom.scm:350 ../scm/mana-custom.scm:319
-#: ../scm/sj3-custom.scm:368 ../scm/social-ime-custom.scm:356
-#: ../scm/wnn-custom.scm:351 ../scm/yahoo-jp-custom.scm:362
+#: ../scm/anthy-utf8-custom.scm:380 ../scm/baidu-olime-jp-custom.scm:352
+#: ../scm/canna-custom.scm:413 ../scm/google-cgiapi-jp-custom.scm:350
+#: ../scm/mana-custom.scm:319 ../scm/sj3-custom.scm:368
+#: ../scm/social-ime-custom.scm:356 ../scm/wnn-custom.scm:351
+#: ../scm/yahoo-jp-custom.scm:362
 msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr "直接入力モード(off状態)時も入力モード切り替えキーを有効にする"
 
 #: ../scm/ajax-ime-custom.scm:353 ../scm/anthy-custom.scm:311
-#: ../scm/anthy-utf8-custom.scm:318 ../scm/canna-custom.scm:420
-#: ../scm/google-cgiapi-jp-custom.scm:357 ../scm/sj3-custom.scm:375
-#: ../scm/social-ime-custom.scm:363 ../scm/wnn-custom.scm:358
-#: ../scm/yahoo-jp-custom.scm:369
+#: ../scm/anthy-utf8-custom.scm:318 ../scm/baidu-olime-jp-custom.scm:359
+#: ../scm/canna-custom.scm:420 ../scm/google-cgiapi-jp-custom.scm:357
+#: ../scm/sj3-custom.scm:375 ../scm/social-ime-custom.scm:363
+#: ../scm/wnn-custom.scm:358 ../scm/yahoo-jp-custom.scm:369
 msgid "Enable input prediction"
 msgstr "予測入力を有効にする"
 
 #: ../scm/ajax-ime-custom.scm:359 ../scm/anthy-custom.scm:317
-#: ../scm/anthy-utf8-custom.scm:324 ../scm/canna-custom.scm:426
-#: ../scm/google-cgiapi-jp-custom.scm:363 ../scm/sj3-custom.scm:381
-#: ../scm/social-ime-custom.scm:377 ../scm/wnn-custom.scm:364
-#: ../scm/yahoo-jp-custom.scm:383
+#: ../scm/anthy-utf8-custom.scm:324 ../scm/baidu-olime-jp-custom.scm:365
+#: ../scm/canna-custom.scm:426 ../scm/google-cgiapi-jp-custom.scm:363
+#: ../scm/sj3-custom.scm:381 ../scm/social-ime-custom.scm:377
+#: ../scm/wnn-custom.scm:364 ../scm/yahoo-jp-custom.scm:383
 msgid "Select prediction candidate by numeral keys"
 msgstr "数字キーで予測候補を選択する"
 
 #: ../scm/ajax-ime-custom.scm:365 ../scm/anthy-custom.scm:323
-#: ../scm/anthy-utf8-custom.scm:330 ../scm/canna-custom.scm:432
-#: ../scm/google-cgiapi-jp-custom.scm:369 ../scm/sj3-custom.scm:387
-#: ../scm/social-ime-custom.scm:383 ../scm/wnn-custom.scm:370
-#: ../scm/yahoo-jp-custom.scm:389
+#: ../scm/anthy-utf8-custom.scm:330 ../scm/baidu-olime-jp-custom.scm:371
+#: ../scm/canna-custom.scm:432 ../scm/google-cgiapi-jp-custom.scm:369
+#: ../scm/sj3-custom.scm:387 ../scm/social-ime-custom.scm:383
+#: ../scm/wnn-custom.scm:370 ../scm/yahoo-jp-custom.scm:389
 msgid "Show selected prediction candidate in preedit area"
 msgstr "編集領域内に選んだ予測候補を表示する"
 
-#: ../scm/ajax-ime-custom.scm:371 ../scm/canna-custom.scm:438
-#: ../scm/google-cgiapi-jp-custom.scm:386 ../scm/sj3-custom.scm:393
-#: ../scm/social-ime-custom.scm:389 ../scm/wnn-custom.scm:376
-#: ../scm/yahoo-jp-custom.scm:406
+#: ../scm/ajax-ime-custom.scm:371 ../scm/baidu-olime-jp-custom.scm:388
+#: ../scm/canna-custom.scm:438 ../scm/google-cgiapi-jp-custom.scm:386
+#: ../scm/sj3-custom.scm:393 ../scm/social-ime-custom.scm:389
+#: ../scm/wnn-custom.scm:376 ../scm/yahoo-jp-custom.scm:406
 msgid "Number of cache of prediction candidates"
 msgstr "予測候補キャッシュ数"
 
 #: ../scm/ajax-ime-custom.scm:377 ../scm/anthy-custom.scm:329
-#: ../scm/anthy-utf8-custom.scm:336 ../scm/canna-custom.scm:444
-#: ../scm/google-cgiapi-jp-custom.scm:392 ../scm/sj3-custom.scm:399
-#: ../scm/social-ime-custom.scm:395 ../scm/tutcode-custom.scm:365
-#: ../scm/wnn-custom.scm:382 ../scm/yahoo-jp-custom.scm:412
+#: ../scm/anthy-utf8-custom.scm:336 ../scm/baidu-olime-jp-custom.scm:394
+#: ../scm/canna-custom.scm:444 ../scm/google-cgiapi-jp-custom.scm:392
+#: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
+#: ../scm/tutcode-custom.scm:365 ../scm/wnn-custom.scm:382
+#: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr "予測入力が有効になる文字数"
 
@@ -2395,47 +2432,83 @@ msgstr "[Ajax-IME] 次文節"
 #: ../scm/anthy-key-custom.scm:253 ../scm/anthy-key-custom.scm:259
 #: ../scm/anthy-key-custom.scm:265 ../scm/anthy-key-custom.scm:271
 #: ../scm/anthy-key-custom.scm:277 ../scm/anthy-key-custom.scm:283
-#: ../scm/byeoru-key-custom.scm:48 ../scm/byeoru-key-custom.scm:54
-#: ../scm/byeoru-key-custom.scm:60 ../scm/byeoru-key-custom.scm:66
-#: ../scm/byeoru-key-custom.scm:72 ../scm/byeoru-key-custom.scm:78
-#: ../scm/byeoru-key-custom.scm:84 ../scm/byeoru-key-custom.scm:90
-#: ../scm/byeoru-key-custom.scm:96 ../scm/byeoru-key-custom.scm:102
-#: ../scm/byeoru-key-custom.scm:108 ../scm/byeoru-key-custom.scm:114
-#: ../scm/byeoru-key-custom.scm:120 ../scm/byeoru-key-custom.scm:126
-#: ../scm/byeoru-key-custom.scm:132 ../scm/canna-key-custom.scm:55
-#: ../scm/canna-key-custom.scm:61 ../scm/canna-key-custom.scm:67
-#: ../scm/canna-key-custom.scm:73 ../scm/canna-key-custom.scm:79
-#: ../scm/canna-key-custom.scm:85 ../scm/canna-key-custom.scm:91
-#: ../scm/canna-key-custom.scm:97 ../scm/canna-key-custom.scm:103
-#: ../scm/canna-key-custom.scm:109 ../scm/canna-key-custom.scm:118
-#: ../scm/canna-key-custom.scm:125 ../scm/canna-key-custom.scm:131
-#: ../scm/canna-key-custom.scm:137 ../scm/canna-key-custom.scm:143
-#: ../scm/canna-key-custom.scm:149 ../scm/canna-key-custom.scm:155
-#: ../scm/canna-key-custom.scm:161 ../scm/canna-key-custom.scm:167
-#: ../scm/canna-key-custom.scm:176 ../scm/canna-key-custom.scm:182
-#: ../scm/canna-key-custom.scm:188 ../scm/canna-key-custom.scm:194
-#: ../scm/canna-key-custom.scm:200 ../scm/canna-key-custom.scm:206
-#: ../scm/canna-key-custom.scm:212 ../scm/canna-key-custom.scm:218
-#: ../scm/canna-key-custom.scm:224 ../scm/canna-key-custom.scm:234
-#: ../scm/canna-key-custom.scm:240 ../scm/canna-key-custom.scm:246
-#: ../scm/canna-key-custom.scm:252 ../scm/canna-key-custom.scm:258
-#: ../scm/canna-key-custom.scm:264 ../scm/canna-key-custom.scm:270
-#: ../scm/canna-key-custom.scm:276 ../scm/canna-key-custom.scm:282
-#: ../scm/elatin-custom.scm:292 ../scm/elatin-custom.scm:298
-#: ../scm/elatin-custom.scm:304 ../scm/elatin-custom.scm:310
-#: ../scm/elatin-custom.scm:316 ../scm/elatin-custom.scm:322
-#: ../scm/elatin-custom.scm:328 ../scm/elatin-custom.scm:334
-#: ../scm/elatin-custom.scm:340 ../scm/elatin-custom.scm:346
-#: ../scm/generic-key-custom.scm:48 ../scm/generic-key-custom.scm:54
-#: ../scm/generic-key-custom.scm:60 ../scm/generic-key-custom.scm:66
-#: ../scm/generic-key-custom.scm:72 ../scm/generic-key-custom.scm:78
-#: ../scm/generic-key-custom.scm:84 ../scm/generic-key-custom.scm:90
-#: ../scm/generic-key-custom.scm:96 ../scm/generic-key-custom.scm:106
-#: ../scm/generic-key-custom.scm:112 ../scm/generic-key-custom.scm:118
-#: ../scm/generic-key-custom.scm:124 ../scm/generic-key-custom.scm:130
-#: ../scm/generic-key-custom.scm:136 ../scm/generic-key-custom.scm:142
-#: ../scm/generic-key-custom.scm:148 ../scm/generic-key-custom.scm:154
-#: ../scm/google-cgiapi-jp-key-custom.scm:54
+#: ../scm/baidu-olime-jp-key-custom.scm:54
+#: ../scm/baidu-olime-jp-key-custom.scm:60
+#: ../scm/baidu-olime-jp-key-custom.scm:66
+#: ../scm/baidu-olime-jp-key-custom.scm:72
+#: ../scm/baidu-olime-jp-key-custom.scm:78
+#: ../scm/baidu-olime-jp-key-custom.scm:84
+#: ../scm/baidu-olime-jp-key-custom.scm:90
+#: ../scm/baidu-olime-jp-key-custom.scm:96
+#: ../scm/baidu-olime-jp-key-custom.scm:102
+#: ../scm/baidu-olime-jp-key-custom.scm:108
+#: ../scm/baidu-olime-jp-key-custom.scm:117
+#: ../scm/baidu-olime-jp-key-custom.scm:124
+#: ../scm/baidu-olime-jp-key-custom.scm:130
+#: ../scm/baidu-olime-jp-key-custom.scm:136
+#: ../scm/baidu-olime-jp-key-custom.scm:142
+#: ../scm/baidu-olime-jp-key-custom.scm:148
+#: ../scm/baidu-olime-jp-key-custom.scm:154
+#: ../scm/baidu-olime-jp-key-custom.scm:160
+#: ../scm/baidu-olime-jp-key-custom.scm:166
+#: ../scm/baidu-olime-jp-key-custom.scm:175
+#: ../scm/baidu-olime-jp-key-custom.scm:181
+#: ../scm/baidu-olime-jp-key-custom.scm:187
+#: ../scm/baidu-olime-jp-key-custom.scm:193
+#: ../scm/baidu-olime-jp-key-custom.scm:199
+#: ../scm/baidu-olime-jp-key-custom.scm:205
+#: ../scm/baidu-olime-jp-key-custom.scm:211
+#: ../scm/baidu-olime-jp-key-custom.scm:217
+#: ../scm/baidu-olime-jp-key-custom.scm:223
+#: ../scm/baidu-olime-jp-key-custom.scm:233
+#: ../scm/baidu-olime-jp-key-custom.scm:239
+#: ../scm/baidu-olime-jp-key-custom.scm:245
+#: ../scm/baidu-olime-jp-key-custom.scm:251
+#: ../scm/baidu-olime-jp-key-custom.scm:257
+#: ../scm/baidu-olime-jp-key-custom.scm:263
+#: ../scm/baidu-olime-jp-key-custom.scm:269
+#: ../scm/baidu-olime-jp-key-custom.scm:275
+#: ../scm/baidu-olime-jp-key-custom.scm:281 ../scm/byeoru-key-custom.scm:48
+#: ../scm/byeoru-key-custom.scm:54 ../scm/byeoru-key-custom.scm:60
+#: ../scm/byeoru-key-custom.scm:66 ../scm/byeoru-key-custom.scm:72
+#: ../scm/byeoru-key-custom.scm:78 ../scm/byeoru-key-custom.scm:84
+#: ../scm/byeoru-key-custom.scm:90 ../scm/byeoru-key-custom.scm:96
+#: ../scm/byeoru-key-custom.scm:102 ../scm/byeoru-key-custom.scm:108
+#: ../scm/byeoru-key-custom.scm:114 ../scm/byeoru-key-custom.scm:120
+#: ../scm/byeoru-key-custom.scm:126 ../scm/byeoru-key-custom.scm:132
+#: ../scm/canna-key-custom.scm:55 ../scm/canna-key-custom.scm:61
+#: ../scm/canna-key-custom.scm:67 ../scm/canna-key-custom.scm:73
+#: ../scm/canna-key-custom.scm:79 ../scm/canna-key-custom.scm:85
+#: ../scm/canna-key-custom.scm:91 ../scm/canna-key-custom.scm:97
+#: ../scm/canna-key-custom.scm:103 ../scm/canna-key-custom.scm:109
+#: ../scm/canna-key-custom.scm:118 ../scm/canna-key-custom.scm:125
+#: ../scm/canna-key-custom.scm:131 ../scm/canna-key-custom.scm:137
+#: ../scm/canna-key-custom.scm:143 ../scm/canna-key-custom.scm:149
+#: ../scm/canna-key-custom.scm:155 ../scm/canna-key-custom.scm:161
+#: ../scm/canna-key-custom.scm:167 ../scm/canna-key-custom.scm:176
+#: ../scm/canna-key-custom.scm:182 ../scm/canna-key-custom.scm:188
+#: ../scm/canna-key-custom.scm:194 ../scm/canna-key-custom.scm:200
+#: ../scm/canna-key-custom.scm:206 ../scm/canna-key-custom.scm:212
+#: ../scm/canna-key-custom.scm:218 ../scm/canna-key-custom.scm:224
+#: ../scm/canna-key-custom.scm:234 ../scm/canna-key-custom.scm:240
+#: ../scm/canna-key-custom.scm:246 ../scm/canna-key-custom.scm:252
+#: ../scm/canna-key-custom.scm:258 ../scm/canna-key-custom.scm:264
+#: ../scm/canna-key-custom.scm:270 ../scm/canna-key-custom.scm:276
+#: ../scm/canna-key-custom.scm:282 ../scm/elatin-custom.scm:292
+#: ../scm/elatin-custom.scm:298 ../scm/elatin-custom.scm:304
+#: ../scm/elatin-custom.scm:310 ../scm/elatin-custom.scm:316
+#: ../scm/elatin-custom.scm:322 ../scm/elatin-custom.scm:328
+#: ../scm/elatin-custom.scm:334 ../scm/elatin-custom.scm:340
+#: ../scm/elatin-custom.scm:346 ../scm/generic-key-custom.scm:48
+#: ../scm/generic-key-custom.scm:54 ../scm/generic-key-custom.scm:60
+#: ../scm/generic-key-custom.scm:66 ../scm/generic-key-custom.scm:72
+#: ../scm/generic-key-custom.scm:78 ../scm/generic-key-custom.scm:84
+#: ../scm/generic-key-custom.scm:90 ../scm/generic-key-custom.scm:96
+#: ../scm/generic-key-custom.scm:106 ../scm/generic-key-custom.scm:112
+#: ../scm/generic-key-custom.scm:118 ../scm/generic-key-custom.scm:124
+#: ../scm/generic-key-custom.scm:130 ../scm/generic-key-custom.scm:136
+#: ../scm/generic-key-custom.scm:142 ../scm/generic-key-custom.scm:148
+#: ../scm/generic-key-custom.scm:154 ../scm/google-cgiapi-jp-key-custom.scm:54
 #: ../scm/google-cgiapi-jp-key-custom.scm:60
 #: ../scm/google-cgiapi-jp-key-custom.scm:66
 #: ../scm/google-cgiapi-jp-key-custom.scm:72
@@ -3093,6 +3166,191 @@ msgstr "[Anthy] 前予測候補"
 #: ../scm/anthy-utf8-custom.scm:38
 msgid "Anthy (UTF-8)"
 msgstr "Anthy (UTF-8)"
+
+#: ../scm/baidu-olime-jp-custom.scm:35
+msgid "Baidu-OnlineIME-Jp"
+msgstr ""
+
+#: ../scm/baidu-olime-jp-custom.scm:43
+msgid "Baidu-OnlineIME-Jp server"
+msgstr "Baidu-OnlineIME-Jp サーバ"
+
+#: ../scm/baidu-olime-jp-custom.scm:47
+msgid "Baidu-OnlineIME-Jp (advanced)"
+msgstr "Baidu-OnlineIME-Jp (高度)"
+
+#: ../scm/baidu-olime-jp-custom.scm:321
+msgid "Baidu-OnlineIME-Jp server address"
+msgstr "Baidu-OnlineIME-Jpサーバアドレス"
+
+#: ../scm/baidu-olime-jp-custom.scm:327 ../scm/google-cgiapi-jp-custom.scm:327
+#: ../scm/yahoo-jp-custom.scm:339
+msgid "Use SSL"
+msgstr "SSLを使用"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:35
+msgid "Baidu-OnlineIME-Jp key bindings 1"
+msgstr "Baidu-OnlineIME-Jp キー設定1"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:39
+msgid "Baidu-OnlineIME-Jp key bindings 2"
+msgstr "Baidu-OnlineIME-Jp キー設定2"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:43
+msgid "Baidu-OnlineIME-Jp key bindings 3"
+msgstr "Baidu-OnlineIME-Jp キー設定3"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:47
+msgid "Baidu-OnlineIME-Jp key bindings 4"
+msgstr "Baidu-OnlineIME-Jp キー設定4"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:53
+msgid "[Baidu-OnlineIME-Jp] next segment"
+msgstr "[Baidu-OnlineIME-Jp] 次文節"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:59
+msgid "[Baidu-OnlineIME-Jp] previous segment"
+msgstr "[Baidu-OnlineIME-Jp] 前文節"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:65
+msgid "[Baidu-OnlineIME-Jp] extend segment"
+msgstr "[Baidu-OnlineIME-Jp] 文節を伸ばす"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:71
+msgid "[Baidu-OnlineIME-Jp] shrink segment"
+msgstr "[Baidu-OnlineIME-Jp] 文節を縮める"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:77
+msgid "[Baidu-OnlineIME-Jp] convert to hiragana"
+msgstr "[Baidu-OnlineIME-Jp] ひらがなに変換"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:83
+msgid "[Baidu-OnlineIME-Jp] convert to katakana"
+msgstr "[Baidu-OnlineIME-Jp] カタカナに変換"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:89
+msgid "[Baidu-OnlineIME-Jp] convert to halfwidth katakana"
+msgstr "[Baidu-OnlineIME-Jp] 半角カタカナに変換"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:95
+msgid "[Baidu-OnlineIME-Jp] convert to halfwidth alphanumeric"
+msgstr "[Baidu-OnlineIME-Jp] 半角英数字に変換"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:101
+msgid "[Baidu-OnlineIME-Jp] convert to fullwidth alphanumeric"
+msgstr "[Baidu-OnlineIME-Jp] 全角英数字に変換"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:107
+msgid "[Baidu-OnlineIME-Jp] commit as transposed kana"
+msgstr "[Baidu-OnlineIME-Jp] かな/カナ反転確定"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:116
+msgid "[Baidu-OnlineIME-Jp] on"
+msgstr ""
+
+#: ../scm/baidu-olime-jp-key-custom.scm:123
+msgid "[Baidu-OnlineIME-Jp] off"
+msgstr ""
+
+#: ../scm/baidu-olime-jp-key-custom.scm:129
+msgid "[Baidu-OnlineIME-Jp] begin conversion"
+msgstr "[Baidu-OnlineIME-Jp] 変換開始"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:135
+msgid "[Baidu-OnlineIME-Jp] commit"
+msgstr "[Baidu-OnlineIME-Jp] 確定"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:141
+msgid "[Baidu-OnlineIME-Jp] cancel"
+msgstr "[Baidu-OnlineIME-Jp] キャンセル"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:147
+msgid "[Baidu-OnlineIME-Jp] next candidate"
+msgstr "[Baidu-OnlineIME-Jp] 次候補"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:153
+msgid "[Baidu-OnlineIME-Jp] previous candidate"
+msgstr "[Baidu-OnlineIME-Jp] 前候補"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:159
+msgid "[Baidu-OnlineIME-Jp] next page of candidate window"
+msgstr "[Baidu-OnlineIME-Jp] 候補ウィンドウの次ページ"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:165
+msgid "[Baidu-OnlineIME-Jp] previous page of candidate window"
+msgstr "[Baidu-OnlineIME-Jp] 候補ウィンドウの前ページ"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:174
+msgid "[Baidu-OnlineIME-Jp] beginning of preedit"
+msgstr "[Baidu-OnlineIME-Jp] 編集領域の先頭"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:180
+msgid "[Baidu-OnlineIME-Jp] end of preedit"
+msgstr "[Baidu-OnlineIME-Jp] 編集領域の末尾"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:186
+msgid "[Baidu-OnlineIME-Jp] erase after cursor"
+msgstr "[Baidu-OnlineIME-Jp] カーソル以降を消去"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:192
+msgid "[Baidu-OnlineIME-Jp] erase before cursor"
+msgstr "[Baidu-OnlineIME-Jp] カーソル以前を消去"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:198
+msgid "[Baidu-OnlineIME-Jp] backspace"
+msgstr "[Baidu-OnlineIME-Jp] バックスペース"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:204
+msgid "[Baidu-OnlineIME-Jp] delete"
+msgstr "[Baidu-OnlineIME-Jp] デリート"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:210
+msgid "[Baidu-OnlineIME-Jp] go left"
+msgstr "[Baidu-OnlineIME-Jp] 左に移動"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:216
+msgid "[Baidu-OnlineIME-Jp] go right"
+msgstr "[Baidu-OnlineIME-Jp] 右に移動"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:222
+msgid "[Baidu-OnlineIME-Jp] ESC keys on vi-cooperative mode"
+msgstr "[Baidu-OnlineIME-Jp] vi協調モードでESCとして扱うキー"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:232
+msgid "[Baidu-OnlineIME-Jp] hiragana mode"
+msgstr "[Baidu-OnlineIME-Jp] ひらがな入力モード"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:238
+msgid "[Baidu-OnlineIME-Jp] katakana mode"
+msgstr "[Baidu-OnlineIME-Jp] カタカナ入力モード"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:244
+msgid "[Baidu-OnlineIME-Jp] halfwidth katakana mode"
+msgstr "[Baidu-OnlineIME-Jp] 半角カタカナ入力モード"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:250
+msgid "[Baidu-OnlineIME-Jp] halfwidth alphanumeric mode"
+msgstr "[Baidu-OnlineIME-Jp] 半角英数字入力モード"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:256
+msgid "[Baidu-OnlineIME-Jp] fullwidth alphanumeric mode"
+msgstr "[Baidu-OnlineIME-Jp] 全角英数字モード"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:262
+msgid "[Baidu-OnlineIME-Jp] toggle hiragana/katakana mode"
+msgstr "[Baidu-OnlineIME-Jp] ひらがな/カタカナ入力モードを反転"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:268
+msgid "[Baidu-OnlineIME-Jp] toggle kana/alphanumeric mode"
+msgstr "[Baidu-OnlineIME-Jp] かな/英数入力モードを反転"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:274
+msgid "[Baidu-OnlineIME-Jp] Next prediction candidate"
+msgstr "[Baidu-OnlineIME-Jp] 次予測候補"
+
+#: ../scm/baidu-olime-jp-key-custom.scm:280
+msgid "[Baidu-OnlineIME-Jp] Previous prediction candidate"
+msgstr "[Baidu-OnlineIME-Jp] 前予測候補"
 
 #: ../scm/byeoru-custom.scm:35
 msgid "Byeoru"
@@ -4051,10 +4309,6 @@ msgstr "Google-CGIAPI-Jp (高度)"
 #: ../scm/google-cgiapi-jp-custom.scm:321
 msgid "Google-CGIAPI-Jp server address"
 msgstr "Google-CGIAPI-Jpサーバアドレス"
-
-#: ../scm/google-cgiapi-jp-custom.scm:327 ../scm/yahoo-jp-custom.scm:339
-msgid "Use SSL"
-msgstr "SSLを使用"
 
 #: ../scm/google-cgiapi-jp-key-custom.scm:35
 msgid "Google-CGIAPI-Jp key bindings 1"
