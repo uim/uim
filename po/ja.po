@@ -766,7 +766,7 @@ msgstr "ラテン文字拡張B"
 #: ../qt4/chardict/unicodeviewwidget.cpp:72
 msgctxt "chardict"
 msgid "IPA Extensions"
-msgstr "IPA 拡張"
+msgstr "IPA拡張"
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:70
 #: ../qt4/chardict/unicodeviewwidget.cpp:73
@@ -1042,13 +1042,13 @@ msgstr "リンブ文字"
 #: ../qt4/chardict/unicodeviewwidget.cpp:118
 msgctxt "chardict"
 msgid "Tai Le"
-msgstr "タイ ロ文字"
+msgstr "タイ・ロ文字"
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:116
 #: ../qt4/chardict/unicodeviewwidget.cpp:119
 msgctxt "chardict"
 msgid "New Tai Lue"
-msgstr "新タイ ロ文字"
+msgstr "新タイ・ロ文字"
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:117
 #: ../qt4/chardict/unicodeviewwidget.cpp:120
@@ -1072,7 +1072,7 @@ msgstr "ラーンナー文字"
 #: ../qt4/chardict/unicodeviewwidget.cpp:123
 msgctxt "chardict"
 msgid "Balinese"
-msgstr "バリ語"
+msgstr "バリ文字"
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:121
 #: ../qt4/chardict/unicodeviewwidget.cpp:124
@@ -1564,7 +1564,7 @@ msgstr "マニプリ文字拡張"
 #: ../qt4/chardict/unicodeviewwidget.cpp:205
 msgctxt "chardict"
 msgid "Ethiopic Extended-A"
-msgstr "エチオピア字拡張A"
+msgstr "エチオピア文字拡張A"
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:203
 #: ../qt4/chardict/unicodeviewwidget.cpp:206
