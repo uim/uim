@@ -33,10 +33,16 @@
 #include "abstractcandidatewindow.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QDesktopWidget>
+# include <QtGui/QLabel>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QDesktopWidget>
+# include <QtWidgets/QLabel>
+#endif
 
 #include "quiminputcontext.h"
 

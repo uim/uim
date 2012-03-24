@@ -37,12 +37,20 @@
 #include <uim/uim-custom.h>
 
 #include <QtCore/QList>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QFrame>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QLineEdit>
-#include <QtGui/QSpinBox>
+#if QT_VERSION < 0x050000
+# include <QtGui/QCheckBox>
+# include <QtGui/QComboBox>
+# include <QtGui/QFrame>
+# include <QtGui/QLineEdit>
+# include <QtGui/QSpinBox>
+#else
+# include <QtWidgets/QCheckBox>
+# include <QtWidgets/QComboBox>
+# include <QtWidgets/QFrame>
+# include <QtWidgets/QLineEdit>
+# include <QtWidgets/QSpinBox>
+#endif
 
 #include "keyeditformbase.h"
 #include "olisteditformbase.h"

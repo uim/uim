@@ -35,7 +35,11 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QList>
-#include <QtGui/QDialog>
+#if QT_VERSION < 0x050000
+# include <QtGui/QDialog>
+#else
+# include <QtWidgets/QDialog>
+#endif
 
 #include <uim/uim.h>
 #include <uim/uim-custom.h>

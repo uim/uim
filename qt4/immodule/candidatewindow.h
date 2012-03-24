@@ -33,7 +33,12 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 #define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 
-#include <QtGui/QTableWidget>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QTableWidget>
+#else
+# include <QtWidgets/QTableWidget>
+#endif
 
 #include "abstractcandidatewindow.h"
 

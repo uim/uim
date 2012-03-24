@@ -35,12 +35,18 @@ SUCH DAMAGE.
 
 #include <cstdlib>
 
-#include <QtGui/QApplication>
 #include <QtGui/QClipboard>
-#include <QtGui/QLineEdit>
-#include <QtGui/QTextEdit>
-#ifdef ENABLE_QT4_QT3SUPPORT
-# include <Qt3Support/Q3TextEdit>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QLineEdit>
+# include <QtGui/QTextEdit>
+# ifdef ENABLE_QT4_QT3SUPPORT
+#  include <Qt3Support/Q3TextEdit>
+# endif
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QLineEdit>
+# include <QtWidgets/QTextEdit>
 #endif
 
 #include "quiminputcontext.h"

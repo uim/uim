@@ -33,8 +33,12 @@
 #ifndef UIM_QT4_STANDALONE_QT4_H
 #define UIM_QT4_STANDALONE_QT4_H
 
-#include <QtGui/QFrame>
 #include <QtGui/QMouseEvent>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFrame>
+#else
+# include <QtWidgets/QFrame>
+#endif
 
 class QUimHelperToolbar;
 class UimToolbarDraggingHandler;

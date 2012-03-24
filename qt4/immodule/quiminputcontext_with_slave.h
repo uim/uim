@@ -68,7 +68,11 @@ protected slots:
     virtual void destroyInputContext();
 
 protected:
+#if QT_VERSION < 0x050000
     QInputContext *slave;
+#else
+    QPlatformInputContext *slave;
+#endif
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H */

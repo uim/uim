@@ -34,7 +34,11 @@
 #define UIM_QT4_CANDWIN_QT_H
 
 #include <QtCore/QList>
-#include <QtGui/QFrame>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFrame>
+#else
+# include <QtWidgets/QFrame>
+#endif
 
 class QLabel;
 class QStringList;

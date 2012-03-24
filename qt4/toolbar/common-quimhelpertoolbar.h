@@ -33,8 +33,12 @@
 #ifndef UIM_QT4_TOOLBAR_COMMON_QUIMHELPERTOOLBAR_H
 #define UIM_QT4_TOOLBAR_COMMON_QUIMHELPERTOOLBAR_H
 
-#include <QtGui/QFrame>
 #include <QtGui/QPixmap>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFrame>
+#else
+# include <QtWidgets/QFrame>
+#endif
 
 class UimStateIndicator;
 

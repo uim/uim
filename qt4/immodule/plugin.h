@@ -34,13 +34,22 @@
 #ifndef UIM_QT4_IMMODULE_PLUGIN_H
 #define UIM_QT4_IMMODULE_PLUGIN_H
 
-#include <QtGui/QInputContextPlugin>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QInputContextPlugin>
+#else
+# include <private/qplatforminputcontextplugin_qpa_p.h>
+#endif
 
 class QStringList;
 
 class QUimInfoManager;
 
+#if QT_VERSION < 0x050000
 class UimInputContextPlugin : public QInputContextPlugin
+#else
+class UimInputContextPlugin : public QPlatformInputContextPlugin
+#endif
 {
     Q_OBJECT
 public:
@@ -48,7 +57,11 @@ public:
     ~UimInputContextPlugin();
 
     QStringList keys() const;
+#if QT_VERSION < 0x050000
     QInputContext *create( const QString &key );
+#else
+    QPlatformInputContext *create( const QString &key );
+#endif
     QStringList languages( const QString &key );
     QString displayName( const QString &key );
     QString description( const QString &key );

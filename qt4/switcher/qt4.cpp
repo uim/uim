@@ -37,16 +37,27 @@
 #include <QtCore/QEvent>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QTextCodec>
-#include <QtGui/QApplication>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QRadioButton>
-#include <QtGui/QSizePolicy>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QGroupBox>
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QHeaderView>
+# include <QtGui/QLayout>
+# include <QtGui/QPushButton>
+# include <QtGui/QRadioButton>
+# include <QtGui/QSizePolicy>
+# include <QtGui/QTableWidget>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QGroupBox>
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QHeaderView>
+# include <QtWidgets/QPushButton>
+# include <QtWidgets/QRadioButton>
+# include <QtWidgets/QTableWidget>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include <cstdlib>
 #include <clocale>

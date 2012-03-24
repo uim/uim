@@ -32,11 +32,18 @@
 */
 #include "candidatetablewindow.h"
 
-#include <QtGui/QLabel>
 #include <QtGui/QFontMetrics>
-#include <QtGui/QGridLayout>
-#include <QtGui/QStyle>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QLabel>
+# include <QtGui/QGridLayout>
+# include <QtGui/QStyle>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QGridLayout>
+# include <QtWidgets/QStyle>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include <uim/uim-scm.h>
 

@@ -37,19 +37,35 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
-#include <QtGui/QApplication>
-#include <QtGui/QCheckBox>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QScrollArea>
-#include <QtGui/QSplitter>
-#include <QtGui/QStackedWidget>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QCheckBox>
+# include <QtGui/QGroupBox>
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QLabel>
+# include <QtGui/QMessageBox>
+# include <QtGui/QPushButton>
+# include <QtGui/QScrollArea>
+# include <QtGui/QSplitter>
+# include <QtGui/QStackedWidget>
+# include <QtGui/QTreeWidget>
+# include <QtGui/QTreeWidgetItem>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QCheckBox>
+# include <QtWidgets/QGroupBox>
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QMessageBox>
+# include <QtWidgets/QPushButton>
+# include <QtWidgets/QScrollArea>
+# include <QtWidgets/QSplitter>
+# include <QtWidgets/QStackedWidget>
+# include <QtWidgets/QTreeWidget>
+# include <QtWidgets/QTreeWidgetItem>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include "uim/counted-init.h"
 #include "qtgettext.h"

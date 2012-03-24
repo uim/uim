@@ -33,10 +33,15 @@ SUCH DAMAGE.
 #include "chargridview.h"
 
 #include <QtGui/QFont>
-#include <QtGui/QHeaderView>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QResizeEvent>
-#include <QtGui/QScrollBar>
+#if QT_VERSION < 0x050000
+# include <QtGui/QHeaderView>
+# include <QtGui/QScrollBar>
+#else
+# include <QtWidgets/QHeaderView>
+# include <QtWidgets/QScrollBar>
+#endif
 
 static const int COLS = 10;
 

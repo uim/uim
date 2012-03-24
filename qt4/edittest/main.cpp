@@ -32,12 +32,22 @@
 
 */
 
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QSplitter>
-#include <QtGui/QTextEdit>
-#include <QtGui/QVBoxLayout>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QLabel>
+# include <QtGui/QLineEdit>
+# include <QtGui/QSplitter>
+# include <QtGui/QTextEdit>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QLineEdit>
+# include <QtWidgets/QSplitter>
+# include <QtWidgets/QTextEdit>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 int main(int argc, char *argv[])
 {

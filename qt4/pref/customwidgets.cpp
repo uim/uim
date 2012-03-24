@@ -38,14 +38,25 @@
 #include "qtgettext.h"
 
 #include <QtCore/QPointer>
-#include <QtGui/QFileDialog>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QTableWidget>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFileDialog>
+# include <QtGui/QHeaderView>
+# include <QtGui/QLabel>
+# include <QtGui/QPushButton>
+# include <QtGui/QTableWidget>
+# include <QtGui/QTreeWidget>
+# include <QtGui/QTreeWidgetItem>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QFileDialog>
+# include <QtWidgets/QHeaderView>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QPushButton>
+# include <QtWidgets/QTableWidget>
+# include <QtWidgets/QTreeWidget>
+# include <QtWidgets/QTreeWidgetItem>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 inline static QString _FU8( const char string[] ) 
 {

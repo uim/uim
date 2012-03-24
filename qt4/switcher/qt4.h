@@ -36,8 +36,12 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
-#include <QtGui/QDialog>
 #include <QtGui/QFocusEvent>
+#if QT_VERSION < 0x050000
+# include <QtGui/QDialog>
+#else
+# include <QtWidgets/QDialog>
+#endif
 
 class QFocusEvent;
 class QPushButton;

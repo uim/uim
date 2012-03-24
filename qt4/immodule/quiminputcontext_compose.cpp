@@ -46,6 +46,9 @@
 #endif
 
 #include <QtCore/QTextCodec>
+#if QT_VERSION >= 0x050000
+# undef Expose
+#endif
 #include <QtGui/QKeyEvent>
 
 #include <X11/Xlib.h>
@@ -515,6 +518,7 @@ modmask(char *name)
     return(mask);
 }
 
+#ifdef Q_WS_X11
 int
 QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 {
@@ -958,6 +962,7 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
 
     return 1;
 }
+#endif
 
 static int
 parse_line(char *line, char **argv, int argsize)

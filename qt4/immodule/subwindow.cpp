@@ -34,10 +34,17 @@ SUCH DAMAGE.
 
 #include <QtCore/QPoint>
 #include <QtCore/QRect>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QTextBrowser>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QDesktopWidget>
+# include <QtGui/QTextBrowser>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QDesktopWidget>
+# include <QtWidgets/QTextBrowser>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 
 const Qt::WindowFlags subwindowFlag = ( Qt::Window

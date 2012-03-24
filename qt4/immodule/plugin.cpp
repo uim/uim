@@ -35,9 +35,13 @@
 #include "plugin.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QInputContext>
 #ifdef Q_WS_X11
-#include <QtGui/QX11Info>
+# include <QtGui/QX11Info>
+#endif
+#if QT_VERSION < 0x050000
+# include <QtGui/QInputContext>
+#else
+# include <QtGui/QPlatformInputContext>
 #endif
 
 #include "uim/uim.h"
@@ -45,6 +49,16 @@
 #include "uim/counted-init.h"
 
 #include "quiminfomanager.h"
+#if QT_VERSION >= 0x050000
+# undef Bool
+# undef Expose
+# undef FocusIn
+# undef FocusOut
+# undef FontChange
+# undef KeyPress
+# undef KeyRelease
+# undef None
+#endif
 #include "quiminputcontext_with_slave.h"
 
 #define UIM_QT_LIST_SUBIM_AS_QTIM 0
@@ -68,7 +82,11 @@ QStringList UimInputContextPlugin::keys() const
     return createImList();
 }
 
+#if QT_VERSION < 0x050000
 QInputContext *UimInputContextPlugin::create( const QString & key )
+#else
+QPlatformInputContext *UimInputContextPlugin::create( const QString & key )
+#endif
 {
     QString imname;
 
@@ -194,4 +212,6 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
     return QStringList( "" );
 }
 
+#if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2( uiminputcontextplugin, UimInputContextPlugin )
+#endif

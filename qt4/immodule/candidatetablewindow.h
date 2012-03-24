@@ -33,7 +33,12 @@
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_TABLE_WINDOW_H
 #define UIM_QT4_IMMODULE_CANDIDATE_TABLE_WINDOW_H
 
-#include <QtGui/QPushButton>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QPushButton>
+#else
+# include <QtWidgets/QPushButton>
+#endif
 
 #include "abstractcandidatewindow.h"
 

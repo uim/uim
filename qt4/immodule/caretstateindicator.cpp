@@ -35,10 +35,16 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
 #include <QtCore/QVariant>
-#include <QtGui/QApplication>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QLabel>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QLabel>
+#endif
 
 #include <uim/uim-scm.h>
 

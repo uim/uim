@@ -5,6 +5,10 @@ CONFIG += plugin
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += platformsupport-private
+}
+
 # Input
 HEADERS += @srcdir@/abstractcandidatewindow.h \
            @srcdir@/candidatetablewindow.h \

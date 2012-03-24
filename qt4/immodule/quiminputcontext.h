@@ -35,7 +35,13 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 
-#include <QtGui/QInputContext>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QInputContext>
+#else
+# include <QtGui/QInputMethodEvent>
+# include <QtGui/QPlatformInputContext>
+#endif
 
 #ifdef Q_WS_X11
 #define UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK 1
@@ -69,7 +75,11 @@ struct PreeditSegment
 
 #define WORKAROUND_BROKEN_RESET_IN_QT4
 
+#if QT_VERSION < 0x050000
 class QUimInputContext : public QInputContext
+#else
+class QUimInputContext : public QPlatformInputContext
+#endif
 {
     Q_OBJECT
 public:

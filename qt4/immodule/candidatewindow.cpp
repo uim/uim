@@ -33,9 +33,15 @@ SUCH DAMAGE.
 #include "candidatewindow.h"
 
 #include <QtGui/QFontMetrics>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QHeaderView>
+# include <QtGui/QLabel>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QHeaderView>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include <uim/uim-scm.h>
 

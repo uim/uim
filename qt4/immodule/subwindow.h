@@ -34,7 +34,11 @@ SUCH DAMAGE.
 #define UIM_QT4_IMMODULE_SUBWINDOW_H
 
 #include <QtCore/QTimer>
-#include <QtGui/QFrame>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFrame>
+#else
+# include <QtWidgets/QFrame>
+#endif
 
 class QTextBrowser;
 

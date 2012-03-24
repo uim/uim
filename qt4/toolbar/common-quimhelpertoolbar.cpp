@@ -37,10 +37,17 @@
 
 #include <QtCore/QProcess>
 #include <QtGui/QContextMenuEvent>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolButton>
+#if QT_VERSION < 0x050000
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QMenu>
+# include <QtGui/QMessageBox>
+# include <QtGui/QToolButton>
+#else
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QMenu>
+# include <QtWidgets/QMessageBox>
+# include <QtWidgets/QToolButton>
+#endif
 
 #include "uim/uim-scm.h"
 #include "qtgettext.h"
