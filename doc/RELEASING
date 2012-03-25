@@ -39,6 +39,15 @@ release, you have to repeat the following procedure at least three times.
 
    $ git clone https://code.google.com/p/uim/
 
+   On an alpha release, create a branch
+
+   $ git branch x.y
+   $ git push origin x.y
+
+   Create a tracking branch and check out the branch
+
+   $ git checkout --track -b x.y origin/x.y
+
 6. Do a build test with make-dist.sh
 
    This test is not enough, but worth doing. It is especially useful when a
@@ -46,12 +55,7 @@ release, you have to repeat the following procedure at least three times.
 
 7. Tag to tags/uim-x.y.z
 
-   On an alpha release, create a branch at first.
-
-   $ git branch x.y
-   $ git push origin x.y
-
-   Then tag and push the tag.
+   Tag and push the tag.
 
    On an alpha release
    $ git tag uim-x.y.z-alpha
@@ -67,10 +71,11 @@ release, you have to repeat the following procedure at least three times.
 
 8. Create the source tarball
 
-   On an alpha or a beta release
+   On an alpha release
    $ make distcheck distdir=uim-x.y.z-alpha
    $ make sum distdir=uim-x.y.z-alpha
 
+   On a beta release
    $ make distcheck distdir=uim-x.y.z-beta
    $ make sum distdir=uim-x.y.z-beta
 
@@ -129,7 +134,3 @@ release, you have to repeat the following procedure at least three times.
    SHA1 (uim-1.4.0-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
 
    <append RELNOTE here>
-
-12. Update Freshmeat entry
-
-   http://freshmeat.net/projects/uim-inputmethod/
