@@ -33,7 +33,15 @@ release, you have to repeat the following procedure at least three times.
    - configure.ac
    - uim.h
 
-   And increment libtool-version.mk too if ABI is updated.
+   $ vim configure.ac
+   $ vim uim.h
+
+   And increment libtool-version.mk too if API/ABI is updated.
+
+   $ vim uim/libtool-version.mk
+
+   Then push them.
+   $ git push
 
 5. Export a fresh tree from the Git repository.
 
@@ -54,7 +62,9 @@ release, you have to repeat the following procedure at least three times.
    This test is not enough, but worth doing. It is especially useful when a
    new file is added. We should also do unit testing at this point.
 
-7. Tag to tags/uim-x.y.z
+   $ ./make-dist.sh
+
+7. Tag uim-x.y.z
 
    Tag and push the tag.
 
@@ -90,27 +100,27 @@ release, you have to repeat the following procedure at least three times.
 
    Final release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim x.y.z' -l 'Stable,Featured' \
-                            uim-x.y.z.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim x.y.z' -l 'Stable,Featured' \
+                              uim-x.y.z.tar.bz2
 
    Alpha release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim x.y.0-alpha' -l 'Unstable' \
-                            uim-x.y.0-alpha.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim x.y.0-alpha' -l 'Unstable' \
+                              uim-x.y.0-alpha.tar.bz2
 
    Beta release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim x.y.0-beta' -l 'Unstable' \
-                            uim-x.y.0-beta.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim x.y.0-beta' -l 'Unstable' \
+                              uim-x.y.0-beta.tar.bz2
 
    Snapshot release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
-                            uim-trunk-snapshot20070703.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
+                              uim-trunk-snapshot20070703.tar.bz2
 
    And untag 'Featured' from previous final release files by the web
    interface.
