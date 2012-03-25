@@ -33,12 +33,12 @@ release, you have to repeat the following procedure at least three times.
    - configure.ac
    - uim.h
 
-   $ vim configure.ac
-   $ vim uim.h
+   $ vi configure.ac
+   $ vi uim.h
 
    And increment libtool-version.mk too if API/ABI is updated.
 
-   $ vim uim/libtool-version.mk
+   $ vi uim/libtool-version.mk
 
    Then push them.
    $ git push
@@ -80,7 +80,7 @@ release, you have to repeat the following procedure at least three times.
    $ git tag uim-x.y.z
    $ git push --tags
 
-8. Create the source tarball
+8. Create the source tarball on a non-final release
 
    On an alpha release
    $ make distcheck distdir=uim-x.y.0-alpha
