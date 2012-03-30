@@ -1,6 +1,8 @@
 Overview of changes from 1.8.0-beta to 1.8.0
 ============================================
 * Fixes
+  - libgcroots
+    * Fix version ([uim-en 438])
   - doc
     * Fix release manual.
 
