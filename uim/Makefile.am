@@ -4,7 +4,7 @@ include $(top_builddir)/sigscheme/sigscheme.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = encoding-table.c test-gc.c
+EXTRA_DIST = encoding-table.c test-gc.c version.h.in
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c

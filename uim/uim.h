@@ -37,13 +37,12 @@
 
 #include <stdlib.h>
 
+#include "version.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define UIM_VERSION_MAJOR      (1)
-#define UIM_VERSION_MINOR      (8)
-#define UIM_VERSION_PATCHLEVEL (0)
 #define UIM_VERSION_REQUIRE(major, minor, patchlevel)			     \
   ((major) < UIM_VERSION_MAJOR						     \
    || ((major) == UIM_VERSION_MAJOR && (minor) < UIM_VERSION_MINOR)	     \

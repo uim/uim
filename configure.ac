@@ -1,8 +1,18 @@
+m4_define([UIM_MAJOR_VERSION], [1])
+m4_define([UIM_MINOR_VERSION], [8])
+m4_define([UIM_PATCHLEVEL_VERSION], [0])
+m4_define([UIM_VERSION],
+    UIM_MAJOR_VERSION.UIM_MINOR_VERSION.UIM_PATCHLEVEL_VERSION)
+
 AC_PREREQ(2.60b)
-AC_INIT([uim], [1.8.0], [uim-en@googlegroups.com])
+AC_INIT([uim], [UIM_VERSION], [uim-en@googlegroups.com])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
 AM_INIT_AUTOMAKE([1.10 dist-bzip2])
+
+AC_SUBST(UIM_VERSION_MAJOR, UIM_MAJOR_VERSION)
+AC_SUBST(UIM_VERSION_MINOR, UIM_MINOR_VERSION)
+AC_SUBST(UIM_VERSION_PATCHLEVEL, UIM_PATCHLEVEL_VERSION)
 
 # Enable GNU extensions such as asprintf(3), BSD-originated functions,
 # POSIX features and more on glibc (and some other
@@ -1914,6 +1924,7 @@ AC_CONFIG_FILES([Makefile
 		 m4/Makefile
 		 doc/Makefile
 		 uim/Makefile
+		 uim/version.h
 		 scm/Makefile
 		 gtk2/Makefile
 		 gtk2/candwin/Makefile
