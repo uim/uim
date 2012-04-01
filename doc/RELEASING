@@ -31,13 +31,9 @@ release, you have to repeat the following procedure at least three times.
    $ vi NEWS
    $ vi RELNOTE
 
-4. Increment the version numbers in:
-
-   - configure.ac
-   - uim.h
+4. Increment the version numbers in configure.ac
 
    $ vi configure.ac
-   $ vi uim.h
 
    And increment libtool-version.mk too if API/ABI is updated.
 
