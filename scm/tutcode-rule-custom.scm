@@ -39,6 +39,12 @@
                      (N_ "tutcode-rule")
                      (N_ "Settings for tutcode-rule.scm"))
 
+(define-custom 'tutcode-rule-use-tutplus? #f
+  '(tutcode-rule)
+  '(boolean)
+  (N_ "Use TUT+ Code which supports shin joyo kanji")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-rule-uppercase-as-opposite-kana? #f
   '(tutcode-rule)
   '(boolean)
