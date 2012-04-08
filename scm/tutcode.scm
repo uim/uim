@@ -4492,7 +4492,7 @@
          (rk-flush rkc)
          (set! res (charcode->string key))))
       (else
-       (set! res (tutcode-push-key! pc (charcode->string key)))
+       (set! res (tutcode-push-key! pc (charcode->string key)))))
     (cond
       ((string? res)
         ;; 再帰的に部首合成される場合があるので、head全体をundo用に保持
@@ -4512,7 +4512,7 @@
         ;;XXX 部首合成変換中は交ぜ書き変換等は無効にする
         ))
       ((procedure? res)
-       (res 'tutcode-state-bushu pc)))))))
+       (res 'tutcode-state-bushu pc)))))
 
 ;;; 部首合成変換開始
 ;;; @param char 新たに入力された文字(2番目の部首)
@@ -4673,7 +4673,7 @@
              (rk-flush rkc)
              (set! res (charcode->string key))))
           (else
-           (set! res (tutcode-push-key! pc (charcode->string key)))
+           (set! res (tutcode-push-key! pc (charcode->string key)))))
         (cond
           ((string? res)
             (tutcode-append-string pc res)
@@ -4685,7 +4685,7 @@
             ;;XXX 部首合成変換中は交ぜ書き変換等は無効にする
             ))
           ((procedure? res)
-           (res 'tutcode-state-interactive-bushu pc)))))))))
+           (res 'tutcode-state-interactive-bushu pc)))))))
 
 ;;; 対話的部首合成変換開始
 (define (tutcode-begin-interactive-bushu-conversion pc)
