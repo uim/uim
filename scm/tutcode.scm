@@ -6192,6 +6192,12 @@
       (filter
         pair?
         (list
+          (make-subrule tutcode-katakana-sequence
+            (list
+              (lambda (state pc) (tutcode-context-set-katakana-mode! pc #t))))
+          (make-subrule tutcode-hiragana-sequence
+            (list
+              (lambda (state pc) (tutcode-context-set-katakana-mode! pc #f))))
           (make-subrule tutcode-mazegaki-start-sequence
             '(tutcode-mazegaki-start))
           (make-subrule tutcode-latin-conv-start-sequence
