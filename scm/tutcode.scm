@@ -1890,10 +1890,15 @@
           ()))))
     (if (null? label-cand-alist)
       ()
-      (map
-        (lambda (elem)
-          (list (cadr elem) (car elem) ""))
-        (reverse label-cand-alist)))))
+      (let
+        ((stroke-help
+          (map
+            (lambda (elem)
+              (list (cadr elem) (car elem) ""))
+            (reverse label-cand-alist))))
+        (if tutcode-use-pseudo-table-style?
+          (tutcode-table-in-vertical-candwin stroke-help)
+          stroke-help)))))
 
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
@@ -1914,6 +1919,120 @@
               0
               (length stroke-help)
               tutcode-nr-candidate-max-for-kigou-mode)))))))
+
+;;; 通常の候補ウィンドウに、表形式で候補を表示するために、
+;;; 表形式の1行分を連結した形に変換する。
+;;; (表形式候補ウィンドウ未対応で、縦に候補を並べるcandwin用。
+;;;  uim-elで(setq uim-candidate-display-inline t)の場合等)
+;;; @param cands ("表示文字列" "ラベル文字列" "注釈")のリスト
+;;; @return 変換後のリスト。
+;;;  例:(("*や|*ま|*か|*あ|*は|*」|*】|*…|*・|*”" "q" "") ...)
+(define (tutcode-table-in-vertical-candwin cands)
+  (let*
+    ((layout (if (null? uim-candwin-prog-layout)
+                uim-candwin-prog-layout-qwerty-jis
+                uim-candwin-prog-layout))
+     (vecsize (length layout))
+     (vec (make-vector vecsize #f)))
+    (for-each
+      (lambda (elem)
+        (let
+          ((k (list-index (lambda (e) (string=? e (cadr elem))) layout)))
+          (if k
+            (vector-set! vec k (car elem)))))
+      cands)
+    (let*
+      ;; 表の下半分(シフトキー領域)が空の場合は上半分だけ使う
+      ((vecmax
+        (let loop ((k (* 13 4)))
+          (if (>= k vecsize)
+            (* 13 4)
+            (if (string? (vector-ref vec k))
+              vecsize
+              (loop (+ k 1))))))
+       ;; 各列の最大幅を調べる
+       (width-list0
+        (let colloop
+          ((col 12)
+           (width-list ()))
+          (if (negative? col)
+            width-list
+            (colloop
+              (- col 1)
+              (cons
+                (let rowloop
+                  ((k col)
+                   (maxwidth -1))
+                  (if (>= k vecmax)
+                    maxwidth
+                    (let*
+                      ((elem (vector-ref vec k))
+                       (width (if (string? elem) (string-length elem) -1)))
+                      (rowloop
+                        (+ k 13)
+                        (if (> width maxwidth)
+                          width
+                          maxwidth)))))
+                width-list)))))
+       ;; 表の右端ブロックが空の場合は表示しない
+       (colmax
+        (if (any (lambda (x) (> x -1)) (take-right width-list0 3)) 13 10))
+       (width-list (map (lambda (x) (if (< x 2) 2 x)) width-list0)))
+      ;; 各行内の全列を連結して候補文字列を作る
+      (let rowloop
+        ((table (take! (vector->list vec) vecmax))
+         (k 0)
+         (res ()))
+        (if (null? table)
+          (reverse res)
+          (let*
+            ((line (take table 13))
+             (line-sep
+              (cdr
+                (let colloop
+                  ((col (- colmax 1))
+                   (line-sep ()))
+                  (if (negative? col)
+                    line-sep
+                    (colloop
+                      (- col 1)
+                      (append
+                        (let*
+                          ((elem (list-ref line col))
+                           (elemlen (if (string? elem) (string-length elem) 0))
+                           (width (list-ref width-list col))
+                           (strlist
+                            (if (zero? elemlen)
+                              (make-list width " ")
+                              ;; 中央に配置する
+                              (letrec
+                                ((padleft
+                                  (lambda (pad strlist)
+                                    (if (<= pad 0)
+                                      strlist
+                                      (padright
+                                        (- pad 1)
+                                        (cons " " strlist)))))
+                                 (padright
+                                  (lambda (pad strlist)
+                                    (if (<= pad 0)
+                                      strlist
+                                      (padleft
+                                        (- pad 1)
+                                        (append strlist (list " ")))))))
+                                (padleft (- width elemlen) (list elem))))))
+                          (cons
+                            (if (or (= col 5) (= col 10))
+                              "||" ; ブロック区切りを目立たせる
+                              "|")
+                            strlist))
+                        line-sep))))))
+             (cand (apply string-append line-sep))
+             (candlabel (list cand (list-ref layout k) "")))
+            (rowloop
+              (drop table 13)
+              (+ k 13)
+              (cons candlabel res))))))))
 
 ;;; 仮想鍵盤の表示を行うかどうかの設定を一時的に切り替える(トグル)。
 ;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。)
@@ -2137,10 +2256,16 @@
           (tutcode-auto-help-update-stroke-alist-normal pc () helpstrlist)))))
     (if (null? label-cands-alist)
       ()
-      (map
-        (lambda (elem)
-          (list (string-list-concat (cdr elem)) (car elem) ""))
-        label-cands-alist))))
+      (let
+        ((auto-help
+          (map
+            (lambda (elem)
+              (list (string-list-concat (cdr elem)) (car elem) ""))
+            label-cands-alist)))
+        (if (and tutcode-use-pseudo-table-style?
+                 (not tutcode-auto-help-with-real-keys?))
+          (tutcode-table-in-vertical-candwin auto-help)
+          auto-help)))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; @param strlist 確定した文字列のリスト(逆順)
