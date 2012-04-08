@@ -1977,7 +1977,28 @@
        ;; 表の右端ブロックが空の場合は表示しない
        (colmax
         (if (any (lambda (x) (> x -1)) (take-right width-list0 3)) 13 10))
-       (width-list (map (lambda (x) (if (< x 2) 2 x)) width-list0)))
+       (width-list (map (lambda (x) (if (< x 2) 2 x)) width-list0))
+       ;; ラベルは、各行で、最初の中身のある桁に対応するものを使用
+       (labels
+        (let rowloop
+          ((row 0)
+           (labels ()))
+          (if (>= (* row 13) vecmax)
+            (reverse labels)
+            (rowloop
+              (+ row 1)
+              (cons
+                (let colloop
+                  ((col 0))
+                  (let ((k (+ (* row 13) col)))
+                    (cond
+                      ((>= col colmax)
+                        (list-ref layout (* row 13)))
+                      ((string? (vector-ref vec k))
+                        (list-ref layout k))
+                      (else
+                        (colloop (+ col 1))))))
+                labels))))))
       ;; 各行内の全列を連結して候補文字列を作る
       (let rowloop
         ((table (take! (vector->list vec) vecmax))
@@ -2028,7 +2049,7 @@
                             strlist))
                         line-sep))))))
              (cand (apply string-append line-sep))
-             (candlabel (list cand (list-ref layout k) "")))
+             (candlabel (list cand (list-ref labels (quotient k 13)) "")))
             (rowloop
               (drop table 13)
               (+ k 13)
