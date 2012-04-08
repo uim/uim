@@ -35,6 +35,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  tutcode.scm tutcode-custom.scm tutcode-key-custom.scm tutcode-bushu.scm \
  tutcode-bushudic.scm tutcode-rule.scm tutcode-kigoudic.scm \
  tutcode-editor.scm tutcode-dialog.scm tutcode-kigou-rule.scm \
+ tutcode-rule-custom.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \
  byeoru.scm byeoru-symbols.scm \
  byeoru-custom.scm byeoru-key-custom.scm \

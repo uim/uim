@@ -2770,9 +2770,6 @@
 ;;; には、~/.uimに以下のように記述する。
 ;;;   (define tutcode-rule-uppercase-as-opposite-kana? #t)
 ;;; (従来からの動作は、大文字では必ずカタカナ入力)
-;;; (XXX:tutcode-customに設定を入れると、tutcode-rule.scm以外を使う場合に、
-;;;  ユーザがcustomで行った設定が期待通りには効かない。
-;;;  tutcode-rule-custom.scmを追加する?)
 (if (or (not (symbol-bound? 'tutcode-rule-uppercase-as-opposite-kana?))
         (not tutcode-rule-uppercase-as-opposite-kana?))
   (set! tutcode-rule-uppercase-for-katakana

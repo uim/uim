@@ -384,6 +384,7 @@
 (require-custom "tutcode-custom.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "tutcode-key-custom.scm")
+(require-custom "tutcode-rule-custom.scm");uim-prefへ表示のため(tcode時は無用)
 (require-dynlib "skk") ;SKK形式の交ぜ書き辞書の検索のためlibuim-skk.soをロード
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
