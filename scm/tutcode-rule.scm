@@ -2766,17 +2766,37 @@
     ((("Q" "L" "J"))("ョ" "ょ"))
     ((("A" "L" "K"))("ヮ" "ゎ"))))
 
+;;; 大文字で、現在のひらがな/カタカナモードと反対のカタカナ/ひらがなを入力する
+;;; には、~/.uimに以下のように記述する。
+;;;   (define tutcode-rule-uppercase-as-opposite-kana? #t)
+;;; (従来からの動作は、大文字では必ずカタカナ入力)
+;;; (XXX:tutcode-customに設定を入れると、tutcode-rule.scm以外を使う場合に、
+;;;  ユーザがcustomで行った設定が期待通りには効かない。
+;;;  tutcode-rule-custom.scmを追加する?)
+(if (or (not (symbol-bound? 'tutcode-rule-uppercase-as-opposite-kana?))
+        (not tutcode-rule-uppercase-as-opposite-kana?))
+  (set! tutcode-rule-uppercase-for-katakana
+    (map
+      (lambda (x)
+        (list (car x) (list (caadr x))))
+      tutcode-rule-uppercase-for-katakana)))
+
 (define tutcode-rule-uppercase-for-kigou-in-katakana
   '(
     ((("E" " "))("ー"))
     ((("O" " "))("・"))))
 
 ;;; 大文字でカタカナ入力を行う定義を登録しないようにするには、
-;;; ~/.uimに以下のように記述する。
+;;; ~/.uimに以下のように記述する。(大文字でのカタカナ入力を使わない場合、
+;;; stroke-helpの仮想鍵盤で下半分のシフトキー領域無しで半分のサイズで
+;;; 表示したい場合など)
 ;;;   (define tutcode-rule-exclude-uppercase-for-katakana? #t)
 ;;; また、カタカナ中に出現することの多い"ー"と"・"を大文字で入力する定義のみを
 ;;; 登録しないようにするには、~/.uimに以下のように記述する。
 ;;;   (define tutcode-rule-exclude-uppercase-for-kigou-in-katakana? #t)
+;;; (XXX:現状は、大文字の((("E" " "))("ー"))定義が使われても、
+;;;  漢字→入力シーケンス変換すると小文字化される。それを回避したい場合用。
+;;;  例:"CODE "と打鍵、"CODー"と表示、漢字→入力シーケンス変換すると"CODe ")
 (if (or (not (symbol-bound? 'tutcode-rule-exclude-uppercase-for-katakana?))
         (not tutcode-rule-exclude-uppercase-for-katakana?))
   (set! tutcode-rule
