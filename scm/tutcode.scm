@@ -4489,7 +4489,10 @@
               (charcode->string key) 'tutcode-predicting-bushu)))
       ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
-         (rk-flush rkc)
+         (begin
+           (if (tutcode-verbose-stroke-key? key key-state)
+             (set! res (last (rk-context-seq rkc))))
+           (rk-flush rkc))
          (set! res (charcode->string key))))
       (else
        (set! res (tutcode-push-key! pc (charcode->string key)))))
@@ -4670,7 +4673,10 @@
                   'tutcode-predicting-interactive-bushu)))
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
-             (rk-flush rkc)
+             (begin
+               (if (tutcode-verbose-stroke-key? key key-state)
+                 (set! res (last (rk-context-seq rkc))))
+               (rk-flush rkc))
              (set! res (charcode->string key))))
           (else
            (set! res (tutcode-push-key! pc (charcode->string key)))))
