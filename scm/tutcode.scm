@@ -203,13 +203,18 @@
 ;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
 ;;;    │  │  │d │  │e │  │2a(鬱▲林缶)│  │  │      │  │
 ;;;    └─┴─┴─┴─┴─┴─┴──────┴─┴─┴───┴─┘
-;;; ** 直近に表示した自動ヘルプの再表示
-;;;    tutcode-auto-help-redisplay-sequenceに以下のようにキーシーケンスを
-;;;    設定すると使用可能になります。
-;;;      (define tutcode-auto-help-redisplay-sequence "al-")
 ;;; * 文字ヘルプ表示機能(tutcode-help-sequence)
 ;;;   カーソル位置直前の文字のヘルプ(打ち方)を表示します。
 ;;;   (uimのsurrounding text APIを使ってカーソル位置直前の文字を取得)
+;;; * 直近に表示した(自動)ヘルプの再表示(tutcode-auto-help-redisplay-sequence)
+;;; * 直近に表示した(自動)ヘルプのダンプ(tutcode-auto-help-dump-sequence)
+;;;   候補ウィンドウに表示したヘルプ内容を以下のような文字列にしてcommitします。
+;;;   (部首合成シーケンス(例:"林缶")をコピーして、後でクリップボードから
+;;;    前置型部首合成変換のpreeditへペーストして変換したい場合向け)
+;;;       |  |  |  |  ||            |  |  |     |  ||
+;;;       |  |  |  | b||            |  |  |  f  |  ||
+;;;       | 3|  |  |  ||            |  |  |1(憂)|  ||
+;;;       |  | d|  | e||2a(鬱▲林缶)|  |  |     |  ||
 ;;;
 ;;; 【補完/予測入力・熟語ガイド】
 ;;; +「補完」:確定済文字列に対して、続く文字列の候補を表示します。
@@ -1926,7 +1931,7 @@
 ;;;  uim-elで(setq uim-candidate-display-inline t)の場合等)
 ;;; @param cands ("表示文字列" "ラベル文字列" "注釈")のリスト
 ;;; @return 変換後のリスト。
-;;;  例:(("*や|*ま|*か|*あ|*は|*」|*】|*…|*・|*”" "q" "") ...)
+;;;  例:(("*や|*ま|*か|*あ|*は||*」|*】|*…|*・|*”||" "q" "") ...)
 (define (tutcode-table-in-vertical-candwin cands)
   (let*
     ((layout (if (null? uim-candwin-prog-layout)
@@ -2012,7 +2017,7 @@
               (cdr
                 (let colloop
                   ((col (- colmax 1))
-                   (line-sep ()))
+                   (line-sep (if (= colmax 10) '("||") ())))
                   (if (negative? col)
                     line-sep
                     (colloop
@@ -2590,6 +2595,23 @@
         0
         (length help)
         tutcode-nr-candidate-max-for-kigou-mode))))
+
+;;; 自動ヘルプ:直前のヘルプで候補ウィンドウに表示した内容をダンプ・commitする
+;;; (部首合成シーケンス(例:"言▲▲西一早")をコピーしたい場合用)
+(define (tutcode-auto-help-dump state pc)
+  (if (eq? state 'tutcode-state-on)
+    (let ((help (tutcode-context-auto-help pc)))
+      (if (and help
+               (> (length help) 0)
+               (not (eq? (car help) 'delaytmp)))
+        (let ((linecands
+                (append-map
+                  (lambda (elem)
+                    (list (car elem) "\n"))
+                  (if tutcode-use-pseudo-table-style?
+                    help
+                    (tutcode-table-in-vertical-candwin help)))))
+          (tutcode-commit pc (apply string-append linecands) #t #t))))))
 
 ;;; preedit表示を更新する。
 (define (tutcode-do-update-preedit pc)
@@ -6475,6 +6497,8 @@
             '(tutcode-postfix-seq2kanji-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay))
+          (make-subrule tutcode-auto-help-dump-sequence
+            (list tutcode-auto-help-dump))
           (make-subrule tutcode-help-sequence
             '(tutcode-help))
           (make-subrule tutcode-help-clipboard-sequence
