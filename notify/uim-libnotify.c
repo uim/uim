@@ -37,7 +37,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <glib.h>
-#include <glib/gconvert.h>
 #include <libnotify/notify.h>
 
 #include "uim.h"  /* for uim_bool */
