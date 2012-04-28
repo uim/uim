@@ -343,8 +343,6 @@
 ;;; generic.scmをベースにして以下の変更をしている。
 ;;;  * キーシーケンス中のスペースが有効になるように変更。
 ;;;  * ひらがな/カタカナモードの切り替えを追加。
-;;;  * rk入力中の未確定(preedit)文字列の表示をしないようにした
-;;;    (EmacsのT/TUT-Code入力環境tc2では表示しないのでそれに合わせて)。
 ;;;  * 交ぜ書き変換ではSKK形式の辞書を使うので、
 ;;;    skk.scmのかな漢字変換処理から必要な部分を取り込み。
 ;;;  * 部首合成変換機能を追加。
@@ -2674,6 +2672,9 @@
         (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h)))
+        (if tutcode-show-pending-rk?
+          (im-pushback-preedit pc preedit-underline
+            (rk-pending (tutcode-context-rk-context pc))))
         (im-pushback-preedit pc preedit-cursor "")
         (set! cursor-shown? #t)
         (if (> (tutcode-lib-get-nr-predictions pc) 0)
@@ -2706,7 +2707,13 @@
           (if (string? h)
             (im-pushback-preedit pc preedit-none h)))))
     (if (not cursor-shown?)
-      (im-pushback-preedit pc preedit-cursor ""))))
+      (begin
+        (if (and tutcode-show-pending-rk?
+                 (memq stat '(tutcode-state-on tutcode-state-yomi
+                              tutcode-state-bushu)))
+          (im-pushback-preedit pc preedit-underline
+            (rk-pending (tutcode-context-rk-context pc))))
+        (im-pushback-preedit pc preedit-cursor "")))))
 
 ;;; preedit表示を更新する。
 (define (tutcode-update-preedit pc)
@@ -5746,7 +5753,7 @@
     (case (tutcode-context-state pc)
       ((tutcode-state-on)
        (tutcode-proc-state-on pc key key-state)
-       (if (or
+       (if (or tutcode-show-pending-rk?
              ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
              (tutcode-state-has-preedit? c)
              ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
@@ -5784,7 +5791,8 @@
        (tutcode-update-preedit pc))
       (else
        (tutcode-proc-state-off pc key key-state)
-       (if (tutcode-state-has-preedit? c) ; 再帰学習時
+       (if (or tutcode-show-pending-rk?
+               (tutcode-state-has-preedit? c)) ; 再帰学習時
          (tutcode-update-preedit pc))))
     (if (or tutcode-use-stroke-help-window?
             (not (eq? tutcode-stroke-help-with-kanji-combination-guide

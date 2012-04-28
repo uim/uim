@@ -104,6 +104,12 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-show-pending-rk? #f
+  '(tutcode)
+  '(boolean)
+  (N_ "Show pending key sequences")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-dvorak? #f
   '(tutcode)
   '(boolean)
