@@ -203,13 +203,18 @@
 ;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
 ;;;    │  │  │d │  │e │  │2a(鬱▲林缶)│  │  │      │  │
 ;;;    └─┴─┴─┴─┴─┴─┴──────┴─┴─┴───┴─┘
-;;; ** 直近に表示した自動ヘルプの再表示
-;;;    tutcode-auto-help-redisplay-sequenceに以下のようにキーシーケンスを
-;;;    設定すると使用可能になります。
-;;;      (define tutcode-auto-help-redisplay-sequence "al-")
 ;;; * 文字ヘルプ表示機能(tutcode-help-sequence)
 ;;;   カーソル位置直前の文字のヘルプ(打ち方)を表示します。
 ;;;   (uimのsurrounding text APIを使ってカーソル位置直前の文字を取得)
+;;; * 直近に表示した(自動)ヘルプの再表示(tutcode-auto-help-redisplay-sequence)
+;;; * 直近に表示した(自動)ヘルプのダンプ(tutcode-auto-help-dump-sequence)
+;;;   候補ウィンドウに表示したヘルプ内容を以下のような文字列にしてcommitします。
+;;;   (部首合成シーケンス(例:"林缶")をコピーして、後でクリップボードから
+;;;    前置型部首合成変換のpreeditへペーストして変換したい場合向け)
+;;;       |  |  |  |  ||            |  |  |     |  ||
+;;;       |  |  |  | b||            |  |  |  f  |  ||
+;;;       | 3|  |  |  ||            |  |  |1(憂)|  ||
+;;;       |  | d|  | e||2a(鬱▲林缶)|  |  |     |  ||
 ;;;
 ;;; 【補完/予測入力・熟語ガイド】
 ;;; +「補完」:確定済文字列に対して、続く文字列の候補を表示します。
@@ -384,6 +389,7 @@
 (require-custom "tutcode-custom.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "tutcode-key-custom.scm")
+(require-custom "tutcode-rule-custom.scm");uim-prefへ表示のため(tcode時は無用)
 (require-dynlib "skk") ;SKK形式の交ぜ書き辞書の検索のためlibuim-skk.soをロード
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
@@ -1889,10 +1895,15 @@
           ()))))
     (if (null? label-cand-alist)
       ()
-      (map
-        (lambda (elem)
-          (list (cadr elem) (car elem) ""))
-        (reverse label-cand-alist)))))
+      (let
+        ((stroke-help
+          (map
+            (lambda (elem)
+              (list (cadr elem) (car elem) ""))
+            (reverse label-cand-alist))))
+        (if tutcode-use-pseudo-table-style?
+          (tutcode-table-in-vertical-candwin stroke-help)
+          stroke-help)))))
 
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
@@ -1913,6 +1924,141 @@
               0
               (length stroke-help)
               tutcode-nr-candidate-max-for-kigou-mode)))))))
+
+;;; 通常の候補ウィンドウに、表形式で候補を表示するために、
+;;; 表形式の1行分を連結した形に変換する。
+;;; (表形式候補ウィンドウ未対応で、縦に候補を並べるcandwin用。
+;;;  uim-elで(setq uim-candidate-display-inline t)の場合等)
+;;; @param cands ("表示文字列" "ラベル文字列" "注釈")のリスト
+;;; @return 変換後のリスト。
+;;;  例:(("*や|*ま|*か|*あ|*は||*」|*】|*…|*・|*”||" "q" "") ...)
+(define (tutcode-table-in-vertical-candwin cands)
+  (let*
+    ((layout (if (null? uim-candwin-prog-layout)
+                uim-candwin-prog-layout-qwerty-jis
+                uim-candwin-prog-layout))
+     (vecsize (length layout))
+     (vec (make-vector vecsize #f)))
+    (for-each
+      (lambda (elem)
+        (let
+          ((k (list-index (lambda (e) (string=? e (cadr elem))) layout)))
+          (if k
+            (vector-set! vec k (car elem)))))
+      cands)
+    (let*
+      ;; 表の下半分(シフトキー領域)が空の場合は上半分だけ使う
+      ((vecmax
+        (let loop ((k (* 13 4)))
+          (if (>= k vecsize)
+            (* 13 4)
+            (if (string? (vector-ref vec k))
+              vecsize
+              (loop (+ k 1))))))
+       ;; 各列の最大幅を調べる
+       (width-list0
+        (let colloop
+          ((col 12)
+           (width-list ()))
+          (if (negative? col)
+            width-list
+            (colloop
+              (- col 1)
+              (cons
+                (let rowloop
+                  ((k col)
+                   (maxwidth -1))
+                  (if (>= k vecmax)
+                    maxwidth
+                    (let*
+                      ((elem (vector-ref vec k))
+                       (width (if (string? elem) (string-length elem) -1)))
+                      (rowloop
+                        (+ k 13)
+                        (if (> width maxwidth)
+                          width
+                          maxwidth)))))
+                width-list)))))
+       ;; 表の右端ブロックが空の場合は表示しない
+       (colmax
+        (if (any (lambda (x) (> x -1)) (take-right width-list0 3)) 13 10))
+       (width-list (map (lambda (x) (if (< x 2) 2 x)) width-list0))
+       ;; ラベルは、各行で、最初の中身のある桁に対応するものを使用
+       (labels
+        (let rowloop
+          ((row 0)
+           (labels ()))
+          (if (>= (* row 13) vecmax)
+            (reverse labels)
+            (rowloop
+              (+ row 1)
+              (cons
+                (let colloop
+                  ((col 0))
+                  (let ((k (+ (* row 13) col)))
+                    (cond
+                      ((>= col colmax)
+                        (list-ref layout (* row 13)))
+                      ((string? (vector-ref vec k))
+                        (list-ref layout k))
+                      (else
+                        (colloop (+ col 1))))))
+                labels))))))
+      ;; 各行内の全列を連結して候補文字列を作る
+      (let rowloop
+        ((table (take! (vector->list vec) vecmax))
+         (k 0)
+         (res ()))
+        (if (null? table)
+          (reverse res)
+          (let*
+            ((line (take table 13))
+             (line-sep
+              (cdr
+                (let colloop
+                  ((col (- colmax 1))
+                   (line-sep (if (= colmax 10) '("||") ())))
+                  (if (negative? col)
+                    line-sep
+                    (colloop
+                      (- col 1)
+                      (append
+                        (let*
+                          ((elem (list-ref line col))
+                           (elemlen (if (string? elem) (string-length elem) 0))
+                           (width (list-ref width-list col))
+                           (strlist
+                            (if (zero? elemlen)
+                              (make-list width " ")
+                              ;; 中央に配置する
+                              (letrec
+                                ((padleft
+                                  (lambda (pad strlist)
+                                    (if (<= pad 0)
+                                      strlist
+                                      (padright
+                                        (- pad 1)
+                                        (cons " " strlist)))))
+                                 (padright
+                                  (lambda (pad strlist)
+                                    (if (<= pad 0)
+                                      strlist
+                                      (padleft
+                                        (- pad 1)
+                                        (append strlist (list " ")))))))
+                                (padleft (- width elemlen) (list elem))))))
+                          (cons
+                            (if (or (= col 5) (= col 10))
+                              "||" ; ブロック区切りを目立たせる
+                              "|")
+                            strlist))
+                        line-sep))))))
+             (cand (apply string-append line-sep))
+             (candlabel (list cand (list-ref labels (quotient k 13)) "")))
+            (rowloop
+              (drop table 13)
+              (+ k 13)
+              (cons candlabel res))))))))
 
 ;;; 仮想鍵盤の表示を行うかどうかの設定を一時的に切り替える(トグル)。
 ;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。)
@@ -2136,10 +2282,16 @@
           (tutcode-auto-help-update-stroke-alist-normal pc () helpstrlist)))))
     (if (null? label-cands-alist)
       ()
-      (map
-        (lambda (elem)
-          (list (string-list-concat (cdr elem)) (car elem) ""))
-        label-cands-alist))))
+      (let
+        ((auto-help
+          (map
+            (lambda (elem)
+              (list (string-list-concat (cdr elem)) (car elem) ""))
+            label-cands-alist)))
+        (if (and tutcode-use-pseudo-table-style?
+                 (not tutcode-auto-help-with-real-keys?))
+          (tutcode-table-in-vertical-candwin auto-help)
+          auto-help)))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; @param strlist 確定した文字列のリスト(逆順)
@@ -2443,6 +2595,23 @@
         0
         (length help)
         tutcode-nr-candidate-max-for-kigou-mode))))
+
+;;; 自動ヘルプ:直前のヘルプで候補ウィンドウに表示した内容をダンプ・commitする
+;;; (部首合成シーケンス(例:"言▲▲西一早")をコピーしたい場合用)
+(define (tutcode-auto-help-dump state pc)
+  (if (eq? state 'tutcode-state-on)
+    (let ((help (tutcode-context-auto-help pc)))
+      (if (and help
+               (> (length help) 0)
+               (not (eq? (car help) 'delaytmp)))
+        (let ((linecands
+                (append-map
+                  (lambda (elem)
+                    (list (car elem) "\n"))
+                  (if tutcode-use-pseudo-table-style?
+                    help
+                    (tutcode-table-in-vertical-candwin help)))))
+          (tutcode-commit pc (apply string-append linecands) #t #t))))))
 
 ;;; preedit表示を更新する。
 (define (tutcode-do-update-preedit pc)
@@ -4489,10 +4658,13 @@
               (charcode->string key) 'tutcode-predicting-bushu)))
       ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
-         (rk-flush rkc)
+         (begin
+           (if (tutcode-verbose-stroke-key? key key-state)
+             (set! res (last (rk-context-seq rkc))))
+           (rk-flush rkc))
          (set! res (charcode->string key))))
       (else
-       (set! res (tutcode-push-key! pc (charcode->string key)))
+       (set! res (tutcode-push-key! pc (charcode->string key)))))
     (cond
       ((string? res)
         ;; 再帰的に部首合成される場合があるので、head全体をundo用に保持
@@ -4512,7 +4684,7 @@
         ;;XXX 部首合成変換中は交ぜ書き変換等は無効にする
         ))
       ((procedure? res)
-       (res 'tutcode-state-bushu pc)))))))
+       (res 'tutcode-state-bushu pc)))))
 
 ;;; 部首合成変換開始
 ;;; @param char 新たに入力された文字(2番目の部首)
@@ -4670,10 +4842,13 @@
                   'tutcode-predicting-interactive-bushu)))
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
-             (rk-flush rkc)
+             (begin
+               (if (tutcode-verbose-stroke-key? key key-state)
+                 (set! res (last (rk-context-seq rkc))))
+               (rk-flush rkc))
              (set! res (charcode->string key))))
           (else
-           (set! res (tutcode-push-key! pc (charcode->string key)))
+           (set! res (tutcode-push-key! pc (charcode->string key)))))
         (cond
           ((string? res)
             (tutcode-append-string pc res)
@@ -4685,7 +4860,7 @@
             ;;XXX 部首合成変換中は交ぜ書き変換等は無効にする
             ))
           ((procedure? res)
-           (res 'tutcode-state-interactive-bushu pc)))))))))
+           (res 'tutcode-state-interactive-bushu pc)))))))
 
 ;;; 対話的部首合成変換開始
 (define (tutcode-begin-interactive-bushu-conversion pc)
@@ -6186,6 +6361,12 @@
       (filter
         pair?
         (list
+          (make-subrule tutcode-katakana-sequence
+            (list
+              (lambda (state pc) (tutcode-context-set-katakana-mode! pc #t))))
+          (make-subrule tutcode-hiragana-sequence
+            (list
+              (lambda (state pc) (tutcode-context-set-katakana-mode! pc #f))))
           (make-subrule tutcode-mazegaki-start-sequence
             '(tutcode-mazegaki-start))
           (make-subrule tutcode-latin-conv-start-sequence
@@ -6316,6 +6497,8 @@
             '(tutcode-postfix-seq2kanji-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay))
+          (make-subrule tutcode-auto-help-dump-sequence
+            (list tutcode-auto-help-dump))
           (make-subrule tutcode-help-sequence
             '(tutcode-help))
           (make-subrule tutcode-help-clipboard-sequence

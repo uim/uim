@@ -195,7 +195,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 if ( isDarkBg && !QFile::exists( fileName ) ) {
                   fileName = ICONDIR + '/' + fields[1] + ".png";
                 }
-                if ( !isHidden && (fields[1] == "off" 
+                if ( !isHidden && (fields[1] == "direct"
                         || fields[1].endsWith( "_direct" ) ) ) {
                     isHidden = true;
                 }

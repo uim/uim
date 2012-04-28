@@ -47,7 +47,7 @@
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #include <X11/Xlib.h>
-#include <X11/keysym.h>
+#include <X11/XKBlib.h>
 #endif
 
 #ifdef GDK_WINDOWING_X11
@@ -341,7 +341,7 @@ im_uim_init_modifier_keys()
 	KeySym ks;
 	int index = 0;
 	do {
-	  ks = XKeycodeToKeysym(display, map->modifiermap[k], index);
+	  ks = XkbKeycodeToKeysym(display, map->modifiermap[k], 0, index);
 	  index++;
 	} while (!ks && index < keysyms_per_keycode);
 

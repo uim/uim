@@ -4,7 +4,7 @@ include $(top_builddir)/sigscheme/sigscheme.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = encoding-table.c test-gc.c
+EXTRA_DIST = encoding-table.c test-gc.c version.h.in
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
@@ -41,6 +41,7 @@ pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h uim-posix.h dynlib.h \
 		uim-helper.h uim-im-switcher.h \
 		uim-custom.h
+nodist_pkginclude_HEADERS = version.h
 # Install even if !NOTIFY since plugins will need this to use
 # uim_notify_{info,fatal}().  -- YamaKen 2008-02-12
 pkginclude_HEADERS += uim-notify.h

@@ -543,6 +543,7 @@
 /uim/uim-module-manager
 /uim/uim-sh
 /uim/uim-help
+/uim/version.h
 /uim/*.la
 /uim/*.lo
 /uim/*.o

@@ -63,6 +63,18 @@
 	       (N_ "[TUT-Code] toggle hiragana/katakana mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-katakana-sequence ""
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] katakana mode")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-hiragana-sequence ""
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] hiragana mode")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-kigou-toggle-key '("<IgnoreShift><Control>_")
                '(tutcode-keys1 mode-transition)
                '(key)
@@ -115,6 +127,12 @@
                '(tutcode-keys1)
 	       '(string ".*")
 	       (N_ "[TUT-Code] display last auto help")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-auto-help-dump-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] commit last auto help content")
 	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-katakana-commit-key '()

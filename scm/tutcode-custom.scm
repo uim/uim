@@ -205,6 +205,12 @@
   (N_ "Use candidate window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-use-pseudo-table-style? #f
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Use pseudo table style layout")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-candidate-window-table-layout 'qwerty-jis
   '(tutcode candwin)
   (list 'choice

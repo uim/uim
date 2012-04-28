@@ -1,3 +1,30 @@
+Overview of changes from 1.8.0-beta to 1.8.0
+============================================
+* Fixes
+  - libgcroots
+    * Fix version ([uim-en 438])
+  - doc
+    * Fix release manual.
+
+
+Overview of changes from 1.8.0-alpha to 1.8.0-beta
+==================================================
+* Fixes
+  - libuim
+    * Fix version number
+  - po
+    * Fix build failure with intltool 0.50 again (#58097)
+  - uim-toolbar-gtk
+  - uim-toolbar-gtk3
+  - uim-toolbar-qt4
+    * Change behavior when toolbar-display-time is "mode"
+  - uim-chardict-qt
+  - uim-chardict-qt4
+    * Update Unicode block list
+  - ChangeLog
+    * Add ChangeLog.old.2
+
+
 Overview of changes from 1.7.3 to 1.8.0-alpha
 =============================================
 * New features

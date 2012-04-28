@@ -28,51 +28,67 @@ release, you have to repeat the following procedure at least three times.
 
 3. Update NEWS and RELNOTE
 
-4. Increment the version numbers in:
+   $ vi NEWS
+   $ vi RELNOTE
 
-   - configure.ac
-   - uim.h
+4. Increment the version numbers in configure.ac
 
-   And increment libtool-version.mk too if ABI is updated.
+   $ vi configure.ac
+
+   And increment libtool-version.mk too if API/ABI is updated.
+
+   $ vi uim/libtool-version.mk
+
+   Then push them.
+   $ git push
 
 5. Export a fresh tree from the Git repository.
 
    $ git clone https://code.google.com/p/uim/
+   $ cd uim
+
+   On an alpha release, create a branch
+
+   $ git checkout -b x.y
+   $ git push origin x.y
+
+   On a beta release and a final release,
+   create a tracking branch and check out the branch
+
+   $ git checkout --track -b x.y origin/x.y
 
 6. Do a build test with make-dist.sh
 
    This test is not enough, but worth doing. It is especially useful when a
    new file is added. We should also do unit testing at this point.
 
-7. Tag to tags/uim-x.y.z
+   $ ./make-dist.sh
 
-   On an alpha release, create a branch at first.
+7. Tag uim-x.y.z
 
-   $ git branch x.y
-   $ git push origin x.y
-
-   Then tag and push the tag.
+   Tag and push the tag.
 
    On an alpha release
-   $ git tag uim-x.y.z-alpha
+   $ git tag uim-x.y.0-alpha
    $ git push --tags
 
    On a beta release
-   $ git tag uim-x.y.z-beta
+   $ git tag uim-x.y.0-beta
    $ git push --tags
 
    On a final release
    $ git tag uim-x.y.z
    $ git push --tags
 
-8. Create the source tarball
+8. Create the source tarball on a non-final release
 
-   On an alpha or a beta release
-   $ make distcheck distdir=uim-x.y.z-alpha
-   $ make sum distdir=uim-x.y.z-alpha
+   On an alpha release
+   $ make distcheck distdir=uim-x.y.0-alpha
+   $ make sum distdir=uim-x.y.0-alpha
 
-   $ make distcheck distdir=uim-x.y.z-beta
-   $ make sum distdir=uim-x.y.z-beta
+   On a beta release
+   $ make distcheck distdir=uim-x.y.0-beta
+   $ make sum distdir=uim-x.y.0-beta
 
 9. Copy the source tarball to the download site.
 
@@ -84,21 +100,27 @@ release, you have to repeat the following procedure at least three times.
 
    Final release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim 1.5.0' -l 'Stable,Featured' \
-                            uim-1.5.0.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim x.y.z' -l 'Stable,Featured' \
+                              uim-x.y.z.tar.bz2
 
-   Alpha or beta release:
+   Alpha release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim 1.5.0-alpha' -l 'Unstable' \
-                            uim-1.5.0-alpha.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim x.y.0-alpha' -l 'Unstable' \
+                              uim-x.y.0-alpha.tar.bz2
+
+   Beta release:
+
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim x.y.0-beta' -l 'Unstable' \
+                              uim-x.y.0-beta.tar.bz2
 
    Snapshot release:
 
-     $ googlecode-upload.py -u yamakenz -p uim \
-                            -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
-                            uim-trunk-snapshot20070703.tar.bz2
+     $ ./googlecode-upload.py -u yamakenz -p uim \
+                              -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
+                              uim-trunk-snapshot20070703.tar.bz2
 
    And untag 'Featured' from previous final release files by the web
    interface.
@@ -123,13 +145,9 @@ release, you have to repeat the following procedure at least three times.
    
      http://code.google.com/p/uim/downloads/
 
-   MD5 (uim-1.4.0-example.tar.gz) = cff14a6ad95a6a1303b527a86d27bff4
-   MD5 (uim-1.4.0-example.tar.bz2) = b2e96af101a0c51df697990f6311f6f2
-   SHA1 (uim-1.4.0-example.tar.gz) = 3f152c4aa77a3a44d9f74800a8b9d8d3b6c16771
-   SHA1 (uim-1.4.0-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
+   MD5 (uim-x.y.z-example.tar.gz) = cff14a6ad95a6a1303b527a86d27bff4
+   MD5 (uim-x.y.z-example.tar.bz2) = b2e96af101a0c51df697990f6311f6f2
+   SHA1 (uim-x.y.z-example.tar.gz) = 3f152c4aa77a3a44d9f74800a8b9d8d3b6c16771
+   SHA1 (uim-x.y.z-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
 
    <append RELNOTE here>
-
-12. Update Freshmeat entry
-
-   http://freshmeat.net/projects/uim-inputmethod/
