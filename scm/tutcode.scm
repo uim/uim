@@ -819,6 +819,8 @@
      (list 'candwin-delay-waiting #f)
      ;;; 候補ウィンドウの遅延表示待ち中に選択された候補のインデックス番号
      (list 'candwin-delay-selected-index -1)
+     ;;; 擬似表形式候補表示用の候補リスト
+     (list 'pseudo-table-cands ())
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
      (list 'stroke-help ())
@@ -1808,7 +1810,12 @@
       (im-delay-activate-candidate-selector pc delay))
     (begin
       (tutcode-context-set-candwin-delay-waiting! pc #f)
-      (im-activate-candidate-selector pc nr display-limit))))
+      (if (and tutcode-use-pseudo-table-style?
+               (>= nr 0))
+        (let ((pnr-pdl
+                (tutcode-pseudo-table-style-setup pc type nr display-limit)))
+          (im-activate-candidate-selector pc (car pnr-pdl) (cadr pnr-pdl)))
+        (im-activate-candidate-selector pc nr display-limit)))))
 
 ;;; 候補ウィンドウの遅延表示を行うかどうかを返す
 ;;; @param delay 遅延時間。0の場合は遅延表示はしない。
@@ -1816,6 +1823,30 @@
   (and tutcode-candidate-window-use-delay?
        (im-delay-activate-candidate-selector-supported? pc)
        (> delay 0)))
+
+;;; 擬似表形式候補表示用の候補リストを作成する
+;;; @param type 候補ウィンドウタイプ
+;;; @param delay 候補ウィンドウ表示までの待ち時間[s]
+;;; @param nr 候補数。delay後に計算する場合は-1
+;;; @param display-limit ページ内候補数
+;;; @return '(nr display-limit) 擬似表形式の候補リストの候補数とページ内候補数
+(define (tutcode-pseudo-table-style-setup pc type nr display-limit)
+  (let* ((cands
+          (let loop
+            ((idx 0)
+             (cands ()))
+            (if (or (>= idx display-limit) (>= idx nr))
+              (reverse cands)
+              (loop
+                (+ idx 1)
+                (cons (tutcode-get-candidate-handler-internal pc idx 0)
+                      cands)))))
+         (pcands (tutcode-table-in-vertical-candwin cands))
+         (pdl (length pcands))
+         (nr-page (+ (quotient nr display-limit)
+                     (if (= 0 (remainder nr display-limit)) 0 1))))
+    (tutcode-context-set-pseudo-table-cands! pc pcands)
+    (list (* nr-page pdl) pdl)))
 
 ;;; 候補ウィンドウ上で候補を選択する
 ;;; @param idx 選択する候補のインデックス番号
@@ -1893,15 +1924,10 @@
           ()))))
     (if (null? label-cand-alist)
       ()
-      (let
-        ((stroke-help
-          (map
-            (lambda (elem)
-              (list (cadr elem) (car elem) ""))
-            (reverse label-cand-alist))))
-        (if tutcode-use-pseudo-table-style?
-          (tutcode-table-in-vertical-candwin stroke-help)
-          stroke-help)))))
+      (map
+        (lambda (elem)
+          (list (cadr elem) (car elem) ""))
+        (reverse label-cand-alist)))))
 
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
@@ -2280,16 +2306,10 @@
           (tutcode-auto-help-update-stroke-alist-normal pc () helpstrlist)))))
     (if (null? label-cands-alist)
       ()
-      (let
-        ((auto-help
-          (map
-            (lambda (elem)
-              (list (string-list-concat (cdr elem)) (car elem) ""))
-            label-cands-alist)))
-        (if (and tutcode-use-pseudo-table-style?
-                 (not tutcode-auto-help-with-real-keys?))
-          (tutcode-table-in-vertical-candwin auto-help)
-          auto-help)))))
+      (map
+        (lambda (elem)
+          (list (string-list-concat (cdr elem)) (car elem) ""))
+        label-cands-alist))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; @param strlist 確定した文字列のリスト(逆順)
@@ -2606,9 +2626,7 @@
                 (append-map
                   (lambda (elem)
                     (list (car elem) "\n"))
-                  (if tutcode-use-pseudo-table-style?
-                    help
-                    (tutcode-table-in-vertical-candwin help)))))
+                  (tutcode-table-in-vertical-candwin help))))
           (tutcode-commit pc (apply string-append linecands) #t #t))))))
 
 ;;; preedit表示を更新する。
@@ -5847,100 +5865,107 @@
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
 (define (tutcode-get-candidate-handler c idx accel-enum-hint)
   (let ((tc (tutcode-find-descendant-context c)))
-    (cond
-      ;; 記号入力
-      ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
-        (let* ((cand (tutcode-get-nth-candidate-for-kigou-mode tc idx))
-               (n (remainder idx
-                    (length tutcode-heading-label-char-list-for-kigou-mode)))
-               (label (nth n tutcode-heading-label-char-list-for-kigou-mode)))
-          ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
-          (list cand label "")))
-      ;; ヒストリ入力
-      ((eq? (tutcode-context-state tc) 'tutcode-state-history)
-        (let* ((cand (tutcode-get-nth-candidate-for-history tc idx))
-               (n (remainder idx
-                    (length tutcode-heading-label-char-list-for-history)))
-               (label (nth n tutcode-heading-label-char-list-for-history)))
-          (list cand label "")))
-      ;; 補完/予測入力候補
-      ((eq? (tutcode-context-candidate-window tc)
-            'tutcode-candidate-window-predicting)
-        (let*
-          ((nr-in-page (tutcode-context-prediction-nr-in-page tc))
-           (page-limit (tutcode-context-prediction-page-limit tc))
-           (pages (quotient idx page-limit))
-           (idx-in-page (remainder idx page-limit)))
-          ;; 各ページには、nr-in-page個の補完/予測入力候補と、熟語ガイドを表示
-          (if (< idx-in-page nr-in-page)
-            ;; 補完/予測入力候補文字列
-            (let*
-              ((nr-predictions (tutcode-lib-get-nr-predictions tc))
-               (p-idx (+ idx-in-page (* pages nr-in-page)))
-               (i (remainder p-idx nr-predictions))
-               (cand (tutcode-lib-get-nth-prediction tc i))
-               (word (and (eq? (tutcode-context-predicting tc)
-                               'tutcode-predicting-bushu)
-                          (tutcode-lib-get-nth-word tc i)))
-               (cand-guide
-                (if word
-                  (string-append cand "(" word ")")
-                  cand))
-               (n (remainder p-idx
-                    (length tutcode-heading-label-char-list-for-prediction)))
-               (label (nth n tutcode-heading-label-char-list-for-prediction)))
-              (list cand-guide label ""))
-            ;; 熟語ガイド
-            (let*
-              ((guide (tutcode-context-guide tc))
-               (guide-len (length guide)))
-              (if (= guide-len 0)
-                (list "" "" "")
-                (let*
-                  ((guide-idx-in-page (- idx-in-page nr-in-page))
-                   (nr-guide-in-page (- page-limit nr-in-page))
-                   (guide-idx (+ guide-idx-in-page (* pages nr-guide-in-page)))
-                   (n (remainder guide-idx guide-len))
-                   (label-cands-alist (nth n guide))
-                   (label (car label-cands-alist))
-                   (cands (cdr label-cands-alist))
-                   (cand
-                    (string-list-concat
-                      (append cands (list tutcode-guide-mark)))))
-                  (list cand label "")))))))
-      ;; 仮想鍵盤
-      ((eq? (tutcode-context-candidate-window tc)
-            'tutcode-candidate-window-stroke-help)
-        (nth idx (tutcode-context-stroke-help tc)))
-      ;; 自動ヘルプ
-      ((eq? (tutcode-context-candidate-window tc)
-            'tutcode-candidate-window-auto-help)
-        (nth idx (tutcode-context-auto-help tc)))
-      ;; 対話的部首合成変換
-      ((eq? (tutcode-context-state tc) 'tutcode-state-interactive-bushu)
-        (let*
-          ;; 予測入力候補用変数を流用
-          ((nr-in-page (tutcode-context-prediction-nr-in-page tc))
-           (page-limit (tutcode-context-prediction-page-limit tc))
-           (pages (quotient idx page-limit))
-           (idx-in-page (remainder idx page-limit))
-           (nr-predictions (tutcode-lib-get-nr-predictions tc))
-           (p-idx (+ idx-in-page (* pages nr-in-page)))
-           (i (remainder p-idx nr-predictions))
-           (cand (tutcode-lib-get-nth-prediction tc i))
-           (n (remainder p-idx
-                (length tutcode-heading-label-char-list-for-prediction)))
-           (label (nth n tutcode-heading-label-char-list-for-prediction)))
-          (list cand label "")))
-      ;; 交ぜ書き変換
-      ((eq? (tutcode-context-candidate-window tc)
-            'tutcode-candidate-window-converting)
-        (let* ((cand (tutcode-get-nth-candidate tc idx))
-               (n (remainder idx (length tutcode-heading-label-char-list)))
-               (label (nth n tutcode-heading-label-char-list)))
-          (list cand label "")))
-      (else
-        (list "" "" "")))))
+    (if tutcode-use-pseudo-table-style?
+      (nth idx (tutcode-context-pseudo-table-cands tc))
+      (tutcode-get-candidate-handler-internal tc idx accel-enum-hint))))
+
+;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
+;;; (tutcode-pseudo-table-stype-setupからの呼び出し用)
+(define (tutcode-get-candidate-handler-internal tc idx accel-enum-hint)
+  (cond
+    ;; 記号入力
+    ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
+      (let* ((cand (tutcode-get-nth-candidate-for-kigou-mode tc idx))
+             (n (remainder idx
+                  (length tutcode-heading-label-char-list-for-kigou-mode)))
+             (label (nth n tutcode-heading-label-char-list-for-kigou-mode)))
+        ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
+        (list cand label "")))
+    ;; ヒストリ入力
+    ((eq? (tutcode-context-state tc) 'tutcode-state-history)
+      (let* ((cand (tutcode-get-nth-candidate-for-history tc idx))
+             (n (remainder idx
+                  (length tutcode-heading-label-char-list-for-history)))
+             (label (nth n tutcode-heading-label-char-list-for-history)))
+        (list cand label "")))
+    ;; 補完/予測入力候補
+    ((eq? (tutcode-context-candidate-window tc)
+          'tutcode-candidate-window-predicting)
+      (let*
+        ((nr-in-page (tutcode-context-prediction-nr-in-page tc))
+         (page-limit (tutcode-context-prediction-page-limit tc))
+         (pages (quotient idx page-limit))
+         (idx-in-page (remainder idx page-limit)))
+        ;; 各ページには、nr-in-page個の補完/予測入力候補と、熟語ガイドを表示
+        (if (< idx-in-page nr-in-page)
+          ;; 補完/予測入力候補文字列
+          (let*
+            ((nr-predictions (tutcode-lib-get-nr-predictions tc))
+             (p-idx (+ idx-in-page (* pages nr-in-page)))
+             (i (remainder p-idx nr-predictions))
+             (cand (tutcode-lib-get-nth-prediction tc i))
+             (word (and (eq? (tutcode-context-predicting tc)
+                             'tutcode-predicting-bushu)
+                        (tutcode-lib-get-nth-word tc i)))
+             (cand-guide
+              (if word
+                (string-append cand "(" word ")")
+                cand))
+             (n (remainder p-idx
+                  (length tutcode-heading-label-char-list-for-prediction)))
+             (label (nth n tutcode-heading-label-char-list-for-prediction)))
+            (list cand-guide label ""))
+          ;; 熟語ガイド
+          (let*
+            ((guide (tutcode-context-guide tc))
+             (guide-len (length guide)))
+            (if (= guide-len 0)
+              (list "" "" "")
+              (let*
+                ((guide-idx-in-page (- idx-in-page nr-in-page))
+                 (nr-guide-in-page (- page-limit nr-in-page))
+                 (guide-idx (+ guide-idx-in-page (* pages nr-guide-in-page)))
+                 (n (remainder guide-idx guide-len))
+                 (label-cands-alist (nth n guide))
+                 (label (car label-cands-alist))
+                 (cands (cdr label-cands-alist))
+                 (cand
+                  (string-list-concat
+                    (append cands (list tutcode-guide-mark)))))
+                (list cand label "")))))))
+    ;; 仮想鍵盤
+    ((eq? (tutcode-context-candidate-window tc)
+          'tutcode-candidate-window-stroke-help)
+      (nth idx (tutcode-context-stroke-help tc)))
+    ;; 自動ヘルプ
+    ((eq? (tutcode-context-candidate-window tc)
+          'tutcode-candidate-window-auto-help)
+      (nth idx (tutcode-context-auto-help tc)))
+    ;; 対話的部首合成変換
+    ((eq? (tutcode-context-state tc) 'tutcode-state-interactive-bushu)
+      (let*
+        ;; 予測入力候補用変数を流用
+        ((nr-in-page (tutcode-context-prediction-nr-in-page tc))
+         (page-limit (tutcode-context-prediction-page-limit tc))
+         (pages (quotient idx page-limit))
+         (idx-in-page (remainder idx page-limit))
+         (nr-predictions (tutcode-lib-get-nr-predictions tc))
+         (p-idx (+ idx-in-page (* pages nr-in-page)))
+         (i (remainder p-idx nr-predictions))
+         (cand (tutcode-lib-get-nth-prediction tc i))
+         (n (remainder p-idx
+              (length tutcode-heading-label-char-list-for-prediction)))
+         (label (nth n tutcode-heading-label-char-list-for-prediction)))
+        (list cand label "")))
+    ;; 交ぜ書き変換
+    ((eq? (tutcode-context-candidate-window tc)
+          'tutcode-candidate-window-converting)
+      (let* ((cand (tutcode-get-nth-candidate tc idx))
+             (n (remainder idx (length tutcode-heading-label-char-list)))
+             (label (nth n tutcode-heading-label-char-list)))
+        (list cand label "")))
+    (else
+      (list "" "" ""))))
 
 ;;; 候補ウィンドウが候補を選択したときに呼ぶ関数。
 ;;; 表示中の候補が選択された場合、該当する候補を確定する。
@@ -6105,7 +6130,13 @@
           (else
             (list tutcode-nr-candidate-max 0)))))
       (reverse
-        (cons (tutcode-context-candwin-delay-selected-index tc) res)))))
+        (cons (tutcode-context-candwin-delay-selected-index tc)
+              (if tutcode-use-pseudo-table-style?
+                (reverse
+                  (tutcode-pseudo-table-style-setup tc
+                    (tutcode-context-candidate-window tc)
+                    (cadr res) (car res)))
+                res))))))
 
 (tutcode-configure-widgets)
 
