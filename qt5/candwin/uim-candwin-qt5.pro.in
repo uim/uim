@@ -1,0 +1,16 @@
+include(../../qt4/common.pro)
+
+TEMPLATE = app
+
+# to include qtgettext.h
+INCLUDEPATH += @srcdir@/../../qt4
+
+LIBS += @LIBINTL@
+
+# Input
+HEADERS += @srcdir@/../../qt4/candwin/qt4.h
+SOURCES += @srcdir@/../../qt4/candwin/qt4.cpp
+
+TARGET = uim-candwin-qt5
+
+target.path += @DESTDIR@@UIM_LIBEXECDIR@

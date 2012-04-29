@@ -2,8 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
-          gtk2 gtk3 qt3 notify
-SUBDIRS += qt4
+          gtk2 gtk3 qt3 qt4 qt5 notify
 SUBDIRS += xim fep emacs po pixmaps examples tables byeoru-data
 
 EXTRA_DIST = RELNOTE ChangeLog.old ChangeLog.old.2 autogen.sh make-dist.sh \

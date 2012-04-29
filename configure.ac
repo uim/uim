@@ -36,6 +36,7 @@ AC_PATH_PROGS(MD5, md5 md5sum)
 AC_PATH_PROGS(SHA1, sha1 sha1sum)
 AC_PATH_PROGS(SED, sed gsed)
 AX_PATH_QMAKE4
+AX_PATH_QMAKE5
 
 AM_MAINTAINER_MODE
 
@@ -1019,10 +1020,56 @@ case "$enable_qt4_qt3support" in
     ;;
 esac
 
+dnl *****************************
+dnl *** Check for Qt5 Library ***
+dnl *****************************
+AC_ARG_WITH(qt5,
+  AC_HELP_STRING([--with-qt5],
+                 [build qt5 helper applications
+		  @<:@default=no@:>@]),
+  [
+    case $with_qt5 in
+      no)
+        use_qt5="no"
+      ;;
+      yes|*)
+        use_qt5="yes"
+      ;;
+    esac
+  ],
+  [
+    use_qt5="no"
+  ])
+
+
+AC_ARG_WITH(qt5-immodule,
+  AC_HELP_STRING([--with-qt5-immodule],
+                 [Build qt5-immodule extension
+		  @<:@default=no@:>@]),
+  [
+    case $with_qt5_immodule in
+      no)
+        use_qt5_immodule="no"
+      ;;
+      yes|*)
+        use_qt5_immodule="yes"
+      ;;
+    esac
+
+  ],
+  [
+    use_qt5_immodule="no"
+  ])
+if test x$use_qt5 = xyes || test x$use_qt5_immodule = xyes; then
+    if test -z "$QMAKE5"; then
+        AC_MSG_ERROR([no qmake for Qt5 found])
+    fi
+fi
+
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-                 [Determine default toolkit (gtk, gtk3, qt, or qt4)
+                 [Determine default toolkit (gtk, gtk3, qt, qt4 or qt5)
 		  @<:@default=gtk@:>@]),
   [
   if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
@@ -1036,6 +1083,9 @@ AC_ARG_ENABLE(default-toolkit,
   fi
   if test x"$enable_default_toolkit" = "xqt4" && test x"$use_qt4" = "xyes"; then
      default_toolkit="qt4"
+  fi
+  if test x"$enable_default_toolkit" = "xqt5" && test x"$use_qt5" = "xyes"; then
+     default_toolkit="qt5"
   fi
   ],
   [])
@@ -1268,6 +1318,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test x$default_toolkit = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test x$default_toolkit = xqt4)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test x$default_toolkit = xqt5)
 AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
 AM_CONDITIONAL(APPLET_GNOME3, test x$use_applet_gnome3 = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
@@ -1533,7 +1584,7 @@ if test "x$use_applet_kde4" = "xyes" && test "x$CMAKE" = "xno"; then
     use_applet_kde4="no"
 fi
 AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
-if test "x$use_qt4" = "xyes"; then
+if test "x$use_qt4" = "xyes" || test "x$use_qt5" = "xyes"; then
     if test "x$KDE4_CONFIG" != "xno"; then
         KDE4_ICONDIR=`$KDE4_CONFIG --expandvars --install icon`
     fi
@@ -1565,6 +1616,8 @@ AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
 AM_CONDITIONAL(QT4, test x$use_qt4 = xyes)
 AM_CONDITIONAL(QT4_IMMODULE, test x$use_qt4_immodule = xyes)
 AM_CONDITIONAL(APPLET_KDE4, test x$use_applet_kde4 = xyes)
+AM_CONDITIONAL(QT5, test x$use_qt5 = xyes)
+AM_CONDITIONAL(QT5_IMMODULE, test x$use_qt5_immodule = xyes)
 
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--enable-pref],
@@ -1588,6 +1641,9 @@ AC_ARG_ENABLE(pref,
 	elif test x"$default_toolkit" = "xqt4" && \
 	     test x"$use_qt4" = "xyes"; then
 	  use_pref="yes"
+	elif test x"$default_toolkit" = "xqt5" && \
+	     test x"$use_qt5" = "xyes"; then
+	  use_pref="yes"
 	else
 	  use_pref="no"
 	  AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
@@ -1606,6 +1662,9 @@ AC_ARG_ENABLE(pref,
       use_pref="yes"
     elif test x"$default_toolkit" = "xqt4" && \
          test x"$use_qt4" = "xyes"; then
+      use_pref="yes"
+    elif test x"$default_toolkit" = "xqt5" && \
+         test x"$use_qt5" = "xyes"; then
       use_pref="yes"
     else
       use_pref="no"
@@ -1971,6 +2030,20 @@ AC_CONFIG_FILES([Makefile
 		 qt4/toolbar/plasma-applet-uim.desktop
 		 qt4/toolbar/uim-toolbar-qt4.pro
 		 qt4/toolbar/Makefile
+		 qt5/Makefile
+		 qt5/candwin/Makefile
+		 qt5/candwin/uim-candwin-qt5.pro
+		 qt5/chardict/Makefile
+		 qt5/chardict/uim-chardict-qt5.pro
+		 qt5/edittest/Makefile
+		 qt5/immodule/quiminputcontextplugin.pro
+		 qt5/immodule/Makefile
+		 qt5/pref/uim-pref-qt5.pro
+		 qt5/pref/Makefile
+		 qt5/switcher/uim-im-switcher-qt5.pro
+		 qt5/switcher/Makefile
+		 qt5/toolbar/uim-toolbar-qt5.pro
+		 qt5/toolbar/Makefile
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
@@ -2052,6 +2125,30 @@ if test "x$use_knotify4" = xyes; then
         ${cmake_option} ${ac_abs_top_srcdir}/notify
     cd -
 fi
+# Generate Makefiles for Qt5 by qmake
+if test x$use_qt5 = xyes; then
+    if test x$use_qt5_immodule = xyes; then
+        qt5_immodule_option="DEFINES+=QT5_IMMODULE"
+    fi
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
+        ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
+        ${ac_abs_top_builddir}/qt5/chardict/uim-chardict-qt5.pro
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/pref/Makefile.qmake \
+        ${qt5_immodule_option} \
+        ${ac_abs_top_builddir}/qt5/pref/uim-pref-qt5.pro
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/switcher/Makefile.qmake \
+        ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
+        ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
+fi
+if test x$use_qt5_immodule = xyes; then
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
+                ${ac_abs_top_builddir}/qt5/immodule/quiminputcontextplugin.pro
+    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
+                 ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+fi
+
 
 AC_MSG_RESULT([
 Configure Result :
@@ -2080,6 +2177,8 @@ Configure Result :
    Qt4             : ${use_qt4}
    Qt4 immodule    : ${use_qt4_immodule}
    Qt4 Qt3Support  : ${use_qt4_qt3support}
+   Qt5             : ${use_qt5}
+   Qt5 immodule    : ${use_qt5_immodule}
    KDE3 Applet     : ${use_applet_kde}
    KDE4 Applet     : ${use_applet_kde4}
    FEP             : ${use_uim_fep}
