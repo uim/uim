@@ -52,6 +52,11 @@ class UimInputContextPlugin : public QPlatformInputContextPlugin
 #endif
 {
     Q_OBJECT
+#if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID
+        "org.qt-project.Qt.QPlatformInputContextFactoryInterface"
+        FILE "../../qt5/immodule/uim.json")
+#endif
 public:
     UimInputContextPlugin();
     ~UimInputContextPlugin();
@@ -59,12 +64,13 @@ public:
     QStringList keys() const;
 #if QT_VERSION < 0x050000
     QInputContext *create( const QString &key );
-#else
-    QPlatformInputContext *create( const QString &key );
-#endif
     QStringList languages( const QString &key );
     QString displayName( const QString &key );
     QString description( const QString &key );
+#else
+    QPlatformInputContext *create( const QString &key,
+                                   const QStringList &paramList );
+#endif
 
     static QUimInfoManager *getQUimInfoManager();
 
@@ -73,7 +79,9 @@ protected:
     void uimQuit();
 
     QStringList createImList() const;
+#if QT_VERSION < 0x050000
     QStringList createLanguageList( const QString &key ) const;
+#endif
 
     static QUimInfoManager *infoManager;
     bool uimReady;

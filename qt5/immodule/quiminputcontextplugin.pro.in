@@ -1,13 +1,9 @@
 include(../../qt4/common.pro)
-
-TEMPLATE = lib
-CONFIG += plugin
+load(qt_plugin)
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += platformsupport-private
-}
+QT += platformsupport-private
 
 # Input
 HEADERS += @srcdir@/../../qt4/immodule/abstractcandidatewindow.h \
@@ -37,6 +33,8 @@ SOURCES += @srcdir@/../../qt4/immodule/abstractcandidatewindow.cpp \
     SOURCES += @srcdir@/../../qt4/immodule/quiminputcontext_compose.cpp
 }
 
+OTHER_FILES += uim.json
+
 TARGET = uiminputcontextplugin
 
-target.path += @DESTDIR@$$[QT_INSTALL_PLUGINS]/inputmethods
+target.path += @DESTDIR@$$[QT_INSTALL_PLUGINS]/platforminputcontexts

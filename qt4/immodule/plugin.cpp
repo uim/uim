@@ -85,9 +85,12 @@ QStringList UimInputContextPlugin::keys() const
 #if QT_VERSION < 0x050000
 QInputContext *UimInputContextPlugin::create( const QString & key )
 #else
-QPlatformInputContext *UimInputContextPlugin::create( const QString & key )
+QPlatformInputContext *UimInputContextPlugin::create( const QString & key, const QStringList & paramList )
 #endif
 {
+#if QT_VERSION >= 0x050000
+    Q_UNUSED(paramList);
+#endif
     QString imname;
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
@@ -103,6 +106,7 @@ QPlatformInputContext *UimInputContextPlugin::create( const QString & key )
     return uic;
 }
 
+#if QT_VERSION < 0x050000
 QStringList UimInputContextPlugin::languages( const QString & key )
 {
     return createLanguageList( key );
@@ -117,6 +121,7 @@ QString UimInputContextPlugin::description( const QString & key )
 {
     return displayName( key ) + ": an input method provided via the uim input method framework";
 }
+#endif
 
 QUimInfoManager *
 UimInputContextPlugin::getQUimInfoManager()
@@ -182,6 +187,7 @@ QStringList UimInputContextPlugin::createImList() const
     return lst;
 }
 
+#if QT_VERSION < 0x050000
 QStringList UimInputContextPlugin::createLanguageList( const QString &key ) const
 {
     if ( key == "uim" )
@@ -211,6 +217,7 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
 
     return QStringList( "" );
 }
+#endif
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2( uiminputcontextplugin, UimInputContextPlugin )
