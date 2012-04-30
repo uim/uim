@@ -58,13 +58,6 @@ embedded_cb(GtkWidget *widget, gpointer user_data)
   gtk_widget_show_all(user_data);
 }
 
-static void
-systray_unrealize_cb(GtkWidget *widget, gpointer user_data)
-{
-  uim_quit();
-  exit(0);
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -85,7 +78,6 @@ main(int argc, char *argv[])
 
   icon = uim_toolbar_trayicon_new();
   g_signal_connect(G_OBJECT(tray), "embedded", G_CALLBACK(embedded_cb), icon);
-  g_signal_connect_after(G_OBJECT(tray), "unrealize", G_CALLBACK(systray_unrealize_cb), NULL);
 
   gtk_container_add(GTK_CONTAINER(tray), icon);
   gtk_widget_show(GTK_WIDGET(tray));
