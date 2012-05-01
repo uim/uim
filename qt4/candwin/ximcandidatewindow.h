@@ -49,6 +49,7 @@ struct CandData
 class XimCandidateWindow : public QFrame
 {
     Q_OBJECT
+
 public:
     explicit XimCandidateWindow(QWidget *parent = 0);
     ~XimCandidateWindow();

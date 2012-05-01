@@ -6,29 +6,21 @@ CONFIG += plugin
 LIBS += @X11_LIBS@ -luim-counted-init
 
 # Input
-HEADERS += @srcdir@/abstractcandidatewindow.h \
-           @srcdir@/candidatetablewindow.h \
-           @srcdir@/candidatewindow.h \
-           @srcdir@/candidatewindowproxy.h \
+HEADERS += @srcdir@/candidatewindowproxy.h \
            @srcdir@/caretstateindicator.h \
            @srcdir@/plugin.h \
            @srcdir@/qhelpermanager.h \
            @srcdir@/qtextutil.h \
            @srcdir@/quiminfomanager.h \
-           @srcdir@/quiminputcontext.h \
-           @srcdir@/subwindow.h
+           @srcdir@/quiminputcontext.h
 
-SOURCES += @srcdir@/abstractcandidatewindow.cpp \
-           @srcdir@/candidatetablewindow.cpp \
-           @srcdir@/candidatewindow.cpp \
-           @srcdir@/candidatewindowproxy.cpp \
+SOURCES += @srcdir@/candidatewindowproxy.cpp \
            @srcdir@/caretstateindicator.cpp \
            @srcdir@/plugin.cpp \
            @srcdir@/qhelpermanager.cpp \
            @srcdir@/qtextutil.cpp \
            @srcdir@/quiminfomanager.cpp \
-           @srcdir@/quiminputcontext.cpp \
-           @srcdir@/subwindow.cpp
+           @srcdir@/quiminputcontext.cpp
 
 !win32:!embedded:!mac {
     HEADERS += @srcdir@/quiminputcontext_compose.h

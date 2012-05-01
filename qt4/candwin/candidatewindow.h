@@ -30,43 +30,71 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef UIM_QT4_IMMODULE_SUBWINDOW_H
-#define UIM_QT4_IMMODULE_SUBWINDOW_H
+#ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
+#define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 
-#include <QtCore/QTimer>
-#include <QtGui/QFrame>
+#include <QtGui/QTableWidget>
 
-class QTextBrowser;
+#include "abstractcandidatewindow.h"
 
-class SubWindow : public QFrame
+class CandidateListView;
+class SubWindow;
+
+class CandidateWindow : public AbstractCandidateWindow
 {
     Q_OBJECT
 
 public:
-    explicit SubWindow( QWidget *parent = 0 );
-    ~SubWindow();
+    explicit CandidateWindow(QWidget *parent, bool vertical = true);
 
-    void layoutWindow( const QRect &rect, bool isVertical );
+    QSize sizeHint() const;
 
-    bool isHooked()
-    {
-        return m_hookTimer->isActive();
-    }
+private slots:
+    void slotCandidateSelected(int row, int column);
+    void slotHookSubwindow();
 
-public slots:
-    void hookPopup( const QString &contents );
-    void cancelHook();
+private:
+    void activateCandwin(int dLimit);
 
-protected:
-    void popup();
+    void updateView(int newpage, int ncandidates);
+    void updateSize();
+    void shiftPage(bool forward);
+    void setIndex(int totalindex);
 
-protected slots:
-    void timerDone();
+    void setNrCandidates(int nrCands, int dLimit);
 
-protected:
-    QTextBrowser *m_contentsEdit;
+    // Moving and Resizing affects the position of Subwindow
+    virtual void moveEvent(QMoveEvent *);
+    virtual void resizeEvent(QResizeEvent *);
+    virtual void hideEvent(QHideEvent *event);
 
-    QTimer *m_hookTimer;
+    QRect subWindowRect(const QRect &rect, const QTableWidgetItem *item = 0);
+
+    // widgets
+    CandidateListView *cList;
+    SubWindow *subWin;
+
+    // candidate data
+    QList<QString> annotations;
+
+    // config
+    const bool hasAnnotation;
+    const bool isVertical;
 };
 
-#endif /* Not def: UIM_QT4_IMMODULE_SUBWINDOW_H */
+
+class CandidateListView : public QTableWidget
+{
+    Q_OBJECT
+
+public:
+    explicit CandidateListView(QWidget *parent = 0, bool vertical = true)
+        : QTableWidget(parent), isVertical(vertical) {}
+    ~CandidateListView() {}
+
+    QSize sizeHint() const;
+
+private:
+    const bool isVertical;
+};
+#endif /* Not def: UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H */

@@ -38,8 +38,6 @@
 #include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
 
-#include "quiminputcontext.h"
-
 const Qt::WindowFlags candidateFlag = (Qt::Window
                                         | Qt::WindowStaysOnTopHint
                                         | Qt::FramelessWindowHint
@@ -167,7 +165,8 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     setPage(0);
 #endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
     popup();
-    ic->setCandwinActive();
+    fprintf(stdout, "set_candwin_active");
+    fflush(stdout);
 }
 
 #ifdef UIM_QT_USE_DELAY
@@ -244,8 +243,8 @@ void AbstractCandidateWindow::shiftPage(bool forward)
 
         setPage(pageIndex - 1);
     }
-    if (ic && ic->uimContext() && candidateIndex != -1)
-        uim_set_candidate_index(ic->uimContext(), candidateIndex);
+    fprintf(stdout, "set_candidate_index\f%d", candidateIndex);
+    fflush(stdout);
 }
 
 void AbstractCandidateWindow::setIndex(int totalindex)
@@ -301,8 +300,9 @@ void AbstractCandidateWindow::timerDone()
     int nr = -1;
     int display_limit = -1;
     int selected_index = -1;
-    uim_delay_activating(ic->uimContext(), &nr, &display_limit,
-        &selected_index);
+    fprintf(stdout, "uim_delay_activating\f%d\f%d\f%d\f\f", nr, display_limit,
+        selected_index);
+    fflush(stdout);
     if (nr <= 0) {
         return;
     }
@@ -439,8 +439,8 @@ void AbstractCandidateWindow::preparePageCandidates(int page)
 
     for (int i = start; i < pageNr + start; i++)
     {
-        cand = uim_get_candidate(ic->uimContext(), i,
-                displayLimit ? i % displayLimit : i);
+        //cand = uim_get_candidate(ic->uimContext(), i,
+        //        displayLimit ? i % displayLimit : i);
         list.append(cand);
     }
     pageFilled[page] = true;

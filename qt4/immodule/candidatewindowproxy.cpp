@@ -35,6 +35,8 @@
 #include <QtCore/QPoint>
 #include <QtCore/QProcess>
 
+#include "quiminputcontext.h"
+
 CandidateWindowProxy::CandidateWindowProxy()
 {
     process = new QProcess;
@@ -118,10 +120,24 @@ void CandidateWindowProxy::initializeProcess()
 void CandidateWindowProxy::execute(const QString &command)
 {
     initializeProcess();
-    process->write(command);
+    process->write(command + "\f\f");
 }
 
 void CandidateWindowProxy::slotReadyStandardOutput()
 {
-    qDebug("%s", process->readAllStandardOutput().constData());
+    QByteArray output = process->readAllStandardOutput();
+    qDebug("%s", output.constData());
+    if (output == "set_candwin_active\f\f") {
+        ic->setCandwinActive();
+    } else if (output.startsWith("set_candidate_index\f")) {
+        int candidateIndex = 1;
+        if (ic && ic->uimContext() && candidateIndex != -1)
+            uim_set_candidate_index(ic->uimContext(), candidateIndex);
+    } else if (output.startsWith("delay_activating\f")) {
+        int nr = -1;
+        int display_limit = -1;
+        int selected_index = -1;
+        uim_delay_activating(ic->uimContext(), &nr, &display_limit,
+            &selected_index);
+    }
 }

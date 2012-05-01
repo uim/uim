@@ -40,29 +40,29 @@ SUCH DAMAGE.
 #include <QtGui/QVBoxLayout>
 
 
-const Qt::WindowFlags subwindowFlag = ( Qt::Window
+const Qt::WindowFlags subwindowFlag = (Qt::Window
                                         | Qt::WindowStaysOnTopHint
                                         | Qt::FramelessWindowHint
                                         | Qt::Tool
 #if defined(Q_WS_X11)
                                         | Qt::X11BypassWindowManagerHint
 #endif
-                                 );
+                                );
 
 static const int TIMER_INTERVAL = 1000; // 1000ms = 1second
 
-SubWindow::SubWindow( QWidget *parent )
-        : QFrame( parent, subwindowFlag )
+SubWindow::SubWindow(QWidget *parent)
+        : QFrame(parent, subwindowFlag)
 {
-    m_contentsEdit = new QTextBrowser( this );
+    m_contentsEdit = new QTextBrowser(this);
 
-    m_hookTimer = new QTimer( this );
-    connect( m_hookTimer, SIGNAL( timeout() ), this, SLOT( timerDone() ) );
+    m_hookTimer = new QTimer(this);
+    connect(m_hookTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->setMargin( 0 );
-    layout->addWidget( m_contentsEdit );
-    setLayout( layout );
+    layout->setMargin(0);
+    layout->addWidget(m_contentsEdit);
+    setLayout(layout);
 
     adjustSize();
 
@@ -72,16 +72,16 @@ SubWindow::SubWindow( QWidget *parent )
 SubWindow::~SubWindow()
 {}
 
-void SubWindow::hookPopup( const QString &contents )
+void SubWindow::hookPopup(const QString &contents)
 {
     // stop now running timer
-    if ( m_hookTimer->isActive() )
+    if (m_hookTimer->isActive())
         m_hookTimer->stop();
 
-    m_contentsEdit->setText( contents );
+    m_contentsEdit->setText(contents);
 
-    m_hookTimer->setSingleShot( true );
-    m_hookTimer->start( TIMER_INTERVAL );
+    m_hookTimer->setSingleShot(true);
+    m_hookTimer->start(TIMER_INTERVAL);
 }
 
 void SubWindow::popup()
@@ -101,7 +101,7 @@ void SubWindow::timerDone()
     popup();
 }
 
-void SubWindow::layoutWindow( const QRect &rect, bool isVertical )
+void SubWindow::layoutWindow(const QRect &rect, bool isVertical)
 {
     const QRect screenRect = QApplication::desktop()->screenGeometry();
 
@@ -109,13 +109,13 @@ void SubWindow::layoutWindow( const QRect &rect, bool isVertical )
     const int candX = rect.x();
     const int screenW = screenRect.width();
     int destX;
-    if ( isVertical ) {
+    if (isVertical) {
         destX = candX + rect.width();
-        if ( destX + w > screenW )
+        if (destX + w > screenW)
             destX = candX - w;
     } else {
         destX = candX;
-        if ( destX + w > screenW )
+        if (destX + w > screenW)
             destX = screenW - w;
     }
 
@@ -123,15 +123,15 @@ void SubWindow::layoutWindow( const QRect &rect, bool isVertical )
     const int candY = rect.y();
     const int screenH = screenRect.height();
     int destY;
-    if ( isVertical ) {
+    if (isVertical) {
         destY = candY;
-        if ( destY + h > screenH )
+        if (destY + h > screenH)
             destY = screenH - h;
     } else {
         destY = candY + rect.height();
-        if ( destY + h > screenH )
+        if (destY + h > screenH)
             destY = candY - h;
     }
 
-    move( destX, destY );
+    move(destX, destY);
 }

@@ -32,6 +32,8 @@
 */
 #include "candidatetablewindow.h"
 
+#include <cstdio>
+
 #include <QtGui/QLabel>
 #include <QtGui/QFontMetrics>
 #include <QtGui/QGridLayout>
@@ -39,8 +41,6 @@
 #include <QtGui/QVBoxLayout>
 
 #include <uim/uim-scm.h>
-
-#include "quiminputcontext.h"
 
 static const int TABLE_NR_CELLS = TABLE_NR_COLUMNS * TABLE_NR_ROWS;
 
@@ -134,8 +134,8 @@ QSize CandidateTableWindow::sizeHint() const
 
 void CandidateTableWindow::slotCandidateClicked(int index)
 {
-    if (ic && ic->uimContext())
-        uim_set_candidate_index(ic->uimContext(), index);
+    fprintf(stdout, "set_candidate_index\f%d\f\f", index);
+    fflush(stdout);
     updateLabel();
 }
 

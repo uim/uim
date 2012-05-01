@@ -8,9 +8,16 @@ INCLUDEPATH += @srcdir@/..
 LIBS += @LIBINTL@
 
 # Input
-HEADERS += @srcdir@/qt4.h \
+HEADERS += @srcdir@/abstractcandidatewindow.h \
+           @srcdir@/candidatetablewindow.h \
+           @srcdir@/candidatewindow.h \
+           @srcdir@/subwindow.h \
            @srcdir@/ximcandidatewindow.h
-SOURCES += @srcdir@/qt4.cpp \
+SOURCES += @srcdir@/abstractcandidatewindow.cpp \
+           @srcdir@/candidatetablewindow.cpp \
+           @srcdir@/candidatewindow.cpp \
+           @srcdir@/qt4.cpp \
+           @srcdir@/subwindow.cpp \
            @srcdir@/ximcandidatewindow.cpp
 
 TARGET = uim-candwin-qt4
