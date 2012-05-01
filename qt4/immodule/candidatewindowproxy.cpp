@@ -38,7 +38,6 @@
 #include <uim-scm.h>
 
 #include "quiminputcontext.h"
-#include "util.h"
 
 CandidateWindowProxy::CandidateWindowProxy()
 {

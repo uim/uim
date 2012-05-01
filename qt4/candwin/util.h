@@ -35,8 +35,10 @@
 
 #include <QtCore/QStringList>
 
-QString get_messages(int fd);
-QList<QStringList> parse_messages(const QString &message);
+// enable per page candidates handling
+#define UIM_QT_USE_NEW_PAGE_HANDLING 1
+// enable delay showing candidate window
+#define UIM_QT_USE_DELAY 1
 
 struct CandData
 {
@@ -44,5 +46,8 @@ struct CandData
     QString headingLabel;
     QString annotation;
 };
+
+QString get_messages(int fd);
+QList<QStringList> parse_messages(const QString &message);
 
 #endif /* UIM_QT4_UTIL_H */

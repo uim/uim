@@ -33,12 +33,9 @@
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H
 #define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H
 
-// enable per page candidates handling
-#define UIM_QT_USE_NEW_PAGE_HANDLING 1
-// enable delay showing candidate window
-#define UIM_QT_USE_DELAY 1
-
 #include <QtCore/QObject>
+
+#include "util.h"
 
 class QPoint;
 class QProcess;
