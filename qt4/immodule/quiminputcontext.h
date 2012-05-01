@@ -175,12 +175,12 @@ protected:
 
     uim_context m_uc;
     QList<PreeditSegment> psegs;
-    CandidateWindowProxy *cwin;
+    CandidateWindowProxy *proxy;
 
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
     QHash<QWidget*, uim_context> m_ucHash;
     QHash<QWidget*, QList<PreeditSegment> > psegsHash;
-    QHash<QWidget*, CandidateWindowProxy*> cwinHash;
+    QHash<QWidget*, CandidateWindowProxy*> proxyHash;
     QHash<QWidget*, bool> visibleHash;
 
     QWidget *focusedWidget;
