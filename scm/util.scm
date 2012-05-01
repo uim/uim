@@ -187,6 +187,21 @@
      (lambda (port)
        (read port)))))
 
+(define (read-line . args)
+  (let-optionals* args ((port (current-input-port)))
+    (let loop ((c (read-char port))
+               (rest '()))
+      (cond ((eq? #\newline c)
+             (list->string (reverse rest)))
+            ((or (eof-object? c)
+                 (not c))
+             (if (null? rest)
+                 c
+                 (list->string (reverse rest))))
+            (else
+             (loop (read-char port) (cons c rest)))))))
+
+
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 ;; FIXME: remove the closure overhead

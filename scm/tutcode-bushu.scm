@@ -34,7 +34,7 @@
 ;;; (参考:部首合成アルゴリズムは[tcode-ml:1942]あたり)
 
 (require-extension (srfi 1 2 8 69 95))
-(require "fileio.scm")
+(require "util.scm")
 (require-dynlib "look")
 
 ;;; #tの場合、部首の並べ方によって合成される文字の優先度が変わる
@@ -585,50 +585,46 @@
 ;;; bushu.helpファイルを読んでtutcode-bushudic形式のリストを生成する
 ;;; @return tutcode-bushudic形式のリスト。読み込めなかった場合は#f
 (define (tutcode-bushu-help-load)
-  (let*
-    ((fd (file-open tutcode-bushu-help-filename
-          (file-open-flags-number '($O_RDONLY)) 0))
-     (parse
-      (lambda (line)
-        ;; 例: "傳イ専* 伝・"
-        ;; →(((("イ" "専"))("傳"))((("専" "イ"))("傳"))((("伝" "・"))("傳")))
-        (let*
+  (define parse
+    (lambda (line)
+      ;; 例: "傳イ専* 伝・"
+      ;; →(((("イ" "専"))("傳"))((("専" "イ"))("傳"))((("伝" "・"))("傳")))
+      (let*
           ((comps (string-split line " "))
            (kanji-lcomps (map tutcode-bushu-parse-entry comps))
            (kanji (and (pair? (car kanji-lcomps)) (caar kanji-lcomps)))
            ;; 行頭の合成後の漢字を除いたリスト。例:(("イ" "専" "*")("伝" "・"))
            (lcomps
             (if kanji
-              (cons (cdar kanji-lcomps) (cdr kanji-lcomps))
-              ())))
-          (append-map!
-            (lambda (elem)
-              (let ((len (length elem)))
-                (if (< len 2)
-                  ()
-                  (let*
-                    ((bushu1 (list-ref elem 0))
-                     (bushu2 (list-ref elem 1))
-                     (rule (list (list (list bushu1 bushu2)) (list kanji)))
-                     (rev
-                      (and
+                (cons (cdar kanji-lcomps) (cdr kanji-lcomps))
+                ())))
+        (append-map!
+         (lambda (elem)
+           (let ((len (length elem)))
+             (if (< len 2)
+                 ()
+                 (let*
+                     ((bushu1 (list-ref elem 0))
+                      (bushu2 (list-ref elem 1))
+                      (rule (list (list (list bushu1 bushu2)) (list kanji)))
+                      (rev
+                       (and
                         (and (>= len 3) (string=? (list-ref elem 2) "*"))
                         (list (list (list bushu2 bushu1)) (list kanji)))))
-                    (if rev
-                      (list rule rev)
-                      (list rule))))))
-            lcomps))))
-     (res
-      (call-with-open-file-port fd
-        (lambda (port)
-          (let loop ((line (file-read-line port))
-                     (rules ()))
-            (if (or (not line)
-                    (eof-object? line))
-                rules
-                (loop (file-read-line port)
-                  (append! rules (parse line)))))))))
-    res))
+                   (if rev
+                       (list rule rev)
+                       (list rule))))))
+         lcomps))))
+  (call-with-input-file tutcode-bushu-help-filename
+    (lambda (port)
+      (let loop ((line (read-line port))
+                 (rules ()))
+        (if (or (not line)
+                (eof-object? line))
+            rules
+            (loop (read-line port)
+                  (append! rules (parse line))))))))
+
 
 ;;; bushu.helpファイルに基づく部首合成を行う
 (define (tutcode-bushu-compose-explicitly char-list)
