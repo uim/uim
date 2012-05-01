@@ -52,6 +52,8 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
+#include "util.h"
+
 static const int NR_CANDIDATES = 10;
 static const int MIN_CAND_WIDTH = 80;
 
@@ -361,65 +363,31 @@ void XimCandidateWindow::showPage(const QStringList &list)
     adjustCandidateWindowSize();
     show();
 }
+
 void XimCandidateWindow::slotStdinActivated(int fd)
 {
-    char buf[4096];
-    char *read_buf = strdup("");
-    int n;
-
-    while (uim_helper_fd_readable(fd) > 0) {
-        n = read(fd, buf, 4096 - 1);
-        if (n == 0)
-        {
-            ::close(fd);
-            exit(1);
-        }
-        if (n == -1)
-            return ;
-        buf[n] = '\0';
-        read_buf = (char *)realloc(read_buf, strlen(read_buf) + n + 1);
-        strcat(read_buf, buf);
-    }
-
-    QStringList msgList
-        = QString(read_buf).split("\f\f", QString::SkipEmptyParts);
-
-    QStringList::Iterator it = msgList.begin();
-    const QStringList::Iterator end = msgList.end();
-    for (; it != end; ++it)
-        strParse((*it));
-    free(read_buf);
-}
-
-void XimCandidateWindow::strParse(const QString& str)
-{
-#if defined(ENABLE_DEBUG)
-    qDebug("str = %s", str.toLocal8Bit().constData());
-#endif
-    QStringList list = str.split('\f', QString::SkipEmptyParts);
-
-    QStringList::Iterator it = list.begin();
-    const QStringList::Iterator end = list.end();
-    for (; it != end; ++it)
-    {
-        if (QString::compare("activate", (*it)) == 0)
-            activateCand(list);
-        else if (QString::compare("select", (*it)) == 0)
-            selectCand(list);
-        else if (QString::compare("show", (*it)) == 0)
+    QList<QStringList> messageList = parse_messages(fd);
+    for (int i = 0, j = messageList.count(); i < j; i++) {
+        QStringList message = messageList[i];
+        QString command = message[0];
+        if (command == "activate")
+            activateCand(message);
+        else if (command == "select")
+            selectCand(message);
+        else if (command == "show")
             showCand();
-        else if (QString::compare("hide", (*it)) == 0)
+        else if (command == "hide")
             hide();
-        else if (QString::compare("move", (*it)) == 0)
-            moveCand(list);
-        else if (QString::compare("deactivate", (*it)) == 0)
+        else if (command == "move")
+            moveCand(message);
+        else if (command == "deactivate")
             deactivateCand();
-        else if (QString::compare("set_nr_candidates", (*it)) == 0)
-            setNrCandidates(list);
-        else if (QString::compare("set_page_candidates", (*it)) == 0)
-            setPageCandidates(list);
-        else if (QString::compare("show_page", (*it)) == 0)
-            showPage(list);
+        else if (command == "set_nr_candidates")
+            setNrCandidates(message);
+        else if (command == "set_page_candidates")
+            setPageCandidates(message);
+        else if (command == "show_page")
+            showPage(message);
     }
 }
 

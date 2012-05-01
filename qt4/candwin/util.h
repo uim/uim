@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
+ Copyright (c) 2012 uim Project http://code.google.com/p/uim/
 
  All rights reserved.
 
@@ -30,65 +30,11 @@
  SUCH DAMAGE.
 
 */
-#ifndef UIM_QT4_XIM_CANDWIN_QT_H
-#define UIM_QT4_XIM_CANDWIN_QT_H
+#ifndef UIM_QT4_UTIL_H
+#define UIM_QT4_UTIL_H
 
-#include <QtCore/QList>
-#include <QtGui/QFrame>
+#include <QtCore/QStringList>
 
-class QLabel;
-class QStringList;
-class QTableWidget;
+QList<QStringList> parse_messages(int fd, bool exitOnClose = true);
 
-struct CandData
-{
-    QString label;
-    QString str;
-};
-
-class XimCandidateWindow : public QFrame
-{
-    Q_OBJECT
-
-public:
-    explicit XimCandidateWindow(QWidget *parent = 0);
-    ~XimCandidateWindow();
-
-    void activateCand(const QStringList &list);
-    void selectCand(const QStringList &list);
-    void moveCand(const QStringList &list);
-    void showCand();
-    void deactivateCand();
-
-    void setNrCandidates(const QStringList &list);
-    void setPageCandidates(const QStringList &list);
-    void showPage(const QStringList &list);
-
-public slots:
-    void slotStdinActivated(int);
-    void slotCandidateSelected(int row);
-
-protected:
-    void adjustCandidateWindowSize();
-
-    void setPage(int page);
-    void setIndex(int index);
-
-    void updateLabel();
-
-protected:
-    QTableWidget *cList;
-    QLabel *numLabel;
-
-    QList<CandData> stores;
-
-    int nrCandidates;
-    int candidateIndex;
-    int displayLimit;
-    int pageIndex;
-
-    bool isActive;
-    bool needHighlight;
-};
-
-#endif  /* UIM_QT4_XIM_CANDWIN_QT_H */
+#endif /* UIM_QT4_UTIL_H */

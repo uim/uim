@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
+ Copyright (c) 2012 uim Project http://code.google.com/p/uim/
 
  All rights reserved.
 
@@ -30,65 +30,36 @@
  SUCH DAMAGE.
 
 */
-#ifndef UIM_QT4_XIM_CANDWIN_QT_H
-#define UIM_QT4_XIM_CANDWIN_QT_H
+#include "util.h"
 
-#include <QtCore/QList>
-#include <QtGui/QFrame>
+#include <unistd.h>
 
-class QLabel;
-class QStringList;
-class QTableWidget;
+#include <QtCore/QStringList>
 
-struct CandData
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+
+QList<QStringList> parse_messages(int fd, bool exitOnClose)
 {
-    QString label;
-    QString str;
-};
-
-class XimCandidateWindow : public QFrame
-{
-    Q_OBJECT
-
-public:
-    explicit XimCandidateWindow(QWidget *parent = 0);
-    ~XimCandidateWindow();
-
-    void activateCand(const QStringList &list);
-    void selectCand(const QStringList &list);
-    void moveCand(const QStringList &list);
-    void showCand();
-    void deactivateCand();
-
-    void setNrCandidates(const QStringList &list);
-    void setPageCandidates(const QStringList &list);
-    void showPage(const QStringList &list);
-
-public slots:
-    void slotStdinActivated(int);
-    void slotCandidateSelected(int row);
-
-protected:
-    void adjustCandidateWindowSize();
-
-    void setPage(int page);
-    void setIndex(int index);
-
-    void updateLabel();
-
-protected:
-    QTableWidget *cList;
-    QLabel *numLabel;
-
-    QList<CandData> stores;
-
-    int nrCandidates;
-    int candidateIndex;
-    int displayLimit;
-    int pageIndex;
-
-    bool isActive;
-    bool needHighlight;
-};
-
-#endif  /* UIM_QT4_XIM_CANDWIN_QT_H */
+    char buf[4096];
+    QString message;
+    QList<QStringList> result;
+    while (uim_helper_fd_readable(fd) > 0) {
+        int n = read(fd, buf, 4096 - 1);
+        if (n == 0) {
+            ::close(fd);
+            if (exitOnClose)
+                ::exit(0);
+            else
+                return result;
+        }
+        if (n == -1)
+            return result;
+        buf[n] = '\0';
+        message += QString(buf);
+    }
+    QStringList messageList = message.split("\f\f", QString::SkipEmptyParts);
+    for (int i = 0, j = messageList.count(); i < j; i++)
+        result.append(messageList[0].split('\f', QString::SkipEmptyParts));
+    return result;
+}
