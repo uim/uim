@@ -224,8 +224,8 @@ void XimCandidateWindow::moveCand(const QStringList &list)
     const int topwin_y = list[2].toInt();
     const int cw_wi = width();
     const int cw_he = height();
-    const int sc_wi = QApplication::desktop() ->screenGeometry().width();
-    const int sc_he = QApplication::desktop() ->screenGeometry().height();
+    const int sc_wi = QApplication::desktop()->screenGeometry().width();
+    const int sc_he = QApplication::desktop()->screenGeometry().height();
 
     int x, y;
     if (sc_wi < topwin_x + cw_wi)
