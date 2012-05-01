@@ -216,32 +216,33 @@ label_draw(GtkWidget *label, cairo_t *cr, gpointer data)
   if (selected)
     selected_label = gtk_bin_get_child(GTK_BIN(selected->button));
 
-  if (label == selected_label) {
-    GdkRGBA *bg_color, *fg_color;
-    GtkStyleContext *context;
-    PangoLayout *layout;
-    gint x, y;
-    GtkStateFlags state;
+  GdkRGBA *bg_color, *fg_color;
+  GtkStyleContext *context;
+  PangoLayout *layout;
+  gint x, y;
+  GtkStateFlags state;
 
-    layout = gtk_label_get_layout(GTK_LABEL(label));
-    gtk_label_get_layout_offsets(GTK_LABEL(label), &x, &y);
+  layout = gtk_label_get_layout(GTK_LABEL(label));
+  gtk_label_get_layout_offsets(GTK_LABEL(label), &x, &y);
 
-    context = gtk_widget_get_style_context(label);
+  context = gtk_widget_get_style_context(label);
 
+  if (label == selected_label)
     state = GTK_STATE_FLAG_SELECTED;
-    gtk_style_context_get (context, state, "background-color", &bg_color, "color", &fg_color, NULL);
+  else
+    state = GTK_STATE_FLAG_NORMAL;
 
-    cairo_save(cr);
-    gdk_cairo_set_source_rgba(cr, bg_color);
-    cairo_paint(cr);
-    cairo_restore(cr);
-    gdk_rgba_free(bg_color);
-    gdk_rgba_free(fg_color);
+  gtk_style_context_get (context, state, "background-color", &bg_color, "color", &fg_color, NULL);
 
+  cairo_save(cr);
+  gdk_cairo_set_source_rgba(cr, bg_color);
+  cairo_paint(cr);
+  cairo_restore(cr);
+  gdk_rgba_free(bg_color);
+  gdk_rgba_free(fg_color);
 
-    gtk_style_context_set_state (context, state);
-    gtk_render_layout (context, cr, x, y, layout);
-  }
+  gtk_style_context_set_state (context, state);
+  gtk_render_layout (context, cr, x, y, layout);
 
   return FALSE;
 }
