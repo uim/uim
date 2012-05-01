@@ -1,5 +1,4 @@
 uim_gtk3_im_module_path = $(libdir)/gtk-3.0
-uim_gtk3_im_module_file = $(DESTDIR)$(sysconfdir)/gtk-3.0/gtk.immodules
 
 moduledir = $(uim_gtk3_im_module_path)/@GTK3_BINARY_VERSION@/immodules
 
@@ -48,7 +47,7 @@ install-data-hook: gtk3-rc-get-immodule-file
 	if test -z $(DESTDIR); then \
 	  if test $(libdir) = $(GTK3_LIBDIR); then \
 	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
-	      $(QUERY_COMMAND) > `$(GTK3_RC_GET_IMMODULE_FILE)`; \
+	      $(QUERY_COMMAND) --update-cache; \
 	      echo "*** \"`$(GTK3_RC_GET_IMMODULE_FILE)`\" is updated. ***";  \
 	    else \
 	      echo "********************** Warning ***********************"; \
@@ -60,20 +59,14 @@ install-data-hook: gtk3-rc-get-immodule-file
 	    fi \
 	  else \
 	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
-	      $(mkinstalldirs) $(sysconfdir)/gtk-3.0; \
-	      GTK3_PATH=$(uim_gtk3_im_module_path) $(QUERY_COMMAND) > $(uim_gtk3_im_module_file); \
-	      echo "******************************************************"; \
-	      echo " You need to set"; \
-	      echo " GTK3_IM_MODULE_FILE=$(uim_gtk3_im_module_file)"; \
-	      echo " environment variable to use this module."; \
-	      echo "******************************************************"; \
+	      GTK_PATH=$(uim_gtk3_im_module_path) $(QUERY_COMMAND) --update-cache; \
 	    else \
 	      echo "********************** Warning ***********************"; \
 	      echo " $(QUERY_COMMAND) not found"; \
 	      echo " Please make sure to update"; \
-	      echo " \"$(uim_gtk3_im_module_file)\""; \
+	      echo " immodules.cache"; \
 	      echo " manually, and set"; \
-	      echo " GTK3_IM_MODULE_FILE=$(uim_gtk3_im_module_file)"; \
+	      echo " GTK_IM_MODULE_FILE=PATH_TO/immodule.cache"; \
 	      echo " environment variable to use this module."; \
 	      echo "******************************************************"; \
 	    fi \
@@ -83,9 +76,9 @@ uninstall-hook:
 	if test -z $(DESTDIR); then \
 	  if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
 	    if test $(libdir) = $(GTK3_LIBDIR); then \
-	      $(QUERY_COMMAND) > `$(GTK3_RC_GET_IMMODULE_FILE)`; \
+	      $(QUERY_COMMAND) --update-cache; \
 	    else \
-	      GTK3_PATH=$(uim_gtk3_im_module_path) $(QUERY_COMMAND) > $(uim_gtk3_im_module_file); \
+	      GTK_PATH=$(uim_gtk3_im_module_path) $(QUERY_COMMAND) --update-cache; \
 	    fi \
 	  fi \
 	fi
