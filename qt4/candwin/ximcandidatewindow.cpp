@@ -366,7 +366,7 @@ void XimCandidateWindow::showPage(const QStringList &list)
 
 void XimCandidateWindow::slotStdinActivated(int fd)
 {
-    QList<QStringList> messageList = parse_messages(fd);
+    QList<QStringList> messageList = parse_messages(get_messages(fd));
     for (int i = 0, j = messageList.count(); i < j; i++) {
         QStringList message = messageList[i];
         QString command = message[0];

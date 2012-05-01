@@ -39,26 +39,28 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
-QList<QStringList> parse_messages(int fd, bool exitOnClose)
+QString get_messages(int fd)
 {
     char buf[4096];
     QString message;
-    QList<QStringList> result;
     while (uim_helper_fd_readable(fd) > 0) {
         int n = read(fd, buf, 4096 - 1);
         if (n == 0) {
             ::close(fd);
-            if (exitOnClose)
-                ::exit(0);
-            else
-                return result;
+            ::exit(0);
         }
         if (n == -1)
-            return result;
+            return message;
         buf[n] = '\0';
         message += QString(buf);
     }
+    return message;
+}
+
+QList<QStringList> parse_messages(const QString &message)
+{
     QStringList messageList = message.split("\f\f", QString::SkipEmptyParts);
+    QList<QStringList> result;
     for (int i = 0, j = messageList.count(); i < j; i++)
         result.append(messageList[0].split('\f', QString::SkipEmptyParts));
     return result;

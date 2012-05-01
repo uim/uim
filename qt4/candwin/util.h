@@ -35,6 +35,7 @@
 
 #include <QtCore/QStringList>
 
-QList<QStringList> parse_messages(int fd, bool exitOnClose = true);
+QString get_messages(int fd);
+QList<QStringList> parse_messages(const QString &message);
 
 #endif /* UIM_QT4_UTIL_H */
