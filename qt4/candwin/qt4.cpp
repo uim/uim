@@ -30,9 +30,11 @@
  SUCH DAMAGE.
 
 */
-#include "ximcandidatewindow.h"
-
 #include <QtGui/QApplication>
+
+#include "candidatewindow.h"
+#include "candidatetablewindow.h"
+#include "ximcandidatewindow.h"
 
 #include "qtgettext.h"
 
@@ -43,9 +45,28 @@ int main(int argc, char *argv[])
     textdomain(PACKAGE);
     bind_textdomain_codeset(PACKAGE, "UTF-8"); // ensure code encoding is UTF8-
     
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
+    uim_init();
+    if (argc > 1) {
+        // vertical
+        if (!strcmp(argv[1], "-v")) {
+            CandidateWindow window(0);
+            window.show();
+        // horizontal
+        } else if (!strcmp(argv[1], "-h")) {
+            CandidateWindow window(0, false);
+            window.show();
+        // table
+        } else if (!strcmp(argv[1], "-t")) {
+            CandidateTableWindow window(0);
+            window.show();
+        } else {
+            XimCandidateWindow window;
+        }
+    } else {
+        XimCandidateWindow window;
+    }
+    uim_quit();
 
-    XimCandidateWindow b;
-
-    return a.exec();
+    return app.exec();
 }

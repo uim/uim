@@ -32,11 +32,14 @@
 */
 #include "abstractcandidatewindow.h"
 
+#include <QtCore/QSocketNotifier>
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
+
+#include "util.h"
 
 const Qt::WindowFlags candidateFlag = (Qt::Window
                                         | Qt::WindowStaysOnTopHint
@@ -62,6 +65,10 @@ AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
     m_delayTimer->setSingleShot(true);
     connect(m_delayTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
 #endif /* !UIM_QT_USE_DELAY */
+
+    notifier = new QSocketNotifier(0, QSocketNotifier::Read);
+    connect(notifier, SIGNAL(activated(int)),
+        this, SLOT(slotStdinActivated(int)));
 }
 
 AbstractCandidateWindow::~AbstractCandidateWindow()
@@ -478,4 +485,40 @@ bool AbstractCandidateWindow::eventFilter(QObject *obj, QEvent *event)
         return false;
     }
     return QFrame::eventFilter(obj, event);
+}
+
+void AbstractCandidateWindow::slotStdinActivated(int fd)
+{
+    QList<QStringList> messageList = parse_messages(get_messages(fd));
+    for (int i = 0, j = messageList.count(); i < j; i++) {
+        QStringList message = messageList[i];
+        QString command = message[0];
+        fprintf(stdout, "%s", command.toStdString().c_str());
+        fflush(stdout);
+        if (command == "deactivate_candwin")
+            deactivateCandwin();
+        else if (command == "clear_candidates")
+            clearCandidates();
+        else if (command == "popup")
+            popup();
+        else if (command == "hide")
+            hide();
+        else if (command == "layout_window") {
+            QPoint point;
+            point.setX(message[1].toInt());
+            point.setY(message[2].toInt());
+            QRect rect;
+            rect.setHeight(message[3].toInt());
+            layoutWindow(point, rect);
+        } else if (command == "candidate_activate")
+            candidateActivate(message[1].toInt(), message[2].toInt());
+#ifdef UIM_QT_USE_DELAY
+        else if (command == "candidate_activate_with_delay")
+            candidateActivateWithDelay(message[1].toInt());
+#endif /* !UIM_QT_USE_DELAY */
+        else if (command == "candidate_select")
+            candidateSelect(message[1].toInt());
+        else if (command == "candidate_shift_page")
+            candidateShiftPage(message[1].toInt());
+    }
 }

@@ -3,6 +3,9 @@ include(../common.pro)
 TEMPLATE = lib
 CONFIG += plugin
 
+# to include util.h
+INCLUDEPATH += @srcdir@/../candwin
+
 LIBS += @X11_LIBS@ -luim-counted-init
 
 # Input
@@ -12,7 +15,8 @@ HEADERS += @srcdir@/candidatewindowproxy.h \
            @srcdir@/qhelpermanager.h \
            @srcdir@/qtextutil.h \
            @srcdir@/quiminfomanager.h \
-           @srcdir@/quiminputcontext.h
+           @srcdir@/quiminputcontext.h \
+           @srcdir@/../candwin/util.h
 
 SOURCES += @srcdir@/candidatewindowproxy.cpp \
            @srcdir@/caretstateindicator.cpp \
@@ -20,7 +24,8 @@ SOURCES += @srcdir@/candidatewindowproxy.cpp \
            @srcdir@/qhelpermanager.cpp \
            @srcdir@/qtextutil.cpp \
            @srcdir@/quiminfomanager.cpp \
-           @srcdir@/quiminputcontext.cpp
+           @srcdir@/quiminputcontext.cpp \
+           @srcdir@/../candwin/util.cpp
 
 !win32:!embedded:!mac {
     HEADERS += @srcdir@/quiminputcontext_compose.h

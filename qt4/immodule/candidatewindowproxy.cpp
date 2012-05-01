@@ -36,6 +36,7 @@
 #include <QtCore/QProcess>
 
 #include "quiminputcontext.h"
+#include "util.h"
 
 CandidateWindowProxy::CandidateWindowProxy()
 {
@@ -52,16 +53,17 @@ CandidateWindowProxy::~CandidateWindowProxy()
 
 void CandidateWindowProxy::deactivateCandwin()
 {
-    execute("deactivate");
+    execute("deactivate_candwin");
 }
 
 void CandidateWindowProxy::clearCandidates()
 {
+    execute("clear_candidates");
 }
 
 void CandidateWindowProxy::popup()
 {
-    execute("show");
+    execute("popup");
 }
 
 void CandidateWindowProxy::hide()
@@ -71,40 +73,36 @@ void CandidateWindowProxy::hide()
 
 bool CandidateWindowProxy::isVisible()
 {
-    return true;
+    return false;
 }
 
 void CandidateWindowProxy::layoutWindow(const QPoint &point, const QRect &rect)
 {
-    Q_UNUSED(rect)
-    execute("move\f" + QString::number(point.x()) + "\f"
-        + QString::number(point.y()));
+    execute("layout_window\f" + QString::number(point.x()) + "\f"
+        + QString::number(point.y()) + "\f" + QString::number(rect.height()));
 }
 
 void CandidateWindowProxy::candidateActivate(int nr, int displayLimit)
 {
-    Q_UNUSED(nr)
-    execute("activate\fcharset=UTF-8\fdisplay_limit="
-        + QString::number(displayLimit)
-        + "\fhead1\acand1\aannot1\fhead2\acand2\aannot2\fhead3\acand3\aannot3");
+    execute("candidate_activate\f" + QString::number(nr) + "\f"
+        + QString::number(displayLimit));
 }
 
 #ifdef UIM_QT_USE_DELAY
-void candidateActivateWithDelay(int delay)
+void CandidateWindowProxy::candidateActivateWithDelay(int delay)
 {
-    Q_UNUSED(delay)
+    execute("candidate_activate_with_delay\f" + QString::number(delay));
 }
 #endif /* !UIM_QT_USE_DELAY */
 
 void CandidateWindowProxy::candidateSelect(int index)
 {
-    execute("set_nr_candidates\f" + QString::number(index) + "\f20");
+    execute("candidate_select\f" + QString::number(index));
 }
 
 void CandidateWindowProxy::candidateShiftPage(bool forward)
 {
-    Q_UNUSED(forward)
-    execute("show_page\f0");
+    execute("candidate_shift_page\f" + QString::number(forward));
 }
 
 void CandidateWindowProxy::initializeProcess()
@@ -113,7 +111,7 @@ void CandidateWindowProxy::initializeProcess()
         return;
     }
     process->close();
-    process->start("/usr/libexec/uim-candwin-qt4", QStringList());
+    process->start("/usr/libexec/uim-candwin-qt4", QStringList() << "-v");
     process->waitForStarted();
 }
 
@@ -127,17 +125,22 @@ void CandidateWindowProxy::slotReadyStandardOutput()
 {
     QByteArray output = process->readAllStandardOutput();
     qDebug("%s", output.constData());
-    if (output == "set_candwin_active\f\f") {
-        ic->setCandwinActive();
-    } else if (output.startsWith("set_candidate_index\f")) {
-        int candidateIndex = 1;
-        if (ic && ic->uimContext() && candidateIndex != -1)
-            uim_set_candidate_index(ic->uimContext(), candidateIndex);
-    } else if (output.startsWith("delay_activating\f")) {
-        int nr = -1;
-        int display_limit = -1;
-        int selected_index = -1;
-        uim_delay_activating(ic->uimContext(), &nr, &display_limit,
-            &selected_index);
+    QList<QStringList> messageList = parse_messages(QString(output));
+    for (int i = 0, j = messageList.count(); i < j; i++) {
+        QStringList message = messageList[i];
+        QString command = message[0];
+        if (command == "set_candwin_active") {
+            ic->setCandwinActive();
+        } else if (command == "set_candidate_index") {
+            int candidateIndex = message[1].toInt();
+            if (ic && ic->uimContext() && candidateIndex != -1)
+                uim_set_candidate_index(ic->uimContext(), candidateIndex);
+        } else if (command == "delay_activating") {
+            int nr = message[1].toInt();
+            int display_limit = message[2].toInt();
+            int selected_index = message[3].toInt();
+            uim_delay_activating(ic->uimContext(), &nr, &display_limit,
+                &selected_index);
+        }
     }
 }

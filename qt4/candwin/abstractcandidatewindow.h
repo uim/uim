@@ -44,6 +44,7 @@
 #define UIM_QT_USE_DELAY 1
 
 class QLabel;
+class QSocketNotifier;
 class QTimer;
 
 class QUimInputContext;
@@ -101,10 +102,11 @@ class AbstractCandidateWindow : public QFrame
         QList<bool> pageFilled;
 #endif
 
-#ifdef UIM_QT_USE_DELAY
     private slots:
+#ifdef UIM_QT_USE_DELAY
         void timerDone();
 #endif /* !UIM_QT_USE_DELAY */
+        void slotStdinActivated(int fd);
 
     private:
         void setCandidates(int displayLimit,
@@ -131,6 +133,8 @@ class AbstractCandidateWindow : public QFrame
         // timer for delay API
         QTimer *m_delayTimer;
 #endif /* !UIM_QT_USE_DELAY */
+       
+        QSocketNotifier *notifier;
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H */
