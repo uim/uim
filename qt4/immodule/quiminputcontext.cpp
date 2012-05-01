@@ -188,31 +188,8 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 void QUimInputContext::createCandidateWindow()
 {
     cwin = new CandidateWindowProxy;
-    //cwin = 0;
-    //// uim-candwin-prog is deprecated
-    //char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
-    //if ( candwinprog ) {
-    //    if ( !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
-    //        cwin = new CandidateTableWindow( 0 );
-    //    else if ( !strncmp( candwinprog, "uim-candwin-horizontal", 22 ) )
-    //        cwin = new CandidateWindow( 0, false );
-    //} else {
-    //    char *style = uim_scm_symbol_value_str( "candidate-window-style" );
-    //    if ( style ) {
-    //        if ( !strcmp( style, "table" ) )
-    //            cwin = new CandidateTableWindow( 0 );
-    //        else if ( !strcmp( style, "horizontal" ) )
-    //            cwin = new CandidateWindow( 0, false );
-    //    }
-    //    free( style );
-    //}
-    //free( candwinprog );
-    //
-    //if ( !cwin )
-    //    cwin = new CandidateWindow( 0 );
-
-    //cwin->setQUimInputContext( this );
-    //cwin->hide();
+    cwin->setQUimInputContext( this );
+    cwin->hide();
 }
 
 #ifdef Q_WS_X11

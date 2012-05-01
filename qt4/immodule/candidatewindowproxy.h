@@ -75,6 +75,8 @@ class CandidateWindowProxy : public QObject
         void candidateSelect(int index);
         void candidateShiftPage(bool forward);
 
+        QString candidateWindowStyle();
+
     private slots:
         void slotReadyStandardOutput();
 

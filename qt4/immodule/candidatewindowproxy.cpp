@@ -35,6 +35,8 @@
 #include <QtCore/QPoint>
 #include <QtCore/QProcess>
 
+#include <uim-scm.h>
+
 #include "quiminputcontext.h"
 #include "util.h"
 
@@ -105,13 +107,44 @@ void CandidateWindowProxy::candidateShiftPage(bool forward)
     execute("candidate_shift_page\f" + QString::number(forward));
 }
 
+// -v -> vertical
+// -h -> horizontal
+// -t -> table
+QString CandidateWindowProxy::candidateWindowStyle()
+{
+    QString windowStyle;
+    // uim-candwin-prog is deprecated
+    char *candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+    if (candwinprog) {
+        if (!strncmp(candwinprog, "uim-candwin-tbl", 15))
+            windowStyle = "-t";
+        else if (!strncmp(candwinprog, "uim-candwin-horizontal", 22))
+            windowStyle = "-h";
+    } else {
+        char *style = uim_scm_symbol_value_str("candidate-window-style");
+        if (style) {
+            if (!strcmp(style, "table"))
+                windowStyle = "-t";
+            else if (!strcmp(style, "horizontal"))
+                windowStyle = "-h";
+        }
+        free(style);
+    }
+    free(candwinprog);
+    
+    if (windowStyle.isEmpty())
+        return "-v";
+    return windowStyle;
+}
+
 void CandidateWindowProxy::initializeProcess()
 {
     if (process->state() != QProcess::NotRunning) {
         return;
     }
     process->close();
-    process->start("/usr/libexec/uim-candwin-qt4", QStringList() << "-v");
+    QString style = candidateWindowStyle();
+    process->start("/usr/libexec/uim-candwin-qt4", QStringList() << style);
     process->waitForStarted();
 }
 
