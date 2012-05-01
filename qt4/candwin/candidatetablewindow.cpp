@@ -251,14 +251,12 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
             if (index - delta >= ncandidates)
                 continue;
             int candidateIndex = displayLimit * newpage + index - delta;
-            uim_candidate cand = stores[candidateIndex];
-            QString candString
-                = QString::fromUtf8(uim_candidate_get_cand_str(cand));
+            CandData cand = stores[candidateIndex];
+            QString candString = cand.str;
             if (!candString.isEmpty()) {
                 int row = i;
                 int column = j;
-                QString headString
-                    = QString::fromUtf8(uim_candidate_get_heading_label(cand));
+                QString headString = cand.headingLabel;
                 getButtonPosition(row, column, headString);
                 KeyButton *b = buttonArray[row][column];
                 // '&' shouldn't be used as the shortcut key

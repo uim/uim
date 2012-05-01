@@ -73,12 +73,7 @@ AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
 
 AbstractCandidateWindow::~AbstractCandidateWindow()
 {
-    // clear stored candidate data
-    while (!stores.isEmpty()) {
-        uim_candidate cand = stores.takeFirst();
-        if (cand)
-            uim_candidate_free(cand);
-    }
+    stores.clear();
 }
 
 void AbstractCandidateWindow::deactivateCandwin()
@@ -101,12 +96,7 @@ void AbstractCandidateWindow::clearCandidates()
     displayLimit = 0;
     nrCandidates = 0;
 
-    // clear stored candidate data
-    while (!stores.isEmpty()) {
-        uim_candidate cand = stores.takeFirst();
-        if (cand)
-            uim_candidate_free(cand);
-    }
+    stores.clear();
 }
 
 void AbstractCandidateWindow::popup()
@@ -140,18 +130,17 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     m_delayTimer->stop();
 #endif /* !UIM_QT_USE_DELAY */
 
-    QList<uim_candidate> list;
+    QList<CandData> list;
 
 #if !UIM_QT_USE_NEW_PAGE_HANDLING
     activateCandwin(displayLimit);
 
     // set candidates
-    uim_candidate cand;
     for (int i = 0; i < nr; i++)
     {
-        cand = uim_get_candidate(ic->uimContext(), i,
-                displayLimit ? i % displayLimit : i);
-        list.append(cand);
+        //cand = uim_get_candidate(ic->uimContext(), i,
+        //        displayLimit ? i % displayLimit : i);
+        //list.append(cand);
     }
     setCandidates(displayLimit, list);
 
@@ -291,8 +280,7 @@ void AbstractCandidateWindow::setNrCandidates(int nrCands, int dLimit)
     // setup dummy candidate
     for (int i = 0; i < nrCandidates; i++)
     {
-        uim_candidate d = 0;
-        stores.append(d);
+        stores.append(CandData());
     }
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
@@ -317,7 +305,7 @@ void AbstractCandidateWindow::timerDone()
 #endif /* !UIM_QT_USE_DELAY */
 
 void AbstractCandidateWindow::setCandidates(int dl,
-        const QList<uim_candidate> &candidates)
+        const QList<CandData> &candidates)
 {
 #ifdef ENABLE_DEBUG
     qDebug("setCandidates");
@@ -397,7 +385,7 @@ void AbstractCandidateWindow::setPage(int page)
 
 #if UIM_QT_USE_NEW_PAGE_HANDLING
 void AbstractCandidateWindow::setPageCandidates(int page,
-        const QList<uim_candidate> &candidates)
+        const QList<CandData> &candidates)
 {
 #ifdef ENABLE_DEBUG
     qDebug("setPageCandidates");
@@ -421,7 +409,7 @@ void AbstractCandidateWindow::setPageCandidates(int page,
 
 void AbstractCandidateWindow::preparePageCandidates(int page)
 {
-    QList<uim_candidate> list;
+    QList<CandData> list;
 
     if (page < 0)
         return;
@@ -430,8 +418,6 @@ void AbstractCandidateWindow::preparePageCandidates(int page)
         return;
 
     // set page candidates
-    uim_candidate cand;
-
     int start = page * displayLimit;
 
     int pageNr;
@@ -440,11 +426,10 @@ void AbstractCandidateWindow::preparePageCandidates(int page)
     else
         pageNr = nrCandidates - start;
 
-    for (int i = start; i < pageNr + start; i++)
-    {
+    for (int i = start; i < pageNr + start; i++) {
         //cand = uim_get_candidate(ic->uimContext(), i,
         //        displayLimit ? i % displayLimit : i);
-        list.append(cand);
+        //list.append(cand);
     }
     pageFilled[page] = true;
     setPageCandidates(page, list);

@@ -38,6 +38,8 @@
 
 #include <uim/uim.h>
 
+#include "util.h"
+
 // enable per page candidates handling
 #define UIM_QT_USE_NEW_PAGE_HANDLING 1
 // enable delay showing candidate window
@@ -93,7 +95,7 @@ class AbstractCandidateWindow : public QFrame
         QLabel *numLabel;
 
         // candidate data
-        QList<uim_candidate> stores;
+        QList<CandData> stores;
         int nrCandidates;
         int displayLimit;
         int candidateIndex;
@@ -110,11 +112,11 @@ class AbstractCandidateWindow : public QFrame
 
     private:
         void setCandidates(int displayLimit,
-                const QList<uim_candidate> &candidates);
+                const QList<CandData> &candidates);
         void setPage(int page);
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
         void setPageCandidates(int page,
-                const QList<uim_candidate> &candidates);
+                const QList<CandData> &candidates);
         void preparePageCandidates(int page);
 #endif
         bool eventFilter(QObject *obj, QEvent *event);

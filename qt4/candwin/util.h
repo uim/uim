@@ -38,4 +38,11 @@
 QString get_messages(int fd);
 QList<QStringList> parse_messages(const QString &message);
 
+struct CandData
+{
+    QString str;
+    QString headingLabel;
+    QString annotation;
+};
+
 #endif /* UIM_QT4_UTIL_H */

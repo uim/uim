@@ -121,15 +121,12 @@ void CandidateWindow::updateView(int newpage, int ncandidates)
         // the last column is dummy for adjusting size.
         cList->setColumnCount(ncandidates + 1);
     for (int i = 0; i < ncandidates ; i++) {
-        uim_candidate cand = stores[ displayLimit * newpage + i ];
-        QString headString
-            = QString::fromUtf8(uim_candidate_get_heading_label(cand));
-        QString candString
-            = QString::fromUtf8(uim_candidate_get_cand_str(cand));
+        CandData cand = stores[ displayLimit * newpage + i ];
+        QString headString = cand.headingLabel;
+        QString candString = cand.str;
         QString annotationString;
         if (hasAnnotation) {
-            annotationString
-                = QString::fromUtf8(uim_candidate_get_annotation_str(cand));
+            annotationString = cand.annotation;
             annotations.append(annotationString);
         }
 

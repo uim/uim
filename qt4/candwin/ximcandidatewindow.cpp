@@ -170,7 +170,7 @@ void XimCandidateWindow::activateCand(const QStringList &list)
         else
             headString = l [0];
 
-        d.label = headString;
+        d.headingLabel = headString;
 
         l.pop_front();
         QString candString = l [0];
@@ -338,7 +338,7 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
         else
             headString = l [0];
 
-        d.label = headString;
+        d.headingLabel = headString;
 
         l.pop_front();
         QString candString = l [0];
@@ -485,7 +485,7 @@ void XimCandidateWindow::setPage(int page)
     cList->setRowCount(ncandidates);
     for (int i = 0; i < ncandidates ; i++)
     {
-        QString headString = stores[displayLimit * newpage + i].label;
+        QString headString = stores[displayLimit * newpage + i].headingLabel;
         QString candString = stores[displayLimit * newpage + i].str;
 
         // insert new item to the candidate list

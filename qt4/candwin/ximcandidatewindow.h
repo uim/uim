@@ -36,15 +36,11 @@
 #include <QtCore/QList>
 #include <QtGui/QFrame>
 
+#include "util.h"
+
 class QLabel;
 class QStringList;
 class QTableWidget;
-
-struct CandData
-{
-    QString label;
-    QString str;
-};
 
 class XimCandidateWindow : public QFrame
 {
