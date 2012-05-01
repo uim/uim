@@ -66,7 +66,7 @@
   (define (fromconv str)
     (iconv-convert "UTF-8" "EUC-JP" str))
   (define (toconv str)
-    (iconv-convert "EUC-JP" "UTF-8"))
+    (iconv-convert "EUC-JP" "UTF-8" str))
   (define (make-query appid)
     (format "~aconversion?appid=~a&sentence=~a~a"
             yahoo-jp-path
