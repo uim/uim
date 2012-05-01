@@ -46,7 +46,7 @@
 
 class QEvent;
 
-class AbstractCandidateWindow;
+class CandidateWindowProxy;
 class CaretStateIndicator;
 class QUimHelperManager;
 class QUimTextUtil;
@@ -175,12 +175,12 @@ protected:
 
     uim_context m_uc;
     QList<PreeditSegment> psegs;
-    AbstractCandidateWindow *cwin;
+    CandidateWindowProxy *cwin;
 
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
     QHash<QWidget*, uim_context> m_ucHash;
     QHash<QWidget*, QList<PreeditSegment> > psegsHash;
-    QHash<QWidget*, AbstractCandidateWindow*> cwinHash;
+    QHash<QWidget*, CandidateWindowProxy*> cwinHash;
     QHash<QWidget*, bool> visibleHash;
 
     QWidget *focusedWidget;

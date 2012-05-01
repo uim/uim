@@ -46,8 +46,7 @@
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
 
-#include "candidatetablewindow.h"
-#include "candidatewindow.h"
+#include "candidatewindowproxy.h"
 #include "caretstateindicator.h"
 #include "plugin.h"
 #include "qhelpermanager.h"
@@ -128,7 +127,7 @@ QUimInputContext::~QUimInputContext()
     foreach ( const uim_context uc, m_ucHash )
         if ( uc )
             uim_release_context( uc );
-    foreach ( const AbstractCandidateWindow* window, cwinHash )
+    foreach ( const CandidateWindowProxy* window, cwinHash )
         delete window;
 #endif
 
@@ -188,31 +187,32 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
 void QUimInputContext::createCandidateWindow()
 {
-    cwin = 0;
-    // uim-candwin-prog is deprecated
-    char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
-    if ( candwinprog ) {
-        if ( !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
-            cwin = new CandidateTableWindow( 0 );
-        else if ( !strncmp( candwinprog, "uim-candwin-horizontal", 22 ) )
-            cwin = new CandidateWindow( 0, false );
-    } else {
-        char *style = uim_scm_symbol_value_str( "candidate-window-style" );
-        if ( style ) {
-            if ( !strcmp( style, "table" ) )
-                cwin = new CandidateTableWindow( 0 );
-            else if ( !strcmp( style, "horizontal" ) )
-                cwin = new CandidateWindow( 0, false );
-        }
-        free( style );
-    }
-    free( candwinprog );
-    
-    if ( !cwin )
-        cwin = new CandidateWindow( 0 );
+    cwin = new CandidateWindowProxy;
+    //cwin = 0;
+    //// uim-candwin-prog is deprecated
+    //char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
+    //if ( candwinprog ) {
+    //    if ( !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
+    //        cwin = new CandidateTableWindow( 0 );
+    //    else if ( !strncmp( candwinprog, "uim-candwin-horizontal", 22 ) )
+    //        cwin = new CandidateWindow( 0, false );
+    //} else {
+    //    char *style = uim_scm_symbol_value_str( "candidate-window-style" );
+    //    if ( style ) {
+    //        if ( !strcmp( style, "table" ) )
+    //            cwin = new CandidateTableWindow( 0 );
+    //        else if ( !strcmp( style, "horizontal" ) )
+    //            cwin = new CandidateWindow( 0, false );
+    //    }
+    //    free( style );
+    //}
+    //free( candwinprog );
+    //
+    //if ( !cwin )
+    //    cwin = new CandidateWindow( 0 );
 
-    cwin->setQUimInputContext( this );
-    cwin->hide();
+    //cwin->setQUimInputContext( this );
+    //cwin->hide();
 }
 
 #ifdef Q_WS_X11
@@ -703,7 +703,7 @@ void QUimInputContext::savePreedit()
 
 void QUimInputContext::restorePreedit()
 {
-    AbstractCandidateWindow *window = cwinHash.take( focusedWidget );
+    CandidateWindowProxy *window = cwinHash.take( focusedWidget );
     // if window is 0, updateStyle() was called.
     if ( !window ) {
         psegs = psegsHash.take( focusedWidget );
@@ -949,7 +949,7 @@ void QUimInputContext::updateStyle()
     createCandidateWindow();
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
     // invalidate all the candidate windows stored in cwinHash
-    QHashIterator<QWidget*, AbstractCandidateWindow*> i( cwinHash );
+    QHashIterator<QWidget*, CandidateWindowProxy*> i( cwinHash );
     while ( i.hasNext() ) {
         i.next();
         QWidget *widget = i.key();
