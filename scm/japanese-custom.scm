@@ -447,11 +447,7 @@
               (cons next-input '()))))
         (let* ((output (caddr item))
                (utf8->eucjp (lambda (str)
-                 (and-let* ((ic (iconv-open "EUC-JP" "UTF-8"))
-                             (converted-str (iconv-code-conv ic str)))
-                   (and ic
-                     (iconv-release ic))
-                   converted-str)))
+                              (iconv-convert "EUC-JP" "UTF-8" str)))
                (eucjp-output (utf8->eucjp output))
                (eucjp-output-list (string-to-list eucjp-output)))
           (or
