@@ -151,7 +151,7 @@ void CandidateWindow::activateCand( const QStringList &list )
         displayLimit = l[ 1 ].toInt();
     }
 
-    for ( int i = 3; !list[ i ].isNull(); i++ )
+    for ( int i = 3; i < list.count(); i++ )
     {
         // case list[i] = ""
         if ( list[ i ].isEmpty() )
@@ -159,6 +159,9 @@ void CandidateWindow::activateCand( const QStringList &list )
 
         // split heading_label and cand_str
         QStringList l = list[ i ].split( '\a' );
+        int count = l.count();
+        if (count < 2)
+            continue;
 
         // store data
         CandData d;
@@ -178,8 +181,10 @@ void CandidateWindow::activateCand( const QStringList &list )
         else
             d.str = candString;
 
-        l.pop_front();
-        QString annotString = l [ 0 ];
+        if (count >= 3) {
+            l.pop_front();
+            QString annotString = l [ 0 ];
+        }
 
         stores.append( d );
     }
