@@ -64,7 +64,7 @@ class AbstractCandidateWindow : public QFrame
         void setAlwaysLeftPosition(bool left) { isAlwaysLeft = left; }
         bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
-        void layoutWindow(const QPoint &point, const QRect &rect);
+        void layoutWindow(int x, int y, int height);
 
         void setQUimInputContext(QUimInputContext *m_ic) { ic = m_ic; }
 

@@ -117,12 +117,8 @@ void AbstractCandidateWindow::popup()
     show();
 }
 
-void AbstractCandidateWindow::layoutWindow(const QPoint &point,
-        const QRect &rect)
+void AbstractCandidateWindow::layoutWindow(int x, int y, int h)
 {
-    const int x = point.x();
-    const int y = point.y();
-    const int h = rect.height();
     int destX = x;
     int destY = y + h;
 
@@ -476,7 +472,7 @@ bool AbstractCandidateWindow::eventFilter(QObject *obj, QEvent *event)
                 QRect rect
                     = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
                 QPoint p = widget->mapToGlobal(rect.topLeft());
-                layoutWindow(p, rect);
+                layoutWindow(p.x(), p.y(), rect.height());
             } else {
                 QMoveEvent *moveEvent = static_cast<QMoveEvent *>(event);
                 move(pos() + moveEvent->pos() - moveEvent->oldPos());
@@ -503,14 +499,10 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
             popup();
         else if (command == "hide")
             hide();
-        else if (command == "layout_window") {
-            QPoint point;
-            point.setX(message[1].toInt());
-            point.setY(message[2].toInt());
-            QRect rect;
-            rect.setHeight(message[3].toInt());
-            layoutWindow(point, rect);
-        } else if (command == "candidate_activate")
+        else if (command == "layout_window")
+            layoutWindow(message[1].toInt(), message[2].toInt(),
+                message[3].toInt());
+        else if (command == "candidate_activate")
             candidateActivate(message[1].toInt(), message[2].toInt());
 #ifdef UIM_QT_USE_DELAY
         else if (command == "candidate_activate_with_delay")

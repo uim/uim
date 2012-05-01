@@ -76,10 +76,10 @@ bool CandidateWindowProxy::isVisible()
     return false;
 }
 
-void CandidateWindowProxy::layoutWindow(const QPoint &point, const QRect &rect)
+void CandidateWindowProxy::layoutWindow(int x, int y, int height)
 {
-    execute("layout_window\f" + QString::number(point.x()) + "\f"
-        + QString::number(point.y()) + "\f" + QString::number(rect.height()));
+    execute("layout_window\f" + QString::number(x) + "\f"
+        + QString::number(y) + "\f" + QString::number(height));
 }
 
 void CandidateWindowProxy::candidateActivate(int nr, int displayLimit)

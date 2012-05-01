@@ -511,7 +511,7 @@ void QUimInputContext::update()
     if ( w ) {
         QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
         QPoint p = w->mapToGlobal( mf.topLeft() );
-        cwin->layoutWindow( p, mf );
+        cwin->layoutWindow( p.x(), p.y(), mf.height() );
         m_indicator->move( w->mapToGlobal( mf.bottomLeft() )
             + QPoint( 0, CaretStateIndicator::SPACING ) );
     }
