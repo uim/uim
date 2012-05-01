@@ -71,13 +71,6 @@
 
 (class-set-method! predict-google-suggest suggest
   (lambda (self str)
-    (define (iconv-convert to-code from-code from-str)
-      (if (equal? to-code from-code)
-          from-str
-          (and-let* ((ic (iconv-open to-code from-code))
-                     (to-str (iconv-code-conv ic from-str)))
-                    (iconv-release ic)
-                    to-str)))
     (define google-suggest-server
       (if (predict-google-suggest-use-ssl self)
           "encrypted.google.com"

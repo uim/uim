@@ -201,6 +201,16 @@
             (else
              (loop (read-char port) (cons c rest)))))))
 
+(define (iconv-convert to-code from-code from-str)
+  (if (equal? to-code from-code)
+      from-str
+      (or
+       (and-let* ((ic (iconv-open to-code from-code))
+                  (to-str (iconv-code-conv ic from-str)))
+         (iconv-release ic)
+         to-str)
+       ;; XXX
+       from-str)))
 
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))

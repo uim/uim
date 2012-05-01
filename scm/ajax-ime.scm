@@ -36,6 +36,7 @@
 (require "generic-predict.scm")
 (require "input-parse.scm")
 (require "http-client.scm")
+(require "util.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "ajax-ime-custom.scm")
 (require-custom "ajax-ime-key-custom.scm")
@@ -93,12 +94,6 @@
            #f)))))
 
 (define (ajax-ime-conversion str opts)
-  (define (iconv-convert to-code from-code from-str)
-    (and-let* ((ic (iconv-open to-code from-code))
-               (to-str (iconv-code-conv ic from-str)))
-              (if ic
-                  (iconv-release ic))
-              to-str))
   (define (make-query)
     (let ((utf8-str (iconv-convert "UTF-8" "EUC-JP" str)))
       (if utf8-str

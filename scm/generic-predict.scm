@@ -73,13 +73,7 @@
 
 (class-set-method! predict convert-charset
   (lambda (self str tocode fromcode)
-    (let ((cd (iconv-open tocode fromcode)))
-      (if cd
-          (let ((ret (iconv-code-conv cd str)))
-            (iconv-release cd)
-            (or ret
-                str))
-          str))))
+    (iconv-convert tocode fromcode str)))
 
 (class-set-method! predict >internal-charset
   (lambda (self str)

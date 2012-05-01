@@ -28,6 +28,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "util.scm")
+
 (define ja-rk-rule-basic
   '(
     ((("-"). ())("ー" "ー" "ｰ"))
@@ -408,11 +410,7 @@
           ((output (cadr item))
             (single-output (car output))
             (eucjp->utf8 (lambda (str)
-               (and-let* ((ic (iconv-open "UTF-8" "EUC-JP"))
-                           (converted-str (iconv-code-conv ic str)))
-                 (and ic
-                   (iconv-release ic))
-                 converted-str))))
+                           (iconv-convert "UTF-8" "EUC-JP" str))))
           (or
             (and
               ; ((("k" "a")) ("か" "カ" "ｶ")) -> "か"

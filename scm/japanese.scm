@@ -32,6 +32,7 @@
 
 (require-extension (srfi 1 2))
 (require-custom "japanese-custom.scm")
+(require "util.scm")
 
 (define ja-rk-rule-additional
   '(
@@ -655,11 +656,8 @@
       (or
         (<= 0 ucs #xd7ff)
         (<= #xe000 ucs #x10ffff)))
-     (utf8-str (ucs->utf8-string ucs))
-     (ic (iconv-open "EUC-JP" "UTF-8")))
-    (let ((eucj-str (iconv-code-conv ic utf8-str)))
-      (iconv-release ic)
-      eucj-str)))
+     (utf8-str (ucs->utf8-string ucs)))
+    (iconv-convert "EUC-JP" "UTF-8" utf8-str)))
 
 ;;; Convert reverse string list to one EUC-JP kanji string
 (define (ja-kanji-code-input str-list)

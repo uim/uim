@@ -35,6 +35,7 @@
 (require "japanese.scm")
 (require "http-client.scm")
 (require "generic-predict.scm")
+(require "util.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "yahoo-jp-custom.scm")
 (require-custom "yahoo-jp-key-custom.scm")
@@ -63,15 +64,9 @@
 
 (define (yahoo-jp-conversion str opts)
   (define (fromconv str)
-    (let* ((cd (iconv-open "UTF-8" "EUC-JP"))
-           (ret (iconv-code-conv cd str)))
-      (iconv-release cd)
-      ret))
+    (iconv-convert "UTF-8" "EUC-JP" str))
   (define (toconv str)
-    (let* ((cd (iconv-open "EUC-JP" "UTF-8"))
-           (ret (iconv-code-conv cd str)))
-      (iconv-release cd)
-      ret))
+    (iconv-convert "EUC-JP" "UTF-8"))
   (define (make-query appid)
     (format "~aconversion?appid=~a&sentence=~a~a"
             yahoo-jp-path

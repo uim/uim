@@ -62,15 +62,9 @@
 
 (define (baidu-olime-jp-conversion str opts)
   (define (fromconv str)
-    (let* ((cd (iconv-open "UTF-8" "EUC-JP"))
-           (ret (iconv-code-conv cd str)))
-      (iconv-release cd)
-      ret))
+    (iconv-convert "UTF-8" "EUC-JP" str))
   (define (toconv str)
-    (let* ((cd (iconv-open "EUC-JP" "UTF-8"))
-           (ret (iconv-code-conv cd str)))
-      (iconv-release cd)
-      ret))
+    (iconv-convert "EUC-JP" "UTF-8" str))
   (define (make-query)
     (format "/py?ol=1&web=1&py=~a~a"
             (http:encode-uri-string (fromconv str)) opts))
