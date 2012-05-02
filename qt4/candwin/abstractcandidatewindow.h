@@ -44,8 +44,6 @@ class QLabel;
 class QSocketNotifier;
 class QTimer;
 
-class QUimInputContext;
-
 class AbstractCandidateWindow : public QFrame
 {
     Q_OBJECT
@@ -58,12 +56,7 @@ class AbstractCandidateWindow : public QFrame
         void clearCandidates();
         void popup();
 
-        void setAlwaysLeftPosition(bool left) { isAlwaysLeft = left; }
-        bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
-
         void layoutWindow(int x, int y, int height);
-
-        void setQUimInputContext(QUimInputContext *m_ic) { ic = m_ic; }
 
         void candidateActivate(int nr, int displayLimit);
 #ifdef UIM_QT_USE_DELAY
@@ -83,8 +76,6 @@ class AbstractCandidateWindow : public QFrame
         virtual void updateView(int newpage, int ncandidates) = 0;
         virtual void updateSize() = 0;
         void updateLabel();
-
-        QUimInputContext *ic;
 
         // widget
         QLabel *numLabel;
@@ -122,8 +113,6 @@ class AbstractCandidateWindow : public QFrame
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
         int nrPages;
 #endif
-        // config
-        bool isAlwaysLeft;
 
 #ifdef UIM_QT_USE_DELAY
         // timer for delay API

@@ -51,8 +51,8 @@ const Qt::WindowFlags candidateFlag = (Qt::Window
                                  );
 
 AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
-: QFrame(parent, candidateFlag), ic(0), nrCandidates(0), displayLimit(0),
-    candidateIndex(-1), pageIndex(-1), isAlwaysLeft(false)
+: QFrame(parent, candidateFlag), nrCandidates(0), displayLimit(0),
+    candidateIndex(-1), pageIndex(-1)
 {
     setFrameStyle(Raised|NoFrame);
 
