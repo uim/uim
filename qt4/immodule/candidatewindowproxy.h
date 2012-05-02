@@ -86,8 +86,8 @@ class CandidateWindowProxy : public QObject
 
         QProcess *process;
         QUimInputContext *ic;
-        bool isAlwaysLeft;
         QWidget *window;
+        bool isAlwaysLeft;
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H */

@@ -43,7 +43,8 @@
 
 #include "quiminputcontext.h"
 
-CandidateWindowProxy::CandidateWindowProxy() : window(0)
+CandidateWindowProxy::CandidateWindowProxy()
+: ic(0), window(0), isAlwaysLeft(false)
 {
     process = new QProcess;
     initializeProcess();
