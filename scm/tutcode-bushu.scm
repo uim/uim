@@ -615,15 +615,17 @@
                        (list rule rev)
                        (list rule))))))
          lcomps))))
-  (call-with-input-file tutcode-bushu-help-filename
-    (lambda (port)
-      (let loop ((line (read-line port))
-                 (rules ()))
-        (if (or (not line)
-                (eof-object? line))
-            rules
-            (loop (read-line port)
-                  (append! rules (parse line))))))))
+  (and
+    (file-readable? tutcode-bushu-help-filename)
+    (call-with-input-file tutcode-bushu-help-filename
+      (lambda (port)
+        (let loop ((line (read-line port))
+                   (rules ()))
+          (if (or (not line)
+                  (eof-object? line))
+              rules
+              (loop (read-line port)
+                    (append! rules (parse line)))))))))
 
 
 ;;; bushu.helpファイルに基づく部首合成を行う
