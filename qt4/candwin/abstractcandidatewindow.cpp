@@ -494,8 +494,6 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
     for (int i = 0, j = messageList.count(); i < j; i++) {
         QStringList message = messageList[i];
         QString command = message[0];
-        fprintf(stdout, "%s", command.toStdString().c_str());
-        fflush(stdout);
         if (command == "deactivate_candwin")
             deactivateCandwin();
         else if (command == "clear_candidates")

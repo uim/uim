@@ -177,7 +177,6 @@ void CandidateWindowProxy::execute(const QString &command)
 void CandidateWindowProxy::slotReadyStandardOutput()
 {
     QByteArray output = process->readAllStandardOutput();
-    qDebug("%s", output.constData());
     QList<QStringList> messageList = parse_messages(QString(output));
     for (int i = 0, j = messageList.count(); i < j; i++) {
         QStringList message = messageList[i];
