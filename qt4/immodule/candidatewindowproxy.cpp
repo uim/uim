@@ -30,6 +30,8 @@
   SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "candidatewindowproxy.h"
 
 #include <QtCore/QPoint>
@@ -164,7 +166,7 @@ void CandidateWindowProxy::initializeProcess()
     }
     process->close();
     QString style = candidateWindowStyle();
-    process->start("/usr/libexec/uim-candwin-qt4", QStringList() << style);
+    process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
     process->waitForStarted();
 }
 
