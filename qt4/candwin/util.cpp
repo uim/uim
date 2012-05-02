@@ -62,6 +62,6 @@ QList<QStringList> parse_messages(const QString &message)
     QStringList messageList = message.split("\f\f", QString::SkipEmptyParts);
     QList<QStringList> result;
     for (int i = 0, j = messageList.count(); i < j; i++)
-        result.append(messageList[0].split('\f', QString::SkipEmptyParts));
+        result.append(messageList[i].split('\f', QString::SkipEmptyParts));
     return result;
 }
