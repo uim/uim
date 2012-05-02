@@ -40,6 +40,7 @@
 class QPoint;
 class QProcess;
 class QRect;
+class QTimer;
 
 class QUimInputContext;
 
@@ -76,6 +77,9 @@ class CandidateWindowProxy : public QObject
 
     private slots:
         void slotReadyStandardOutput();
+#ifdef UIM_QT_USE_DELAY
+        void timerDone();
+#endif /* !UIM_QT_USE_DELAY */
 
     private:
         void initializeProcess();
@@ -86,8 +90,17 @@ class CandidateWindowProxy : public QObject
 
         QProcess *process;
         QUimInputContext *ic;
+
+        // widget to follow movement
         QWidget *window;
+
+        // config
         bool isAlwaysLeft;
+
+#ifdef UIM_QT_USE_DELAY
+        // timer for delay API
+        QTimer *m_delayTimer;
+#endif /* !UIM_QT_USE_DELAY */
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H */

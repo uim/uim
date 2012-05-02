@@ -33,7 +33,6 @@
 #include "abstractcandidatewindow.h"
 
 #include <QtCore/QSocketNotifier>
-#include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QLabel>
@@ -60,12 +59,6 @@ AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
     numLabel = new QLabel;
     numLabel->adjustSize();
 
-#ifdef UIM_QT_USE_DELAY
-    m_delayTimer = new QTimer(this);
-    m_delayTimer->setSingleShot(true);
-    connect(m_delayTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
-#endif /* !UIM_QT_USE_DELAY */
-
     notifier = new QSocketNotifier(0, QSocketNotifier::Read);
     connect(notifier, SIGNAL(activated(int)),
         this, SLOT(slotStdinActivated(int)));
@@ -78,10 +71,6 @@ AbstractCandidateWindow::~AbstractCandidateWindow()
 
 void AbstractCandidateWindow::deactivateCandwin()
 {
-#ifdef UIM_QT_USE_DELAY
-    m_delayTimer->stop();
-#endif /* !UIM_QT_USE_DELAY */
-
     hide();
     clearCandidates();
 }
@@ -132,10 +121,6 @@ void AbstractCandidateWindow::moveCandwin(int x, int y)
 
 void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
 {
-#ifdef UIM_QT_USE_DELAY
-    m_delayTimer->stop();
-#endif /* !UIM_QT_USE_DELAY */
-
     QList<CandData> list;
 
 #if !UIM_QT_USE_NEW_PAGE_HANDLING
@@ -166,14 +151,6 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     fprintf(stdout, "set_candwin_active\f\f");
     fflush(stdout);
 }
-
-#ifdef UIM_QT_USE_DELAY
-void AbstractCandidateWindow::candidateActivateWithDelay(int delay)
-{
-    m_delayTimer->stop();
-    (delay > 0) ?  m_delayTimer->start(delay * 1000) : timerDone();
-}
-#endif /* !UIM_QT_USE_DELAY */
 
 void AbstractCandidateWindow::candidateSelect(int index)
 {
@@ -496,8 +473,8 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
             candidateActivate(message[1].toInt(), message[2].toInt());
         }
 #ifdef UIM_QT_USE_DELAY
-        else if (command == "candidate_activate_with_delay")
-            candidateActivateWithDelay(message[1].toInt());
+        else if (command == "timer_done")
+            timerDone();
 #endif /* !UIM_QT_USE_DELAY */
         else if (command == "candidate_select")
             candidateSelect(message[1].toInt());

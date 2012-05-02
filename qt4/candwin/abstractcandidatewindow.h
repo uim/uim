@@ -42,7 +42,6 @@
 
 class QLabel;
 class QSocketNotifier;
-class QTimer;
 
 class AbstractCandidateWindow : public QFrame
 {
@@ -59,9 +58,6 @@ class AbstractCandidateWindow : public QFrame
         void layoutWindow(int x, int y, int height);
 
         void candidateActivate(int nr, int displayLimit);
-#ifdef UIM_QT_USE_DELAY
-        void candidateActivateWithDelay(int delay);
-#endif /* !UIM_QT_USE_DELAY */
         void candidateSelect(int index);
         void candidateShiftPage(bool forward);
 
@@ -91,12 +87,12 @@ class AbstractCandidateWindow : public QFrame
 #endif
 
     private slots:
-#ifdef UIM_QT_USE_DELAY
-        void timerDone();
-#endif /* !UIM_QT_USE_DELAY */
         void slotStdinActivated(int fd);
 
     private:
+#ifdef UIM_QT_USE_DELAY
+        void timerDone();
+#endif /* !UIM_QT_USE_DELAY */
         void setCandidates(int displayLimit,
                 const QList<CandData> &candidates);
         void setPage(int page);
@@ -114,11 +110,6 @@ class AbstractCandidateWindow : public QFrame
         int nrPages;
 #endif
 
-#ifdef UIM_QT_USE_DELAY
-        // timer for delay API
-        QTimer *m_delayTimer;
-#endif /* !UIM_QT_USE_DELAY */
-       
         QSocketNotifier *notifier;
 };
 

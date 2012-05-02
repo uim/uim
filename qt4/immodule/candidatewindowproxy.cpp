@@ -36,6 +36,7 @@
 
 #include <QtCore/QPoint>
 #include <QtCore/QProcess>
+#include <QtCore/QTimer>
 #include <QtGui/QApplication>
 
 #include <uim.h>
@@ -46,6 +47,12 @@
 CandidateWindowProxy::CandidateWindowProxy()
 : ic(0), window(0), isAlwaysLeft(false)
 {
+#ifdef UIM_QT_USE_DELAY
+    m_delayTimer = new QTimer(this);
+    m_delayTimer->setSingleShot(true);
+    connect(m_delayTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
+#endif /* !UIM_QT_USE_DELAY */
+
     process = new QProcess;
     initializeProcess();
     connect(process, SIGNAL(readyReadStandardOutput()),
@@ -59,6 +66,9 @@ CandidateWindowProxy::~CandidateWindowProxy()
 
 void CandidateWindowProxy::deactivateCandwin()
 {
+#ifdef UIM_QT_USE_DELAY
+    m_delayTimer->stop();
+#endif /* !UIM_QT_USE_DELAY */
     execute("deactivate_candwin");
 }
 
@@ -90,6 +100,10 @@ void CandidateWindowProxy::layoutWindow(int x, int y, int height)
 
 void CandidateWindowProxy::candidateActivate(int nr, int displayLimit)
 {
+#ifdef UIM_QT_USE_DELAY
+    m_delayTimer->stop();
+#endif /* !UIM_QT_USE_DELAY */
+
 #if UIM_QT_USE_NEW_PAGE_HANDLING
     int pageNr;
     if (displayLimit && nr > displayLimit) {
@@ -117,7 +131,8 @@ void CandidateWindowProxy::candidateActivate(int nr, int displayLimit)
 #ifdef UIM_QT_USE_DELAY
 void CandidateWindowProxy::candidateActivateWithDelay(int delay)
 {
-    execute("candidate_activate_with_delay\f" + QString::number(delay));
+    m_delayTimer->stop();
+    (delay > 0) ?  m_delayTimer->start(delay * 1000) : timerDone();
 }
 #endif /* !UIM_QT_USE_DELAY */
 
@@ -202,6 +217,13 @@ void CandidateWindowProxy::slotReadyStandardOutput()
         }
     }
 }
+
+#ifdef UIM_QT_USE_DELAY 
+void CandidateWindowProxy::timerDone()
+{
+    process->execute("timer_done");
+}
+#endif /* !UIM_QT_USE_DELAY */
 
 void CandidateWindowProxy::setFocusWidget()
 {
