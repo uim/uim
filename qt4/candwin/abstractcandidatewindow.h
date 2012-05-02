@@ -115,6 +115,7 @@ class AbstractCandidateWindow : public QFrame
         void preparePageCandidates(int page);
 #endif
         bool eventFilter(QObject *obj, QEvent *event);
+        void setCandidateData(const QStringList &message);
 
         // widget
         QWidget *window;

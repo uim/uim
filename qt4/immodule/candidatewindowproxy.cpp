@@ -35,6 +35,7 @@
 #include <QtCore/QPoint>
 #include <QtCore/QProcess>
 
+#include <uim.h>
 #include <uim-scm.h>
 
 #include "quiminputcontext.h"
@@ -85,8 +86,28 @@ void CandidateWindowProxy::layoutWindow(int x, int y, int height)
 
 void CandidateWindowProxy::candidateActivate(int nr, int displayLimit)
 {
-    execute("candidate_activate\f" + QString::number(nr) + "\f"
-        + QString::number(displayLimit));
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    int pageNr;
+    if (displayLimit && nr > displayLimit) {
+        pageNr = displayLimit;
+    } else {
+        pageNr = nr;
+    }
+#else
+    int pageNr = nr;
+#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
+    QString candidateMessage;
+    uim_candidate cand;
+    for (int i = 0; i < pageNr; i++) {
+        cand = uim_get_candidate(ic->uimContext(), i,
+            displayLimit ? i % displayLimit : i);
+        candidateMessage +=
+            QString::fromUtf8(uim_candidate_get_heading_label(cand)) + '\a'
+            + QString::fromUtf8(uim_candidate_get_cand_str(cand)) + '\a'
+            + QString::fromUtf8(uim_candidate_get_annotation_str(cand)) + '\f';
+    }
+    execute("candidate_activate\f" + QString::number(nr) + '\f'
+        + QString::number(displayLimit) + '\f' + candidateMessage);
 }
 
 #ifdef UIM_QT_USE_DELAY

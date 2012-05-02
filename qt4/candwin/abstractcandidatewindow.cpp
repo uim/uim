@@ -468,6 +468,26 @@ bool AbstractCandidateWindow::eventFilter(QObject *obj, QEvent *event)
     return QFrame::eventFilter(obj, event);
 }
 
+void AbstractCandidateWindow::setCandidateData(const QStringList &message)
+{
+    for (int i = 3, j = message.count(); i < j; i++) {
+        QStringList candidate = message[i].split('\a');
+
+        int count = candidate.count();
+        if (count < 2)
+            continue;
+
+        CandData cand;
+        cand.headingLabel = candidate[0];
+        cand.str = candidate[1];
+
+        if (count >= 3)
+            cand.annotation = candidate[2];
+
+        stores.append(cand);
+    }
+}
+
 void AbstractCandidateWindow::slotStdinActivated(int fd)
 {
     QList<QStringList> messageList = parse_messages(get_messages(fd));
@@ -487,8 +507,10 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
         else if (command == "layout_window")
             layoutWindow(message[1].toInt(), message[2].toInt(),
                 message[3].toInt());
-        else if (command == "candidate_activate")
+        else if (command == "candidate_activate") {
+            setCandidateData(message);
             candidateActivate(message[1].toInt(), message[2].toInt());
+        }
 #ifdef UIM_QT_USE_DELAY
         else if (command == "candidate_activate_with_delay")
             candidateActivateWithDelay(message[1].toInt());
