@@ -38,6 +38,43 @@
 
 #include "qtgettext.h"
 
+class Window
+{
+    public:
+        Window(int argc, char *argv[]);
+        ~Window();
+
+    private:
+        QWidget *widget;
+};
+
+Window::Window(int argc, char *argv[])
+{
+    uim_init();
+    if (argc > 1) {
+        // vertical
+        if (!strcmp(argv[1], "-v")) {
+            widget = new CandidateWindow(0, true);
+        // horizontal
+        } else if (!strcmp(argv[1], "-h")) {
+            widget = new CandidateWindow(0, false);
+        // table
+        } else if (!strcmp(argv[1], "-t")) {
+            widget = new CandidateTableWindow(0);
+        } else {
+            widget = new XimCandidateWindow;
+        }
+    } else {
+        widget = new XimCandidateWindow;
+    }
+}
+
+Window::~Window()
+{
+    delete widget;
+    uim_quit();
+}
+
 int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "");
@@ -46,27 +83,8 @@ int main(int argc, char *argv[])
     bind_textdomain_codeset(PACKAGE, "UTF-8"); // ensure code encoding is UTF8-
     
     QApplication app(argc, argv);
-    uim_init();
-    if (argc > 1) {
-        // vertical
-        if (!strcmp(argv[1], "-v")) {
-            CandidateWindow window(0);
-            window.show();
-        // horizontal
-        } else if (!strcmp(argv[1], "-h")) {
-            CandidateWindow window(0, false);
-            window.show();
-        // table
-        } else if (!strcmp(argv[1], "-t")) {
-            CandidateTableWindow window(0);
-            window.show();
-        } else {
-            XimCandidateWindow window;
-        }
-    } else {
-        XimCandidateWindow window;
-    }
-    uim_quit();
+
+    Window window(argc, argv);
 
     return app.exec();
 }
