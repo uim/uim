@@ -163,7 +163,7 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     setPage(0);
 #endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
     popup();
-    fprintf(stdout, "set_candwin_active");
+    fprintf(stdout, "set_candwin_active\f\f");
     fflush(stdout);
 }
 
@@ -241,7 +241,7 @@ void AbstractCandidateWindow::shiftPage(bool forward)
 
         setPage(pageIndex - 1);
     }
-    fprintf(stdout, "set_candidate_index\f%d", candidateIndex);
+    fprintf(stdout, "set_candidate_index\f%d\f\f", candidateIndex);
     fflush(stdout);
 }
 
