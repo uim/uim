@@ -36,13 +36,14 @@
 
 #include <QtCore/QPoint>
 #include <QtCore/QProcess>
+#include <QtGui/QApplication>
 
 #include <uim.h>
 #include <uim-scm.h>
 
 #include "quiminputcontext.h"
 
-CandidateWindowProxy::CandidateWindowProxy()
+CandidateWindowProxy::CandidateWindowProxy() : window(0)
 {
     process = new QProcess;
     initializeProcess();
@@ -195,6 +196,38 @@ void CandidateWindowProxy::slotReadyStandardOutput()
             int selected_index = message[3].toInt();
             uim_delay_activating(ic->uimContext(), &nr, &display_limit,
                 &selected_index);
+        } else if (command == "set_focus_widget") {
+            setFocusWidget();
         }
     }
+}
+
+void CandidateWindowProxy::setFocusWidget()
+{
+    window = QApplication::focusWidget()->window();
+    window->installEventFilter(this);
+}
+
+bool CandidateWindowProxy::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == window) {
+        if (event->type() == QEvent::Move) {
+            QWidget *widget = QApplication::focusWidget();
+            if (widget) {
+                QRect rect
+                    = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
+                QPoint p = widget->mapToGlobal(rect.topLeft());
+                execute("layout_window\f" + QString::number(p.x()) + "\f"
+                    + QString::number(p.y()) + "\f"
+                    + QString::number(rect.height()));
+            } else {
+                QMoveEvent *moveEvent = static_cast<QMoveEvent *>(event);
+                QPoint p = moveEvent->pos() - moveEvent->oldPos();
+                execute("move_candwin\f" + QString::number(p.x()) + "\f"
+                    + QString::number(p.y()));
+            }
+        }
+        return false;
+    }
+    return QObject::eventFilter(obj, event);
 }

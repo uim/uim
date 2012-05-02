@@ -52,7 +52,7 @@ const Qt::WindowFlags candidateFlag = (Qt::Window
 
 AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
 : QFrame(parent, candidateFlag), ic(0), nrCandidates(0), displayLimit(0),
-    candidateIndex(-1), pageIndex(-1), window(0), isAlwaysLeft(false)
+    candidateIndex(-1), pageIndex(-1), isAlwaysLeft(false)
 {
     setFrameStyle(Raised|NoFrame);
 
@@ -101,8 +101,8 @@ void AbstractCandidateWindow::clearCandidates()
 
 void AbstractCandidateWindow::popup()
 {
-    window = QApplication::focusWidget()->window();
-    window->installEventFilter(this);
+    fprintf(stdout, "set_focus_widget\f\f");
+    fflush(stdout);
     raise();
     show();
 }
@@ -122,6 +122,12 @@ void AbstractCandidateWindow::layoutWindow(int x, int y, int h)
         destY = y - height();
 
     move(destX, destY);
+}
+
+void AbstractCandidateWindow::moveCandwin(int x, int y)
+{
+    QPoint p = pos();
+    move(p.x() + x, p.y() + y);
 }
 
 void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
@@ -448,26 +454,6 @@ void AbstractCandidateWindow::updateLabel()
     numLabel->setText(indexString);
 }
 
-bool AbstractCandidateWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj == window) {
-        if (event->type() == QEvent::Move) {
-            QWidget *widget = QApplication::focusWidget();
-            if (widget) {
-                QRect rect
-                    = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
-                QPoint p = widget->mapToGlobal(rect.topLeft());
-                layoutWindow(p.x(), p.y(), rect.height());
-            } else {
-                QMoveEvent *moveEvent = static_cast<QMoveEvent *>(event);
-                move(pos() + moveEvent->pos() - moveEvent->oldPos());
-            }
-        }
-        return false;
-    }
-    return QFrame::eventFilter(obj, event);
-}
-
 void AbstractCandidateWindow::setCandidateData(const QStringList &message)
 {
     for (int i = 3, j = message.count(); i < j; i++) {
@@ -517,5 +503,7 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
             candidateSelect(message[1].toInt());
         else if (command == "candidate_shift_page")
             candidateShiftPage(message[1].toInt());
+        else if (command == "move_candwin")
+            moveCandwin(message[1].toInt(), message[2].toInt());
     }
 }

@@ -114,11 +114,9 @@ class AbstractCandidateWindow : public QFrame
                 const QList<CandData> &candidates);
         void preparePageCandidates(int page);
 #endif
-        bool eventFilter(QObject *obj, QEvent *event);
         void setCandidateData(const QStringList &message);
 
-        // widget
-        QWidget *window;
+        void moveCandwin(int x, int y);
 
         // candidate data
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
