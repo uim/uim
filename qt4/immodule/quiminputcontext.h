@@ -75,12 +75,7 @@ struct PreeditSegment
     QString str;
 };
 
-<<<<<<< HEAD
-#define WORKAROUND_BROKEN_RESET_IN_QT4
-
 #if QT_VERSION < 0x050000
-=======
->>>>>>> rpc
 class QUimInputContext : public QInputContext
 #else
 class QUimInputContext : public QPlatformInputContext

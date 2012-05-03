@@ -42,12 +42,21 @@
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QDesktopWidget>
+# include <QtGui/QHeaderView>
+# include <QtGui/QLabel>
+# include <QtGui/QTableWidget>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QDesktopWidget>
+# include <QtWidgets/QHeaderView>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QTableWidget>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>

@@ -1,32 +1,31 @@
 include(../../qt4/common.pro)
 load(qt_plugin)
 
+# to include util.h
+INCLUDEPATH += @srcdir@/../../qt4/candwin
+
 LIBS += @X11_LIBS@ -luim-counted-init
 
 QT += platformsupport-private
 
 # Input
-HEADERS += @srcdir@/../../qt4/immodule/abstractcandidatewindow.h \
-           @srcdir@/../../qt4/immodule/candidatetablewindow.h \
-           @srcdir@/../../qt4/immodule/candidatewindow.h \
+HEADERS += @srcdir@/../../qt4/immodule/candidatewindowproxy.h \
            @srcdir@/../../qt4/immodule/caretstateindicator.h \
            @srcdir@/../../qt4/immodule/plugin.h \
            @srcdir@/../../qt4/immodule/qhelpermanager.h \
            @srcdir@/../../qt4/immodule/qtextutil.h \
            @srcdir@/../../qt4/immodule/quiminfomanager.h \
            @srcdir@/../../qt4/immodule/quiminputcontext.h \
-           @srcdir@/../../qt4/immodule/subwindow.h
+           @srcdir@/../../qt4/candwin/util.h
 
-SOURCES += @srcdir@/../../qt4/immodule/abstractcandidatewindow.cpp \
-           @srcdir@/../../qt4/immodule/candidatetablewindow.cpp \
-           @srcdir@/../../qt4/immodule/candidatewindow.cpp \
+SOURCES += @srcdir@/../../qt4/immodule/candidatewindowproxy.cpp \
            @srcdir@/../../qt4/immodule/caretstateindicator.cpp \
            @srcdir@/../../qt4/immodule/plugin.cpp \
            @srcdir@/../../qt4/immodule/qhelpermanager.cpp \
            @srcdir@/../../qt4/immodule/qtextutil.cpp \
            @srcdir@/../../qt4/immodule/quiminfomanager.cpp \
            @srcdir@/../../qt4/immodule/quiminputcontext.cpp \
-           @srcdir@/../../qt4/immodule/subwindow.cpp
+           @srcdir@/../../qt4/candwin/util.cpp
 
 !win32:!embedded:!mac {
     HEADERS += @srcdir@/../../qt4/immodule/quiminputcontext_compose.h

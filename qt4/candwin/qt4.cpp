@@ -32,8 +32,6 @@
 */
 #include <config.h>
 
-#include "qt4.h"
-
 #include <clocale>
 #include <cstdio>
 #include <cstdlib>
