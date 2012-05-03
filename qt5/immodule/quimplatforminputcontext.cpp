@@ -42,10 +42,10 @@ QList<QUimPlatformInputContext*> contextList;
 
 #define ENABLE_DEBUG
 
-QUimPlatformInputContext::QUimPlatformInputContext( const char *imname )
+QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "QUimPlatformInputContext()" );
+    qDebug("QUimPlatformInputContext()");
 #endif
     Q_UNUSED(imname)
 }
@@ -53,21 +53,21 @@ QUimPlatformInputContext::QUimPlatformInputContext( const char *imname )
 QUimPlatformInputContext::~QUimPlatformInputContext()
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "~QUimPlatformInputContext()" );
+    qDebug("~QUimPlatformInputContext()");
 #endif
 }
 
 void QUimPlatformInputContext::commit()
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "commit()" );
+    qDebug("commit()");
 #endif
 }
 
 bool QUimPlatformInputContext::filterEvent(const QEvent *event)
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "filterEvent()" );
+    qDebug("filterEvent()");
 #endif
     Q_UNUSED(event)
     return false;
@@ -76,14 +76,14 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
 void QUimPlatformInputContext::hideInputPanel()
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "hideInputPanel()" );
+    qDebug("hideInputPanel()");
 #endif
 }
 
 Qt::LayoutDirection QUimPlatformInputContext::inputDirection() const
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "inputDirection()" );
+    qDebug("inputDirection()");
 #endif
     return Qt::LayoutDirectionAuto;
 }
@@ -92,7 +92,7 @@ void QUimPlatformInputContext::invokeAction(QInputMethod::Action action,
     int cursorPosition)
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "invokeAction()" );
+    qDebug("invokeAction()");
 #endif
     Q_UNUSED(action)
     Q_UNUSED(cursorPosition)
@@ -101,7 +101,7 @@ void QUimPlatformInputContext::invokeAction(QInputMethod::Action action,
 bool QUimPlatformInputContext::isAnimating() const
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "isAnimating()" );
+    qDebug("isAnimating()");
 #endif
     return false;
 }
@@ -109,7 +109,7 @@ bool QUimPlatformInputContext::isAnimating() const
 bool QUimPlatformInputContext::isInputPanelVisible() const
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "isInputPanelVisible()" );
+    qDebug("isInputPanelVisible()");
 #endif
     return false;
 }
@@ -117,7 +117,7 @@ bool QUimPlatformInputContext::isInputPanelVisible() const
 bool QUimPlatformInputContext::isValid() const
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "isValid()" );
+    qDebug("isValid()");
 #endif
     return true;
 }
@@ -125,7 +125,7 @@ bool QUimPlatformInputContext::isValid() const
 QRectF QUimPlatformInputContext::keyboardRect() const
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "keyboardRect()" );
+    qDebug("keyboardRect()");
 #endif
     return QRectF();
 }
@@ -133,7 +133,7 @@ QRectF QUimPlatformInputContext::keyboardRect() const
 QLocale QUimPlatformInputContext::locale() const
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "locale()" );
+    qDebug("locale()");
 #endif
     return QLocale();
 }
@@ -141,20 +141,20 @@ QLocale QUimPlatformInputContext::locale() const
 void QUimPlatformInputContext::reset()
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "reset()" );
+    qDebug("reset()");
 #endif
 }
 
 void QUimPlatformInputContext::showInputPanel()
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "showInputPanel()" );
+    qDebug("showInputPanel()");
 #endif
 }
 
 void QUimPlatformInputContext::update(Qt::InputMethodQueries)
 {
 #ifdef ENABLE_DEBUG
-    qDebug( "update()" );
+    qDebug("update()");
 #endif
 }

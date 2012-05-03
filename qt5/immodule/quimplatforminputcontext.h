@@ -45,7 +45,7 @@ class QUimPlatformInputContext : public QPlatformInputContext
     Q_OBJECT
 
 public:
-    explicit QUimPlatformInputContext( const char *imname = 0 );
+    explicit QUimPlatformInputContext(const char *imname = 0);
     ~QUimPlatformInputContext();
 
 
