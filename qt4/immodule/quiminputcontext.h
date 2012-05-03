@@ -44,6 +44,8 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
+#include "util.h" // for WORKAROUND_BROKEN_RESET_IN_QT4
+
 class QEvent;
 
 class CandidateWindowProxy;
@@ -66,8 +68,6 @@ struct PreeditSegment
     int attr;
     QString str;
 };
-
-#define WORKAROUND_BROKEN_RESET_IN_QT4
 
 class QUimInputContext : public QInputContext
 {

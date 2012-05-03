@@ -39,6 +39,8 @@
 #define UIM_QT_USE_NEW_PAGE_HANDLING 1
 // enable delay showing candidate window
 #define UIM_QT_USE_DELAY 1
+// enable workaround for broken reset() behavior
+#define WORKAROUND_BROKEN_RESET_IN_QT4
 
 struct CandData
 {

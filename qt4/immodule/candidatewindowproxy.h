@@ -59,7 +59,9 @@ class CandidateWindowProxy : public QObject
 
         void popup();
         void hide();
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
         bool isVisible();
+#endif
 
         void setAlwaysLeftPosition(bool left) { isAlwaysLeft = left; }
         bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
@@ -130,6 +132,10 @@ class CandidateWindowProxy : public QObject
 
         // config
         bool isAlwaysLeft;
+
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        bool m_isVisible;
+#endif
 
 #ifdef UIM_QT_USE_DELAY
         // timer for delay API

@@ -82,6 +82,23 @@ void AbstractCandidateWindow::setNrCandidates()
 }
 #endif
 
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+void AbstractCandidateWindow::showEvent(QShowEvent *event)
+{
+    QFrame::showEvent(event);
+
+    fprintf(stdout, "shown\f\f");
+    fflush(stdout);
+}
+
+void AbstractCandidateWindow::hideEvent(QHideEvent *event)
+{
+    QFrame::hideEvent(event);
+    fprintf(stdout, "hidden\f\f");
+    fflush(stdout);
+}
+#endif
+
 void AbstractCandidateWindow::slotStdinActivated(int fd)
 {
     QList<QStringList> messageList = parse_messages(get_messages(fd));

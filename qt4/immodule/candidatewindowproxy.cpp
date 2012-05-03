@@ -44,8 +44,11 @@
 #include "quiminputcontext.h"
 
 CandidateWindowProxy::CandidateWindowProxy()
-: ic(0), nrCandidates(0), displayLimit(0),
-    candidateIndex(-1), pageIndex(-1), window(0), isAlwaysLeft(false)
+: ic(0), nrCandidates(0), displayLimit(0), candidateIndex(-1), pageIndex(-1),
+  window(0), isAlwaysLeft(false)
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+, m_isVisible(false)
+#endif
 {
 #ifdef UIM_QT_USE_DELAY
     m_delayTimer = new QTimer(this);
@@ -108,10 +111,12 @@ void CandidateWindowProxy::hide()
     execute("hide");
 }
 
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
 bool CandidateWindowProxy::isVisible()
 {
-    return false;
+    return m_isVisible;
 }
+#endif
 
 void CandidateWindowProxy::layoutWindow(int x, int y, int height)
 {
@@ -246,6 +251,13 @@ void CandidateWindowProxy::slotReadyStandardOutput()
         } else if (command == "update_label") {
             updateLabel();
         }
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        else if (command == "shown") {
+            m_isVisible = true;
+        } else if (command == "hidden") {
+            m_isVisible = false;
+        }
+#endif
     }
 }
 

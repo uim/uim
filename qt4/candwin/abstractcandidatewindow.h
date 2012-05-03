@@ -64,6 +64,11 @@ class AbstractCandidateWindow : public QFrame
             const QList<CandData> &stores) = 0;
         virtual void updateSize() = 0;
 
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        virtual void showEvent(QShowEvent *event);
+        virtual void hideEvent(QHideEvent *event);
+#endif
+
         // widget
         QLabel *numLabel;
 

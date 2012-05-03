@@ -271,7 +271,7 @@ void CandidateWindow::resizeEvent(QResizeEvent *e)
 
 void CandidateWindow::hideEvent(QHideEvent *event)
 {
-    QFrame::hideEvent(event);
+    AbstractCandidateWindow::hideEvent(event);
     if (subWin)
         subWin->cancelHook();
 }
