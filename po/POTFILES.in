@@ -101,6 +101,7 @@ scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-custom.scm
 scm/tutcode-key-custom.scm
+scm/tutcode-rule-custom.scm
 scm/tutcode.scm
 scm/viqr.scm
 scm/wnn-custom.scm

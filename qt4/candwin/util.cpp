@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
+ Copyright (c) 2012 uim Project http://code.google.com/p/uim/
 
  All rights reserved.
 
@@ -30,69 +30,38 @@
  SUCH DAMAGE.
 
 */
-#ifndef UIM_QT4_CANDWIN_QT_H
-#define UIM_QT4_CANDWIN_QT_H
+#include "util.h"
 
-#include <QtCore/QList>
-#if QT_VERSION < 0x050000
-# include <QtGui/QFrame>
-#else
-# include <QtWidgets/QFrame>
-#endif
+#include <unistd.h>
 
-class QLabel;
-class QStringList;
-class QTableWidget;
+#include <QtCore/QStringList>
 
-struct CandData
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+
+QString get_messages(int fd)
 {
-    QString label;
-    QString str;
-};
+    char buf[4096];
+    QString message;
+    while (uim_helper_fd_readable(fd) > 0) {
+        int n = read(fd, buf, 4096 - 1);
+        if (n == 0) {
+            ::close(fd);
+            ::exit(0);
+        }
+        if (n == -1)
+            return message;
+        buf[n] = '\0';
+        message += QString::fromUtf8(buf);
+    }
+    return message;
+}
 
-class CandidateWindow : public QFrame
+QList<QStringList> parse_messages(const QString &message)
 {
-    Q_OBJECT
-public:
-    explicit CandidateWindow( QWidget *parent = 0 );
-    ~CandidateWindow();
-
-    void activateCand( const QStringList &list );
-    void selectCand( const QStringList &list );
-    void moveCand( const QStringList &list );
-    void showCand();
-    void deactivateCand();
-
-    void setNrCandidates( const QStringList &list );
-    void setPageCandidates( const QStringList &list );
-    void showPage( const QStringList &list );
-
-public slots:
-    void slotStdinActivated( int );
-    void slotCandidateSelected( int row );
-
-protected:
-    void strParse( const QString& str );
-    void adjustCandidateWindowSize();
-
-    void setPage( int page );
-    void setIndex( int index );
-
-    void updateLabel();
-
-protected:
-    QTableWidget *cList;
-    QLabel *numLabel;
-
-    QList<CandData> stores;
-
-    int nrCandidates;
-    int candidateIndex;
-    int displayLimit;
-    int pageIndex;
-
-    bool isActive;
-    bool needHighlight;
-};
-
-#endif  /* UIM_QT4_CANDWIN_QT_H */
+    QStringList messageList = message.split("\f\f", QString::SkipEmptyParts);
+    QList<QStringList> result;
+    for (int i = 0, j = messageList.count(); i < j; i++)
+        result.append(messageList[i].split('\f', QString::SkipEmptyParts));
+    return result;
+}

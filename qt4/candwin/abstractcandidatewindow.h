@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
+  copyright (c) 2010-2012 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -30,60 +30,57 @@
   SUCH DAMAGE.
 
 */
+#ifndef UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H
+#define UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <QtCore/QList>
+#include <QtGui/QFrame>
+
+#include <uim/uim.h>
+
+#include "util.h"
+
+class QLabel;
+class QSocketNotifier;
+
+class AbstractCandidateWindow : public QFrame
+{
+    Q_OBJECT
+
+    public:
+        explicit AbstractCandidateWindow(QWidget *parent);
+        virtual ~AbstractCandidateWindow();
+
+    protected:
+        virtual void setupSubWindow();
+
+        virtual void shiftPage(int idx);
+        virtual void setIndex(int totalindex, int displayLimit,
+            int candidateIndex) = 0;
+        virtual void updateView(int ncandidates,
+            const QList<CandData> &stores) = 0;
+        virtual void updateSize() = 0;
+
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        virtual void showEvent(QShowEvent *event);
+        virtual void hideEvent(QHideEvent *event);
 #endif
 
-#include <stdlib.h>
-#include <locale.h>
-#include "uim/gettext.h"
-#include "uim/uim.h"
-#include "uim/uim-helper.h"
-#include <gtk/gtk.h>
-#include "eggtrayicon.h"
+        // widget
+        QLabel *numLabel;
 
-extern GtkWidget *uim_toolbar_trayicon_new(void);
-extern void uim_toolbar_check_helper_connection(GtkWidget *widget);
-extern void uim_toolbar_get_im_list(void);
+    private slots:
+        void slotStdinActivated(int fd);
 
+    private:
+        QList<CandData> candidateData(const QStringList &message);
+        void popup();
+        void layoutWindow(int x, int y, int height);
+        void moveCandwin(int x, int y);
+        void candidateActivate();
+        void updateLabel(const QString &indexString);
 
-static void
-embedded_cb(GtkWidget *widget, gpointer user_data)
-{
-  uim_toolbar_check_helper_connection(user_data);
-  uim_helper_client_get_prop_list();
-  uim_toolbar_get_im_list();
+        QSocketNotifier *notifier;
+};
 
-  gtk_widget_show_all(user_data);
-}
-
-int
-main(int argc, char *argv[])
-{
-  GtkWidget *icon;
-  EggTrayIcon *tray;
-
-  setlocale(LC_ALL, "");
-  bindtextdomain(PACKAGE, LOCALEDIR);
-  textdomain(PACKAGE);
-  bind_textdomain_codeset(PACKAGE, "UTF-8");
-
-  uim_init();
-
-  gtk_init(&argc, &argv);
-
-  tray = egg_tray_icon_new("uim");
-  gtk_window_set_wmclass(GTK_WINDOW(tray), "ibus-ui-gtk", "ibus-ui-gtk");
-
-  icon = uim_toolbar_trayicon_new();
-  g_signal_connect(G_OBJECT(tray), "embedded", G_CALLBACK(embedded_cb), icon);
-
-  gtk_container_add(GTK_CONTAINER(tray), icon);
-  gtk_widget_show(GTK_WIDGET(tray));
-
-  gtk_main();
-
-  uim_quit();
-  return 0;
-}
+#endif /* Not def: UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H */

@@ -17,5 +17,12 @@ endif
 FORCE:
 
 EXTRA_DIST =  uim-candwin-qt4.pro.in \
-	     qt4.h \
-	     qt4.cpp
+	      abstractcandidatewindow.h \
+	      abstractcandidatewindow.cpp \
+	      candidatetablewindow.h \
+	      candidatetablewindow.cpp \
+	      candidatewindow.h \
+	      candidatewindow.cpp \
+	      subwindow.h \
+	      subwindow.cpp \
+	      qt4.cpp

@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2010-2012 uim Project http://code.google.com/p/uim/
+  copyright (c) 2012 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -30,44 +30,43 @@
   SUCH DAMAGE.
 
 */
-#ifndef UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H
-#define UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H
+#ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H
+#define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H
 
-#include <QtCore/QList>
-#if QT_VERSION < 0x050000
-# include <QtGui/QFrame>
-#else
-# include <QtWidgets/QFrame>
-#endif
+#include <QtCore/QObject>
 
-#include <uim/uim.h>
+#include <uim.h>
 
-// enable per page candidates handling
-#define UIM_QT_USE_NEW_PAGE_HANDLING 1
-// enable delay showing candidate window
-#define UIM_QT_USE_DELAY 1
+#include "util.h"
 
-class QLabel;
+class QPoint;
+class QProcess;
+class QRect;
 class QTimer;
 
 class QUimInputContext;
 
-class AbstractCandidateWindow : public QFrame
+class CandidateWindowProxy : public QObject
 {
     Q_OBJECT
 
     public:
-        explicit AbstractCandidateWindow(QWidget *parent);
-        virtual ~AbstractCandidateWindow();
+        explicit CandidateWindowProxy();
+        virtual ~CandidateWindowProxy();
 
         void deactivateCandwin();
         void clearCandidates();
+
         void popup();
+        void hide();
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        bool isVisible();
+#endif
 
         void setAlwaysLeftPosition(bool left) { isAlwaysLeft = left; }
         bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
-        void layoutWindow(const QPoint &point, const QRect &rect);
+        void layoutWindow(int x, int y, int height);
 
         void setQUimInputContext(QUimInputContext *m_ic) { ic = m_ic; }
 
@@ -78,22 +77,40 @@ class AbstractCandidateWindow : public QFrame
         void candidateSelect(int index);
         void candidateShiftPage(bool forward);
 
-    protected:
-        virtual void activateCandwin(int dLimit);
+        QString candidateWindowStyle();
 
-        virtual void shiftPage(bool forward);
-        virtual void setIndex(int totalindex);
+    private slots:
+        void slotReadyStandardOutput();
+#ifdef UIM_QT_USE_DELAY
+        void timerDone();
+#endif /* !UIM_QT_USE_DELAY */
+
+    private:
+        void initializeProcess();
+        void execute(const QString &command);
+
+        void activateCandwin(int dLimit);
+
+        void shiftPage(bool forward);
+        void setIndex(int totalindex);
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        virtual void setNrCandidates(int nrCands, int dLimit);
+        void setNrCandidates(int nrCands, int dLimit);
 #endif
-        virtual void updateView(int newpage, int ncandidates) = 0;
-        virtual void updateSize() = 0;
         void updateLabel();
+        void setCandidates(int displayLimit,
+                const QList<uim_candidate> &candidates);
+        void setPage(int page);
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+        void setPageCandidates(int page,
+                const QList<uim_candidate> &candidates);
+        void preparePageCandidates(int page);
+#endif
 
+        void setFocusWidget();
+        bool eventFilter(QObject *obj, QEvent *event);
+
+        QProcess *process;
         QUimInputContext *ic;
-
-        // widget
-        QLabel *numLabel;
 
         // candidate data
         QList<uim_candidate> stores;
@@ -105,31 +122,20 @@ class AbstractCandidateWindow : public QFrame
         QList<bool> pageFilled;
 #endif
 
-#ifdef UIM_QT_USE_DELAY
-    private slots:
-        void timerDone();
-#endif /* !UIM_QT_USE_DELAY */
-
-    private:
-        void setCandidates(int displayLimit,
-                const QList<uim_candidate> &candidates);
-        void setPage(int page);
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        void setPageCandidates(int page,
-                const QList<uim_candidate> &candidates);
-        void preparePageCandidates(int page);
-#endif
-        bool eventFilter(QObject *obj, QEvent *event);
-
-        // widget
+        // widget to follow movement
         QWidget *window;
 
         // candidate data
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
         int nrPages;
 #endif
+
         // config
         bool isAlwaysLeft;
+
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        bool m_isVisible;
+#endif
 
 #ifdef UIM_QT_USE_DELAY
         // timer for delay API
@@ -137,4 +143,4 @@ class AbstractCandidateWindow : public QFrame
 #endif /* !UIM_QT_USE_DELAY */
 };
 
-#endif /* Not def: UIM_QT4_IMMODULE_ABSTRACT_CANDIDATE_WINDOW_H */
+#endif /* Not def: UIM_QT4_IMMODULE_CANDIDATE_WINDOW_PROXY_H */

@@ -278,6 +278,7 @@ static void
 right_click_menu_quit_activated(GtkMenu *menu_item, gpointer data)
 {
   gtk_main_quit();
+  uim_quit();
 }
 
 void
