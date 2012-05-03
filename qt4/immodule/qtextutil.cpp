@@ -49,12 +49,20 @@ SUCH DAMAGE.
 # include <QtWidgets/QTextEdit>
 #endif
 
+#if QT_VERSION < 0x050000
 #include "quiminputcontext.h"
+#else
+#include "quimplatforminputcontext.h"
+#endif
 
 QUimTextUtil::QUimTextUtil( QObject *parent )
         : QObject( parent )
 {
+#if QT_VERSION < 0x050000
     mIc = static_cast<QUimInputContext *>( parent );
+#else
+    mIc = static_cast<QUimPlatformInputContext *>( parent );
+#endif
     mPreeditSaved = false;
 }
 
@@ -69,7 +77,12 @@ QUimTextUtil::acquire_text_cb( void *ptr, enum UTextArea text_id,
                                char **former, char **latter )
 {
     int err;
+#if QT_VERSION < 0x050000
     QUimInputContext *ic = static_cast<QUimInputContext *>( ptr );
+#else
+    QUimPlatformInputContext *ic
+        = static_cast<QUimPlatformInputContext *>( ptr );
+#endif
     QUimTextUtil *tu = ic->textUtil();
 
     switch ( text_id ) {
@@ -99,7 +112,12 @@ QUimTextUtil::delete_text_cb( void *ptr, enum UTextArea text_id,
                               int former_req_len, int latter_req_len )
 {
     int err;
+#if QT_VERSION < 0x050000
     QUimInputContext *ic = static_cast<QUimInputContext *>( ptr );
+#else
+    QUimPlatformInputContext *ic
+        = static_cast<QUimPlatformInputContext *>( ptr );
+#endif
     QUimTextUtil *tu = ic->textUtil();
 
     switch ( text_id ) {

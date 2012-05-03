@@ -2036,7 +2036,7 @@ AC_CONFIG_FILES([Makefile
 		 qt5/chardict/Makefile
 		 qt5/chardict/uim-chardict-qt5.pro
 		 qt5/edittest/Makefile
-		 qt5/immodule/quiminputcontextplugin.pro
+		 qt5/immodule/quimplatforminputcontextplugin.pro
 		 qt5/immodule/Makefile
 		 qt5/pref/uim-pref-qt5.pro
 		 qt5/pref/Makefile
@@ -2144,7 +2144,7 @@ if test x$use_qt5 = xyes; then
 fi
 if test x$use_qt5_immodule = xyes; then
     ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
-                ${ac_abs_top_builddir}/qt5/immodule/quiminputcontextplugin.pro
+         ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
     ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
                  ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi

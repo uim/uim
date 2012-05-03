@@ -59,16 +59,30 @@ typedef struct _DefTree {
     KeySym ks;
 } DefTree;
 
+#include <QtCore/QtGlobal>
+
+#if QT_VERSION < 0x050000
 class QUimInputContext;
+#else
+class QUimPlatformInputContext;
+#endif
 class Compose {
 public:
+#if QT_VERSION < 0x050000
     Compose(DefTree *, QUimInputContext *);
+#else
+    Compose(DefTree *, QUimPlatformInputContext *);
+#endif
     ~Compose();
     bool handle_qkey(const QKeyEvent *event);
     void reset();
 private:
     bool handleKey(KeySym xkeysym, int xstate, bool is_push);
+#if QT_VERSION < 0x050000
     QUimInputContext *m_ic;
+#else
+    QUimPlatformInputContext *m_ic;
+#endif
     DefTree *m_top;
     DefTree *m_context;
     DefTree *m_composed;

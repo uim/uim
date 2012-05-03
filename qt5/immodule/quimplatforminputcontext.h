@@ -1,7 +1,6 @@
 /*
 
-  Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2012 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2012 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -32,55 +31,61 @@
 
 */
 
-#ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
-#define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
+#ifndef UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
+#define UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 
-#if QT_VERSION < 0x050000
-# include "quiminputcontext.h"
-#else
-# include "quimplatforminputcontext.h"
-#endif
+#include <QtGui/QPlatformInputContext>
 
-// This class is for dealing with Dead/Multi key composing.
-// Have QSimpleInputContext as slave and forward event to the
-// slave when isComposing==false.
+#include <uim.h>
 
-#if QT_VERSION < 0x050000
-class QUimInputContextWithSlave : public QUimInputContext
-#else
-class QUimInputContextWithSlave : public QUimPlatformInputContext
-#endif
+class QUimTextUtil;
+
+class QUimPlatformInputContext : public QPlatformInputContext
 {
     Q_OBJECT
+
 public:
-    explicit QUimInputContextWithSlave(const char *imname = 0,
-        const char *lang = 0 );
-    ~QUimInputContextWithSlave();
+    explicit QUimPlatformInputContext( const char *imname = 0 );
+    ~QUimPlatformInputContext();
 
-    virtual void setFocus();
-    virtual void unsetFocus();
 
-#if defined(Q_WS_X11)
-    virtual void setFocusWidget( QWidget *w );
-    virtual void setHolderWidget( QWidget *w );
-#endif
+    virtual void commit();
+    virtual bool filterEvent(const QEvent *event);
+    virtual void hideInputPanel();
+    virtual Qt::LayoutDirection inputDirection() const;
+    virtual void invokeAction(QInputMethod::Action action, int cursorPosition);
+    virtual bool isAnimating() const;
+    virtual bool isInputPanelVisible() const;
+    virtual bool isValid() const;
+    virtual QRectF keyboardRect() const;
+    virtual QLocale locale() const;
+    virtual void reset();
+    virtual void showInputPanel();
+    virtual void update(Qt::InputMethodQueries);
 
-    virtual bool filterEvent( QEvent *event );
+    uim_context uimContext() { return m_uc; }
 
-    /*
-    signals:
-    void imEventGenerated( QWidget *, QInputMethodEvent * );
-    */
+    void commitString(const QString& str);
 
-protected slots:
-    virtual void destroyInputContext();
+    void updatePosition();
+    void updateStyle();
 
-protected:
-#if QT_VERSION < 0x050000
-    QInputContext *slave;
-#else
-    QPlatformInputContext *slave;
-#endif
+    QUimTextUtil *textUtil() { return mTextUtil; }
+
+    QString getPreeditString();
+    int getPreeditCursorPosition();
+
+    void saveContext();
+    void restoreContext();
+
+    void updateIndicator(const QString &str);
+
+    void setCandwinActive() { candwinIsActive = true; }
+
+private:
+    QUimTextUtil *mTextUtil;
+    bool candwinIsActive;
+    uim_context m_uc;
 };
 
-#endif /* Not def: UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H */
+#endif /* Not def: UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H */

@@ -44,7 +44,11 @@ class QProcess;
 class QRect;
 class QTimer;
 
+#if QT_VERSION < 0x050000
 class QUimInputContext;
+#else
+class QUimPlatformInputContext;
+#endif
 
 class CandidateWindowProxy : public QObject
 {
@@ -68,7 +72,12 @@ class CandidateWindowProxy : public QObject
 
         void layoutWindow(int x, int y, int height);
 
+#if QT_VERSION < 0x050000
         void setQUimInputContext(QUimInputContext *m_ic) { ic = m_ic; }
+#else
+        void setQUimPlatformInputContext(QUimPlatformInputContext *m_ic)
+        { ic = m_ic; }
+#endif
 
         void candidateActivate(int nr, int displayLimit);
 #ifdef UIM_QT_USE_DELAY
@@ -110,7 +119,11 @@ class CandidateWindowProxy : public QObject
         bool eventFilter(QObject *obj, QEvent *event);
 
         QProcess *process;
+#if QT_VERSION < 0x050000
         QUimInputContext *ic;
+#else
+        QUimPlatformInputContext *ic;
+#endif
 
         // candidate data
         QList<uim_candidate> stores;

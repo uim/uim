@@ -9,22 +9,22 @@ LIBS += @X11_LIBS@ -luim-counted-init
 QT += platformsupport-private
 
 # Input
-HEADERS += @srcdir@/../../qt4/immodule/candidatewindowproxy.h \
+HEADERS += @srcdir@/quimplatforminputcontext.h \
+           @srcdir@/../../qt4/immodule/candidatewindowproxy.h \
            @srcdir@/../../qt4/immodule/caretstateindicator.h \
            @srcdir@/../../qt4/immodule/plugin.h \
            @srcdir@/../../qt4/immodule/qhelpermanager.h \
            @srcdir@/../../qt4/immodule/qtextutil.h \
            @srcdir@/../../qt4/immodule/quiminfomanager.h \
-           @srcdir@/../../qt4/immodule/quiminputcontext.h \
            @srcdir@/../../qt4/candwin/util.h
 
-SOURCES += @srcdir@/../../qt4/immodule/candidatewindowproxy.cpp \
+SOURCES += @srcdir@/quimplatforminputcontext.cpp \
+           @srcdir@/../../qt4/immodule/candidatewindowproxy.cpp \
            @srcdir@/../../qt4/immodule/caretstateindicator.cpp \
            @srcdir@/../../qt4/immodule/plugin.cpp \
            @srcdir@/../../qt4/immodule/qhelpermanager.cpp \
            @srcdir@/../../qt4/immodule/qtextutil.cpp \
            @srcdir@/../../qt4/immodule/quiminfomanager.cpp \
-           @srcdir@/../../qt4/immodule/quiminputcontext.cpp \
            @srcdir@/../../qt4/candwin/util.cpp
 
 !win32:!embedded:!mac {
@@ -34,6 +34,6 @@ SOURCES += @srcdir@/../../qt4/immodule/candidatewindowproxy.cpp \
 
 OTHER_FILES += uim.json
 
-TARGET = uiminputcontextplugin
+TARGET = uimplatforminputcontextplugin
 
 target.path += @DESTDIR@$$[QT_INSTALL_PLUGINS]/platforminputcontexts

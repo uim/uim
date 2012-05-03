@@ -101,7 +101,12 @@ QPlatformInputContext *UimInputContextPlugin::create( const QString & key, const
     if ( key == "uim" )
         imname = uim_get_default_im_name( setlocale( LC_CTYPE, 0 ) );
 
+#if QT_VERSION < 0x050000
     QUimInputContext *uic = new QUimInputContext( imname.toUtf8().data() );
+#else
+    QUimPlatformInputContext *uic
+        = new QUimPlatformInputContext( imname.toUtf8().data() );
+#endif
 
     return uic;
 }

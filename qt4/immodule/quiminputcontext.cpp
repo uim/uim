@@ -37,15 +37,10 @@
 #include <cstring>
 
 #include <QtCore/QPoint>
+#include <QtGui/QApplication>
 #include <QtGui/QInputMethodEvent>
+#include <QtGui/QLabel>
 #include <QtGui/QTextCharFormat>
-#if QT_VERSION < 0x050000
-# include <QtGui/QApplication>
-# include <QtGui/QLabel>
-#else
-# include <QtWidgets/QApplication>
-# include <QtWidgets/QLabel>
-#endif
 
 #include <uim/uim-helper.h>
 #include <uim/uim-im-switcher.h>
@@ -374,9 +369,7 @@ void QUimInputContext::setFocusWidget( QWidget *w )
     qDebug( "QUimInputContext::setFocusWidget() w = %p", w );
 #endif
 
-#if QT_VERSION < 0x050000
     QInputContext::setFocusWidget( w );
-#endif
 
     if ( w )
         setFocus();
@@ -630,9 +623,7 @@ void QUimInputContext::commitString( const QString& str )
 {
     QInputMethodEvent e;
     e.setCommitString( str );
-#if QT_VERSION < 0x050000
     sendEvent( e );
-#endif
 
     m_isComposing = false;
 }
@@ -662,9 +653,7 @@ void QUimInputContext::updatePreedit()
 
     if ( !newString.isEmpty() ) {
         QInputMethodEvent e( newString, getPreeditAttrs() );
-#if QT_VERSION < 0x050000
         sendEvent( e );
-#endif
         // Qt4.3.1 does not call back update() here
         update();
     } else {
