@@ -54,14 +54,14 @@ private slots:
     void slotHookSubwindow();
 
 private:
-    void activateCandwin(int dLimit);
+    void activateCandwin();
 
-    void updateView(int newpage, int ncandidates);
+    void updateView(int ncandidates, const QList<CandData> &stores);
     void updateSize();
-    void shiftPage(bool forward);
-    void setIndex(int totalindex);
+    void shiftPage(int idx);
+    void setIndex(int totalindex, int displayLimit, int candidateIndex);
 
-    void setNrCandidates(int nrCands, int dLimit);
+    void setNrCandidates();
 
     // Moving and Resizing affects the position of Subwindow
     virtual void moveEvent(QMoveEvent *);

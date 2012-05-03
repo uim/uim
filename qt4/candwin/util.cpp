@@ -52,7 +52,7 @@ QString get_messages(int fd)
         if (n == -1)
             return message;
         buf[n] = '\0';
-        message += QString(buf);
+        message += QString::fromUtf8(buf);
     }
     return message;
 }

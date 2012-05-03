@@ -35,6 +35,8 @@
 
 #include <QtCore/QObject>
 
+#include <uim.h>
+
 #include "util.h"
 
 class QPoint;
@@ -85,14 +87,46 @@ class CandidateWindowProxy : public QObject
         void initializeProcess();
         void execute(const QString &command);
 
+        void activateCandwin(int dLimit);
+
+        void shiftPage(bool forward);
+        void setIndex(int totalindex);
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+        void setNrCandidates(int nrCands, int dLimit);
+#endif
+        void updateLabel();
+        void setCandidates(int displayLimit,
+                const QList<uim_candidate> &candidates);
+        void setPage(int page);
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+        void setPageCandidates(int page,
+                const QList<uim_candidate> &candidates);
+        void preparePageCandidates(int page);
+#endif
+
         void setFocusWidget();
         bool eventFilter(QObject *obj, QEvent *event);
 
         QProcess *process;
         QUimInputContext *ic;
 
+        // candidate data
+        QList<uim_candidate> stores;
+        int nrCandidates;
+        int displayLimit;
+        int candidateIndex;
+        int pageIndex;
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+        QList<bool> pageFilled;
+#endif
+
         // widget to follow movement
         QWidget *window;
+
+        // candidate data
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+        int nrPages;
+#endif
 
         // config
         bool isAlwaysLeft;

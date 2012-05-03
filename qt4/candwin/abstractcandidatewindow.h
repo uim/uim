@@ -51,64 +51,32 @@ class AbstractCandidateWindow : public QFrame
         explicit AbstractCandidateWindow(QWidget *parent);
         virtual ~AbstractCandidateWindow();
 
-        void deactivateCandwin();
-        void clearCandidates();
-        void popup();
-
-        void layoutWindow(int x, int y, int height);
-
-        void candidateActivate(int nr, int displayLimit);
-        void candidateSelect(int index);
-        void candidateShiftPage(bool forward);
-
     protected:
-        virtual void activateCandwin(int dLimit);
+        virtual void activateCandwin();
 
-        virtual void shiftPage(bool forward);
-        virtual void setIndex(int totalindex);
+        virtual void shiftPage(int idx);
+        virtual void setIndex(int totalindex, int displayLimit,
+            int candidateIndex) = 0;
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        virtual void setNrCandidates(int nrCands, int dLimit);
+        virtual void setNrCandidates();
 #endif
-        virtual void updateView(int newpage, int ncandidates) = 0;
+        virtual void updateView(int ncandidates,
+            const QList<CandData> &stores) = 0;
         virtual void updateSize() = 0;
-        void updateLabel();
 
         // widget
         QLabel *numLabel;
-
-        // candidate data
-        QList<CandData> stores;
-        int nrCandidates;
-        int displayLimit;
-        int candidateIndex;
-        int pageIndex;
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        QList<bool> pageFilled;
-#endif
 
     private slots:
         void slotStdinActivated(int fd);
 
     private:
-#ifdef UIM_QT_USE_DELAY
-        void timerDone();
-#endif /* !UIM_QT_USE_DELAY */
-        void setCandidates(int displayLimit,
-                const QList<CandData> &candidates);
-        void setPage(int page);
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        void setPageCandidates(int page,
-                const QList<CandData> &candidates);
-        void preparePageCandidates(int page);
-#endif
-        void setCandidateData(const QStringList &message);
-
+        QList<CandData> candidateData(const QStringList &message);
+        void popup();
+        void layoutWindow(int x, int y, int height);
         void moveCandwin(int x, int y);
-
-        // candidate data
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        int nrPages;
-#endif
+        void candidateActivate();
+        void updateLabel(const QString &indexString);
 
         QSocketNotifier *notifier;
 };

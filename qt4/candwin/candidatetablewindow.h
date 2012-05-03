@@ -62,9 +62,9 @@ class CandidateTableWindow : public AbstractCandidateWindow
         QGridLayout *createLayout(int row, int column,
             int rowOffset, int columnOffset);
         void setBlockVisible(QLayout *layout, bool visible);
-        void updateView(int newpage, int ncandidates);
+        void updateView(int ncandidates, const QList<CandData> &stores);
         void updateSize();
-        void setIndex(int totalIndex);
+        void setIndex(int totalIndex, int displayLimit, int candidateIndex);
         void getButtonPosition(int &row, int &column,
             const QString &headString);
 

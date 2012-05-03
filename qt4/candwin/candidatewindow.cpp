@@ -92,25 +92,22 @@ CandidateWindow::CandidateWindow(QWidget *parent, bool vertical)
     setLayout(layout);
 }
 
-void CandidateWindow::activateCandwin(int dLimit)
+void CandidateWindow::activateCandwin()
 {
-    AbstractCandidateWindow::activateCandwin(dLimit);
-
     if (!subWin)
         subWin = new SubWindow(this);
 }
 
 #if UIM_QT_USE_NEW_PAGE_HANDLING
-void CandidateWindow::setNrCandidates(int nrCands, int dLimit)
+void CandidateWindow::setNrCandidates()
 {
-    AbstractCandidateWindow::setNrCandidates(nrCands, dLimit);
-
     if (!subWin)
         subWin = new SubWindow(this);
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
-void CandidateWindow::updateView(int newpage, int ncandidates)
+void CandidateWindow::updateView(int ncandidates,
+    const QList<CandData> &stores)
 {
     cList->clearContents();
     annotations.clear();
@@ -121,7 +118,7 @@ void CandidateWindow::updateView(int newpage, int ncandidates)
         // the last column is dummy for adjusting size.
         cList->setColumnCount(ncandidates + 1);
     for (int i = 0; i < ncandidates ; i++) {
-        CandData cand = stores[ displayLimit * newpage + i ];
+        CandData cand = stores[i];
         QString headString = cand.headingLabel;
         QString candString = cand.str;
         QString annotationString;
@@ -177,10 +174,9 @@ void CandidateWindow::updateSize()
     setFixedSize(sizeHint());
 }
 
-void CandidateWindow::setIndex(int totalindex)
+void CandidateWindow::setIndex(int totalindex, int displayLimit,
+    int candidateIndex)
 {
-    AbstractCandidateWindow::setIndex(totalindex);
-
     // select item
     if (candidateIndex >= 0) {
         int pos = totalindex;
@@ -208,29 +204,25 @@ void CandidateWindow::setIndex(int totalindex)
         cList->clearSelection();
     }
 
-    updateLabel();
+    fprintf(stdout, "update_label\f\f");
+    fflush(stdout);
 }
 
 void CandidateWindow::slotCandidateSelected(int row, int column)
 {
-    candidateIndex = (pageIndex * displayLimit)
-        + (isVertical ? row : column);
-    fprintf(stdout, "set_candidate_index\f%d\f\f", candidateIndex);
+    fprintf(stdout, "set_candidate_index_2\f%d\f\f", isVertical ? row : column);
     fflush(stdout);
-    updateLabel();
+    fprintf(stdout, "update_label\f\f");
+    fflush(stdout);
 }
 
-void CandidateWindow::shiftPage(bool forward)
+void CandidateWindow::shiftPage(int idx)
 {
-    AbstractCandidateWindow::shiftPage(forward);
-    if (candidateIndex != -1) {
-        cList->clearSelection();
-        int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
-        if (isVertical)
-            cList->selectRow(idx);
-        else
-            cList->selectColumn(idx);
-    }
+    cList->clearSelection();
+    if (isVertical)
+        cList->selectRow(idx);
+    else
+        cList->selectColumn(idx);
 }
 
 
