@@ -134,15 +134,13 @@ QList<CandData> AbstractCandidateWindow::candidateData(
         QStringList candidate = message[i].split('\a');
 
         int count = candidate.count();
-        if (count < 2)
+        if (count < 3)
             continue;
 
         CandData cand;
         cand.headingLabel = candidate[0];
         cand.str = candidate[1];
-
-        if (count >= 3)
-            cand.annotation = candidate[2];
+        cand.annotation = candidate[2];
 
         stores.append(cand);
     }
