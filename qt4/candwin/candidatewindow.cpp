@@ -92,19 +92,11 @@ CandidateWindow::CandidateWindow(QWidget *parent, bool vertical)
     setLayout(layout);
 }
 
-void CandidateWindow::activateCandwin()
+void CandidateWindow::setupSubWindow()
 {
     if (!subWin)
         subWin = new SubWindow(this);
 }
-
-#if UIM_QT_USE_NEW_PAGE_HANDLING
-void CandidateWindow::setNrCandidates()
-{
-    if (!subWin)
-        subWin = new SubWindow(this);
-}
-#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
 void CandidateWindow::updateView(int ncandidates,
     const QList<CandData> &stores)
@@ -224,10 +216,6 @@ void CandidateWindow::shiftPage(int idx)
     else
         cList->selectColumn(idx);
 }
-
-
-#if UIM_QT_USE_NEW_PAGE_HANDLING
-#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
 void CandidateWindow::slotHookSubwindow()
 {

@@ -301,7 +301,7 @@ void CandidateWindowProxy::activateCandwin(int dLimit)
     candidateIndex = -1;
     displayLimit = dLimit;
     pageIndex = 0;
-    execute("activate_candwin");
+    execute("setup_sub_window");
 }
 
 void CandidateWindowProxy::shiftPage(bool forward)
@@ -378,7 +378,7 @@ void CandidateWindowProxy::setNrCandidates(int nrCands, int dLimit)
     for (int i = 0; i < nrCandidates; i++)
         stores.append(0);
 
-    execute("set_nr_candidates");
+    execute("setup_sub_window");
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 

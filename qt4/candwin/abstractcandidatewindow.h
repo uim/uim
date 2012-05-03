@@ -52,14 +52,11 @@ class AbstractCandidateWindow : public QFrame
         virtual ~AbstractCandidateWindow();
 
     protected:
-        virtual void activateCandwin();
+        virtual void setupSubWindow();
 
         virtual void shiftPage(int idx);
         virtual void setIndex(int totalindex, int displayLimit,
             int candidateIndex) = 0;
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-        virtual void setNrCandidates();
-#endif
         virtual void updateView(int ncandidates,
             const QList<CandData> &stores) = 0;
         virtual void updateSize() = 0;

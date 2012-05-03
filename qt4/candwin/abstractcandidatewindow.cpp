@@ -67,7 +67,7 @@ AbstractCandidateWindow::~AbstractCandidateWindow()
 {
 }
 
-void AbstractCandidateWindow::activateCandwin()
+void AbstractCandidateWindow::setupSubWindow()
 {
 }
 
@@ -75,12 +75,6 @@ void AbstractCandidateWindow::shiftPage(int idx)
 {
     Q_UNUSED(idx)
 }
-
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-void AbstractCandidateWindow::setNrCandidates()
-{
-}
-#endif
 
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
 void AbstractCandidateWindow::showEvent(QShowEvent *event)
@@ -105,9 +99,7 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
     for (int i = 0, j = messageList.count(); i < j; i++) {
         QStringList message = messageList[i];
         QString command = message[0];
-        if (command == "activate_candwin")
-            activateCandwin();
-        else if (command == "candidate_activate")
+        if (command == "candidate_activate")
             candidateActivate();
         else if (command == "hide")
             hide();
@@ -118,11 +110,11 @@ void AbstractCandidateWindow::slotStdinActivated(int fd)
             moveCandwin(message[1].toInt(), message[2].toInt());
         else if (command == "popup")
             popup();
-        else if (command == "set_nr_candidates")
-            setNrCandidates();
         else if (command == "set_index")
             setIndex(message[1].toInt(), message[2].toInt(),
                 message[3].toInt());
+        else if (command == "setup_sub_window")
+            setupSubWindow();
         else if (command == "shift_page")
             shiftPage(message[1].toInt());
         else if (command == "update_label")
