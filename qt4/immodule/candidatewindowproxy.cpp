@@ -299,7 +299,11 @@ void CandidateWindowProxy::initializeProcess()
     }
     process->close();
     QString style = candidateWindowStyle();
+#if QT_VERSION < 0x050000
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
+#else
+    process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
+#endif
     process->waitForStarted();
 }
 
