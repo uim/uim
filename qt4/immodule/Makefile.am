@@ -21,7 +21,8 @@ EXTRA_DIST = INDENT \
 	     quiminputcontext_with_slave.h \
 	     quiminputcontext_with_slave.cpp
 
-EXTRA_DIST += caretstateindicator.h \
+EXTRA_DIST += candidatewindowproxy.h \
+              caretstateindicator.h \
               plugin.h \
               qhelpermanager.h \
               qtextutil.h \
@@ -29,7 +30,8 @@ EXTRA_DIST += caretstateindicator.h \
               quiminputcontext.h \
               quiminputcontext_compose.h
 
-EXTRA_DIST += caretstateindicator.cpp \
+EXTRA_DIST += candidatewindowproxy.cpp \
+              caretstateindicator.cpp \
               plugin.cpp \
               qhelpermanager.cpp \
               qtextutil.cpp \

@@ -23,6 +23,10 @@ EXTRA_DIST =  uim-candwin-qt4.pro.in \
 	      candidatetablewindow.cpp \
 	      candidatewindow.h \
 	      candidatewindow.cpp \
+	      qt4.cpp \
 	      subwindow.h \
 	      subwindow.cpp \
-	      qt4.cpp
+	      util.h \
+	      util.cpp \
+	      ximcandidatewindow.h \
+	      ximcandidatewindow.cpp
