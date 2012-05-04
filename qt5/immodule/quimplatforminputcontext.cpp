@@ -438,6 +438,12 @@ void QUimPlatformInputContext::reset()
 #ifdef ENABLE_DEBUG
     qDebug("reset()");
 #endif
+    candwinIsActive = false;
+
+    proxy->hide();
+    uim_reset_context(m_uc);
+    clearPreedit();
+    updatePreedit();
 }
 
 void QUimPlatformInputContext::showInputPanel()
