@@ -95,8 +95,13 @@ public:
 
     void setCandwinActive() { candwinIsActive = true; }
 
+private slots:
+    void slotInputItemChanged();
+
 private:
     uim_context createUimContext(const char *imname);
+    void setFocus();
+    void unsetFocus();
 
     QList<QInputMethodEvent::Attribute> getPreeditAttrs();
 
@@ -134,6 +139,8 @@ private:
     uim_context m_uc;
     QList<PreeditSegment> preeditSegments;
     CandidateWindowProxy *proxy;
+
+    static QUimHelperManager *m_helperManager;
 };
 
 #endif /* Not def: UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H */

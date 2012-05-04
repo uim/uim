@@ -40,6 +40,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
 
+#include <uim/uim-helper.h>
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
 
@@ -54,17 +55,24 @@ bool disableFocusedContext = false;
 
 QList<QUimPlatformInputContext*> contextList;
 
+QUimHelperManager *QUimPlatformInputContext::m_helperManager = 0;
+
 static int unicodeToUKey(ushort c);
 
 #define ENABLE_DEBUG
 
 QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
+: candwinIsActive(false), m_isComposing(false), m_uc(0)
 {
 #ifdef ENABLE_DEBUG
     qDebug("QUimPlatformInputContext()");
 #endif
 
     contextList.append(this);
+
+    // must be initialized before createUimContext() call
+    if (!m_helperManager)
+        m_helperManager = new QUimHelperManager;
 
     if (imname)
         m_uc = createUimContext(imname);
@@ -77,6 +85,9 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 
     // read configuration
     updatePosition();
+
+    connect(qApp->inputMethod(), SIGNAL(inputItemChanged()),
+        this, SLOT(slotInputItemChanged()));
 }
 
 QUimPlatformInputContext::~QUimPlatformInputContext()
@@ -96,10 +107,20 @@ QUimPlatformInputContext::~QUimPlatformInputContext()
     }
 }
 
+void QUimPlatformInputContext::slotInputItemChanged()
+{
+    if (qApp->inputMethod()->inputItem())
+        setFocus();
+    else
+        unsetFocus();
+}
+
 uim_context QUimPlatformInputContext::createUimContext(const char *imname)
 {
     uim_context uc = uim_create_context(this, "UTF-8", 0, imname, 0,
             QUimPlatformInputContext::commit_cb);
+
+    m_helperManager->checkHelperConnection();
 
     /**/
 
@@ -112,7 +133,6 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
         QUimPlatformInputContext::cand_select_cb,
         QUimPlatformInputContext::cand_shift_page_cb,
         QUimPlatformInputContext::cand_deactivate_cb);
-
 
     uim_set_prop_list_update_cb(uc, QUimHelperManager::update_prop_list_cb);
     uim_set_prop_label_update_cb(uc, QUimHelperManager::update_prop_label_cb);
@@ -132,6 +152,43 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
     uim_prop_list_update(uc);
 
     return uc;
+}
+
+void QUimPlatformInputContext::setFocus()
+{
+#ifdef ENABLE_DEBUG
+    qDebug("QUimPlatformInputContext: %p->setFocus(), focusWidget()=%p",
+            this, QApplication::focusWidget());
+#endif
+
+    focusedInputContext = this;
+    disableFocusedContext = false;
+
+    if (candwinIsActive)
+        proxy->popup();
+
+    m_helperManager->checkHelperConnection();
+
+    uim_helper_client_focus_in(m_uc);
+    uim_prop_list_update(m_uc);
+
+    uim_focus_in_context(m_uc);
+}
+
+void QUimPlatformInputContext::unsetFocus()
+{
+#ifdef ENABLE_DEBUG
+    qDebug("QUimPlatformInputContext: %p->unsetFocus(), focusWidget()=%p",
+            this, QApplication::focusWidget());
+#endif
+
+    uim_focus_out_context(m_uc);
+
+    proxy->hide();
+
+    m_helperManager->checkHelperConnection();
+
+    uim_helper_client_focus_out(m_uc);
 }
 
 void QUimPlatformInputContext::commit()
@@ -673,6 +730,11 @@ void QUimPlatformInputContext::updatePosition()
     char * leftp = uim_scm_symbol_value_str("candidate-window-position");
     proxy->setAlwaysLeftPosition(leftp && !strcmp(leftp, "left"));
     free(leftp);
+}
+
+void QUimPlatformInputContext::updateIndicator(const QString &str)
+{
+    Q_UNUSED(str);
 }
 
 static int unicodeToUKey (ushort c) {
