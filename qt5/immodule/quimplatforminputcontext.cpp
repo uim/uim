@@ -44,9 +44,11 @@
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
 
-#include "../../qt4/immodule/candidatewindowproxy.h"
-#include "../../qt4/immodule/qhelpermanager.h"
-#include "../../qt4/immodule/qtextutil.h"
+#include "candidatewindowproxy.h"
+#include "plugin.h"
+#include "qhelpermanager.h"
+#include "qtextutil.h"
+#include "quiminfomanager.h"
 
 static const char DEFAULT_SEPARATOR_STR[] = "|";
 

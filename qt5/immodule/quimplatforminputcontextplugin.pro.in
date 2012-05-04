@@ -1,8 +1,9 @@
 include(../../qt4/common.pro)
 load(qt_plugin)
 
-# to include util.h
-INCLUDEPATH += @srcdir@/../../qt4/candwin
+# to include util.h and for quimplatforminputcontext.cpp
+INCLUDEPATH += @srcdir@/../../qt4/candwin \
+               @srcdir@/../../qt4/immodule
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
