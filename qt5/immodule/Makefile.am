@@ -12,7 +12,7 @@ if QT5_IMMODULE
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 endif
-	-rm -f Makefile
+	-rm -f Makefile quimplatforminputcontextplugin.pro
 
 FORCE:
 

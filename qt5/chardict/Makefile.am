@@ -13,6 +13,6 @@ if QT5
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 endif
-	-rm -f Makefile
+	-rm -f Makefile uim-chardict-qt5.pro
 
 EXTRA_DIST =  uim-chardict-qt5.pro.in

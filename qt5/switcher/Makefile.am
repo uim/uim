@@ -12,7 +12,7 @@ if QT5
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 endif
-	-rm -f Makefile
+	-rm -f Makefile uim-im-switcher-qt5.pro
 
 FORCE:
 
