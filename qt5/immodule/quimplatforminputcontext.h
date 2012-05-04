@@ -67,7 +67,7 @@ public:
     virtual void hideInputPanel();
     virtual Qt::LayoutDirection inputDirection() const;
     virtual void invokeAction(QInputMethod::Action action, int cursorPosition);
-    virtual bool isAnimating() const;
+    virtual bool isAnimating() const { return m_isAnimating; }
     virtual bool isInputPanelVisible() const;
     virtual bool isValid() const;
     virtual QRectF keyboardRect() const;
@@ -134,7 +134,7 @@ private:
 
     QUimTextUtil *m_textUtil;
     bool candwinIsActive;
-    bool m_isComposing;
+    bool m_isAnimating;
 
     uim_context m_uc;
     QList<PreeditSegment> preeditSegments;

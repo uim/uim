@@ -62,7 +62,7 @@ static int unicodeToUKey(ushort c);
 #define ENABLE_DEBUG
 
 QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
-: candwinIsActive(false), m_isComposing(false), m_uc(0)
+: candwinIsActive(false), m_isAnimating(false), m_uc(0)
 {
 #ifdef ENABLE_DEBUG
     qDebug("QUimPlatformInputContext()");
@@ -401,14 +401,6 @@ void QUimPlatformInputContext::invokeAction(QInputMethod::Action action,
     Q_UNUSED(cursorPosition)
 }
 
-bool QUimPlatformInputContext::isAnimating() const
-{
-#ifdef ENABLE_DEBUG
-    qDebug("isAnimating()");
-#endif
-    return m_isComposing;
-}
-
 bool QUimPlatformInputContext::isInputPanelVisible() const
 {
 #ifdef ENABLE_DEBUG
@@ -598,7 +590,7 @@ void QUimPlatformInputContext::commitString(const QString& str)
     e.setCommitString(str);
     QCoreApplication::sendEvent(qApp->inputMethod()->inputItem(), &e);
 
-    m_isComposing = false;
+    m_isAnimating = false;
 }
 
 void QUimPlatformInputContext::clearPreedit()
@@ -617,12 +609,12 @@ void QUimPlatformInputContext::updatePreedit()
 {
     QString newString = getPreeditString();
 
-    if (!m_isComposing) {
+    if (!m_isAnimating) {
         if (newString.isEmpty())
             return;
 
         // Start conversion
-        m_isComposing = true;
+        m_isAnimating = true;
     }
 
     if (!newString.isEmpty()) {
