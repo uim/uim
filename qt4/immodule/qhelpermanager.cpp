@@ -43,15 +43,27 @@ SUCH DAMAGE.
 
 #include "plugin.h"
 #include "quiminfomanager.h"
-#include "quiminputcontext.h"
+#if QT_VERSION < 0x050000
+# include "quiminputcontext.h"
+#else
+# include "quimplatforminputcontext.h"
+#endif
 
 static int im_uim_fd = 0;
 static QSocketNotifier *notifier = 0;
 
+#if QT_VERSION < 0x050000
 extern QUimInputContext *focusedInputContext;
+#else
+extern QUimPlatformInputContext *focusedInputContext;
+#endif
 extern bool disableFocusedContext;
 
+#if QT_VERSION < 0x050000
 extern QList<QUimInputContext *> contextList;
+#else
+extern QList<QUimPlatformInputContext *> contextList;
+#endif
 
 QUimHelperManager::QUimHelperManager( QObject *parent )
         : QObject( parent )
@@ -153,7 +165,11 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         if ( !list.isEmpty() && !list[ 0 ].isEmpty() &&
                 !list[ 1 ].isEmpty() && !list[ 2 ].isEmpty() )
         {
+#if QT_VERSION < 0x050000
             QList<QUimInputContext *>::iterator it;
+#else
+            QList<QUimPlatformInputContext *>::iterator it;
+#endif
             for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
                 uim_prop_update_custom( ( *it )->uimContext(),
@@ -177,7 +193,11 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             UimInputContextPlugin::getQUimInfoManager();
         infoManager->initUimInfo();
 
+#if QT_VERSION < 0x050000
         QList<QUimInputContext *>::iterator it;
+#else
+        QList<QUimPlatformInputContext *>::iterator it;
+#endif
         for ( it = contextList.begin(); it != contextList.end(); ++it ) {
             ( *it )->updatePosition();
             ( *it )->updateStyle();
@@ -203,7 +223,11 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     }
     else if ( str.startsWith( QLatin1String( "im_change_whole_desktop" ) ) )
     {
+#if QT_VERSION < 0x050000
         QList<QUimInputContext *>::iterator it;
+#else
+        QList<QUimPlatformInputContext *>::iterator it;
+#endif
         for ( it = contextList.begin(); it != contextList.end(); ++it )
         {
             uim_switch_im( ( *it )->uimContext(), im_name.toUtf8().data() );
@@ -218,7 +242,11 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     {
         if ( focusedInputContext )
         {
+#if QT_VERSION < 0x050000
             QList<QUimInputContext *>::iterator it;
+#else
+            QList<QUimPlatformInputContext *>::iterator it;
+#endif
             for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
                 uim_switch_im( ( *it )->uimContext(), im_name.toUtf8().data() );
@@ -283,7 +311,11 @@ void QUimHelperManager::helper_disconnect_cb()
 
 void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 {
+#if QT_VERSION < 0x050000
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
+#else
+    QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>( ptr );
+#endif
 
     if ( ic != focusedInputContext || disableFocusedContext )
         return;
@@ -298,7 +330,11 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
 {
+#if QT_VERSION < 0x050000
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
+#else
+    QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>( ptr );
+#endif
     if ( ic != focusedInputContext || disableFocusedContext )
         return;
 

@@ -33,7 +33,12 @@
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_TABLE_WINDOW_H
 #define UIM_QT4_IMMODULE_CANDIDATE_TABLE_WINDOW_H
 
-#include <QtGui/QPushButton>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QPushButton>
+#else
+# include <QtWidgets/QPushButton>
+#endif
 
 #include "abstractcandidatewindow.h"
 
@@ -62,9 +67,9 @@ class CandidateTableWindow : public AbstractCandidateWindow
         QGridLayout *createLayout(int row, int column,
             int rowOffset, int columnOffset);
         void setBlockVisible(QLayout *layout, bool visible);
-        void updateView(int newpage, int ncandidates);
+        void updateView(int ncandidates, const QList<CandData> &stores);
         void updateSize();
-        void setIndex(int totalIndex);
+        void setIndex(int totalIndex, int displayLimit, int candidateIndex);
         void getButtonPosition(int &row, int &column,
             const QString &headString);
 

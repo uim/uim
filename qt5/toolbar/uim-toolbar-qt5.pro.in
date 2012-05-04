@@ -1,0 +1,19 @@
+include(../../qt4/common.pro)
+
+TEMPLATE = app
+
+# to include qtgettext.h
+INCLUDEPATH += @srcdir@/../../qt4
+LIBS += @LIBINTL@
+
+# Input
+HEADERS += @srcdir@/../../qt4/toolbar/common-quimhelpertoolbar.h \
+           @srcdir@/../../qt4/toolbar/common-uimstateindicator.h \
+           @srcdir@/../../qt4/toolbar/standalone-qt4.h
+SOURCES += @srcdir@/../../qt4/toolbar/common-quimhelpertoolbar.cpp \
+           @srcdir@/../../qt4/toolbar/common-uimstateindicator.cpp \
+           @srcdir@/../../qt4/toolbar/standalone-qt4.cpp
+
+TARGET = uim-toolbar-qt5
+
+target.path += @DESTDIR@@exec_prefix@/bin

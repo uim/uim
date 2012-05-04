@@ -35,13 +35,21 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 
-#include "quiminputcontext.h"
+#if QT_VERSION < 0x050000
+# include "quiminputcontext.h"
+#else
+# include "quimplatforminputcontext.h"
+#endif
 
 // This class is for dealing with Dead/Multi key composing.
 // Have QSimpleInputContext as slave and forward event to the
 // slave when isComposing==false.
 
+#if QT_VERSION < 0x050000
 class QUimInputContextWithSlave : public QUimInputContext
+#else
+class QUimInputContextWithSlave : public QUimPlatformInputContext
+#endif
 {
     Q_OBJECT
 public:
@@ -68,7 +76,11 @@ protected slots:
     virtual void destroyInputContext();
 
 protected:
+#if QT_VERSION < 0x050000
     QInputContext *slave;
+#else
+    QPlatformInputContext *slave;
+#endif
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H */

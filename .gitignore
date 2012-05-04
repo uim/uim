@@ -1,3 +1,4 @@
+*.swp
 
 # /
 /ChangeLog
@@ -30,7 +31,6 @@
 # /byeru-data/
 /byeoru-data/Makefile
 /byeoru-data/Makefile.in
-
 
 # /doc/
 /doc/Makefile.in
@@ -500,6 +500,71 @@
 /qt4/toolbar/uim-toolbar-qt4
 /qt4/toolbar/uim-toolbar-qt4.pro
 /qt4/toolbar/*.o
+
+# /qt5/
+/qt5/Makefile
+/qt5/Makefile.in
+
+# /qt5/candwin/
+/qt5/candwin/Makefile
+/qt5/candwin/Makefile.in
+/qt5/candwin/Makefile.qmake
+/qt5/candwin/moc_*.cpp
+/qt5/candwin/uim-candwin-qt5
+/qt5/candwin/uim-candwin-qt5.pro
+/qt5/candwin/*.o
+
+# /qt5/chardict/
+/qt5/chardict/Makefile
+/qt5/chardict/Makefile.in
+/qt5/chardict/Makefile.qmake
+/qt5/chardict/moc_*.cpp
+/qt5/chardict/uim-chardict-qt5
+/qt5/chardict/uim-chardict-qt5.pro
+/qt5/chardict/*.o
+
+# /qt5/edittest/
+/qt5/edittest/Makefile
+/qt5/edittest/Makefile.in
+/qt5/edittest/Makefile.qmake
+/qt5/edittest/edittest
+/qt5/edittest/*.o
+
+# /qt5/immodule/
+/qt5/immodule/Makefile
+/qt5/immodule/Makefile.in
+/qt5/immodule/Makefile.qmake
+/qt5/immodule/libuimplatforminputcontextplugin.so
+/qt5/immodule/moc_*.cpp
+/qt5/immodule/quimplatforminputcontextplugin.pro
+/qt5/immodule/*.o
+
+# /qt5/pref/
+/qt5/pref/Makefile
+/qt5/pref/Makefile.in
+/qt5/pref/Makefile.qmake
+/qt5/pref/moc_*.cpp
+/qt5/pref/uim-pref-qt5
+/qt5/pref/uim-pref-qt5.pro
+/qt5/pref/*.o
+
+# /qt5/switcher/
+/qt5/switcher/Makefile
+/qt5/switcher/Makefile.in
+/qt5/switcher/Makefile.qmake
+/qt5/switcher/moc_*.cpp
+/qt5/switcher/uim-im-switcher-qt5
+/qt5/switcher/uim-im-switcher-qt5.pro
+/qt5/switcher/*.o
+
+# /qt5/toolbar/
+/qt5/toolbar/Makefile
+/qt5/toolbar/Makefile.in
+/qt5/toolbar/Makefile.qmake
+/qt5/toolbar/moc_*.cpp
+/qt5/toolbar/uim-toolbar-qt5
+/qt5/toolbar/uim-toolbar-qt5.pro
+/qt5/toolbar/*.o
 
 # /replace/
 /replace/.deps/

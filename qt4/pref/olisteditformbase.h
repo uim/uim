@@ -33,7 +33,12 @@
 #ifndef UIM_QT4_PREF_OLISTEDITFORMBASE_H
 #define UIM_QT4_PREF_OLISTEDITFORMBASE_H
 
-#include <QtGui/QDialog>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QDialog>
+#else
+# include <QtWidgets/QDialog>
+#endif
 
 class QTreeWidget;
 class QPushButton;

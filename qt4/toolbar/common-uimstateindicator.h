@@ -35,9 +35,15 @@
 
 #include <QtCore/QList>
 #include <QtCore/QMultiHash>
-#include <QtGui/QMenu>
-#include <QtGui/QToolButton>
-#include <QtGui/QFrame>
+#if QT_VERSION < 0x050000
+# include <QtGui/QMenu>
+# include <QtGui/QToolButton>
+# include <QtGui/QFrame>
+#else
+# include <QtWidgets/QMenu>
+# include <QtWidgets/QToolButton>
+# include <QtWidgets/QFrame>
+#endif
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>

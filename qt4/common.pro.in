@@ -9,6 +9,10 @@ LIBS += -lreplace -luim -luim-scm
 !win32:!embedded:!mac {
     LIBS += -luim-x-util
 }
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+}
  
 QMAKE_CC                = @CC@
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@

@@ -40,10 +40,15 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
-#include <QtGui/QApplication>
-#include <QtGui/QHBoxLayout>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPixmap>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QHBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QHBoxLayout>
+#endif
 
 #include <cstring>
 #include <cstdlib>

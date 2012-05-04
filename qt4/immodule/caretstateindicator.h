@@ -32,7 +32,12 @@
 #ifndef UIM_QT4_CARET_STATE_INDICATOR_H
 #define UIM_QT4_CARET_STATE_INDICATOR_H
 
-#include <QtGui/QWidget>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QWidget>
+#else
+# include <QtWidgets/QWidget>
+#endif
 
 class QLabel;
 class QTimer;

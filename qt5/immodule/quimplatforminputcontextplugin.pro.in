@@ -1,0 +1,40 @@
+include(../../qt4/common.pro)
+load(qt_plugin)
+
+# to include util.h and for quimplatforminputcontext.cpp
+INCLUDEPATH += @srcdir@/../../qt4/candwin \
+               @srcdir@/../../qt4/immodule
+
+LIBS += @X11_LIBS@ -luim-counted-init
+
+QT += platformsupport-private
+
+# Input
+HEADERS += @srcdir@/quimplatforminputcontext.h \
+           @srcdir@/../../qt4/immodule/candidatewindowproxy.h \
+           @srcdir@/../../qt4/immodule/caretstateindicator.h \
+           @srcdir@/../../qt4/immodule/plugin.h \
+           @srcdir@/../../qt4/immodule/qhelpermanager.h \
+           @srcdir@/../../qt4/immodule/qtextutil.h \
+           @srcdir@/../../qt4/immodule/quiminfomanager.h \
+           @srcdir@/../../qt4/candwin/util.h
+
+SOURCES += @srcdir@/quimplatforminputcontext.cpp \
+           @srcdir@/../../qt4/immodule/candidatewindowproxy.cpp \
+           @srcdir@/../../qt4/immodule/caretstateindicator.cpp \
+           @srcdir@/../../qt4/immodule/plugin.cpp \
+           @srcdir@/../../qt4/immodule/qhelpermanager.cpp \
+           @srcdir@/../../qt4/immodule/qtextutil.cpp \
+           @srcdir@/../../qt4/immodule/quiminfomanager.cpp \
+           @srcdir@/../../qt4/candwin/util.cpp
+
+!win32:!embedded:!mac {
+    HEADERS += @srcdir@/../../qt4/immodule/quiminputcontext_compose.h
+    SOURCES += @srcdir@/../../qt4/immodule/quiminputcontext_compose.cpp
+}
+
+OTHER_FILES += uim.json
+
+TARGET = uimplatforminputcontextplugin
+
+target.path += @DESTDIR@$$[QT_INSTALL_PLUGINS]/platforminputcontexts

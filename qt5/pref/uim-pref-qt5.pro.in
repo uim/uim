@@ -1,0 +1,21 @@
+include(../../qt4/common.pro)
+
+TEMPLATE = app
+
+# to include qtgettext.h
+INCLUDEPATH += @srcdir@/../../qt4
+LIBS += -luim-custom -luim-counted-init -luim @LIBINTL@
+
+# Input
+HEADERS += @srcdir@/../../qt4/pref/customwidgets.h \
+           @srcdir@/../../qt4/pref/qt4.h \
+           @srcdir@/../../qt4/pref/keyeditformbase.h \
+           @srcdir@/../../qt4/pref/olisteditformbase.h
+SOURCES += @srcdir@/../../qt4/pref/customwidgets.cpp \
+           @srcdir@/../../qt4/pref/qt4.cpp \
+           @srcdir@/../../qt4/pref/keyeditformbase.cpp \
+           @srcdir@/../../qt4/pref/olisteditformbase.cpp
+
+TARGET = uim-pref-qt5
+
+target.path += @DESTDIR@@exec_prefix@/bin

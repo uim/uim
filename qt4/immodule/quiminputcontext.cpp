@@ -46,8 +46,7 @@
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
 
-#include "candidatetablewindow.h"
-#include "candidatewindow.h"
+#include "candidatewindowproxy.h"
 #include "caretstateindicator.h"
 #include "plugin.h"
 #include "qhelpermanager.h"
@@ -123,12 +122,12 @@ QUimInputContext::~QUimInputContext()
 
     if ( m_uc )
         uim_release_context( m_uc );
-    delete cwin;
+    delete proxy;
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
     foreach ( const uim_context uc, m_ucHash )
         if ( uc )
             uim_release_context( uc );
-    foreach ( const AbstractCandidateWindow* window, cwinHash )
+    foreach ( const CandidateWindowProxy* window, proxyHash )
         delete window;
 #endif
 
@@ -188,31 +187,9 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
 void QUimInputContext::createCandidateWindow()
 {
-    cwin = 0;
-    // uim-candwin-prog is deprecated
-    char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
-    if ( candwinprog ) {
-        if ( !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
-            cwin = new CandidateTableWindow( 0 );
-        else if ( !strncmp( candwinprog, "uim-candwin-horizontal", 22 ) )
-            cwin = new CandidateWindow( 0, false );
-    } else {
-        char *style = uim_scm_symbol_value_str( "candidate-window-style" );
-        if ( style ) {
-            if ( !strcmp( style, "table" ) )
-                cwin = new CandidateTableWindow( 0 );
-            else if ( !strcmp( style, "horizontal" ) )
-                cwin = new CandidateWindow( 0, false );
-        }
-        free( style );
-    }
-    free( candwinprog );
-    
-    if ( !cwin )
-        cwin = new CandidateWindow( 0 );
-
-    cwin->setQUimInputContext( this );
-    cwin->hide();
+    proxy = new CandidateWindowProxy;
+    proxy->setQUimInputContext( this );
+    proxy->hide();
 }
 
 #ifdef Q_WS_X11
@@ -419,7 +396,7 @@ void QUimInputContext::setFocus()
     else
 #endif
     if ( candwinIsActive )
-        cwin->popup();
+        proxy->popup();
 
     m_HelperManager->checkHelperConnection();
 
@@ -439,7 +416,7 @@ void QUimInputContext::unsetFocus()
 
     uim_focus_out_context( m_uc );
 
-    cwin->hide();
+    proxy->hide();
     m_indicator->hide();
 
     m_HelperManager->checkHelperConnection();
@@ -487,11 +464,11 @@ void QUimInputContext::reset()
     // until focused again.
     if ( isPreeditPreservationEnabled()
             && !m_ucHash.contains( focusedWidget ) ) {
-        psegs.isEmpty() ? cwin->hide() : savePreedit();
+        psegs.isEmpty() ? proxy->hide() : savePreedit();
         return;
     }
 #endif
-    cwin->hide();
+    proxy->hide();
     uim_reset_context( m_uc );
 #ifdef Q_WS_X11
     mCompose->reset();
@@ -511,7 +488,7 @@ void QUimInputContext::update()
     if ( w ) {
         QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
         QPoint p = w->mapToGlobal( mf.topLeft() );
-        cwin->layoutWindow( p, mf );
+        proxy->layoutWindow( p.x(), p.y(), mf.height() );
         m_indicator->move( w->mapToGlobal( mf.bottomLeft() )
             + QPoint( 0, CaretStateIndicator::SPACING ) );
     }
@@ -588,7 +565,7 @@ void QUimInputContext::cand_activate_cb( void *ptr, int nr, int displayLimit )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->cwin->candidateActivate( nr, displayLimit );
+    ic->proxy->candidateActivate( nr, displayLimit );
 }
 
 void QUimInputContext::cand_select_cb( void *ptr, int index )
@@ -598,7 +575,7 @@ void QUimInputContext::cand_select_cb( void *ptr, int index )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->cwin->candidateSelect( index );
+    ic->proxy->candidateSelect( index );
 }
 
 void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
@@ -608,7 +585,7 @@ void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->cwin->candidateShiftPage( forward );
+    ic->proxy->candidateShiftPage( forward );
 }
 
 void QUimInputContext::cand_deactivate_cb( void *ptr )
@@ -618,7 +595,7 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->cwin->deactivateCandwin();
+    ic->proxy->deactivateCandwin();
     ic->candwinIsActive = false;
 }
 
@@ -638,7 +615,7 @@ void QUimInputContext::switch_system_global_im_cb( void *ptr, const char *name )
 void QUimInputContext::cand_activate_with_delay_cb( void *ptr, int delay )
 {
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->cwin->candidateActivateWithDelay( delay );
+    ic->proxy->candidateActivateWithDelay( delay );
 }
 #endif /* !UIM_QT_USE_DELAY */
 
@@ -690,9 +667,9 @@ void QUimInputContext::savePreedit()
 {
     m_ucHash.insert( focusedWidget, m_uc );
     psegsHash.insert( focusedWidget, psegs );
-    cwinHash.insert( focusedWidget, cwin );
-    visibleHash.insert( focusedWidget, cwin->isVisible() );
-    cwin->hide();
+    proxyHash.insert( focusedWidget, proxy );
+    visibleHash.insert( focusedWidget, proxy->isVisible() );
+    proxy->hide();
 
     const char *imname = uim_get_current_im_name( m_uc );
     if ( imname )
@@ -703,7 +680,7 @@ void QUimInputContext::savePreedit()
 
 void QUimInputContext::restorePreedit()
 {
-    AbstractCandidateWindow *window = cwinHash.take( focusedWidget );
+    CandidateWindowProxy *window = proxyHash.take( focusedWidget );
     // if window is 0, updateStyle() was called.
     if ( !window ) {
         psegs = psegsHash.take( focusedWidget );
@@ -721,12 +698,12 @@ void QUimInputContext::restorePreedit()
     }
     if ( m_uc )
         uim_release_context( m_uc );
-    delete cwin;
+    delete proxy;
     m_uc = m_ucHash.take( focusedWidget );
     psegs = psegsHash.take( focusedWidget );
-    cwin = window;
+    proxy = window;
     if ( visibleHash.take( focusedWidget ) )
-        cwin->popup();
+        proxy->popup();
 }
 #endif
 
@@ -770,7 +747,7 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
-    if ( cwin->isAlwaysLeftPosition() )
+    if ( proxy->isAlwaysLeftPosition() )
         return 0;
 
     int cursorPos = 0;
@@ -933,7 +910,7 @@ void QUimInputContext::switch_system_global_im( const char *name )
 void QUimInputContext::updatePosition()
 {
     char * leftp = uim_scm_symbol_value_str( "candidate-window-position" );
-    cwin->setAlwaysLeftPosition( leftp && !strcmp( leftp, "left" ) );
+    proxy->setAlwaysLeftPosition( leftp && !strcmp( leftp, "left" ) );
     free( leftp );
 }
 
@@ -945,16 +922,16 @@ void QUimInputContext::updateStyle()
         free( candwinprog );
         return;
     }
-    delete cwin;
+    delete proxy;
     createCandidateWindow();
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
-    // invalidate all the candidate windows stored in cwinHash
-    QHashIterator<QWidget*, AbstractCandidateWindow*> i( cwinHash );
+    // invalidate all the candidate windows stored in proxyHash
+    QHashIterator<QWidget*, CandidateWindowProxy*> i( proxyHash );
     while ( i.hasNext() ) {
         i.next();
         QWidget *widget = i.key();
-        delete cwinHash[ widget ];
-        cwinHash[ widget ] = 0;
+        delete proxyHash[ widget ];
+        proxyHash[ widget ] = 0;
     }
 #endif
 }

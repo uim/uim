@@ -32,15 +32,22 @@
 */
 #include "candidatetablewindow.h"
 
-#include <QtGui/QLabel>
+#include <cstdio>
+
 #include <QtGui/QFontMetrics>
-#include <QtGui/QGridLayout>
-#include <QtGui/QStyle>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QLabel>
+# include <QtGui/QGridLayout>
+# include <QtGui/QStyle>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QGridLayout>
+# include <QtWidgets/QStyle>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include <uim/uim-scm.h>
-
-#include "quiminputcontext.h"
 
 static const int TABLE_NR_CELLS = TABLE_NR_COLUMNS * TABLE_NR_ROWS;
 
@@ -134,9 +141,10 @@ QSize CandidateTableWindow::sizeHint() const
 
 void CandidateTableWindow::slotCandidateClicked(int index)
 {
-    if (ic && ic->uimContext())
-        uim_set_candidate_index(ic->uimContext(), index);
-    updateLabel();
+    fprintf(stdout, "set_candidate_index\f%d\f\f", index);
+    fflush(stdout);
+    fprintf(stdout, "update_label\f\f");
+    fflush(stdout);
 }
 
 static char *initTableInternal()
@@ -229,7 +237,8 @@ void CandidateTableWindow::setBlockVisible(QLayout *layout, bool visible)
     }
 }
 
-void CandidateTableWindow::updateView(int newpage, int ncandidates)
+void CandidateTableWindow::updateView(int ncandidates,
+    const QList<CandData> &stores)
 {
     for (int i = 0; i < TABLE_NR_ROWS; i++) {
         for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
@@ -250,15 +259,13 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
             }
             if (index - delta >= ncandidates)
                 continue;
-            int candidateIndex = displayLimit * newpage + index - delta;
-            uim_candidate cand = stores[candidateIndex];
-            QString candString
-                = QString::fromUtf8(uim_candidate_get_cand_str(cand));
+            int candidateIndex = index - delta;
+            CandData cand = stores[candidateIndex];
+            QString candString = cand.str;
             if (!candString.isEmpty()) {
                 int row = i;
                 int column = j;
-                QString headString
-                    = QString::fromUtf8(uim_candidate_get_heading_label(cand));
+                QString headString = cand.headingLabel;
                 getButtonPosition(row, column, headString);
                 KeyButton *b = buttonArray[row][column];
                 // '&' shouldn't be used as the shortcut key
@@ -297,10 +304,14 @@ void CandidateTableWindow::updateSize()
     setMinimumSize(QSize(0, 0));
 }
 
-void CandidateTableWindow::setIndex(int totalIndex)
+void CandidateTableWindow::setIndex(int totalindex, int displayLimit,
+    int candidateIndex)
 {
-    AbstractCandidateWindow::setIndex(totalIndex);
-    updateLabel();
+    Q_UNUSED(totalindex)
+    Q_UNUSED(displayLimit)
+    Q_UNUSED(candidateIndex)
+    fprintf(stdout, "update_label\f\f");
+    fflush(stdout);
 }
 
 void CandidateTableWindow::getButtonPosition(int &row, int &column,

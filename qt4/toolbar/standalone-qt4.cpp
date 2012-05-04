@@ -37,12 +37,18 @@
 #include "common-uimstateindicator.h"
 
 #include <QtCore/QPoint>
-#include <QtGui/QApplication>
 #include <QtGui/QCursor>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QHBoxLayout>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QDesktopWidget>
+# include <QtGui/QHBoxLayout>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QDesktopWidget>
+# include <QtWidgets/QHBoxLayout>
+#endif
 
 #include <clocale>
 
@@ -184,8 +190,13 @@ void UimToolbarDraggingHandler::paintEvent( QPaintEvent *e )
     QPainter painter( this );
     int w = width();
     int h = height();
+#if QT_VERSION < 0x050000
     qDrawShadeLine( &painter, w / 2, TOOLBAR_MARGIN_SIZE,
         w / 2, h - TOOLBAR_MARGIN_SIZE, palette() );
+#else
+    painter.drawLine( w / 2, TOOLBAR_MARGIN_SIZE,
+        w / 2, h - TOOLBAR_MARGIN_SIZE );
+#endif
 }
 
 int main( int argc, char *argv[] )

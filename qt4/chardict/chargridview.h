@@ -33,7 +33,12 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_CHARDICT_CHAR_GRID_VIEW_H
 #define UIM_QT4_CHARDICT_CHAR_GRID_VIEW_H
 
-#include <QtGui/QTableWidget>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QTableWidget>
+#else
+# include <QtWidgets/QTableWidget>
+#endif
 
 class QFont;
 class QMouseEvent;

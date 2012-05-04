@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2010-2012 uim Project http://code.google.com/p/uim/
+  copyright (c) 2012 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -30,43 +30,52 @@
   SUCH DAMAGE.
 
 */
-#include "abstractcandidatewindow.h"
+#include <config.h>
 
+#include "candidatewindowproxy.h"
+
+#include <QtCore/QPoint>
+#include <QtCore/QProcess>
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
-
-#include "quiminputcontext.h"
-
-const Qt::WindowFlags candidateFlag = (Qt::Window
-                                        | Qt::WindowStaysOnTopHint
-                                        | Qt::FramelessWindowHint
-                                        | Qt::Tool
-#if defined(Q_WS_X11)
-                                        | Qt::X11BypassWindowManagerHint
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QDesktopWidget>
+# include <QtGui/QLabel>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QDesktopWidget>
+# include <QtWidgets/QLabel>
 #endif
-                                 );
 
-AbstractCandidateWindow::AbstractCandidateWindow(QWidget *parent)
-: QFrame(parent, candidateFlag), ic(0), nrCandidates(0), displayLimit(0),
-    candidateIndex(-1), pageIndex(-1), window(0), isAlwaysLeft(false)
+#include <uim-scm.h>
+
+#if QT_VERSION < 0x050000
+# include "quiminputcontext.h"
+#else
+# include "quimplatforminputcontext.h"
+#endif
+
+CandidateWindowProxy::CandidateWindowProxy()
+: ic(0), nrCandidates(0), displayLimit(0), candidateIndex(-1), pageIndex(-1),
+  window(0), isAlwaysLeft(false)
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+, m_isVisible(false)
+#endif
 {
-    setFrameStyle(Raised|NoFrame);
-
-    // setup NumberLabel
-    numLabel = new QLabel;
-    numLabel->adjustSize();
-
 #ifdef UIM_QT_USE_DELAY
     m_delayTimer = new QTimer(this);
     m_delayTimer->setSingleShot(true);
     connect(m_delayTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
 #endif /* !UIM_QT_USE_DELAY */
+
+    process = new QProcess;
+    initializeProcess();
+    connect(process, SIGNAL(readyReadStandardOutput()),
+        this, SLOT(slotReadyStandardOutput()));
 }
 
-AbstractCandidateWindow::~AbstractCandidateWindow()
+CandidateWindowProxy::~CandidateWindowProxy()
 {
     // clear stored candidate data
     while (!stores.isEmpty()) {
@@ -74,19 +83,20 @@ AbstractCandidateWindow::~AbstractCandidateWindow()
         if (cand)
             uim_candidate_free(cand);
     }
+    process->close();
 }
 
-void AbstractCandidateWindow::deactivateCandwin()
+void CandidateWindowProxy::deactivateCandwin()
 {
 #ifdef UIM_QT_USE_DELAY
     m_delayTimer->stop();
 #endif /* !UIM_QT_USE_DELAY */
 
-    hide();
+    execute("hide");
     clearCandidates();
 }
 
-void AbstractCandidateWindow::clearCandidates()
+void CandidateWindowProxy::clearCandidates()
 {
 #ifdef ENABLE_DEBUG
     qDebug("clear Candidates");
@@ -104,50 +114,42 @@ void AbstractCandidateWindow::clearCandidates()
     }
 }
 
-void AbstractCandidateWindow::popup()
+void CandidateWindowProxy::popup()
 {
-    window = QApplication::focusWidget()->window();
-    window->installEventFilter(this);
-    raise();
-    show();
+    execute("popup");
 }
 
-void AbstractCandidateWindow::layoutWindow(const QPoint &point,
-        const QRect &rect)
+void CandidateWindowProxy::hide()
 {
-    const int x = point.x();
-    const int y = point.y();
-    const int h = rect.height();
-    int destX = x;
-    int destY = y + h;
-
-    int screenW = QApplication::desktop()->screenGeometry().width();
-    int screenH = QApplication::desktop()->screenGeometry().height();
-
-    if (destX + width() > screenW)
-        destX = screenW - width();
-
-    if (destY + height() > screenH)
-        destY = y - height();
-
-    move(destX, destY);
+    execute("hide");
 }
 
-void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+bool CandidateWindowProxy::isVisible()
+{
+    return m_isVisible;
+}
+#endif
+
+void CandidateWindowProxy::layoutWindow(int x, int y, int height)
+{
+    execute("layout_window\f" + QString::number(x) + '\f'
+        + QString::number(y) + '\f' + QString::number(height));
+}
+
+void CandidateWindowProxy::candidateActivate(int nr, int displayLimit)
 {
 #ifdef UIM_QT_USE_DELAY
     m_delayTimer->stop();
 #endif /* !UIM_QT_USE_DELAY */
 
-    QList<uim_candidate> list;
+   QList<uim_candidate> list;
 
 #if !UIM_QT_USE_NEW_PAGE_HANDLING
     activateCandwin(displayLimit);
 
     // set candidates
-    uim_candidate cand;
-    for (int i = 0; i < nr; i++)
-    {
+    for (int i = 0; i < nr; i++) {
         cand = uim_get_candidate(ic->uimContext(), i,
                 displayLimit ? i % displayLimit : i);
         list.append(cand);
@@ -166,26 +168,25 @@ void AbstractCandidateWindow::candidateActivate(int nr, int displayLimit)
     preparePageCandidates(0);
     setPage(0);
 #endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
-    popup();
-    ic->setCandwinActive();
+
+    execute("candidate_activate");
 }
 
 #ifdef UIM_QT_USE_DELAY
-void AbstractCandidateWindow::candidateActivateWithDelay(int delay)
+void CandidateWindowProxy::candidateActivateWithDelay(int delay)
 {
     m_delayTimer->stop();
     (delay > 0) ?  m_delayTimer->start(delay * 1000) : timerDone();
 }
 #endif /* !UIM_QT_USE_DELAY */
 
-void AbstractCandidateWindow::candidateSelect(int index)
+void CandidateWindowProxy::candidateSelect(int index)
 {
 #if UIM_QT_USE_NEW_PAGE_HANDLING
-    int new_page;
-    
     if (index >= nrCandidates)
         index = 0;
 
+    int new_page;
     if (index >= 0 && displayLimit)
         new_page = index / displayLimit;
     else
@@ -196,7 +197,7 @@ void AbstractCandidateWindow::candidateSelect(int index)
     setIndex(index);
 }
 
-void AbstractCandidateWindow::candidateShiftPage(bool forward)
+void CandidateWindowProxy::candidateShiftPage(bool forward)
 {
 #if UIM_QT_USE_NEW_PAGE_HANDLING
     int new_page, index;
@@ -214,41 +215,142 @@ void AbstractCandidateWindow::candidateShiftPage(bool forward)
     shiftPage(forward);
 }
 
-void AbstractCandidateWindow::activateCandwin(int dLimit)
+// -v -> vertical
+// -h -> horizontal
+// -t -> table
+QString CandidateWindowProxy::candidateWindowStyle()
+{
+    QString windowStyle;
+    // uim-candwin-prog is deprecated
+    char *candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+    if (candwinprog) {
+        if (!strncmp(candwinprog, "uim-candwin-tbl", 15))
+            windowStyle = "-t";
+        else if (!strncmp(candwinprog, "uim-candwin-horizontal", 22))
+            windowStyle = "-h";
+    } else {
+        char *style = uim_scm_symbol_value_str("candidate-window-style");
+        if (style) {
+            if (!strcmp(style, "table"))
+                windowStyle = "-t";
+            else if (!strcmp(style, "horizontal"))
+                windowStyle = "-h";
+        }
+        free(style);
+    }
+    free(candwinprog);
+    
+    if (windowStyle.isEmpty())
+        return "-v";
+    return windowStyle;
+}
+
+void CandidateWindowProxy::slotReadyStandardOutput()
+{
+    QByteArray output = process->readAllStandardOutput();
+    QList<QStringList> messageList = parse_messages(QString(output));
+    for (int i = 0, j = messageList.count(); i < j; i++) {
+        QStringList message = messageList[i];
+        QString command = message[0];
+        if (command == "set_candidate_index") {
+            uim_set_candidate_index(ic->uimContext(), message[1].toInt());
+        } else if (command == "set_candidate_index_2") {
+            candidateIndex = pageIndex * displayLimit + message[1].toInt();
+            uim_set_candidate_index(ic->uimContext(), candidateIndex);
+        } else if (command == "set_candwin_active") {
+            ic->setCandwinActive();
+        } else if (command == "set_focus_widget") {
+            setFocusWidget();
+        } else if (command == "update_label") {
+            updateLabel();
+        }
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        else if (command == "shown") {
+            m_isVisible = true;
+        } else if (command == "hidden") {
+            m_isVisible = false;
+        }
+#endif
+    }
+}
+
+#ifdef UIM_QT_USE_DELAY 
+void CandidateWindowProxy::timerDone()
+{
+    int nr = -1;
+    int display_limit = -1;
+    int selected_index = -1;
+    uim_delay_activating(ic->uimContext(), &nr, &display_limit,
+        &selected_index);
+    if (nr <= 0) {
+        return;
+    }
+    candidateActivate(nr, display_limit);
+    if (selected_index >= 0) {
+        candidateSelect(selected_index);
+    }
+}
+#endif /* !UIM_QT_USE_DELAY */
+
+void CandidateWindowProxy::initializeProcess()
+{
+    if (process->state() != QProcess::NotRunning) {
+        return;
+    }
+    process->close();
+    QString style = candidateWindowStyle();
+#if QT_VERSION < 0x050000
+    process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
+#else
+    process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
+#endif
+    process->waitForStarted();
+}
+
+void CandidateWindowProxy::execute(const QString &command)
+{
+    initializeProcess();
+    process->write((command + "\f\f").toUtf8());
+}
+
+void CandidateWindowProxy::activateCandwin(int dLimit)
 {
     candidateIndex = -1;
     displayLimit = dLimit;
     pageIndex = 0;
+    execute("setup_sub_window");
 }
 
-void AbstractCandidateWindow::shiftPage(bool forward)
+void CandidateWindowProxy::shiftPage(bool forward)
 {
 #ifdef ENABLE_DEBUG
     qDebug("candidateIndex = %d", candidateIndex);
 #endif
     
-    if (forward)
-    {
+    if (forward) {
         if (candidateIndex != -1)
             candidateIndex += displayLimit;
         setPage(pageIndex + 1);
-    }
-    else
-    {
+    } else {
         if (candidateIndex != -1) {
             if (candidateIndex < displayLimit)
-                candidateIndex = displayLimit * (nrCandidates / displayLimit) + candidateIndex;
+                candidateIndex = displayLimit * (nrCandidates / displayLimit)
+                    + candidateIndex;
             else
                 candidateIndex -= displayLimit;
         }
-
         setPage(pageIndex - 1);
     }
     if (ic && ic->uimContext() && candidateIndex != -1)
         uim_set_candidate_index(ic->uimContext(), candidateIndex);
+    // for CandidateWindow
+    if (candidateIndex != -1) {
+        int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
+        execute("shift_page\f" + QString::number(idx));
+    }
 }
 
-void AbstractCandidateWindow::setIndex(int totalindex)
+void CandidateWindowProxy::setIndex(int totalindex)
 {
 #ifdef ENABLE_DEBUG
     qDebug("setIndex : totalindex = %d", totalindex);
@@ -268,10 +370,13 @@ void AbstractCandidateWindow::setIndex(int totalindex)
         newpage = candidateIndex / displayLimit;
     if (pageIndex != newpage)
         setPage(newpage);
+    execute("set_index\f" + QString::number(totalindex)
+        + '\f' + QString::number(displayLimit)
+        + '\f' + QString::number(candidateIndex));
 }
 
 #if UIM_QT_USE_NEW_PAGE_HANDLING
-void AbstractCandidateWindow::setNrCandidates(int nrCands, int dLimit)
+void CandidateWindowProxy::setNrCandidates(int nrCands, int dLimit)
 {
 #ifdef ENABLE_DEBUG
     qDebug("setNrCandidates");
@@ -288,32 +393,25 @@ void AbstractCandidateWindow::setNrCandidates(int nrCands, int dLimit)
 
     // setup dummy candidate
     for (int i = 0; i < nrCandidates; i++)
-    {
-        uim_candidate d = 0;
-        stores.append(d);
-    }
+        stores.append(0);
+
+    execute("setup_sub_window");
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
-#ifdef UIM_QT_USE_DELAY 
-void AbstractCandidateWindow::timerDone()
+void CandidateWindowProxy::updateLabel()
 {
-    int nr = -1;
-    int display_limit = -1;
-    int selected_index = -1;
-    uim_delay_activating(ic->uimContext(), &nr, &display_limit,
-        &selected_index);
-    if (nr <= 0) {
-        return;
-    }
-    candidateActivate(nr, display_limit);
-    if (selected_index >= 0) {
-        candidateSelect(selected_index);
-    }
-}
-#endif /* !UIM_QT_USE_DELAY */
+    QString indexString;
+    if (candidateIndex >= 0)
+        indexString = QString::number(candidateIndex + 1) + " / "
+            + QString::number(nrCandidates);
+    else
+        indexString = "- / " + QString::number(nrCandidates);
 
-void AbstractCandidateWindow::setCandidates(int dl,
+    execute("update_label\f" + indexString);
+}
+
+void CandidateWindowProxy::setCandidates(int dl,
         const QList<uim_candidate> &candidates)
 {
 #ifdef ENABLE_DEBUG
@@ -339,7 +437,7 @@ void AbstractCandidateWindow::setCandidates(int dl,
     setPage(0);
 }
 
-void AbstractCandidateWindow::setPage(int page)
+void CandidateWindowProxy::setPage(int page)
 {
 #ifdef ENABLE_DEBUG
     qDebug("setPage : page = %d", page);
@@ -381,7 +479,17 @@ void AbstractCandidateWindow::setPage(int page)
     if (newpage == lastpage)
         ncandidates = nrCandidates - displayLimit * lastpage;
 
-    updateView(newpage, ncandidates);
+    QString candidateMessage;
+    for (int i = 0; i < ncandidates; i++) {
+        uim_candidate cand = stores.at(displayLimit * newpage + i);
+        candidateMessage +=
+            QString::fromUtf8(uim_candidate_get_heading_label(cand)) + '\a'
+            + QString::fromUtf8(uim_candidate_get_cand_str(cand)) + '\a'
+            + QString::fromUtf8(uim_candidate_get_annotation_str(cand)) + '\f';
+    }
+
+    execute("update_view\f" + QString::number(ncandidates) + "\f"
+        + candidateMessage);
 
     // set index
     if (newindex != candidateIndex)
@@ -389,11 +497,11 @@ void AbstractCandidateWindow::setPage(int page)
     else
         updateLabel();
 
-    updateSize();
+    execute("update_size");
 }
 
 #if UIM_QT_USE_NEW_PAGE_HANDLING
-void AbstractCandidateWindow::setPageCandidates(int page,
+void CandidateWindowProxy::setPageCandidates(int page,
         const QList<uim_candidate> &candidates)
 {
 #ifdef ENABLE_DEBUG
@@ -416,7 +524,7 @@ void AbstractCandidateWindow::setPageCandidates(int page,
         stores[start + i] = candidates[i];
 }
 
-void AbstractCandidateWindow::preparePageCandidates(int page)
+void CandidateWindowProxy::preparePageCandidates(int page)
 {
     QList<uim_candidate> list;
 
@@ -427,8 +535,6 @@ void AbstractCandidateWindow::preparePageCandidates(int page)
         return;
 
     // set page candidates
-    uim_candidate cand;
-
     int start = page * displayLimit;
 
     int pageNr;
@@ -437,9 +543,9 @@ void AbstractCandidateWindow::preparePageCandidates(int page)
     else
         pageNr = nrCandidates - start;
 
-    for (int i = start; i < pageNr + start; i++)
-    {
-        cand = uim_get_candidate(ic->uimContext(), i,
+    for (int i = start; i < pageNr + start; i++) {
+        // set page candidates
+        uim_candidate cand = uim_get_candidate(ic->uimContext(), i,
                 displayLimit ? i % displayLimit : i);
         list.append(cand);
     }
@@ -448,19 +554,13 @@ void AbstractCandidateWindow::preparePageCandidates(int page)
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
-void AbstractCandidateWindow::updateLabel()
+void CandidateWindowProxy::setFocusWidget()
 {
-    QString indexString;
-    if (candidateIndex >= 0)
-        indexString = QString::number(candidateIndex + 1) + " / "
-            + QString::number(nrCandidates);
-    else
-        indexString = "- / " + QString::number(nrCandidates);
-
-    numLabel->setText(indexString);
+    window = QApplication::focusWidget()->window();
+    window->installEventFilter(this);
 }
 
-bool AbstractCandidateWindow::eventFilter(QObject *obj, QEvent *event)
+bool CandidateWindowProxy::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == window) {
         if (event->type() == QEvent::Move) {
@@ -469,13 +569,17 @@ bool AbstractCandidateWindow::eventFilter(QObject *obj, QEvent *event)
                 QRect rect
                     = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
                 QPoint p = widget->mapToGlobal(rect.topLeft());
-                layoutWindow(p, rect);
+                execute("layout_window\f" + QString::number(p.x()) + '\f'
+                    + QString::number(p.y()) + '\f'
+                    + QString::number(rect.height()));
             } else {
                 QMoveEvent *moveEvent = static_cast<QMoveEvent *>(event);
-                move(pos() + moveEvent->pos() - moveEvent->oldPos());
+                QPoint p = moveEvent->pos() - moveEvent->oldPos();
+                execute("move_candwin\f" + QString::number(p.x()) + '\f'
+                    + QString::number(p.y()));
             }
         }
         return false;
     }
-    return QFrame::eventFilter(obj, event);
+    return QObject::eventFilter(obj, event);
 }

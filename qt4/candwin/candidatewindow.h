@@ -33,7 +33,12 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 #define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 
-#include <QtGui/QTableWidget>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include <QtGui/QTableWidget>
+#else
+# include <QtWidgets/QTableWidget>
+#endif
 
 #include "abstractcandidatewindow.h"
 
@@ -45,30 +50,28 @@ class CandidateWindow : public AbstractCandidateWindow
     Q_OBJECT
 
 public:
-    explicit CandidateWindow( QWidget *parent, bool vertical = true );
+    explicit CandidateWindow(QWidget *parent, bool vertical = true);
 
     QSize sizeHint() const;
 
 private slots:
-    void slotCandidateSelected( int row, int column );
+    void slotCandidateSelected(int row, int column);
     void slotHookSubwindow();
 
 private:
-    void activateCandwin( int dLimit );
+    void setupSubWindow();
 
-    void updateView( int newpage, int ncandidates );
+    void updateView(int ncandidates, const QList<CandData> &stores);
     void updateSize();
-    void shiftPage( bool forward );
-    void setIndex( int totalindex );
-
-    void setNrCandidates( int nrCands, int dLimit );
+    void shiftPage(int idx);
+    void setIndex(int totalindex, int displayLimit, int candidateIndex);
 
     // Moving and Resizing affects the position of Subwindow
-    virtual void moveEvent( QMoveEvent * );
-    virtual void resizeEvent( QResizeEvent * );
-    virtual void hideEvent( QHideEvent *event );
+    virtual void moveEvent(QMoveEvent *);
+    virtual void resizeEvent(QResizeEvent *);
+    virtual void hideEvent(QHideEvent *event);
 
-    QRect subWindowRect( const QRect &rect, const QTableWidgetItem *item = 0 );
+    QRect subWindowRect(const QRect &rect, const QTableWidgetItem *item = 0);
 
     // widgets
     CandidateListView *cList;
@@ -88,8 +91,8 @@ class CandidateListView : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit CandidateListView( QWidget *parent = 0, bool vertical = true )
-        : QTableWidget( parent ), isVertical( vertical ) {}
+    explicit CandidateListView(QWidget *parent = 0, bool vertical = true)
+        : QTableWidget(parent), isVertical(vertical) {}
     ~CandidateListView() {}
 
     QSize sizeHint() const;

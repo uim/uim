@@ -32,13 +32,22 @@
 */
 #include "keyeditformbase.h"
 
-#include <QtGui/QGridLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QGridLayout>
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QHeaderView>
+# include <QtGui/QPushButton>
+# include <QtGui/QSpacerItem>
+# include <QtGui/QTreeWidget>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QGridLayout>
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QPushButton>
+# include <QtWidgets/QSpacerItem>
+# include <QtWidgets/QTreeWidget>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 #include "qtgettext.h"
 

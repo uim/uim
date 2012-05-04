@@ -36,13 +36,23 @@ SUCH DAMAGE.
 
 #include <QtCore/QSettings>
 #include <QtCore/QTextStream>
-#include <QtGui/QFrame>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QSplitter>
-#include <QtGui/QVBoxLayout>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFrame>
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QLabel>
+# include <QtGui/QListWidget>
+# include <QtGui/QListWidgetItem>
+# include <QtGui/QSplitter>
+# include <QtGui/QVBoxLayout>
+#else
+# include <QtWidgets/QFrame>
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QListWidget>
+# include <QtWidgets/QListWidgetItem>
+# include <QtWidgets/QSplitter>
+# include <QtWidgets/QVBoxLayout>
+#endif
 
 class UnicodeBlock
 {

@@ -34,7 +34,11 @@ SUCH DAMAGE.
 #define UIM_QT4_IMMODULE_SUBWINDOW_H
 
 #include <QtCore/QTimer>
-#include <QtGui/QFrame>
+#if QT_VERSION < 0x050000
+# include <QtGui/QFrame>
+#else
+# include <QtWidgets/QFrame>
+#endif
 
 class QTextBrowser;
 
@@ -43,10 +47,10 @@ class SubWindow : public QFrame
     Q_OBJECT
 
 public:
-    explicit SubWindow( QWidget *parent = 0 );
+    explicit SubWindow(QWidget *parent = 0);
     ~SubWindow();
 
-    void layoutWindow( const QRect &rect, bool isVertical );
+    void layoutWindow(const QRect &rect, bool isVertical);
 
     bool isHooked()
     {
@@ -54,7 +58,7 @@ public:
     }
 
 public slots:
-    void hookPopup( const QString &contents );
+    void hookPopup(const QString &contents);
     void cancelHook();
 
 protected:

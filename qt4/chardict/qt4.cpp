@@ -35,17 +35,31 @@ SUCH DAMAGE.
 #include "unicodeviewwidget.h"
 
 #include <QtCore/QSettings>
-#include <QtGui/QApplication>
-#include <QtGui/QComboBox>
 #include <QtGui/QFont>
-#include <QtGui/QFontDialog>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
-#include <QtGui/QSizePolicy>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QStackedWidget>
+#if QT_VERSION < 0x050000
+# include <QtGui/QApplication>
+# include <QtGui/QComboBox>
+# include <QtGui/QFontDialog>
+# include <QtGui/QHBoxLayout>
+# include <QtGui/QLabel>
+# include <QtGui/QLineEdit>
+# include <QtGui/QPushButton>
+# include <QtGui/QSizePolicy>
+# include <QtGui/QVBoxLayout>
+# include <QtGui/QStackedWidget>
+#else
+# include <QtWidgets/QApplication>
+# include <QtWidgets/QComboBox>
+# include <QtWidgets/QFontDialog>
+# include <QtWidgets/QHBoxLayout>
+# include <QtWidgets/QLabel>
+# include <QtWidgets/QLineEdit>
+# include <QtWidgets/QPushButton>
+# include <QtWidgets/QSizePolicy>
+# include <QtWidgets/QVBoxLayout>
+# include <QtWidgets/QStackedWidget>
+
+#endif
 
 #ifdef Q_WS_X11
 #include <QtGui/QX11Info>

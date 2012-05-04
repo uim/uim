@@ -46,6 +46,9 @@
 #endif
 
 #include <QtCore/QTextCodec>
+#if QT_VERSION >= 0x050000
+# undef Expose
+#endif
 #include <QtGui/QKeyEvent>
 
 #include <X11/Xlib.h>
@@ -54,7 +57,11 @@
 
 #include "uim/uim.h"
 
+#if QT_VERSION < 0x050000
 #include "quiminputcontext.h"
+#else
+#include "quimplatforminputcontext.h"
+#endif
 
 static const char COMPOSE_FILE[] = "Compose";
 static const char COMPOSE_DIR_FILE[] = "X11/locale/compose.dir";
@@ -70,7 +77,11 @@ static inline bool iscomment(char ch)
 static int parse_line(char *line, char **argv, int argsize);
 static unsigned int KeySymToUcs4(KeySym keysym);
 
+#if QT_VERSION < 0x050000
 Compose::Compose(DefTree *top, QUimInputContext *ic)
+#else
+Compose::Compose(DefTree *top, QUimPlatformInputContext *ic)
+#endif
 {
     m_ic = ic;
     m_composed = 0;
@@ -515,6 +526,7 @@ modmask(char *name)
     return(mask);
 }
 
+#ifdef Q_WS_X11
 int
 QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 {
@@ -958,6 +970,7 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
 
     return 1;
 }
+#endif
 
 static int
 parse_line(char *line, char **argv, int argsize)

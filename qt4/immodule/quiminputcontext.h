@@ -35,6 +35,7 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 
+#include <QtCore/QtGlobal>
 #include <QtGui/QInputContext>
 
 #ifdef Q_WS_X11
@@ -44,9 +45,11 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
+#include "util.h" // for WORKAROUND_BROKEN_RESET_IN_QT4
+
 class QEvent;
 
-class AbstractCandidateWindow;
+class CandidateWindowProxy;
 class CaretStateIndicator;
 class QUimHelperManager;
 class QUimTextUtil;
@@ -66,8 +69,6 @@ struct PreeditSegment
     int attr;
     QString str;
 };
-
-#define WORKAROUND_BROKEN_RESET_IN_QT4
 
 class QUimInputContext : public QInputContext
 {
@@ -175,12 +176,12 @@ protected:
 
     uim_context m_uc;
     QList<PreeditSegment> psegs;
-    AbstractCandidateWindow *cwin;
+    CandidateWindowProxy *proxy;
 
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
     QHash<QWidget*, uim_context> m_ucHash;
     QHash<QWidget*, QList<PreeditSegment> > psegsHash;
-    QHash<QWidget*, AbstractCandidateWindow*> cwinHash;
+    QHash<QWidget*, CandidateWindowProxy*> proxyHash;
     QHash<QWidget*, bool> visibleHash;
 
     QWidget *focusedWidget;

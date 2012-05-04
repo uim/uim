@@ -37,7 +37,11 @@ SUCH DAMAGE.
 
 #include "uim/uim.h"
 
+#if QT_VERSION < 0x050000
 class QUimInputContext;
+#else
+class QUimPlatformInputContext;
+#endif
 
 class QUimTextUtil : QObject
 {
@@ -118,7 +122,11 @@ private:
     void restorePreedit();
 
     QWidget *mWidget;
+#if QT_VERSION < 0x050000
     QUimInputContext *mIc;
+#else
+    QUimPlatformInputContext *mIc;
+#endif
     bool mPreeditSaved;
 };
 
