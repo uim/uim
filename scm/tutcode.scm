@@ -819,8 +819,8 @@
      (list 'candwin-delay-waiting #f)
      ;;; 候補ウィンドウの遅延表示待ち中に選択された候補のインデックス番号
      (list 'candwin-delay-selected-index -1)
-     ;;; 擬似表形式候補表示用の候補リスト
-     (list 'pseudo-table-cands ())
+     ;;; 擬似表形式候補表示用の候補vector(各要素が各ページの候補リスト)
+     (list 'pseudo-table-cands #f)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
      (list 'stroke-help ())
@@ -933,7 +933,8 @@
         (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
     ;; 表形式候補ウィンドウ用設定
     (if (null? tutcode-heading-label-char-list)
-      (if (eq? candidate-window-style 'table)
+      (if (or (eq? candidate-window-style 'table)
+              tutcode-use-pseudo-table-style?)
         (set! tutcode-heading-label-char-list
           (case tutcode-candidate-window-table-layout
             ((qwerty-jis) tutcode-table-heading-label-char-list-qwerty-jis)
@@ -946,7 +947,8 @@
       (set! tutcode-heading-label-char-list-for-history
         tutcode-heading-label-char-list))
     (if (null? tutcode-heading-label-char-list-for-kigou-mode)
-      (if (eq? candidate-window-style 'table)
+      (if (or (eq? candidate-window-style 'table)
+              tutcode-use-pseudo-table-style?)
         (begin
           (set! tutcode-heading-label-char-list-for-kigou-mode
             tutcode-table-heading-label-char-list-for-kigou-mode)
@@ -1812,8 +1814,7 @@
       (tutcode-context-set-candwin-delay-waiting! pc #f)
       (if (and tutcode-use-pseudo-table-style?
                (>= nr 0))
-        (let ((pnr-pdl
-                (tutcode-pseudo-table-style-setup pc type nr display-limit)))
+        (let ((pnr-pdl (tutcode-pseudo-table-style-setup pc nr display-limit)))
           (im-activate-candidate-selector pc (car pnr-pdl) (cadr pnr-pdl)))
         (im-activate-candidate-selector pc nr display-limit)))))
 
@@ -1824,29 +1825,106 @@
        (im-delay-activate-candidate-selector-supported? pc)
        (> delay 0)))
 
-;;; 擬似表形式候補表示用の候補リストを作成する
-;;; @param type 候補ウィンドウタイプ
-;;; @param delay 候補ウィンドウ表示までの待ち時間[s]
-;;; @param nr 候補数。delay後に計算する場合は-1
+;;; 擬似表形式候補表示用の最初のページの候補リストを作成して
+;;; pseudo-table-candsにsetする
+;;; @param nr 候補数
 ;;; @param display-limit ページ内候補数
 ;;; @return '(nr display-limit) 擬似表形式の候補リストの候補数とページ内候補数
-(define (tutcode-pseudo-table-style-setup pc type nr display-limit)
-  (let* ((cands
+(define (tutcode-pseudo-table-style-setup pc nr display-limit)
+  (if (= nr 0)
+    '(0 0)
+    (let* ((pcands (tutcode-pseudo-table-style-make-page pc 0 display-limit nr))
+           (pdl (length pcands))
+           (nr-page (+ (quotient nr display-limit)
+                       (if (= 0 (remainder nr display-limit)) 0 1)))
+           (pnr (* nr-page pdl))
+           (pcands-all (make-vector nr-page #f)))
+      (vector-set! pcands-all 0 pcands)
+      (tutcode-context-set-pseudo-table-cands! pc pcands-all)
+      (list pnr pdl))))
+
+;;; 擬似表形式候補表示用の新ページの候補リストを作成して返す
+(define (tutcode-pseudo-table-style-make-new-page pc)
+  (let*
+    ((dl-nr-nth (tutcode-candwin-limit-nr-nth pc))
+     (dl (list-ref dl-nr-nth 0))
+     (nr (list-ref dl-nr-nth 1))
+     (nth (list-ref dl-nr-nth 2))
+     (page (quotient nth dl))
+     (start-index (* page dl))
+     (end-index (+ start-index dl)))
+    (tutcode-pseudo-table-style-make-page pc start-index end-index nr)))
+
+;;; 候補ウィンドウに表示・選択中の候補の情報を返す
+;;; @return (<ページ内候補数(display-limit)> <全候補数> <選択中の候補番号>)
+(define (tutcode-candwin-limit-nr-nth pc)
+  (cond
+    ((eq? (tutcode-context-state pc) 'tutcode-state-kigou)
+      (list tutcode-nr-candidate-max-for-kigou-mode
+            (tutcode-context-nr-candidates pc)
+            (tutcode-context-nth pc)))
+    ((eq? (tutcode-context-state pc) 'tutcode-state-history)
+      (list tutcode-nr-candidate-max-for-history
+            (tutcode-context-nr-candidates pc)
+            (tutcode-context-nth pc)))
+    ((eq? (tutcode-context-candidate-window pc)
+          'tutcode-candidate-window-predicting)
+      (list (tutcode-context-prediction-page-limit pc)
+            (tutcode-context-prediction-nr-all pc)
+            (tutcode-context-prediction-index pc)))
+    ((eq? (tutcode-context-candidate-window pc)
+          'tutcode-candidate-window-stroke-help)
+      (list tutcode-nr-candidate-max-for-kigou-mode
+            (length (tutcode-context-stroke-help pc))
+            0))
+    ((eq? (tutcode-context-candidate-window pc)
+          'tutcode-candidate-window-auto-help)
+      (list tutcode-nr-candidate-max-for-kigou-mode
+            (length (tutcode-context-auto-help pc))
+            0))
+    ((eq? (tutcode-context-state pc) 'tutcode-state-interactive-bushu)
+      (list (tutcode-context-prediction-page-limit pc)
+            (tutcode-context-prediction-nr-all pc)
+            (tutcode-context-prediction-index pc)))
+    ((eq? (tutcode-context-candidate-window pc)
+          'tutcode-candidate-window-converting)
+      (list tutcode-nr-candidate-max
+            (tutcode-context-nr-candidates pc)
+            (tutcode-context-nth pc)))
+    (else
+      (list tutcode-nr-candidate-max 0 0))))
+
+;;; 擬似表形式候補表示用の指定した開始番号のページの候補リストを作成して返す
+;;; @param start-index 開始番号
+;;; @param end-index 終了番号
+(define (tutcode-pseudo-table-style-make-page pc start-index end-index nr)
+  (let ((cands
           (let loop
-            ((idx 0)
+            ((idx start-index)
              (cands ()))
-            (if (or (>= idx display-limit) (>= idx nr))
+            (if (or (>= idx end-index) (>= idx nr))
               (reverse cands)
               (loop
                 (+ idx 1)
                 (cons (tutcode-get-candidate-handler-internal pc idx 0)
-                      cands)))))
-         (pcands (tutcode-table-in-vertical-candwin cands))
-         (pdl (length pcands))
-         (nr-page (+ (quotient nr display-limit)
-                     (if (= 0 (remainder nr display-limit)) 0 1))))
-    (tutcode-context-set-pseudo-table-cands! pc pcands)
-    (list (* nr-page pdl) pdl)))
+                      cands))))))
+    (tutcode-table-in-vertical-candwin cands)))
+
+;;; 候補リスト上の候補番号を、擬似表形式上の候補番号に変換
+(define (tutcode-pseudo-table-style-candwin-index pc idx)
+  (let* ((vec (tutcode-context-pseudo-table-cands pc))
+         (display-limit (length (vector-ref vec 0)))
+         (page-limit (list-ref (tutcode-candwin-limit-nr-nth pc) 0))
+         (page (quotient idx page-limit)))
+    (* page display-limit))) ; XXX:candwinのページ単位のみ対応
+
+;;; 擬似表形式上の候補番号を、候補リスト上の候補番号に変換
+(define (tutcode-pseudo-table-style-scm-index pc idx)
+  (let* ((vec (tutcode-context-pseudo-table-cands pc))
+         (display-limit (length (vector-ref vec 0)))
+         (page-limit (list-ref (tutcode-candwin-limit-nr-nth pc) 0))
+         (page (quotient idx display-limit)))
+    (* page page-limit))) ; XXX:candwinのページ単位のみ対応
 
 ;;; 候補ウィンドウ上で候補を選択する
 ;;; @param idx 選択する候補のインデックス番号
@@ -1856,6 +1934,13 @@
     ;; (XXX (uim api-docに合わせて)candwin側で対処した方がいいかもしれないが、
     ;;      shift-pageとの混在時の計算が面倒なので、とりあえずscm側で。)
     (tutcode-context-set-candwin-delay-selected-index! pc idx)
+    (tutcode-pseudo-table-select-candidate pc idx)))
+
+;;; 候補ウィンドウ上で候補を選択する(擬似表形式候補表示対応)
+;;; @param idx 選択する候補のインデックス番号
+(define (tutcode-pseudo-table-select-candidate pc idx)
+  (if tutcode-use-pseudo-table-style?
+    (im-select-candidate pc (tutcode-pseudo-table-style-candwin-index pc idx))
     (im-select-candidate pc idx)))
 
 ;;; 仮想鍵盤に表示する候補リストを作って返す
@@ -5003,6 +5088,7 @@
       (im-deactivate-candidate-selector pc)
       (tutcode-context-set-candidate-window! pc 'tutcode-candidate-window-off)
       (tutcode-context-set-predicting! pc 'tutcode-predicting-off)
+      (tutcode-context-set-pseudo-table-cands! pc #f)
       (tutcode-context-set-candwin-delay-waiting! pc #f)
       (tutcode-context-set-candwin-delay-selected-index! pc -1))))
 
@@ -5866,11 +5952,20 @@
 (define (tutcode-get-candidate-handler c idx accel-enum-hint)
   (let ((tc (tutcode-find-descendant-context c)))
     (if tutcode-use-pseudo-table-style?
-      (nth idx (tutcode-context-pseudo-table-cands tc))
+      (let* ((vec (tutcode-context-pseudo-table-cands tc))
+             (dl (length (vector-ref vec 0)))
+             (page (quotient idx dl))
+             (pcands (vector-ref vec page))
+             (cands
+              (or pcands
+                  (let ((cands (tutcode-pseudo-table-style-make-new-page tc)))
+                    (vector-set! vec page cands)
+                    cands))))
+        (list-ref cands (remainder idx dl)))
       (tutcode-get-candidate-handler-internal tc idx accel-enum-hint))))
 
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
-;;; (tutcode-pseudo-table-stype-setupからの呼び出し用)
+;;; (tutcode-pseudo-table-style-setupからの呼び出し用)
 (define (tutcode-get-candidate-handler-internal tc idx accel-enum-hint)
   (cond
     ;; 記号入力
@@ -5971,9 +6066,14 @@
 ;;; 表示中の候補が選択された場合、該当する候補を確定する。
 ;;; 表示されていない候補が選択された(候補ウィンドウ側で
 ;;; ページ移動操作が行われた)場合、内部の選択候補番号を更新するだけ。
-(define (tutcode-set-candidate-index-handler c idx)
+(define (tutcode-set-candidate-index-handler c pidx)
   (let* ((pc (tutcode-find-descendant-context c))
          (candwin (tutcode-context-candidate-window pc))
+         (idx (if tutcode-use-pseudo-table-style?
+                ;; XXX:擬似表形式では、マウスによる候補選択は未対応。
+                ;;     candwinページ内のクリック時は、ページ内最初の候補確定
+                (tutcode-pseudo-table-style-scm-index pc pidx)
+                pidx))
          ;; 仮想鍵盤上のクリックをキー入力として処理(ソフトキーボード)
          (label-to-key-press
           (lambda (label)
@@ -6065,7 +6165,8 @@
 ;;; 取得するために呼ぶ関数
 ;;; @return (nr display-limit selected-index)
 (define (tutcode-delay-activating-handler c)
-  (let ((tc (tutcode-find-descendant-context c)))
+  (let* ((tc (tutcode-find-descendant-context c))
+         (selected-index (tutcode-context-candwin-delay-selected-index tc)))
     (tutcode-context-set-candwin-delay-waiting! tc #f)
     (let
       ((res
@@ -6130,13 +6231,14 @@
           (else
             (list tutcode-nr-candidate-max 0)))))
       (reverse
-        (cons (tutcode-context-candwin-delay-selected-index tc)
-              (if tutcode-use-pseudo-table-style?
-                (reverse
-                  (tutcode-pseudo-table-style-setup tc
-                    (tutcode-context-candidate-window tc)
-                    (cadr res) (car res)))
-                res))))))
+        (if (and tutcode-use-pseudo-table-style?
+                 (> (cadr res) 0)) ; nrが0の場合はcandwinは表示されない
+          (let ((pres
+                  (tutcode-pseudo-table-style-setup tc (cadr res) (car res))))
+            ;; candwin-indexはsetup呼出後に呼ぶ必要あり
+            (cons (tutcode-pseudo-table-style-candwin-index tc selected-index)
+                    (reverse pres)))
+          (cons selected-index res))))))
 
 (tutcode-configure-widgets)
 
