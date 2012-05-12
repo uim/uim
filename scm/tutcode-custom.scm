@@ -429,32 +429,38 @@
 		 (lambda ()
 		   tutcode-use-auto-help-window?))
 
+(define (tutcode-custom-adjust-nr-candidate-max)
+  (if (or (eq? candidate-window-style 'table) tutcode-use-pseudo-table-style?)
+    (begin
+      (custom-set-value! 'tutcode-nr-candidate-max
+        (length tutcode-table-heading-label-char-list))
+      (custom-set-value!
+        'tutcode-nr-candidate-max-for-kigou-mode
+        (length tutcode-table-heading-label-char-list-for-kigou-mode))
+      (custom-set-value!
+        'tutcode-nr-candidate-max-for-prediction
+        (length tutcode-heading-label-char-list-for-prediction))
+      (custom-set-value!
+        'tutcode-nr-candidate-max-for-guide
+        (- (length tutcode-table-heading-label-char-list-for-kigou-mode)
+           (length tutcode-heading-label-char-list-for-prediction)))
+      (custom-set-value!
+        'tutcode-nr-candidate-max-for-history
+        (length tutcode-table-heading-label-char-list)))
+    (begin
+      (custom-set-value! 'tutcode-nr-candidate-max 10)
+      (custom-set-value! 'tutcode-nr-candidate-max-for-kigou-mode 10)
+      (custom-set-value! 'tutcode-nr-candidate-max-for-prediction 10)
+      (custom-set-value! 'tutcode-nr-candidate-max-for-guide 10)
+      (custom-set-value! 'tutcode-nr-candidate-max-for-history 10))))
+
 (custom-add-hook 'candidate-window-style
   'custom-set-hooks
-  (lambda ()
-    (if (eq? candidate-window-style 'table)
-      (begin
-        (custom-set-value! 'tutcode-nr-candidate-max
-          (length tutcode-table-heading-label-char-list))
-        (custom-set-value!
-          'tutcode-nr-candidate-max-for-kigou-mode
-          (length tutcode-table-heading-label-char-list-for-kigou-mode))
-        (custom-set-value!
-          'tutcode-nr-candidate-max-for-prediction
-          (length tutcode-heading-label-char-list-for-prediction))
-        (custom-set-value!
-          'tutcode-nr-candidate-max-for-guide
-          (- (length tutcode-table-heading-label-char-list-for-kigou-mode)
-             (length tutcode-heading-label-char-list-for-prediction)))
-        (custom-set-value!
-          'tutcode-nr-candidate-max-for-history
-          (length tutcode-table-heading-label-char-list)))
-      (begin
-        (custom-set-value! 'tutcode-nr-candidate-max 10)
-        (custom-set-value! 'tutcode-nr-candidate-max-for-kigou-mode 10)
-        (custom-set-value! 'tutcode-nr-candidate-max-for-prediction 10)
-        (custom-set-value! 'tutcode-nr-candidate-max-for-guide 10)
-        (custom-set-value! 'tutcode-nr-candidate-max-for-history 10)))))
+  tutcode-custom-adjust-nr-candidate-max)
+
+(custom-add-hook 'tutcode-use-pseudo-table-style?
+  'custom-set-hooks
+  tutcode-custom-adjust-nr-candidate-max)
 
 (custom-add-hook 'tutcode-candidate-window-table-layout
 		 'custom-activity-hooks
