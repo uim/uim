@@ -1908,7 +1908,11 @@
                 (+ idx 1)
                 (cons (tutcode-get-candidate-handler-internal pc idx 0)
                       cands))))))
-    (tutcode-table-in-vertical-candwin cands)))
+    ;; 最初のページ以外は、下半分ブロックが空でも省略しない
+    ;; (全候補数は最初のページの候補数をもとに計算するので、
+    ;; 最初のページで下半分ブロック有りなのに、最後のページで省略されると、
+    ;; 候補が足りなくなってget-candidate時にエラーになる)
+    (tutcode-table-in-vertical-candwin cands (= start-index 0))))
 
 ;;; 候補リスト上の候補番号を、擬似表形式上の候補番号に変換
 (define (tutcode-pseudo-table-style-candwin-index pc idx)
@@ -2039,9 +2043,10 @@
 ;;; (表形式候補ウィンドウ未対応で、縦に候補を並べるcandwin用。
 ;;;  uim-elで(setq uim-candidate-display-inline t)の場合等)
 ;;; @param cands ("表示文字列" "ラベル文字列" "注釈")のリスト
+;;; @param omit-empty-block? 表の下半分(シフトキー領域)が空の場合に省略するか
 ;;; @return 変換後のリスト。
 ;;;  例:(("*や|*ま|*か|*あ|*は||*」|*】|*…|*・|*”||" "q" "") ...)
-(define (tutcode-table-in-vertical-candwin cands)
+(define (tutcode-table-in-vertical-candwin cands omit-empty-block?)
   (let*
     ((layout (if (null? uim-candwin-prog-layout)
                 uim-candwin-prog-layout-qwerty-jis
@@ -2058,12 +2063,14 @@
     (let*
       ;; 表の下半分(シフトキー領域)が空の場合は上半分だけ使う
       ((vecmax
-        (let loop ((k (* 13 4)))
-          (if (>= k vecsize)
-            (* 13 4)
-            (if (string? (vector-ref vec k))
-              vecsize
-              (loop (+ k 1))))))
+        (if (not omit-empty-block?)
+          vecsize
+          (let loop ((k (* 13 4)))
+            (if (>= k vecsize)
+              (* 13 4)
+              (if (string? (vector-ref vec k))
+                vecsize
+                (loop (+ k 1)))))))
        ;; 各列の最大幅を調べる
        (width-list0
         (let colloop
@@ -2711,7 +2718,7 @@
                 (append-map
                   (lambda (elem)
                     (list (car elem) "\n"))
-                  (tutcode-table-in-vertical-candwin help))))
+                  (tutcode-table-in-vertical-candwin help #t))))
           (tutcode-commit pc (apply string-append linecands) #t #t))))))
 
 ;;; preedit表示を更新する。
