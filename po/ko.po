@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2012-03-21 19:45+0900\n"
+"POT-Creation-Date: 2012-05-21 20:11+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -510,24 +510,24 @@ msgid "current text area only"
 msgstr "현재 텍스트영역만"
 
 #: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicates and controls the state of input method (for uim)"
-msgstr "입력기(uim)의 상태를 표시 및 제어"
-
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:2
-msgid "Input Method Indicator"
-msgstr "입력기 표시부"
-
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:3
-msgid "Utilities"
-msgstr "유틸리티"
-
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:4
 msgid "uim Applet Factory"
 msgstr ""
 
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:5
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:2
 msgid "uim applet factory"
 msgstr ""
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:3
+msgid "Input Method Indicator"
+msgstr "입력기 표시부"
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:4
+msgid "Indicates and controls the state of input method (for uim)"
+msgstr "입력기(uim)의 상태를 표시 및 제어"
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:5
+msgid "Utilities"
+msgstr "유틸리티"
 
 #: ../gtk2/toolbar/eggtrayicon.c:154
 msgid "Orientation"
@@ -598,12 +598,12 @@ msgstr "손글씨 입력 패드"
 msgid "Help"
 msgstr "도움말"
 
-#: ../gtk2/toolbar/common-gtk.c:290 ../gtk2/toolbar/common-gtk.c:550
+#: ../gtk2/toolbar/common-gtk.c:291 ../gtk2/toolbar/common-gtk.c:551
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr ""
 
-#: ../gtk2/toolbar/common-gtk.c:962
+#: ../gtk2/toolbar/common-gtk.c:963
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:85
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
 msgid "Quit this toolbar"
@@ -2362,11 +2362,11 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:129 ../scm/tutcode-custom.scm:135
 #: ../scm/tutcode-custom.scm:141 ../scm/tutcode-custom.scm:147
 #: ../scm/tutcode-custom.scm:153 ../scm/tutcode-custom.scm:159
-#: ../scm/tutcode-custom.scm:170 ../scm/tutcode-custom.scm:176
-#: ../scm/tutcode-custom.scm:183 ../scm/tutcode-custom.scm:190
-#: ../scm/tutcode-custom.scm:196 ../scm/tutcode-custom.scm:206
-#: ../scm/tutcode-custom.scm:215 ../scm/tutcode-custom.scm:227
-#: ../scm/tutcode-custom.scm:233 ../scm/tutcode-custom.scm:239
+#: ../scm/tutcode-custom.scm:165 ../scm/tutcode-custom.scm:176
+#: ../scm/tutcode-custom.scm:182 ../scm/tutcode-custom.scm:189
+#: ../scm/tutcode-custom.scm:196 ../scm/tutcode-custom.scm:202
+#: ../scm/tutcode-custom.scm:212 ../scm/tutcode-custom.scm:218
+#: ../scm/tutcode-custom.scm:227 ../scm/tutcode-custom.scm:239
 #: ../scm/tutcode-custom.scm:245 ../scm/tutcode-custom.scm:251
 #: ../scm/tutcode-custom.scm:257 ../scm/tutcode-custom.scm:263
 #: ../scm/tutcode-custom.scm:269 ../scm/tutcode-custom.scm:275
@@ -2375,12 +2375,15 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:305 ../scm/tutcode-custom.scm:311
 #: ../scm/tutcode-custom.scm:317 ../scm/tutcode-custom.scm:323
 #: ../scm/tutcode-custom.scm:329 ../scm/tutcode-custom.scm:335
-#: ../scm/tutcode-custom.scm:342 ../scm/tutcode-custom.scm:348
+#: ../scm/tutcode-custom.scm:341 ../scm/tutcode-custom.scm:347
 #: ../scm/tutcode-custom.scm:354 ../scm/tutcode-custom.scm:360
 #: ../scm/tutcode-custom.scm:366 ../scm/tutcode-custom.scm:372
-#: ../scm/tutcode-custom.scm:381 ../scm/tutcode-custom.scm:387
+#: ../scm/tutcode-custom.scm:378 ../scm/tutcode-custom.scm:384
+#: ../scm/tutcode-custom.scm:393 ../scm/tutcode-custom.scm:399
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
-#: ../scm/tutcode-key-custom.scm:46 ../scm/wnn-custom.scm:44
+#: ../scm/tutcode-key-custom.scm:46 ../scm/tutcode-rule-custom.scm:46
+#: ../scm/tutcode-rule-custom.scm:52 ../scm/tutcode-rule-custom.scm:58
+#: ../scm/tutcode-rule-custom.scm:64 ../scm/wnn-custom.scm:44
 #: ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52 ../scm/wnn-custom.scm:62
 #: ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83 ../scm/wnn-custom.scm:89
 #: ../scm/wnn-custom.scm:95 ../scm/wnn-custom.scm:101
@@ -2448,7 +2451,7 @@ msgstr ""
 #: ../scm/canna-custom.scm:82 ../scm/generic-custom.scm:42
 #: ../scm/google-cgiapi-jp-custom.scm:82 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:205
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:211
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr "후보창을 사용"
@@ -2458,7 +2461,7 @@ msgstr "후보창을 사용"
 #: ../scm/canna-custom.scm:88 ../scm/generic-custom.scm:48
 #: ../scm/google-cgiapi-jp-custom.scm:88 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:232
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:244
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "후보창을 표시하기까지 변환키를 누르는 횟수"
@@ -2469,7 +2472,7 @@ msgstr "후보창을 표시하기까지 변환키를 누르는 횟수"
 #: ../scm/google-cgiapi-jp-custom.scm:94 ../scm/mana-custom.scm:86
 #: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
-#: ../scm/tutcode-custom.scm:238 ../scm/wnn-custom.scm:94
+#: ../scm/tutcode-custom.scm:250 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "후보창에 한번에 표시하는 후보의 수"
@@ -2842,7 +2845,7 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:336 ../scm/baidu-olime-jp-custom.scm:394
 #: ../scm/canna-custom.scm:444 ../scm/google-cgiapi-jp-custom.scm:392
 #: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
-#: ../scm/tutcode-custom.scm:365 ../scm/wnn-custom.scm:382
+#: ../scm/tutcode-custom.scm:377 ../scm/wnn-custom.scm:382
 #: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr ""
@@ -3154,43 +3157,45 @@ msgstr ""
 #: ../scm/tutcode-key-custom.scm:562 ../scm/tutcode-key-custom.scm:568
 #: ../scm/tutcode-key-custom.scm:574 ../scm/tutcode-key-custom.scm:580
 #: ../scm/tutcode-key-custom.scm:586 ../scm/tutcode-key-custom.scm:592
-#: ../scm/wnn-key-custom.scm:54 ../scm/wnn-key-custom.scm:60
-#: ../scm/wnn-key-custom.scm:66 ../scm/wnn-key-custom.scm:72
-#: ../scm/wnn-key-custom.scm:78 ../scm/wnn-key-custom.scm:84
-#: ../scm/wnn-key-custom.scm:90 ../scm/wnn-key-custom.scm:96
-#: ../scm/wnn-key-custom.scm:102 ../scm/wnn-key-custom.scm:108
-#: ../scm/wnn-key-custom.scm:117 ../scm/wnn-key-custom.scm:124
-#: ../scm/wnn-key-custom.scm:130 ../scm/wnn-key-custom.scm:136
-#: ../scm/wnn-key-custom.scm:142 ../scm/wnn-key-custom.scm:148
-#: ../scm/wnn-key-custom.scm:154 ../scm/wnn-key-custom.scm:160
-#: ../scm/wnn-key-custom.scm:166 ../scm/wnn-key-custom.scm:175
-#: ../scm/wnn-key-custom.scm:181 ../scm/wnn-key-custom.scm:187
-#: ../scm/wnn-key-custom.scm:193 ../scm/wnn-key-custom.scm:199
-#: ../scm/wnn-key-custom.scm:205 ../scm/wnn-key-custom.scm:211
-#: ../scm/wnn-key-custom.scm:217 ../scm/wnn-key-custom.scm:223
-#: ../scm/wnn-key-custom.scm:233 ../scm/wnn-key-custom.scm:239
-#: ../scm/wnn-key-custom.scm:245 ../scm/wnn-key-custom.scm:251
-#: ../scm/wnn-key-custom.scm:257 ../scm/wnn-key-custom.scm:263
-#: ../scm/wnn-key-custom.scm:269 ../scm/wnn-key-custom.scm:275
-#: ../scm/wnn-key-custom.scm:281 ../scm/yahoo-jp-key-custom.scm:54
-#: ../scm/yahoo-jp-key-custom.scm:60 ../scm/yahoo-jp-key-custom.scm:66
-#: ../scm/yahoo-jp-key-custom.scm:72 ../scm/yahoo-jp-key-custom.scm:78
-#: ../scm/yahoo-jp-key-custom.scm:84 ../scm/yahoo-jp-key-custom.scm:90
-#: ../scm/yahoo-jp-key-custom.scm:96 ../scm/yahoo-jp-key-custom.scm:102
-#: ../scm/yahoo-jp-key-custom.scm:108 ../scm/yahoo-jp-key-custom.scm:117
-#: ../scm/yahoo-jp-key-custom.scm:124 ../scm/yahoo-jp-key-custom.scm:130
-#: ../scm/yahoo-jp-key-custom.scm:136 ../scm/yahoo-jp-key-custom.scm:142
-#: ../scm/yahoo-jp-key-custom.scm:148 ../scm/yahoo-jp-key-custom.scm:154
-#: ../scm/yahoo-jp-key-custom.scm:160 ../scm/yahoo-jp-key-custom.scm:166
-#: ../scm/yahoo-jp-key-custom.scm:175 ../scm/yahoo-jp-key-custom.scm:181
-#: ../scm/yahoo-jp-key-custom.scm:187 ../scm/yahoo-jp-key-custom.scm:193
-#: ../scm/yahoo-jp-key-custom.scm:199 ../scm/yahoo-jp-key-custom.scm:205
-#: ../scm/yahoo-jp-key-custom.scm:211 ../scm/yahoo-jp-key-custom.scm:217
-#: ../scm/yahoo-jp-key-custom.scm:223 ../scm/yahoo-jp-key-custom.scm:233
-#: ../scm/yahoo-jp-key-custom.scm:239 ../scm/yahoo-jp-key-custom.scm:245
-#: ../scm/yahoo-jp-key-custom.scm:251 ../scm/yahoo-jp-key-custom.scm:257
-#: ../scm/yahoo-jp-key-custom.scm:263 ../scm/yahoo-jp-key-custom.scm:269
-#: ../scm/yahoo-jp-key-custom.scm:275 ../scm/yahoo-jp-key-custom.scm:281
+#: ../scm/tutcode-key-custom.scm:598 ../scm/tutcode-key-custom.scm:604
+#: ../scm/tutcode-key-custom.scm:610 ../scm/wnn-key-custom.scm:54
+#: ../scm/wnn-key-custom.scm:60 ../scm/wnn-key-custom.scm:66
+#: ../scm/wnn-key-custom.scm:72 ../scm/wnn-key-custom.scm:78
+#: ../scm/wnn-key-custom.scm:84 ../scm/wnn-key-custom.scm:90
+#: ../scm/wnn-key-custom.scm:96 ../scm/wnn-key-custom.scm:102
+#: ../scm/wnn-key-custom.scm:108 ../scm/wnn-key-custom.scm:117
+#: ../scm/wnn-key-custom.scm:124 ../scm/wnn-key-custom.scm:130
+#: ../scm/wnn-key-custom.scm:136 ../scm/wnn-key-custom.scm:142
+#: ../scm/wnn-key-custom.scm:148 ../scm/wnn-key-custom.scm:154
+#: ../scm/wnn-key-custom.scm:160 ../scm/wnn-key-custom.scm:166
+#: ../scm/wnn-key-custom.scm:175 ../scm/wnn-key-custom.scm:181
+#: ../scm/wnn-key-custom.scm:187 ../scm/wnn-key-custom.scm:193
+#: ../scm/wnn-key-custom.scm:199 ../scm/wnn-key-custom.scm:205
+#: ../scm/wnn-key-custom.scm:211 ../scm/wnn-key-custom.scm:217
+#: ../scm/wnn-key-custom.scm:223 ../scm/wnn-key-custom.scm:233
+#: ../scm/wnn-key-custom.scm:239 ../scm/wnn-key-custom.scm:245
+#: ../scm/wnn-key-custom.scm:251 ../scm/wnn-key-custom.scm:257
+#: ../scm/wnn-key-custom.scm:263 ../scm/wnn-key-custom.scm:269
+#: ../scm/wnn-key-custom.scm:275 ../scm/wnn-key-custom.scm:281
+#: ../scm/yahoo-jp-key-custom.scm:54 ../scm/yahoo-jp-key-custom.scm:60
+#: ../scm/yahoo-jp-key-custom.scm:66 ../scm/yahoo-jp-key-custom.scm:72
+#: ../scm/yahoo-jp-key-custom.scm:78 ../scm/yahoo-jp-key-custom.scm:84
+#: ../scm/yahoo-jp-key-custom.scm:90 ../scm/yahoo-jp-key-custom.scm:96
+#: ../scm/yahoo-jp-key-custom.scm:102 ../scm/yahoo-jp-key-custom.scm:108
+#: ../scm/yahoo-jp-key-custom.scm:117 ../scm/yahoo-jp-key-custom.scm:124
+#: ../scm/yahoo-jp-key-custom.scm:130 ../scm/yahoo-jp-key-custom.scm:136
+#: ../scm/yahoo-jp-key-custom.scm:142 ../scm/yahoo-jp-key-custom.scm:148
+#: ../scm/yahoo-jp-key-custom.scm:154 ../scm/yahoo-jp-key-custom.scm:160
+#: ../scm/yahoo-jp-key-custom.scm:166 ../scm/yahoo-jp-key-custom.scm:175
+#: ../scm/yahoo-jp-key-custom.scm:181 ../scm/yahoo-jp-key-custom.scm:187
+#: ../scm/yahoo-jp-key-custom.scm:193 ../scm/yahoo-jp-key-custom.scm:199
+#: ../scm/yahoo-jp-key-custom.scm:205 ../scm/yahoo-jp-key-custom.scm:211
+#: ../scm/yahoo-jp-key-custom.scm:217 ../scm/yahoo-jp-key-custom.scm:223
+#: ../scm/yahoo-jp-key-custom.scm:233 ../scm/yahoo-jp-key-custom.scm:239
+#: ../scm/yahoo-jp-key-custom.scm:245 ../scm/yahoo-jp-key-custom.scm:251
+#: ../scm/yahoo-jp-key-custom.scm:257 ../scm/yahoo-jp-key-custom.scm:263
+#: ../scm/yahoo-jp-key-custom.scm:269 ../scm/yahoo-jp-key-custom.scm:275
+#: ../scm/yahoo-jp-key-custom.scm:281
 msgid "long description will be here"
 msgstr ""
 
@@ -5161,7 +5166,7 @@ msgstr ""
 msgid "Based on mode"
 msgstr ""
 
-#: ../scm/im-custom.scm:460 ../scm/tutcode-custom.scm:225
+#: ../scm/im-custom.scm:460 ../scm/tutcode-custom.scm:237
 msgid "Never"
 msgstr ""
 
@@ -7176,7 +7181,7 @@ msgstr ""
 msgid "Dictionary files"
 msgstr ""
 
-#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:226
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:238
 msgid "Commit candidate by heading label keys"
 msgstr ""
 
@@ -7719,233 +7724,241 @@ msgid "Number of candidates to be excluded from mazegaki learning"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:110
-msgid "Use Dvorak keyboard"
+msgid "Show pending key sequences"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:116
-msgid "Enable two stroke kigou mode"
+msgid "Use Dvorak keyboard"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:122
-msgid "Enable fallback of surrounding text API"
+msgid "Enable two stroke kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:128
-msgid "Keep key sequence not convertible to Kanji"
+msgid "Enable fallback of surrounding text API"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:134
-msgid "Delete leading delimiter on postfix kanji to sequence conversion"
+msgid "Keep key sequence not convertible to Kanji"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:140
-msgid "History size"
+msgid "Delete leading delimiter on postfix kanji to sequence conversion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:146
-msgid "Maximum length of yomi for postfix mazegaki conversion"
+msgid "History size"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:152
-msgid "Enable inflection in mazegaki conversion"
+msgid "Maximum length of yomi for postfix mazegaki conversion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:158
+msgid "Enable inflection in mazegaki conversion"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:164
 msgid "Maximum length of yomi suffix for mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:165
+#: ../scm/tutcode-custom.scm:171
 msgid "tc-2.1+[tcode-ml:1925]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:167
+#: ../scm/tutcode-custom.scm:173
 msgid "Kanchoku Win YAMANOBE"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:168
+#: ../scm/tutcode-custom.scm:174
 msgid "tc-2.3.1-22.6"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:169
+#: ../scm/tutcode-custom.scm:175
 msgid "Bushu conversion algorithm"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:175
+#: ../scm/tutcode-custom.scm:181
 msgid "Enable interactive bushu conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:182
+#: ../scm/tutcode-custom.scm:188
 msgid "bushu.index2 file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:189
+#: ../scm/tutcode-custom.scm:195
 msgid "bushu.expand file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:195
+#: ../scm/tutcode-custom.scm:201
 msgid "bushu.help file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:211
-msgid "qwerty-jis"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:211
-msgid "Qwerty JIS"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:212
-msgid "qwerty-us"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:212
-msgid "Qwerty US"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:213
-msgid "dvorak"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:213
-msgid "Dvorak"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:214
-msgid "Key layout of table style candidate window"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:220
-msgid "always"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:220
-msgid "All keys as label key"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:221
-msgid "which have candidate"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:222
-msgid "Enable keys which have candidate"
+#: ../scm/tutcode-custom.scm:217
+msgid "Use pseudo table style layout"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:223
-msgid "while candidate window is shown"
+msgid "qwerty-jis"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:223
+msgid "Qwerty JIS"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:224
-msgid "Enable while candidate window is shown"
+msgid "qwerty-us"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:224
+msgid "Qwerty US"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:225
+msgid "dvorak"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:225
+msgid "Dvorak"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:226
+msgid "Key layout of table style candidate window"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:232
+msgid "always"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:232
+msgid "All keys as label key"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:233
+msgid "which have candidate"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:234
+msgid "Enable keys which have candidate"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:235
+msgid "while candidate window is shown"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:236
+msgid "Enable while candidate window is shown"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:237
 msgid "never"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:244
+#: ../scm/tutcode-custom.scm:256
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:250
+#: ../scm/tutcode-custom.scm:262
 msgid "Number of candidates in candidate window at a time for prediction"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:256
+#: ../scm/tutcode-custom.scm:268
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:262
+#: ../scm/tutcode-custom.scm:274
 msgid "Number of candidates in candidate window at a time for history"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:268
+#: ../scm/tutcode-custom.scm:280
 msgid "Use stroke help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:274
+#: ../scm/tutcode-custom.scm:286
 msgid "Show stroke help window on no input"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:280
+#: ../scm/tutcode-custom.scm:292
 msgid "Use auto help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:286
+#: ../scm/tutcode-custom.scm:298
 msgid "Show real keys on auto help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:292
+#: ../scm/tutcode-custom.scm:304
 msgid "Use delay showing candidate window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:298
+#: ../scm/tutcode-custom.scm:310
 msgid "Delay before showing candidate window for mazegaki [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:304
+#: ../scm/tutcode-custom.scm:316
 msgid "Delay before showing candidate window for stroke help [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:310
+#: ../scm/tutcode-custom.scm:322
 msgid "Delay before showing candidate window for auto help [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:316
+#: ../scm/tutcode-custom.scm:328
 msgid "Delay before showing candidate window for completion [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:322
+#: ../scm/tutcode-custom.scm:334
 msgid "Delay before showing candidate window for prediction [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:328
+#: ../scm/tutcode-custom.scm:340
 msgid "Delay before showing candidate window for bushu prediction [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:334
+#: ../scm/tutcode-custom.scm:346
 msgid ""
 "Delay before showing candidate window for interactive bushu conversion [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:341
+#: ../scm/tutcode-custom.scm:353
 msgid "Enable completion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:347
+#: ../scm/tutcode-custom.scm:359
 msgid "Minimum character length for completion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:353
+#: ../scm/tutcode-custom.scm:365
 msgid "Maximum character length for completion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:359
+#: ../scm/tutcode-custom.scm:371
 msgid "Enable input prediction for mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:371
+#: ../scm/tutcode-custom.scm:383
 msgid "Enable Kanji combination guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:377
+#: ../scm/tutcode-custom.scm:389
 msgid "Full stroke help"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:378
+#: ../scm/tutcode-custom.scm:390
 msgid "Guide only"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:379
+#: ../scm/tutcode-custom.scm:391
 msgid "Disable"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:380
+#: ../scm/tutcode-custom.scm:392
 msgid "Show stroke help temporarily by keys in kanji combination guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:386
+#: ../scm/tutcode-custom.scm:398
 msgid "Enable input prediction for bushu conversion"
 msgstr ""
 
@@ -7974,358 +7987,394 @@ msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:69
-msgid "[TUT-Code] toggle kigou mode"
+msgid "[TUT-Code] katakana mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:75
-msgid "[TUT-Code] toggle two stroke kigou mode"
+msgid "[TUT-Code] hiragana mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:81
-msgid "[TUT-Code] mazegaki conversion mode"
+msgid "[TUT-Code] toggle kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:87
-msgid "[TUT-Code] bushu conversion mode"
+msgid "[TUT-Code] toggle two stroke kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:93
-msgid "[TUT-Code] interactive bushu conversion mode"
+msgid "[TUT-Code] mazegaki conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:99
-msgid "[TUT-Code] latin conversion mode"
+msgid "[TUT-Code] bushu conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:105
-msgid "[TUT-Code] kanji code input mode"
+msgid "[TUT-Code] interactive bushu conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:111
-msgid "[TUT-Code] history"
+msgid "[TUT-Code] latin conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:117
-msgid "[TUT-Code] display last auto help"
+msgid "[TUT-Code] kanji code input mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:123
-msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
+msgid "[TUT-Code] history"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:129
-msgid "[TUT-Code] toggle use of stroke help window"
+msgid "[TUT-Code] display last auto help"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:135
-msgid "[TUT-Code] begin completion"
+msgid "[TUT-Code] commit last auto help content"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:141
-msgid "[TUT-Code] begin conversion"
+msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:147
-msgid "[TUT-Code] commit"
+msgid "[TUT-Code] toggle use of stroke help window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:153
-msgid "[TUT-Code] cancel"
+msgid "[TUT-Code] begin completion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:159
-msgid "[TUT-Code] next candidate"
+msgid "[TUT-Code] begin conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:165
-msgid "[TUT-Code] previous candidate"
+msgid "[TUT-Code] commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:171
-msgid "[TUT-Code] undo last commit"
+msgid "[TUT-Code] cancel"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:177
-msgid "[TUT-Code] display help for char at current position"
+msgid "[TUT-Code] next candidate"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:183
-msgid "[TUT-Code] display help for string on clipboard"
+msgid "[TUT-Code] previous candidate"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:189
-msgid "[TUT-Code] paste from clipboard"
+msgid "[TUT-Code] undo last commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:195
-msgid "[TUT-Code] sequence to kanji conversion on clipboard"
+msgid "[TUT-Code] display help for char at current position"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:201
-msgid "[TUT-Code] mazegaki conversion on selection"
+msgid "[TUT-Code] display help for string on clipboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:207
-msgid "[TUT-Code] mazegaki conversion with inflection on selection"
+msgid "[TUT-Code] paste from clipboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:213
-msgid "[TUT-Code] katakana conversion on selection"
+msgid "[TUT-Code] sequence to kanji conversion on clipboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:219
-msgid "[TUT-Code] kanji to sequence conversion on selection"
+msgid "[TUT-Code] mazegaki conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:225
-msgid "[TUT-Code] sequence to kanji conversion on selection"
+msgid "[TUT-Code] mazegaki conversion with inflection on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:231
-msgid "[TUT-Code] next page of candidate window"
+msgid "[TUT-Code] katakana conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:237
-msgid "[TUT-Code] previous page of candidate window"
+msgid "[TUT-Code] kanji to sequence conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:243
-msgid "[TUT-Code] backspace"
+msgid "[TUT-Code] sequence to kanji conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:249
-msgid "[TUT-Code] return"
+msgid "[TUT-Code] next page of candidate window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:255
-msgid "[TUT-Code] ESC keys on vi-cooperative mode"
+msgid "[TUT-Code] previous page of candidate window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:261
-msgid "[TUT-Code] register new entry to dictionary"
+msgid "[TUT-Code] backspace"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:267
-msgid "[TUT-Code] purge the entry from dictionary"
+msgid "[TUT-Code] return"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:273
-msgid "[TUT-Code] relimit yomi to left in mazegaki"
+msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:279
-msgid "[TUT-Code] relimit yomi to right in mazegaki"
+msgid "[TUT-Code] register new entry to dictionary"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:285
-msgid "[TUT-Code] insert pending key strokes"
+msgid "[TUT-Code] purge the entry from dictionary"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:291
-msgid "[TUT-Code] postfix bushu conversion"
+msgid "[TUT-Code] relimit yomi to left in mazegaki"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:297
-msgid "[TUT-Code] postfix mazegaki conversion"
+msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:303
-msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
+msgid "[TUT-Code] insert pending key strokes"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:309
-msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
+msgid "[TUT-Code] postfix bushu conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:315
-msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
+msgid "[TUT-Code] postfix mazegaki conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:321
-msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:327
-msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:333
-msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:339
-msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:345
-msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:351
-msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:357
-msgid "[TUT-Code] postfix mazegaki conversion with inflection"
+msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:363
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
+msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:369
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:375
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:381
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:387
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:393
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:399
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:405
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:411
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:417
-msgid "[TUT-Code] postfix katakana conversion"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:423
-msgid "[TUT-Code] postfix katakana conversion of 1 character"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:429
-msgid "[TUT-Code] postfix katakana conversion of 2 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:435
-msgid "[TUT-Code] postfix katakana conversion of 3 characters"
+msgid "[TUT-Code] postfix katakana conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:441
-msgid "[TUT-Code] postfix katakana conversion of 4 characters"
+msgid "[TUT-Code] postfix katakana conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:447
-msgid "[TUT-Code] postfix katakana conversion of 5 characters"
+msgid "[TUT-Code] postfix katakana conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:453
-msgid "[TUT-Code] postfix katakana conversion of 6 characters"
+msgid "[TUT-Code] postfix katakana conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:459
-msgid "[TUT-Code] postfix katakana conversion of 7 characters"
+msgid "[TUT-Code] postfix katakana conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:465
-msgid "[TUT-Code] postfix katakana conversion of 8 characters"
+msgid "[TUT-Code] postfix katakana conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:471
-msgid "[TUT-Code] postfix katakana conversion of 9 characters"
+msgid "[TUT-Code] postfix katakana conversion of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:477
-msgid "[TUT-Code] postfix kanji to sequence conversion"
+msgid "[TUT-Code] postfix katakana conversion of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:483
-msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
+msgid "[TUT-Code] postfix katakana conversion of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:489
-msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
+msgid "[TUT-Code] postfix katakana conversion of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:495
-msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:501
-msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:507
-msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:513
-msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:519
-msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:525
-msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:531
-msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:537
-msgid "[TUT-Code] postfix sequence to kanji conversion"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:543
-msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:549
-msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:555
-msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:561
-msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:567
-msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:573
-msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:579
-msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:585
-msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:591
+msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:597
+msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:603
+msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:609
 msgid "[TUT-Code] postfix sequence to kanji conversion of 9 characters"
 msgstr ""
 
-#: ../scm/tutcode.scm:905
+#: ../scm/tutcode-rule-custom.scm:39
+msgid "tutcode-rule"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:40
+msgid "Settings for tutcode-rule.scm"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:45
+msgid "Use TUT+ Code which supports shin joyo kanji"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:51
+msgid "Use uppercase rule to input opposite kana"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:57
+msgid "Exclude uppercase katakana rule"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:63
+msgid "Exclude uppercase kigou in katakana rule"
+msgstr ""
+
+#: ../scm/tutcode.scm:911
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr ""
 
@@ -8740,12 +8789,12 @@ msgid ""
 msgstr ""
 
 #: ../uim.desktop.in.in.h:1
-msgid "Customize uim input method environment"
-msgstr "uim 환경설정"
-
-#: ../uim.desktop.in.in.h:2
 msgid "Input Method"
 msgstr "입력기"
+
+#: ../uim.desktop.in.in.h:2
+msgid "Customize uim input method environment"
+msgstr "uim 환경설정"
 
 #: ../uim/m17nlib.c:482
 msgid "m17n library IM open error"
