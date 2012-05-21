@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2012-03-21 19:45+0900\n"
+"POT-Creation-Date: 2012-05-21 20:43+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -234,11 +234,11 @@ msgstr ""
 msgid "continuance"
 msgstr ""
 
-#: ../gtk2/dict/word-win-gtk.c:194 ../qt4/pref/customwidgets.cpp:1302
+#: ../gtk2/dict/word-win-gtk.c:194 ../qt4/pref/customwidgets.cpp:1313
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../gtk2/dict/word-win-gtk.c:200 ../qt4/chardict/qt4.cpp:157
+#: ../gtk2/dict/word-win-gtk.c:200 ../qt4/chardict/qt4.cpp:171
 msgid "Clear"
 msgstr "Effacer"
 
@@ -348,13 +348,13 @@ msgstr ""
 msgid "line"
 msgstr "droite"
 
-#: ../gtk2/pref/gtk-custom-widgets.c:453 ../qt4/pref/customwidgets.cpp:243
+#: ../gtk2/pref/gtk-custom-widgets.c:453 ../qt4/pref/customwidgets.cpp:254
 msgid "Specify file"
 msgstr ""
 
 #: ../gtk2/pref/gtk-custom-widgets.c:501 ../gtk2/pref/gtk-custom-widgets.c:505
 #: ../qt3/pref/customwidgets.cpp:183 ../qt3/pref/customwidgets.cpp:187
-#: ../qt4/pref/customwidgets.cpp:198 ../qt4/pref/customwidgets.cpp:202
+#: ../qt4/pref/customwidgets.cpp:209 ../qt4/pref/customwidgets.cpp:213
 msgid "Select..."
 msgstr ""
 
@@ -376,14 +376,14 @@ msgstr ""
 
 #: ../gtk2/pref/gtk-custom-widgets.c:1379
 #: ../gtk2/pref/gtk-custom-widgets.c:1911
-#: ../gtk2/pref/gtk-custom-widgets.c:2343 ../qt4/pref/customwidgets.cpp:368
-#: ../qt4/pref/customwidgets.cpp:647 ../qt4/pref/customwidgets.cpp:1210
-#: ../qt4/pref/keyeditformbase.cpp:58
+#: ../gtk2/pref/gtk-custom-widgets.c:2343 ../qt4/pref/customwidgets.cpp:379
+#: ../qt4/pref/customwidgets.cpp:658 ../qt4/pref/customwidgets.cpp:1221
+#: ../qt4/pref/keyeditformbase.cpp:67
 msgid "Edit..."
 msgstr "_Édition ..."
 
 #: ../gtk2/pref/gtk-custom-widgets.c:1531 ../qt3/pref/customwidgets.cpp:884
-#: ../qt4/pref/customwidgets.cpp:899
+#: ../qt4/pref/customwidgets.cpp:910
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr ""
 
@@ -414,13 +414,13 @@ msgid ""
 "Save?"
 msgstr ""
 
-#: ../gtk2/pref/gtk.c:232 ../qt3/pref/qt.cpp:274 ../qt4/pref/qt4.cpp:278
+#: ../gtk2/pref/gtk.c:232 ../qt3/pref/qt.cpp:274 ../qt4/pref/qt4.cpp:294
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
 msgstr ""
 
-#: ../gtk2/pref/gtk.c:284 ../qt3/pref/qt.cpp:145 ../qt4/pref/qt4.cpp:142
+#: ../gtk2/pref/gtk.c:284 ../qt3/pref/qt.cpp:145 ../qt4/pref/qt4.cpp:158
 msgid "Group"
 msgstr "Groupe"
 
@@ -457,65 +457,65 @@ msgid ""
 msgstr ""
 
 #: ../gtk2/switcher/gtk.c:307 ../qt3/switcher/qt.cpp:112
-#: ../qt4/switcher/qt4.cpp:118
+#: ../qt4/switcher/qt4.cpp:129
 msgid "InputMethodName"
 msgstr "Nom de la méthode d'entrée"
 
 #: ../gtk2/switcher/gtk.c:316 ../qt3/switcher/qt.cpp:113
-#: ../qt4/switcher/qt4.cpp:118 ../scm/predict-custom.scm:188
+#: ../qt4/switcher/qt4.cpp:129 ../scm/predict-custom.scm:188
 msgid "Language"
 msgstr "Langue"
 
 #: ../gtk2/switcher/gtk.c:325 ../qt3/switcher/qt.cpp:114
-#: ../qt4/switcher/qt4.cpp:118
+#: ../qt4/switcher/qt4.cpp:129
 msgid "Description"
 msgstr "Description"
 
 #: ../gtk2/switcher/gtk.c:356 ../qt3/switcher/qt.cpp:74
-#: ../qt4/switcher/qt4.cpp:78
+#: ../qt4/switcher/qt4.cpp:89
 msgid "uim input method switcher"
 msgstr ""
 
 #: ../gtk2/switcher/gtk.c:385 ../qt3/switcher/qt.cpp:118
-#: ../qt4/switcher/qt4.cpp:134 ../scm/im-custom.scm:505
+#: ../qt4/switcher/qt4.cpp:145 ../scm/im-custom.scm:505
 msgid "Effective coverage"
 msgstr ""
 
 #. radio buttons for the switcher coverage
 #: ../gtk2/switcher/gtk.c:393 ../qt3/switcher/qt.cpp:119
-#: ../qt4/switcher/qt4.cpp:124 ../scm/im-custom.scm:497
+#: ../qt4/switcher/qt4.cpp:135 ../scm/im-custom.scm:497
 msgid "whole desktop"
 msgstr ""
 
 #. default is "whole desktop"
 #: ../gtk2/switcher/gtk.c:394 ../qt3/switcher/qt.cpp:122
-#: ../qt4/switcher/qt4.cpp:125
+#: ../qt4/switcher/qt4.cpp:136
 msgid "current application only"
 msgstr ""
 
 #: ../gtk2/switcher/gtk.c:395 ../qt3/switcher/qt.cpp:124
-#: ../qt4/switcher/qt4.cpp:126
+#: ../qt4/switcher/qt4.cpp:137
 msgid "current text area only"
 msgstr ""
 
 #: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicates and controls the state of input method (for uim)"
-msgstr ""
-
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:2
-msgid "Input Method Indicator"
-msgstr ""
-
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:3
-msgid "Utilities"
-msgstr ""
-
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:4
 msgid "uim Applet Factory"
 msgstr ""
 
-#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:5
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:2
 msgid "uim applet factory"
+msgstr ""
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:3
+msgid "Input Method Indicator"
+msgstr ""
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:4
+msgid "Indicates and controls the state of input method (for uim)"
+msgstr ""
+
+#: ../gtk2/toolbar/GNOME_UimApplet.server.in.in.h:5
+msgid "Utilities"
 msgstr ""
 
 #: ../gtk2/toolbar/eggtrayicon.c:154
@@ -542,59 +542,59 @@ msgstr ""
 #: ../gtk2/toolbar/common-gtk.c:87 ../gtk3/toolbar/applet-gnome3.c:61
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:78
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:140
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:90
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:167
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:97
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:174
 msgid "Switch input method"
 msgstr ""
 
 #: ../gtk2/toolbar/common-gtk.c:100 ../gtk3/toolbar/applet-gnome3.c:63
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:79
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:165
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:92
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:193
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:99
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:200
 msgid "Preference"
 msgstr ""
 
 #: ../gtk2/toolbar/common-gtk.c:113 ../gtk3/toolbar/applet-gnome3.c:65
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:80
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:189
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:94
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:218
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:101
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:225
 msgid "Japanese dictionary editor"
 msgstr ""
 
 #: ../gtk2/toolbar/common-gtk.c:126 ../gtk3/toolbar/applet-gnome3.c:67
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:81
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:213
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:96
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:243
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:250
 msgid "Input pad"
 msgstr ""
 
 #: ../gtk2/toolbar/common-gtk.c:139 ../gtk3/toolbar/applet-gnome3.c:69
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:82
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:237
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:98
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:268
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:105
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:275
 msgid "Handwriting input pad"
 msgstr ""
 
 #: ../gtk2/toolbar/common-gtk.c:152 ../gtk3/toolbar/applet-gnome3.c:71
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:83
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:260
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:100
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:292 ../scm/im-custom.scm:130
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:107
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:299 ../scm/im-custom.scm:130
 msgid "Help"
 msgstr "Aide"
 
-#: ../gtk2/toolbar/common-gtk.c:290 ../gtk2/toolbar/common-gtk.c:550
+#: ../gtk2/toolbar/common-gtk.c:291 ../gtk2/toolbar/common-gtk.c:551
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr ""
 
-#: ../gtk2/toolbar/common-gtk.c:962
+#: ../gtk2/toolbar/common-gtk.c:963
 #: ../qt3/toolbar/common-quimhelpertoolbar.cpp:85
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:110
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -608,1352 +608,1352 @@ msgid "About"
 msgstr ""
 
 #: ../qt3/chardict/bushuviewwidget.cpp:72
-#: ../qt4/chardict/bushuviewwidget.cpp:74
+#: ../qt4/chardict/bushuviewwidget.cpp:84
 msgid "Bushu List"
 msgstr ""
 
-#: ../qt3/chardict/qt.cpp:113 ../qt4/chardict/qt4.cpp:142
+#: ../qt3/chardict/qt.cpp:113 ../qt4/chardict/qt4.cpp:156
 msgid "Mode:"
 msgstr ""
 
-#: ../qt3/chardict/qt.cpp:115 ../qt4/chardict/qt4.cpp:144
+#: ../qt3/chardict/qt.cpp:115 ../qt4/chardict/qt4.cpp:158
 msgid "Bushu Search"
 msgstr ""
 
-#: ../qt3/chardict/qt.cpp:116 ../qt4/chardict/qt4.cpp:145
+#: ../qt3/chardict/qt.cpp:116 ../qt4/chardict/qt4.cpp:159
 msgid "Unicode Search"
 msgstr ""
 
-#: ../qt3/chardict/qt.cpp:122 ../qt4/chardict/qt4.cpp:149
+#: ../qt3/chardict/qt.cpp:122 ../qt4/chardict/qt4.cpp:163
 msgid "Select Font"
 msgstr ""
 
-#: ../qt3/chardict/qt.cpp:126 ../qt4/chardict/qt4.cpp:153
+#: ../qt3/chardict/qt.cpp:126 ../qt4/chardict/qt4.cpp:167
 msgid "Chars:"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:65
-#: ../qt4/chardict/unicodeviewwidget.cpp:68
+#: ../qt4/chardict/unicodeviewwidget.cpp:78
 msgctxt "chardict"
 msgid "Basic Latin"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:66
-#: ../qt4/chardict/unicodeviewwidget.cpp:69
+#: ../qt4/chardict/unicodeviewwidget.cpp:79
 msgctxt "chardict"
 msgid "Latin-1 Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:67
-#: ../qt4/chardict/unicodeviewwidget.cpp:70
+#: ../qt4/chardict/unicodeviewwidget.cpp:80
 msgctxt "chardict"
 msgid "Latin Extended-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:68
-#: ../qt4/chardict/unicodeviewwidget.cpp:71
+#: ../qt4/chardict/unicodeviewwidget.cpp:81
 msgctxt "chardict"
 msgid "Latin Extended-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:69
-#: ../qt4/chardict/unicodeviewwidget.cpp:72
+#: ../qt4/chardict/unicodeviewwidget.cpp:82
 msgctxt "chardict"
 msgid "IPA Extensions"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:70
-#: ../qt4/chardict/unicodeviewwidget.cpp:73
+#: ../qt4/chardict/unicodeviewwidget.cpp:83
 msgctxt "chardict"
 msgid "Spacing Modifier Letters"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:71
-#: ../qt4/chardict/unicodeviewwidget.cpp:74
+#: ../qt4/chardict/unicodeviewwidget.cpp:84
 msgctxt "chardict"
 msgid "Combining Diacritical Marks"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:72
-#: ../qt4/chardict/unicodeviewwidget.cpp:75
+#: ../qt4/chardict/unicodeviewwidget.cpp:85
 msgctxt "chardict"
 msgid "Greek and Coptic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:73
-#: ../qt4/chardict/unicodeviewwidget.cpp:76
+#: ../qt4/chardict/unicodeviewwidget.cpp:86
 msgctxt "chardict"
 msgid "Cyrillic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:74
-#: ../qt4/chardict/unicodeviewwidget.cpp:77
+#: ../qt4/chardict/unicodeviewwidget.cpp:87
 msgctxt "chardict"
 msgid "Cyrillic Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:75
-#: ../qt4/chardict/unicodeviewwidget.cpp:78
+#: ../qt4/chardict/unicodeviewwidget.cpp:88
 msgctxt "chardict"
 msgid "Armenian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:76
-#: ../qt4/chardict/unicodeviewwidget.cpp:79
+#: ../qt4/chardict/unicodeviewwidget.cpp:89
 msgctxt "chardict"
 msgid "Hebrew"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:77
-#: ../qt4/chardict/unicodeviewwidget.cpp:80
+#: ../qt4/chardict/unicodeviewwidget.cpp:90
 msgctxt "chardict"
 msgid "Arabic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:78
-#: ../qt4/chardict/unicodeviewwidget.cpp:81
+#: ../qt4/chardict/unicodeviewwidget.cpp:91
 msgctxt "chardict"
 msgid "Syriac"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:79
-#: ../qt4/chardict/unicodeviewwidget.cpp:82
+#: ../qt4/chardict/unicodeviewwidget.cpp:92
 msgctxt "chardict"
 msgid "Arabic Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:80
-#: ../qt4/chardict/unicodeviewwidget.cpp:83
+#: ../qt4/chardict/unicodeviewwidget.cpp:93
 msgctxt "chardict"
 msgid "Thaana"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:81
-#: ../qt4/chardict/unicodeviewwidget.cpp:84
+#: ../qt4/chardict/unicodeviewwidget.cpp:94
 msgctxt "chardict"
 msgid "NKo"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:82
-#: ../qt4/chardict/unicodeviewwidget.cpp:85
+#: ../qt4/chardict/unicodeviewwidget.cpp:95
 msgctxt "chardict"
 msgid "Samaritan"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:83
-#: ../qt4/chardict/unicodeviewwidget.cpp:86
+#: ../qt4/chardict/unicodeviewwidget.cpp:96
 msgctxt "chardict"
 msgid "Mandaic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:84
-#: ../qt4/chardict/unicodeviewwidget.cpp:87
+#: ../qt4/chardict/unicodeviewwidget.cpp:97
 msgctxt "chardict"
 msgid "Arabic Extended-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:85
-#: ../qt4/chardict/unicodeviewwidget.cpp:88
+#: ../qt4/chardict/unicodeviewwidget.cpp:98
 msgctxt "chardict"
 msgid "Devanagari"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:86
-#: ../qt4/chardict/unicodeviewwidget.cpp:89
+#: ../qt4/chardict/unicodeviewwidget.cpp:99
 msgctxt "chardict"
 msgid "Bengali"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:87
-#: ../qt4/chardict/unicodeviewwidget.cpp:90
+#: ../qt4/chardict/unicodeviewwidget.cpp:100
 msgctxt "chardict"
 msgid "Gurmukhi"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:88
-#: ../qt4/chardict/unicodeviewwidget.cpp:91
+#: ../qt4/chardict/unicodeviewwidget.cpp:101
 msgctxt "chardict"
 msgid "Gujarati"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:89
-#: ../qt4/chardict/unicodeviewwidget.cpp:92
+#: ../qt4/chardict/unicodeviewwidget.cpp:102
 msgctxt "chardict"
 msgid "Oriya"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:90
-#: ../qt4/chardict/unicodeviewwidget.cpp:93
+#: ../qt4/chardict/unicodeviewwidget.cpp:103
 msgctxt "chardict"
 msgid "Tamil"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:91
-#: ../qt4/chardict/unicodeviewwidget.cpp:94
+#: ../qt4/chardict/unicodeviewwidget.cpp:104
 msgctxt "chardict"
 msgid "Telugu"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:92
-#: ../qt4/chardict/unicodeviewwidget.cpp:95
+#: ../qt4/chardict/unicodeviewwidget.cpp:105
 msgctxt "chardict"
 msgid "Kannada"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:93
-#: ../qt4/chardict/unicodeviewwidget.cpp:96
+#: ../qt4/chardict/unicodeviewwidget.cpp:106
 msgctxt "chardict"
 msgid "Malayalam"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:94
-#: ../qt4/chardict/unicodeviewwidget.cpp:97
+#: ../qt4/chardict/unicodeviewwidget.cpp:107
 msgctxt "chardict"
 msgid "Sinhala"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:95
-#: ../qt4/chardict/unicodeviewwidget.cpp:98
+#: ../qt4/chardict/unicodeviewwidget.cpp:108
 msgctxt "chardict"
 msgid "Thai"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:96
-#: ../qt4/chardict/unicodeviewwidget.cpp:99
+#: ../qt4/chardict/unicodeviewwidget.cpp:109
 msgctxt "chardict"
 msgid "Lao"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:97
-#: ../qt4/chardict/unicodeviewwidget.cpp:100
+#: ../qt4/chardict/unicodeviewwidget.cpp:110
 msgctxt "chardict"
 msgid "Tibetan"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:98
-#: ../qt4/chardict/unicodeviewwidget.cpp:101
+#: ../qt4/chardict/unicodeviewwidget.cpp:111
 msgctxt "chardict"
 msgid "Myanmar"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:99
-#: ../qt4/chardict/unicodeviewwidget.cpp:102
+#: ../qt4/chardict/unicodeviewwidget.cpp:112
 msgctxt "chardict"
 msgid "Georgian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:100
-#: ../qt4/chardict/unicodeviewwidget.cpp:103
+#: ../qt4/chardict/unicodeviewwidget.cpp:113
 msgctxt "chardict"
 msgid "Hangul Jamo"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:101
-#: ../qt4/chardict/unicodeviewwidget.cpp:104
+#: ../qt4/chardict/unicodeviewwidget.cpp:114
 msgctxt "chardict"
 msgid "Ethiopic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:102
-#: ../qt4/chardict/unicodeviewwidget.cpp:105
+#: ../qt4/chardict/unicodeviewwidget.cpp:115
 msgctxt "chardict"
 msgid "Ethiopic Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:103
-#: ../qt4/chardict/unicodeviewwidget.cpp:106
+#: ../qt4/chardict/unicodeviewwidget.cpp:116
 msgctxt "chardict"
 msgid "Cherokee"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:104
-#: ../qt4/chardict/unicodeviewwidget.cpp:107
+#: ../qt4/chardict/unicodeviewwidget.cpp:117
 msgctxt "chardict"
 msgid "Unified Canadian Aboriginal Syllabics"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:105
-#: ../qt4/chardict/unicodeviewwidget.cpp:108
+#: ../qt4/chardict/unicodeviewwidget.cpp:118
 msgctxt "chardict"
 msgid "Ogham"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:106
-#: ../qt4/chardict/unicodeviewwidget.cpp:109
+#: ../qt4/chardict/unicodeviewwidget.cpp:119
 msgctxt "chardict"
 msgid "Runic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:107
-#: ../qt4/chardict/unicodeviewwidget.cpp:110
+#: ../qt4/chardict/unicodeviewwidget.cpp:120
 msgctxt "chardict"
 msgid "Tagalog"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:108
-#: ../qt4/chardict/unicodeviewwidget.cpp:111
+#: ../qt4/chardict/unicodeviewwidget.cpp:121
 msgctxt "chardict"
 msgid "Hanunoo"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:109
-#: ../qt4/chardict/unicodeviewwidget.cpp:112
+#: ../qt4/chardict/unicodeviewwidget.cpp:122
 msgctxt "chardict"
 msgid "Buhid"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:110
-#: ../qt4/chardict/unicodeviewwidget.cpp:113
+#: ../qt4/chardict/unicodeviewwidget.cpp:123
 msgctxt "chardict"
 msgid "Tagbanwa"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:111
-#: ../qt4/chardict/unicodeviewwidget.cpp:114
+#: ../qt4/chardict/unicodeviewwidget.cpp:124
 msgctxt "chardict"
 msgid "Khmer"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:112
-#: ../qt4/chardict/unicodeviewwidget.cpp:115
+#: ../qt4/chardict/unicodeviewwidget.cpp:125
 msgctxt "chardict"
 msgid "Mongolian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:113
-#: ../qt4/chardict/unicodeviewwidget.cpp:116
+#: ../qt4/chardict/unicodeviewwidget.cpp:126
 msgctxt "chardict"
 msgid "Unified Canadian Aboriginal Syllabics Extended"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:114
-#: ../qt4/chardict/unicodeviewwidget.cpp:117
+#: ../qt4/chardict/unicodeviewwidget.cpp:127
 msgctxt "chardict"
 msgid "Limbu"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:115
-#: ../qt4/chardict/unicodeviewwidget.cpp:118
+#: ../qt4/chardict/unicodeviewwidget.cpp:128
 msgctxt "chardict"
 msgid "Tai Le"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:116
-#: ../qt4/chardict/unicodeviewwidget.cpp:119
+#: ../qt4/chardict/unicodeviewwidget.cpp:129
 msgctxt "chardict"
 msgid "New Tai Lue"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:117
-#: ../qt4/chardict/unicodeviewwidget.cpp:120
+#: ../qt4/chardict/unicodeviewwidget.cpp:130
 msgctxt "chardict"
 msgid "Khmer Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:118
-#: ../qt4/chardict/unicodeviewwidget.cpp:121
+#: ../qt4/chardict/unicodeviewwidget.cpp:131
 msgctxt "chardict"
 msgid "Buginese"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:119
-#: ../qt4/chardict/unicodeviewwidget.cpp:122
+#: ../qt4/chardict/unicodeviewwidget.cpp:132
 msgctxt "chardict"
 msgid "Tai Tham"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:120
-#: ../qt4/chardict/unicodeviewwidget.cpp:123
+#: ../qt4/chardict/unicodeviewwidget.cpp:133
 msgctxt "chardict"
 msgid "Balinese"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:121
-#: ../qt4/chardict/unicodeviewwidget.cpp:124
+#: ../qt4/chardict/unicodeviewwidget.cpp:134
 msgctxt "chardict"
 msgid "Sundanese"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:122
-#: ../qt4/chardict/unicodeviewwidget.cpp:125
+#: ../qt4/chardict/unicodeviewwidget.cpp:135
 msgctxt "chardict"
 msgid "Batak"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:123
-#: ../qt4/chardict/unicodeviewwidget.cpp:126
+#: ../qt4/chardict/unicodeviewwidget.cpp:136
 msgctxt "chardict"
 msgid "Lepcha"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:124
-#: ../qt4/chardict/unicodeviewwidget.cpp:127
+#: ../qt4/chardict/unicodeviewwidget.cpp:137
 msgctxt "chardict"
 msgid "Ol Chiki"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:125
-#: ../qt4/chardict/unicodeviewwidget.cpp:128
+#: ../qt4/chardict/unicodeviewwidget.cpp:138
 msgctxt "chardict"
 msgid "Sundanese Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:126
-#: ../qt4/chardict/unicodeviewwidget.cpp:129
+#: ../qt4/chardict/unicodeviewwidget.cpp:139
 msgctxt "chardict"
 msgid "Vedic Extensions"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:127
-#: ../qt4/chardict/unicodeviewwidget.cpp:130
+#: ../qt4/chardict/unicodeviewwidget.cpp:140
 msgctxt "chardict"
 msgid "Phonetic Extensions"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:128
-#: ../qt4/chardict/unicodeviewwidget.cpp:131
+#: ../qt4/chardict/unicodeviewwidget.cpp:141
 msgctxt "chardict"
 msgid "Phonetic Extensions Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:129
-#: ../qt4/chardict/unicodeviewwidget.cpp:132
+#: ../qt4/chardict/unicodeviewwidget.cpp:142
 msgctxt "chardict"
 msgid "Combining Diacritical Marks Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:130
-#: ../qt4/chardict/unicodeviewwidget.cpp:133
+#: ../qt4/chardict/unicodeviewwidget.cpp:143
 msgctxt "chardict"
 msgid "Latin Extended Additional"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:131
-#: ../qt4/chardict/unicodeviewwidget.cpp:134
+#: ../qt4/chardict/unicodeviewwidget.cpp:144
 msgctxt "chardict"
 msgid "Greek Extended"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:132
-#: ../qt4/chardict/unicodeviewwidget.cpp:135
+#: ../qt4/chardict/unicodeviewwidget.cpp:145
 msgctxt "chardict"
 msgid "General Punctuation"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:133
-#: ../qt4/chardict/unicodeviewwidget.cpp:136
+#: ../qt4/chardict/unicodeviewwidget.cpp:146
 msgctxt "chardict"
 msgid "Superscripts and Subscripts"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:134
-#: ../qt4/chardict/unicodeviewwidget.cpp:137
+#: ../qt4/chardict/unicodeviewwidget.cpp:147
 msgctxt "chardict"
 msgid "Currency Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:135
-#: ../qt4/chardict/unicodeviewwidget.cpp:138
+#: ../qt4/chardict/unicodeviewwidget.cpp:148
 msgctxt "chardict"
 msgid "Combining Diacritical Marks for Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:136
-#: ../qt4/chardict/unicodeviewwidget.cpp:139
+#: ../qt4/chardict/unicodeviewwidget.cpp:149
 msgctxt "chardict"
 msgid "Letterlike Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:137
-#: ../qt4/chardict/unicodeviewwidget.cpp:140
+#: ../qt4/chardict/unicodeviewwidget.cpp:150
 msgctxt "chardict"
 msgid "Number Forms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:138
-#: ../qt4/chardict/unicodeviewwidget.cpp:141
+#: ../qt4/chardict/unicodeviewwidget.cpp:151
 msgctxt "chardict"
 msgid "Arrows"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:139
-#: ../qt4/chardict/unicodeviewwidget.cpp:142
+#: ../qt4/chardict/unicodeviewwidget.cpp:152
 msgctxt "chardict"
 msgid "Mathematical Operators"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:140
-#: ../qt4/chardict/unicodeviewwidget.cpp:143
+#: ../qt4/chardict/unicodeviewwidget.cpp:153
 msgctxt "chardict"
 msgid "Miscellaneous Technical"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:141
-#: ../qt4/chardict/unicodeviewwidget.cpp:144
+#: ../qt4/chardict/unicodeviewwidget.cpp:154
 msgctxt "chardict"
 msgid "Control Pictures"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:142
-#: ../qt4/chardict/unicodeviewwidget.cpp:145
+#: ../qt4/chardict/unicodeviewwidget.cpp:155
 msgctxt "chardict"
 msgid "Optical Character Recognition"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:143
-#: ../qt4/chardict/unicodeviewwidget.cpp:146
+#: ../qt4/chardict/unicodeviewwidget.cpp:156
 msgctxt "chardict"
 msgid "Enclosed Alphanumerics"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:144
-#: ../qt4/chardict/unicodeviewwidget.cpp:147
+#: ../qt4/chardict/unicodeviewwidget.cpp:157
 msgctxt "chardict"
 msgid "Box Drawing"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:145
-#: ../qt4/chardict/unicodeviewwidget.cpp:148
+#: ../qt4/chardict/unicodeviewwidget.cpp:158
 msgctxt "chardict"
 msgid "Block Elements"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:146
-#: ../qt4/chardict/unicodeviewwidget.cpp:149
+#: ../qt4/chardict/unicodeviewwidget.cpp:159
 msgctxt "chardict"
 msgid "Geometric Shapes"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:147
-#: ../qt4/chardict/unicodeviewwidget.cpp:150
+#: ../qt4/chardict/unicodeviewwidget.cpp:160
 msgctxt "chardict"
 msgid "Miscellaneous Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:148
-#: ../qt4/chardict/unicodeviewwidget.cpp:151
+#: ../qt4/chardict/unicodeviewwidget.cpp:161
 msgctxt "chardict"
 msgid "Dingbats"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:149
-#: ../qt4/chardict/unicodeviewwidget.cpp:152
+#: ../qt4/chardict/unicodeviewwidget.cpp:162
 msgctxt "chardict"
 msgid "Miscellaneous Mathematical Symbols-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:150
-#: ../qt4/chardict/unicodeviewwidget.cpp:153
+#: ../qt4/chardict/unicodeviewwidget.cpp:163
 msgctxt "chardict"
 msgid "Supplemental Arrows-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:151
-#: ../qt4/chardict/unicodeviewwidget.cpp:154
+#: ../qt4/chardict/unicodeviewwidget.cpp:164
 msgctxt "chardict"
 msgid "Braille Patterns"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:152
-#: ../qt4/chardict/unicodeviewwidget.cpp:155
+#: ../qt4/chardict/unicodeviewwidget.cpp:165
 msgctxt "chardict"
 msgid "Supplemental Arrows-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:153
-#: ../qt4/chardict/unicodeviewwidget.cpp:156
+#: ../qt4/chardict/unicodeviewwidget.cpp:166
 msgctxt "chardict"
 msgid "Miscellaneous Mathematical Symbols-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:154
-#: ../qt4/chardict/unicodeviewwidget.cpp:157
+#: ../qt4/chardict/unicodeviewwidget.cpp:167
 msgctxt "chardict"
 msgid "Supplemental Mathematical Operators"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:155
-#: ../qt4/chardict/unicodeviewwidget.cpp:158
+#: ../qt4/chardict/unicodeviewwidget.cpp:168
 msgctxt "chardict"
 msgid "Miscellaneous Symbols and Arrows"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:156
-#: ../qt4/chardict/unicodeviewwidget.cpp:159
+#: ../qt4/chardict/unicodeviewwidget.cpp:169
 msgctxt "chardict"
 msgid "Glagolitic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:157
-#: ../qt4/chardict/unicodeviewwidget.cpp:160
+#: ../qt4/chardict/unicodeviewwidget.cpp:170
 msgctxt "chardict"
 msgid "Latin Extended-C"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:158
-#: ../qt4/chardict/unicodeviewwidget.cpp:161
+#: ../qt4/chardict/unicodeviewwidget.cpp:171
 msgctxt "chardict"
 msgid "Coptic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:159
-#: ../qt4/chardict/unicodeviewwidget.cpp:162
+#: ../qt4/chardict/unicodeviewwidget.cpp:172
 msgctxt "chardict"
 msgid "Georgian Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:160
-#: ../qt4/chardict/unicodeviewwidget.cpp:163
+#: ../qt4/chardict/unicodeviewwidget.cpp:173
 msgctxt "chardict"
 msgid "Tifinagh"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:161
-#: ../qt4/chardict/unicodeviewwidget.cpp:164
+#: ../qt4/chardict/unicodeviewwidget.cpp:174
 msgctxt "chardict"
 msgid "Ethiopic Extended"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:162
-#: ../qt4/chardict/unicodeviewwidget.cpp:165
+#: ../qt4/chardict/unicodeviewwidget.cpp:175
 msgctxt "chardict"
 msgid "Cyrillic Extended-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:163
-#: ../qt4/chardict/unicodeviewwidget.cpp:166
+#: ../qt4/chardict/unicodeviewwidget.cpp:176
 msgctxt "chardict"
 msgid "Supplemental Punctuation"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:164
-#: ../qt4/chardict/unicodeviewwidget.cpp:167
+#: ../qt4/chardict/unicodeviewwidget.cpp:177
 msgctxt "chardict"
 msgid "CJK Radicals Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:165
-#: ../qt4/chardict/unicodeviewwidget.cpp:168
+#: ../qt4/chardict/unicodeviewwidget.cpp:178
 msgctxt "chardict"
 msgid "Kangxi Radicals"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:166
-#: ../qt4/chardict/unicodeviewwidget.cpp:169
+#: ../qt4/chardict/unicodeviewwidget.cpp:179
 msgctxt "chardict"
 msgid "Ideographic Description Characters"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:167
-#: ../qt4/chardict/unicodeviewwidget.cpp:170
+#: ../qt4/chardict/unicodeviewwidget.cpp:180
 msgctxt "chardict"
 msgid "CJK Symbols and Punctuation"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:168
-#: ../qt4/chardict/unicodeviewwidget.cpp:171
+#: ../qt4/chardict/unicodeviewwidget.cpp:181
 msgctxt "chardict"
 msgid "Hiragana"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:169
-#: ../qt4/chardict/unicodeviewwidget.cpp:172
+#: ../qt4/chardict/unicodeviewwidget.cpp:182
 msgctxt "chardict"
 msgid "Katakana"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:170
-#: ../qt4/chardict/unicodeviewwidget.cpp:173
+#: ../qt4/chardict/unicodeviewwidget.cpp:183
 msgctxt "chardict"
 msgid "Bopomofo"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:171
-#: ../qt4/chardict/unicodeviewwidget.cpp:174
+#: ../qt4/chardict/unicodeviewwidget.cpp:184
 msgctxt "chardict"
 msgid "Hangul Compatibility Jamo"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:172
-#: ../qt4/chardict/unicodeviewwidget.cpp:175
+#: ../qt4/chardict/unicodeviewwidget.cpp:185
 msgctxt "chardict"
 msgid "Kanbun"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:173
-#: ../qt4/chardict/unicodeviewwidget.cpp:176
+#: ../qt4/chardict/unicodeviewwidget.cpp:186
 msgctxt "chardict"
 msgid "Bopomofo Extended"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:174
-#: ../qt4/chardict/unicodeviewwidget.cpp:177
+#: ../qt4/chardict/unicodeviewwidget.cpp:187
 msgctxt "chardict"
 msgid "CJK Strokes"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:175
-#: ../qt4/chardict/unicodeviewwidget.cpp:178
+#: ../qt4/chardict/unicodeviewwidget.cpp:188
 msgctxt "chardict"
 msgid "Katakana Phonetic Extensions"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:176
-#: ../qt4/chardict/unicodeviewwidget.cpp:179
+#: ../qt4/chardict/unicodeviewwidget.cpp:189
 msgctxt "chardict"
 msgid "Enclosed CJK Letters and Months"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:177
-#: ../qt4/chardict/unicodeviewwidget.cpp:180
+#: ../qt4/chardict/unicodeviewwidget.cpp:190
 msgctxt "chardict"
 msgid "CJK Compatibility"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:178
-#: ../qt4/chardict/unicodeviewwidget.cpp:181
+#: ../qt4/chardict/unicodeviewwidget.cpp:191
 msgctxt "chardict"
 msgid "CJK Unified Ideographs Extension A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:179
-#: ../qt4/chardict/unicodeviewwidget.cpp:182
+#: ../qt4/chardict/unicodeviewwidget.cpp:192
 msgctxt "chardict"
 msgid "Yijing Hexagram Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:180
-#: ../qt4/chardict/unicodeviewwidget.cpp:183
+#: ../qt4/chardict/unicodeviewwidget.cpp:193
 msgctxt "chardict"
 msgid "CJK Unified Ideographs"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:181
-#: ../qt4/chardict/unicodeviewwidget.cpp:184
+#: ../qt4/chardict/unicodeviewwidget.cpp:194
 msgctxt "chardict"
 msgid "Yi Syllables"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:182
-#: ../qt4/chardict/unicodeviewwidget.cpp:185
+#: ../qt4/chardict/unicodeviewwidget.cpp:195
 msgctxt "chardict"
 msgid "Yi Radicals"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:183
-#: ../qt4/chardict/unicodeviewwidget.cpp:186
+#: ../qt4/chardict/unicodeviewwidget.cpp:196
 msgctxt "chardict"
 msgid "Lisu"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:184
-#: ../qt4/chardict/unicodeviewwidget.cpp:187
+#: ../qt4/chardict/unicodeviewwidget.cpp:197
 msgctxt "chardict"
 msgid "Vai"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:185
-#: ../qt4/chardict/unicodeviewwidget.cpp:188
+#: ../qt4/chardict/unicodeviewwidget.cpp:198
 msgctxt "chardict"
 msgid "Cyrillic Extended-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:186
-#: ../qt4/chardict/unicodeviewwidget.cpp:189
+#: ../qt4/chardict/unicodeviewwidget.cpp:199
 msgctxt "chardict"
 msgid "Bamum"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:187
-#: ../qt4/chardict/unicodeviewwidget.cpp:190
+#: ../qt4/chardict/unicodeviewwidget.cpp:200
 msgctxt "chardict"
 msgid "Modifier Tone Letters"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:188
-#: ../qt4/chardict/unicodeviewwidget.cpp:191
+#: ../qt4/chardict/unicodeviewwidget.cpp:201
 msgctxt "chardict"
 msgid "Latin Extended-D"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:189
-#: ../qt4/chardict/unicodeviewwidget.cpp:192
+#: ../qt4/chardict/unicodeviewwidget.cpp:202
 msgctxt "chardict"
 msgid "Syloti Nagri"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:190
-#: ../qt4/chardict/unicodeviewwidget.cpp:193
+#: ../qt4/chardict/unicodeviewwidget.cpp:203
 msgctxt "chardict"
 msgid "Common Indic Number Forms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:191
-#: ../qt4/chardict/unicodeviewwidget.cpp:194
+#: ../qt4/chardict/unicodeviewwidget.cpp:204
 msgctxt "chardict"
 msgid "Phags-pa"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:192
-#: ../qt4/chardict/unicodeviewwidget.cpp:195
+#: ../qt4/chardict/unicodeviewwidget.cpp:205
 msgctxt "chardict"
 msgid "Saurashtra"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:193
-#: ../qt4/chardict/unicodeviewwidget.cpp:196
+#: ../qt4/chardict/unicodeviewwidget.cpp:206
 msgctxt "chardict"
 msgid "Devanagari Extended"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:194
-#: ../qt4/chardict/unicodeviewwidget.cpp:197
+#: ../qt4/chardict/unicodeviewwidget.cpp:207
 msgctxt "chardict"
 msgid "Kayah Li"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:195
-#: ../qt4/chardict/unicodeviewwidget.cpp:198
+#: ../qt4/chardict/unicodeviewwidget.cpp:208
 msgctxt "chardict"
 msgid "Rejang"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:196
-#: ../qt4/chardict/unicodeviewwidget.cpp:199
+#: ../qt4/chardict/unicodeviewwidget.cpp:209
 msgctxt "chardict"
 msgid "Hangul Jamo Extended-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:197
-#: ../qt4/chardict/unicodeviewwidget.cpp:200
+#: ../qt4/chardict/unicodeviewwidget.cpp:210
 msgctxt "chardict"
 msgid "Javanese"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:198
-#: ../qt4/chardict/unicodeviewwidget.cpp:201
+#: ../qt4/chardict/unicodeviewwidget.cpp:211
 msgctxt "chardict"
 msgid "Cham"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:199
-#: ../qt4/chardict/unicodeviewwidget.cpp:202
+#: ../qt4/chardict/unicodeviewwidget.cpp:212
 msgctxt "chardict"
 msgid "Myanmar Extended-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:200
-#: ../qt4/chardict/unicodeviewwidget.cpp:203
+#: ../qt4/chardict/unicodeviewwidget.cpp:213
 msgctxt "chardict"
 msgid "Tai Viet"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:201
-#: ../qt4/chardict/unicodeviewwidget.cpp:204
+#: ../qt4/chardict/unicodeviewwidget.cpp:214
 msgctxt "chardict"
 msgid "Meetei Mayek Extensions"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:202
-#: ../qt4/chardict/unicodeviewwidget.cpp:205
+#: ../qt4/chardict/unicodeviewwidget.cpp:215
 msgctxt "chardict"
 msgid "Ethiopic Extended-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:203
-#: ../qt4/chardict/unicodeviewwidget.cpp:206
+#: ../qt4/chardict/unicodeviewwidget.cpp:216
 msgctxt "chardict"
 msgid "Meetei Mayek"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:204
-#: ../qt4/chardict/unicodeviewwidget.cpp:207
+#: ../qt4/chardict/unicodeviewwidget.cpp:217
 msgctxt "chardict"
 msgid "Hangul Syllables"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:205
-#: ../qt4/chardict/unicodeviewwidget.cpp:208
+#: ../qt4/chardict/unicodeviewwidget.cpp:218
 msgctxt "chardict"
 msgid "Hangul Jamo Extended-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:206
-#: ../qt4/chardict/unicodeviewwidget.cpp:209
+#: ../qt4/chardict/unicodeviewwidget.cpp:219
 msgctxt "chardict"
 msgid "High Surrogates"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:207
-#: ../qt4/chardict/unicodeviewwidget.cpp:210
+#: ../qt4/chardict/unicodeviewwidget.cpp:220
 msgctxt "chardict"
 msgid "High Private Use Surrogates"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:208
-#: ../qt4/chardict/unicodeviewwidget.cpp:211
+#: ../qt4/chardict/unicodeviewwidget.cpp:221
 msgctxt "chardict"
 msgid "Low Surrogates"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:209
-#: ../qt4/chardict/unicodeviewwidget.cpp:212
+#: ../qt4/chardict/unicodeviewwidget.cpp:222
 msgctxt "chardict"
 msgid "Private Use Area"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:210
-#: ../qt4/chardict/unicodeviewwidget.cpp:213
+#: ../qt4/chardict/unicodeviewwidget.cpp:223
 msgctxt "chardict"
 msgid "CJK Compatibility Ideographs"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:211
-#: ../qt4/chardict/unicodeviewwidget.cpp:214
+#: ../qt4/chardict/unicodeviewwidget.cpp:224
 msgctxt "chardict"
 msgid "Alphabetic Presentation Forms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:212
-#: ../qt4/chardict/unicodeviewwidget.cpp:215
+#: ../qt4/chardict/unicodeviewwidget.cpp:225
 msgctxt "chardict"
 msgid "Arabic Presentation Forms-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:213
-#: ../qt4/chardict/unicodeviewwidget.cpp:216
+#: ../qt4/chardict/unicodeviewwidget.cpp:226
 msgctxt "chardict"
 msgid "Variation Selectors"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:214
-#: ../qt4/chardict/unicodeviewwidget.cpp:217
+#: ../qt4/chardict/unicodeviewwidget.cpp:227
 msgctxt "chardict"
 msgid "Vertical Forms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:215
-#: ../qt4/chardict/unicodeviewwidget.cpp:218
+#: ../qt4/chardict/unicodeviewwidget.cpp:228
 msgctxt "chardict"
 msgid "Combining Half Marks"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:216
-#: ../qt4/chardict/unicodeviewwidget.cpp:219
+#: ../qt4/chardict/unicodeviewwidget.cpp:229
 msgctxt "chardict"
 msgid "CJK Compatibility Forms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:217
-#: ../qt4/chardict/unicodeviewwidget.cpp:220
+#: ../qt4/chardict/unicodeviewwidget.cpp:230
 msgctxt "chardict"
 msgid "Small Form Variants"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:218
-#: ../qt4/chardict/unicodeviewwidget.cpp:221
+#: ../qt4/chardict/unicodeviewwidget.cpp:231
 msgctxt "chardict"
 msgid "Arabic Presentation Forms-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:219
-#: ../qt4/chardict/unicodeviewwidget.cpp:222
+#: ../qt4/chardict/unicodeviewwidget.cpp:232
 msgctxt "chardict"
 msgid "Halfwidth and Fullwidth Forms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:220
-#: ../qt4/chardict/unicodeviewwidget.cpp:223
+#: ../qt4/chardict/unicodeviewwidget.cpp:233
 msgctxt "chardict"
 msgid "Specials"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:221
-#: ../qt4/chardict/unicodeviewwidget.cpp:224
+#: ../qt4/chardict/unicodeviewwidget.cpp:234
 msgctxt "chardict"
 msgid "Linear B Syllabary"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:222
-#: ../qt4/chardict/unicodeviewwidget.cpp:225
+#: ../qt4/chardict/unicodeviewwidget.cpp:235
 msgctxt "chardict"
 msgid "Linear B Ideograms"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:223
-#: ../qt4/chardict/unicodeviewwidget.cpp:226
+#: ../qt4/chardict/unicodeviewwidget.cpp:236
 msgctxt "chardict"
 msgid "Aegean Numbers"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:224
-#: ../qt4/chardict/unicodeviewwidget.cpp:227
+#: ../qt4/chardict/unicodeviewwidget.cpp:237
 msgctxt "chardict"
 msgid "Ancient Greek Numbers"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:225
-#: ../qt4/chardict/unicodeviewwidget.cpp:228
+#: ../qt4/chardict/unicodeviewwidget.cpp:238
 msgctxt "chardict"
 msgid "Ancient Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:226
-#: ../qt4/chardict/unicodeviewwidget.cpp:229
+#: ../qt4/chardict/unicodeviewwidget.cpp:239
 msgctxt "chardict"
 msgid "Phaistos Disc"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:227
-#: ../qt4/chardict/unicodeviewwidget.cpp:230
+#: ../qt4/chardict/unicodeviewwidget.cpp:240
 msgctxt "chardict"
 msgid "Lycian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:228
-#: ../qt4/chardict/unicodeviewwidget.cpp:231
+#: ../qt4/chardict/unicodeviewwidget.cpp:241
 msgctxt "chardict"
 msgid "Carian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:229
-#: ../qt4/chardict/unicodeviewwidget.cpp:232
+#: ../qt4/chardict/unicodeviewwidget.cpp:242
 msgctxt "chardict"
 msgid "Old Italic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:230
-#: ../qt4/chardict/unicodeviewwidget.cpp:233
+#: ../qt4/chardict/unicodeviewwidget.cpp:243
 msgctxt "chardict"
 msgid "Gothic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:231
-#: ../qt4/chardict/unicodeviewwidget.cpp:234
+#: ../qt4/chardict/unicodeviewwidget.cpp:244
 msgctxt "chardict"
 msgid "Ugaritic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:232
-#: ../qt4/chardict/unicodeviewwidget.cpp:235
+#: ../qt4/chardict/unicodeviewwidget.cpp:245
 msgctxt "chardict"
 msgid "Old Persian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:233
-#: ../qt4/chardict/unicodeviewwidget.cpp:236
+#: ../qt4/chardict/unicodeviewwidget.cpp:246
 msgctxt "chardict"
 msgid "Deseret"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:234
-#: ../qt4/chardict/unicodeviewwidget.cpp:237
+#: ../qt4/chardict/unicodeviewwidget.cpp:247
 msgctxt "chardict"
 msgid "Shavian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:235
-#: ../qt4/chardict/unicodeviewwidget.cpp:238
+#: ../qt4/chardict/unicodeviewwidget.cpp:248
 msgctxt "chardict"
 msgid "Osmanya"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:236
-#: ../qt4/chardict/unicodeviewwidget.cpp:239
+#: ../qt4/chardict/unicodeviewwidget.cpp:249
 msgctxt "chardict"
 msgid "Cypriot Syllabary"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:237
-#: ../qt4/chardict/unicodeviewwidget.cpp:240
+#: ../qt4/chardict/unicodeviewwidget.cpp:250
 msgctxt "chardict"
 msgid "Imperial Aramaic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:238
-#: ../qt4/chardict/unicodeviewwidget.cpp:241
+#: ../qt4/chardict/unicodeviewwidget.cpp:251
 msgctxt "chardict"
 msgid "Phoenician"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:239
-#: ../qt4/chardict/unicodeviewwidget.cpp:242
+#: ../qt4/chardict/unicodeviewwidget.cpp:252
 msgctxt "chardict"
 msgid "Lydian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:240
-#: ../qt4/chardict/unicodeviewwidget.cpp:243
+#: ../qt4/chardict/unicodeviewwidget.cpp:253
 msgctxt "chardict"
 msgid "Meroitic Hieroglyphs"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:241
-#: ../qt4/chardict/unicodeviewwidget.cpp:244
+#: ../qt4/chardict/unicodeviewwidget.cpp:254
 msgctxt "chardict"
 msgid "Meroitic Cursive"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:242
-#: ../qt4/chardict/unicodeviewwidget.cpp:245
+#: ../qt4/chardict/unicodeviewwidget.cpp:255
 msgctxt "chardict"
 msgid "Kharoshthi"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:243
-#: ../qt4/chardict/unicodeviewwidget.cpp:246
+#: ../qt4/chardict/unicodeviewwidget.cpp:256
 msgctxt "chardict"
 msgid "Old South Arabian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:244
-#: ../qt4/chardict/unicodeviewwidget.cpp:247
+#: ../qt4/chardict/unicodeviewwidget.cpp:257
 msgctxt "chardict"
 msgid "Avestan"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:245
-#: ../qt4/chardict/unicodeviewwidget.cpp:248
+#: ../qt4/chardict/unicodeviewwidget.cpp:258
 msgctxt "chardict"
 msgid "Inscriptional Parthian"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:246
-#: ../qt4/chardict/unicodeviewwidget.cpp:249
+#: ../qt4/chardict/unicodeviewwidget.cpp:259
 msgctxt "chardict"
 msgid "Inscriptional Pahlavi"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:247
-#: ../qt4/chardict/unicodeviewwidget.cpp:250
+#: ../qt4/chardict/unicodeviewwidget.cpp:260
 msgctxt "chardict"
 msgid "Old Turkic"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:248
-#: ../qt4/chardict/unicodeviewwidget.cpp:251
+#: ../qt4/chardict/unicodeviewwidget.cpp:261
 msgctxt "chardict"
 msgid "Rumi Numeral Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:249
-#: ../qt4/chardict/unicodeviewwidget.cpp:252
+#: ../qt4/chardict/unicodeviewwidget.cpp:262
 msgctxt "chardict"
 msgid "Brahmi"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:250
-#: ../qt4/chardict/unicodeviewwidget.cpp:253
+#: ../qt4/chardict/unicodeviewwidget.cpp:263
 msgctxt "chardict"
 msgid "Kaithi"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:251
-#: ../qt4/chardict/unicodeviewwidget.cpp:254
+#: ../qt4/chardict/unicodeviewwidget.cpp:264
 msgctxt "chardict"
 msgid "Sora Sompeng"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:252
-#: ../qt4/chardict/unicodeviewwidget.cpp:255
+#: ../qt4/chardict/unicodeviewwidget.cpp:265
 msgctxt "chardict"
 msgid "Chakma"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:253
-#: ../qt4/chardict/unicodeviewwidget.cpp:256
+#: ../qt4/chardict/unicodeviewwidget.cpp:266
 msgctxt "chardict"
 msgid "Sharada"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:254
-#: ../qt4/chardict/unicodeviewwidget.cpp:257
+#: ../qt4/chardict/unicodeviewwidget.cpp:267
 msgctxt "chardict"
 msgid "Takri"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:255
-#: ../qt4/chardict/unicodeviewwidget.cpp:258
+#: ../qt4/chardict/unicodeviewwidget.cpp:268
 msgctxt "chardict"
 msgid "Cuneiform"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:256
-#: ../qt4/chardict/unicodeviewwidget.cpp:259
+#: ../qt4/chardict/unicodeviewwidget.cpp:269
 msgctxt "chardict"
 msgid "Cuneiform Numbers and Punctuation"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:257
-#: ../qt4/chardict/unicodeviewwidget.cpp:260
+#: ../qt4/chardict/unicodeviewwidget.cpp:270
 msgctxt "chardict"
 msgid "Egyptian Hieroglyphs"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:258
-#: ../qt4/chardict/unicodeviewwidget.cpp:261
+#: ../qt4/chardict/unicodeviewwidget.cpp:271
 msgctxt "chardict"
 msgid "Bamum Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:259
-#: ../qt4/chardict/unicodeviewwidget.cpp:262
+#: ../qt4/chardict/unicodeviewwidget.cpp:272
 msgctxt "chardict"
 msgid "Miao"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:260
-#: ../qt4/chardict/unicodeviewwidget.cpp:263
+#: ../qt4/chardict/unicodeviewwidget.cpp:273
 msgctxt "chardict"
 msgid "Kana Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:261
-#: ../qt4/chardict/unicodeviewwidget.cpp:264
+#: ../qt4/chardict/unicodeviewwidget.cpp:274
 msgctxt "chardict"
 msgid "Byzantine Musical Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:262
-#: ../qt4/chardict/unicodeviewwidget.cpp:265
+#: ../qt4/chardict/unicodeviewwidget.cpp:275
 msgctxt "chardict"
 msgid "Musical Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:263
-#: ../qt4/chardict/unicodeviewwidget.cpp:266
+#: ../qt4/chardict/unicodeviewwidget.cpp:276
 msgctxt "chardict"
 msgid "Ancient Greek Musical Notation"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:264
-#: ../qt4/chardict/unicodeviewwidget.cpp:267
+#: ../qt4/chardict/unicodeviewwidget.cpp:277
 msgctxt "chardict"
 msgid "Tai Xuan Jing Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:265
-#: ../qt4/chardict/unicodeviewwidget.cpp:268
+#: ../qt4/chardict/unicodeviewwidget.cpp:278
 msgctxt "chardict"
 msgid "Counting Rod Numerals"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:266
-#: ../qt4/chardict/unicodeviewwidget.cpp:269
+#: ../qt4/chardict/unicodeviewwidget.cpp:279
 msgctxt "chardict"
 msgid "Mathematical Alphanumeric Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:267
-#: ../qt4/chardict/unicodeviewwidget.cpp:270
+#: ../qt4/chardict/unicodeviewwidget.cpp:280
 msgctxt "chardict"
 msgid "Arabic Mathematical Alphabetic Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:268
-#: ../qt4/chardict/unicodeviewwidget.cpp:271
+#: ../qt4/chardict/unicodeviewwidget.cpp:281
 msgctxt "chardict"
 msgid "Mahjong Tiles"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:269
-#: ../qt4/chardict/unicodeviewwidget.cpp:272
+#: ../qt4/chardict/unicodeviewwidget.cpp:282
 msgctxt "chardict"
 msgid "Domino Tiles"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:270
-#: ../qt4/chardict/unicodeviewwidget.cpp:273
+#: ../qt4/chardict/unicodeviewwidget.cpp:283
 msgctxt "chardict"
 msgid "Playing Cards"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:271
-#: ../qt4/chardict/unicodeviewwidget.cpp:274
+#: ../qt4/chardict/unicodeviewwidget.cpp:284
 msgctxt "chardict"
 msgid "Enclosed Alphanumeric Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:272
-#: ../qt4/chardict/unicodeviewwidget.cpp:275
+#: ../qt4/chardict/unicodeviewwidget.cpp:285
 msgctxt "chardict"
 msgid "Enclosed Ideographic Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:273
-#: ../qt4/chardict/unicodeviewwidget.cpp:276
+#: ../qt4/chardict/unicodeviewwidget.cpp:286
 msgctxt "chardict"
 msgid "Miscellaneous Symbols and Pictographs"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:274
-#: ../qt4/chardict/unicodeviewwidget.cpp:277
+#: ../qt4/chardict/unicodeviewwidget.cpp:287
 msgctxt "chardict"
 msgid "Emoticons"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:275
-#: ../qt4/chardict/unicodeviewwidget.cpp:278
+#: ../qt4/chardict/unicodeviewwidget.cpp:288
 msgctxt "chardict"
 msgid "Transport and Map Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:276
-#: ../qt4/chardict/unicodeviewwidget.cpp:279
+#: ../qt4/chardict/unicodeviewwidget.cpp:289
 msgctxt "chardict"
 msgid "Alchemical Symbols"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:277
-#: ../qt4/chardict/unicodeviewwidget.cpp:280
+#: ../qt4/chardict/unicodeviewwidget.cpp:290
 msgctxt "chardict"
 msgid "CJK Unified Ideographs Extension B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:278
-#: ../qt4/chardict/unicodeviewwidget.cpp:281
+#: ../qt4/chardict/unicodeviewwidget.cpp:291
 msgctxt "chardict"
 msgid "CJK Unified Ideographs Extension C"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:279
-#: ../qt4/chardict/unicodeviewwidget.cpp:282
+#: ../qt4/chardict/unicodeviewwidget.cpp:292
 msgctxt "chardict"
 msgid "CJK Unified Ideographs Extension D"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:280
-#: ../qt4/chardict/unicodeviewwidget.cpp:283
+#: ../qt4/chardict/unicodeviewwidget.cpp:293
 msgctxt "chardict"
 msgid "CJK Compatibility Ideographs Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:281
-#: ../qt4/chardict/unicodeviewwidget.cpp:284
+#: ../qt4/chardict/unicodeviewwidget.cpp:294
 msgctxt "chardict"
 msgid "Tags"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:282
-#: ../qt4/chardict/unicodeviewwidget.cpp:285
+#: ../qt4/chardict/unicodeviewwidget.cpp:295
 msgctxt "chardict"
 msgid "Variation Selectors Supplement"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:283
-#: ../qt4/chardict/unicodeviewwidget.cpp:286
+#: ../qt4/chardict/unicodeviewwidget.cpp:296
 msgctxt "chardict"
 msgid "Supplementary Private Use Area-A"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:284
-#: ../qt4/chardict/unicodeviewwidget.cpp:287
+#: ../qt4/chardict/unicodeviewwidget.cpp:297
 msgctxt "chardict"
 msgid "Supplementary Private Use Area-B"
 msgstr ""
 
 #: ../qt3/chardict/unicodeviewwidget.cpp:308
-#: ../qt4/chardict/unicodeviewwidget.cpp:311
+#: ../qt4/chardict/unicodeviewwidget.cpp:321
 msgid "UnicodeBlock List"
 msgstr ""
 
@@ -1961,11 +1961,11 @@ msgstr ""
 msgid "Edit"
 msgstr "Édition"
 
-#: ../qt3/pref/customwidgets.cpp:887 ../qt4/pref/customwidgets.cpp:904
+#: ../qt3/pref/customwidgets.cpp:887 ../qt4/pref/customwidgets.cpp:915
 msgid "Key Grab Dialog"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:113 ../qt4/pref/qt4.cpp:109
+#: ../qt3/pref/qt.cpp:113 ../qt4/pref/qt4.cpp:125
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -1973,88 +1973,88 @@ msgid ""
 "Please check the file if you find your settings aren't applied."
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:121 ../qt4/pref/qt4.cpp:117
+#: ../qt3/pref/qt.cpp:121 ../qt4/pref/qt4.cpp:133
 msgid "~/.uim exists!"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:163 ../qt4/pref/qt4.cpp:158
+#: ../qt3/pref/qt.cpp:163 ../qt4/pref/qt4.cpp:174
 msgid "Defaults"
 msgstr "Options par défaut"
 
 #: ../qt3/pref/qt.cpp:166 ../qt3/pref/qt.cpp:257 ../qt3/pref/qt.cpp:364
-#: ../qt3/switcher/qt.cpp:129 ../qt4/pref/customwidgets.cpp:1325
-#: ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261 ../qt4/pref/qt4.cpp:371
-#: ../qt4/pref/keyeditformbase.cpp:64 ../qt4/pref/olisteditformbase.cpp:63
-#: ../qt4/switcher/qt4.cpp:139
+#: ../qt3/switcher/qt.cpp:129 ../qt4/pref/customwidgets.cpp:1336
+#: ../qt4/pref/qt4.cpp:177 ../qt4/pref/qt4.cpp:277 ../qt4/pref/qt4.cpp:387
+#: ../qt4/pref/keyeditformbase.cpp:73 ../qt4/pref/olisteditformbase.cpp:72
+#: ../qt4/switcher/qt4.cpp:150
 msgid "OK"
 msgstr "OK"
 
-#: ../qt3/pref/qt.cpp:169 ../qt4/pref/qt4.cpp:164 ../qt4/switcher/qt4.cpp:144
+#: ../qt3/pref/qt.cpp:169 ../qt4/pref/qt4.cpp:180 ../qt4/switcher/qt4.cpp:155
 msgid "Apply"
 msgstr ""
 
 #: ../qt3/pref/qt.cpp:173 ../qt3/pref/qt.cpp:258 ../qt3/switcher/qt.cpp:134
-#: ../qt4/pref/customwidgets.cpp:1329 ../qt4/pref/qt4.cpp:168
-#: ../qt4/pref/qt4.cpp:262 ../qt4/pref/keyeditformbase.cpp:68
-#: ../qt4/pref/olisteditformbase.cpp:67 ../qt4/switcher/qt4.cpp:149
+#: ../qt4/pref/customwidgets.cpp:1340 ../qt4/pref/qt4.cpp:184
+#: ../qt4/pref/qt4.cpp:278 ../qt4/pref/keyeditformbase.cpp:77
+#: ../qt4/pref/olisteditformbase.cpp:76 ../qt4/switcher/qt4.cpp:160
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../qt3/pref/qt.cpp:255 ../qt4/pref/qt4.cpp:259
+#: ../qt3/pref/qt.cpp:255 ../qt4/pref/qt4.cpp:275
 msgid "Save Confirm"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:256 ../qt4/pref/qt4.cpp:260
+#: ../qt3/pref/qt.cpp:256 ../qt4/pref/qt4.cpp:276
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:273 ../qt4/pref/qt4.cpp:277
+#: ../qt3/pref/qt.cpp:273 ../qt4/pref/qt4.cpp:293
 msgid "Quit Confirm"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:276 ../qt4/pref/qt4.cpp:280
+#: ../qt3/pref/qt.cpp:276 ../qt4/pref/qt4.cpp:296
 msgid "Yes"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:277 ../qt4/pref/qt4.cpp:281
+#: ../qt3/pref/qt.cpp:277 ../qt4/pref/qt4.cpp:297
 msgid "No"
 msgstr ""
 
-#: ../qt3/pref/qt.cpp:360 ../qt4/pref/qt4.cpp:367
+#: ../qt3/pref/qt.cpp:360 ../qt4/pref/qt4.cpp:383
 msgid "Show this dialog on startup"
 msgstr ""
 
-#: ../qt4/pref/customwidgets.cpp:740
+#: ../qt4/pref/customwidgets.cpp:751
 msgid "%1 - key configuration"
 msgstr ""
 
-#: ../qt4/pref/customwidgets.cpp:1308 ../qt4/pref/keyeditformbase.cpp:55
+#: ../qt4/pref/customwidgets.cpp:1319 ../qt4/pref/keyeditformbase.cpp:64
 msgid "Remove"
 msgstr ""
 
-#: ../qt4/pref/customwidgets.cpp:1314 ../qt4/pref/olisteditformbase.cpp:54
+#: ../qt4/pref/customwidgets.cpp:1325 ../qt4/pref/olisteditformbase.cpp:63
 msgid "Up"
 msgstr ""
 
-#: ../qt4/pref/customwidgets.cpp:1320 ../qt4/pref/olisteditformbase.cpp:57
+#: ../qt4/pref/customwidgets.cpp:1331 ../qt4/pref/olisteditformbase.cpp:66
 msgid "Down"
 msgstr ""
 
-#: ../qt4/pref/keyeditformbase.cpp:49
+#: ../qt4/pref/keyeditformbase.cpp:58
 msgid "Key Combination"
 msgstr ""
 
-#: ../qt4/pref/keyeditformbase.cpp:52
+#: ../qt4/pref/keyeditformbase.cpp:61
 msgid "Add..."
 msgstr ""
 
-#: ../qt4/pref/olisteditformbase.cpp:51
+#: ../qt4/pref/olisteditformbase.cpp:60
 msgid "Available Items"
 msgstr ""
 
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:59
 msgid "Cannot launch '%1'."
 msgstr ""
 
@@ -2256,9 +2256,9 @@ msgstr ""
 #: ../scm/im-custom.scm:590 ../scm/im-custom.scm:593 ../scm/im-custom.scm:595
 #: ../scm/im-custom.scm:623 ../scm/im-custom.scm:629 ../scm/im-custom.scm:644
 #: ../scm/im-custom.scm:671 ../scm/im-custom.scm:677 ../scm/im-custom.scm:689
-#: ../scm/japanese-custom.scm:473 ../scm/japanese-custom.scm:477
-#: ../scm/japanese-custom.scm:485 ../scm/japanese-custom.scm:495
-#: ../scm/japanese-custom.scm:501 ../scm/look-custom.scm:40
+#: ../scm/japanese-custom.scm:467 ../scm/japanese-custom.scm:471
+#: ../scm/japanese-custom.scm:479 ../scm/japanese-custom.scm:489
+#: ../scm/japanese-custom.scm:495 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
 #: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
 #: ../scm/look-custom.scm:77 ../scm/look-custom.scm:83
@@ -2345,11 +2345,11 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:129 ../scm/tutcode-custom.scm:135
 #: ../scm/tutcode-custom.scm:141 ../scm/tutcode-custom.scm:147
 #: ../scm/tutcode-custom.scm:153 ../scm/tutcode-custom.scm:159
-#: ../scm/tutcode-custom.scm:170 ../scm/tutcode-custom.scm:176
-#: ../scm/tutcode-custom.scm:183 ../scm/tutcode-custom.scm:190
-#: ../scm/tutcode-custom.scm:196 ../scm/tutcode-custom.scm:206
-#: ../scm/tutcode-custom.scm:215 ../scm/tutcode-custom.scm:227
-#: ../scm/tutcode-custom.scm:233 ../scm/tutcode-custom.scm:239
+#: ../scm/tutcode-custom.scm:165 ../scm/tutcode-custom.scm:176
+#: ../scm/tutcode-custom.scm:182 ../scm/tutcode-custom.scm:189
+#: ../scm/tutcode-custom.scm:196 ../scm/tutcode-custom.scm:202
+#: ../scm/tutcode-custom.scm:212 ../scm/tutcode-custom.scm:218
+#: ../scm/tutcode-custom.scm:227 ../scm/tutcode-custom.scm:239
 #: ../scm/tutcode-custom.scm:245 ../scm/tutcode-custom.scm:251
 #: ../scm/tutcode-custom.scm:257 ../scm/tutcode-custom.scm:263
 #: ../scm/tutcode-custom.scm:269 ../scm/tutcode-custom.scm:275
@@ -2358,12 +2358,15 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:305 ../scm/tutcode-custom.scm:311
 #: ../scm/tutcode-custom.scm:317 ../scm/tutcode-custom.scm:323
 #: ../scm/tutcode-custom.scm:329 ../scm/tutcode-custom.scm:335
-#: ../scm/tutcode-custom.scm:342 ../scm/tutcode-custom.scm:348
+#: ../scm/tutcode-custom.scm:341 ../scm/tutcode-custom.scm:347
 #: ../scm/tutcode-custom.scm:354 ../scm/tutcode-custom.scm:360
 #: ../scm/tutcode-custom.scm:366 ../scm/tutcode-custom.scm:372
-#: ../scm/tutcode-custom.scm:381 ../scm/tutcode-custom.scm:387
+#: ../scm/tutcode-custom.scm:378 ../scm/tutcode-custom.scm:384
+#: ../scm/tutcode-custom.scm:393 ../scm/tutcode-custom.scm:399
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
-#: ../scm/tutcode-key-custom.scm:46 ../scm/wnn-custom.scm:44
+#: ../scm/tutcode-key-custom.scm:46 ../scm/tutcode-rule-custom.scm:46
+#: ../scm/tutcode-rule-custom.scm:52 ../scm/tutcode-rule-custom.scm:58
+#: ../scm/tutcode-rule-custom.scm:64 ../scm/wnn-custom.scm:44
 #: ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52 ../scm/wnn-custom.scm:62
 #: ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83 ../scm/wnn-custom.scm:89
 #: ../scm/wnn-custom.scm:95 ../scm/wnn-custom.scm:101
@@ -2431,7 +2434,7 @@ msgstr ""
 #: ../scm/canna-custom.scm:82 ../scm/generic-custom.scm:42
 #: ../scm/google-cgiapi-jp-custom.scm:82 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:205
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:211
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr ""
@@ -2441,7 +2444,7 @@ msgstr ""
 #: ../scm/canna-custom.scm:88 ../scm/generic-custom.scm:48
 #: ../scm/google-cgiapi-jp-custom.scm:88 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:232
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:244
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr ""
@@ -2452,7 +2455,7 @@ msgstr ""
 #: ../scm/google-cgiapi-jp-custom.scm:94 ../scm/mana-custom.scm:86
 #: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
-#: ../scm/tutcode-custom.scm:238 ../scm/wnn-custom.scm:94
+#: ../scm/tutcode-custom.scm:250 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr ""
@@ -2825,7 +2828,7 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:336 ../scm/baidu-olime-jp-custom.scm:394
 #: ../scm/canna-custom.scm:444 ../scm/google-cgiapi-jp-custom.scm:392
 #: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
-#: ../scm/tutcode-custom.scm:365 ../scm/wnn-custom.scm:382
+#: ../scm/tutcode-custom.scm:377 ../scm/wnn-custom.scm:382
 #: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr ""
@@ -3137,43 +3140,45 @@ msgstr ""
 #: ../scm/tutcode-key-custom.scm:562 ../scm/tutcode-key-custom.scm:568
 #: ../scm/tutcode-key-custom.scm:574 ../scm/tutcode-key-custom.scm:580
 #: ../scm/tutcode-key-custom.scm:586 ../scm/tutcode-key-custom.scm:592
-#: ../scm/wnn-key-custom.scm:54 ../scm/wnn-key-custom.scm:60
-#: ../scm/wnn-key-custom.scm:66 ../scm/wnn-key-custom.scm:72
-#: ../scm/wnn-key-custom.scm:78 ../scm/wnn-key-custom.scm:84
-#: ../scm/wnn-key-custom.scm:90 ../scm/wnn-key-custom.scm:96
-#: ../scm/wnn-key-custom.scm:102 ../scm/wnn-key-custom.scm:108
-#: ../scm/wnn-key-custom.scm:117 ../scm/wnn-key-custom.scm:124
-#: ../scm/wnn-key-custom.scm:130 ../scm/wnn-key-custom.scm:136
-#: ../scm/wnn-key-custom.scm:142 ../scm/wnn-key-custom.scm:148
-#: ../scm/wnn-key-custom.scm:154 ../scm/wnn-key-custom.scm:160
-#: ../scm/wnn-key-custom.scm:166 ../scm/wnn-key-custom.scm:175
-#: ../scm/wnn-key-custom.scm:181 ../scm/wnn-key-custom.scm:187
-#: ../scm/wnn-key-custom.scm:193 ../scm/wnn-key-custom.scm:199
-#: ../scm/wnn-key-custom.scm:205 ../scm/wnn-key-custom.scm:211
-#: ../scm/wnn-key-custom.scm:217 ../scm/wnn-key-custom.scm:223
-#: ../scm/wnn-key-custom.scm:233 ../scm/wnn-key-custom.scm:239
-#: ../scm/wnn-key-custom.scm:245 ../scm/wnn-key-custom.scm:251
-#: ../scm/wnn-key-custom.scm:257 ../scm/wnn-key-custom.scm:263
-#: ../scm/wnn-key-custom.scm:269 ../scm/wnn-key-custom.scm:275
-#: ../scm/wnn-key-custom.scm:281 ../scm/yahoo-jp-key-custom.scm:54
-#: ../scm/yahoo-jp-key-custom.scm:60 ../scm/yahoo-jp-key-custom.scm:66
-#: ../scm/yahoo-jp-key-custom.scm:72 ../scm/yahoo-jp-key-custom.scm:78
-#: ../scm/yahoo-jp-key-custom.scm:84 ../scm/yahoo-jp-key-custom.scm:90
-#: ../scm/yahoo-jp-key-custom.scm:96 ../scm/yahoo-jp-key-custom.scm:102
-#: ../scm/yahoo-jp-key-custom.scm:108 ../scm/yahoo-jp-key-custom.scm:117
-#: ../scm/yahoo-jp-key-custom.scm:124 ../scm/yahoo-jp-key-custom.scm:130
-#: ../scm/yahoo-jp-key-custom.scm:136 ../scm/yahoo-jp-key-custom.scm:142
-#: ../scm/yahoo-jp-key-custom.scm:148 ../scm/yahoo-jp-key-custom.scm:154
-#: ../scm/yahoo-jp-key-custom.scm:160 ../scm/yahoo-jp-key-custom.scm:166
-#: ../scm/yahoo-jp-key-custom.scm:175 ../scm/yahoo-jp-key-custom.scm:181
-#: ../scm/yahoo-jp-key-custom.scm:187 ../scm/yahoo-jp-key-custom.scm:193
-#: ../scm/yahoo-jp-key-custom.scm:199 ../scm/yahoo-jp-key-custom.scm:205
-#: ../scm/yahoo-jp-key-custom.scm:211 ../scm/yahoo-jp-key-custom.scm:217
-#: ../scm/yahoo-jp-key-custom.scm:223 ../scm/yahoo-jp-key-custom.scm:233
-#: ../scm/yahoo-jp-key-custom.scm:239 ../scm/yahoo-jp-key-custom.scm:245
-#: ../scm/yahoo-jp-key-custom.scm:251 ../scm/yahoo-jp-key-custom.scm:257
-#: ../scm/yahoo-jp-key-custom.scm:263 ../scm/yahoo-jp-key-custom.scm:269
-#: ../scm/yahoo-jp-key-custom.scm:275 ../scm/yahoo-jp-key-custom.scm:281
+#: ../scm/tutcode-key-custom.scm:598 ../scm/tutcode-key-custom.scm:604
+#: ../scm/tutcode-key-custom.scm:610 ../scm/wnn-key-custom.scm:54
+#: ../scm/wnn-key-custom.scm:60 ../scm/wnn-key-custom.scm:66
+#: ../scm/wnn-key-custom.scm:72 ../scm/wnn-key-custom.scm:78
+#: ../scm/wnn-key-custom.scm:84 ../scm/wnn-key-custom.scm:90
+#: ../scm/wnn-key-custom.scm:96 ../scm/wnn-key-custom.scm:102
+#: ../scm/wnn-key-custom.scm:108 ../scm/wnn-key-custom.scm:117
+#: ../scm/wnn-key-custom.scm:124 ../scm/wnn-key-custom.scm:130
+#: ../scm/wnn-key-custom.scm:136 ../scm/wnn-key-custom.scm:142
+#: ../scm/wnn-key-custom.scm:148 ../scm/wnn-key-custom.scm:154
+#: ../scm/wnn-key-custom.scm:160 ../scm/wnn-key-custom.scm:166
+#: ../scm/wnn-key-custom.scm:175 ../scm/wnn-key-custom.scm:181
+#: ../scm/wnn-key-custom.scm:187 ../scm/wnn-key-custom.scm:193
+#: ../scm/wnn-key-custom.scm:199 ../scm/wnn-key-custom.scm:205
+#: ../scm/wnn-key-custom.scm:211 ../scm/wnn-key-custom.scm:217
+#: ../scm/wnn-key-custom.scm:223 ../scm/wnn-key-custom.scm:233
+#: ../scm/wnn-key-custom.scm:239 ../scm/wnn-key-custom.scm:245
+#: ../scm/wnn-key-custom.scm:251 ../scm/wnn-key-custom.scm:257
+#: ../scm/wnn-key-custom.scm:263 ../scm/wnn-key-custom.scm:269
+#: ../scm/wnn-key-custom.scm:275 ../scm/wnn-key-custom.scm:281
+#: ../scm/yahoo-jp-key-custom.scm:54 ../scm/yahoo-jp-key-custom.scm:60
+#: ../scm/yahoo-jp-key-custom.scm:66 ../scm/yahoo-jp-key-custom.scm:72
+#: ../scm/yahoo-jp-key-custom.scm:78 ../scm/yahoo-jp-key-custom.scm:84
+#: ../scm/yahoo-jp-key-custom.scm:90 ../scm/yahoo-jp-key-custom.scm:96
+#: ../scm/yahoo-jp-key-custom.scm:102 ../scm/yahoo-jp-key-custom.scm:108
+#: ../scm/yahoo-jp-key-custom.scm:117 ../scm/yahoo-jp-key-custom.scm:124
+#: ../scm/yahoo-jp-key-custom.scm:130 ../scm/yahoo-jp-key-custom.scm:136
+#: ../scm/yahoo-jp-key-custom.scm:142 ../scm/yahoo-jp-key-custom.scm:148
+#: ../scm/yahoo-jp-key-custom.scm:154 ../scm/yahoo-jp-key-custom.scm:160
+#: ../scm/yahoo-jp-key-custom.scm:166 ../scm/yahoo-jp-key-custom.scm:175
+#: ../scm/yahoo-jp-key-custom.scm:181 ../scm/yahoo-jp-key-custom.scm:187
+#: ../scm/yahoo-jp-key-custom.scm:193 ../scm/yahoo-jp-key-custom.scm:199
+#: ../scm/yahoo-jp-key-custom.scm:205 ../scm/yahoo-jp-key-custom.scm:211
+#: ../scm/yahoo-jp-key-custom.scm:217 ../scm/yahoo-jp-key-custom.scm:223
+#: ../scm/yahoo-jp-key-custom.scm:233 ../scm/yahoo-jp-key-custom.scm:239
+#: ../scm/yahoo-jp-key-custom.scm:245 ../scm/yahoo-jp-key-custom.scm:251
+#: ../scm/yahoo-jp-key-custom.scm:257 ../scm/yahoo-jp-key-custom.scm:263
+#: ../scm/yahoo-jp-key-custom.scm:269 ../scm/yahoo-jp-key-custom.scm:275
+#: ../scm/yahoo-jp-key-custom.scm:281
 msgid "long description will be here"
 msgstr ""
 
@@ -3321,7 +3326,7 @@ msgstr ""
 msgid "[Ajax-IME] Previous prediction candidate"
 msgstr ""
 
-#: ../scm/ajax-ime.scm:605
+#: ../scm/ajax-ime.scm:600
 msgid ""
 "Caveat: All requests to the Ajax-IME server go over the Internet "
 "unencrypted.\n"
@@ -4718,7 +4723,7 @@ msgstr ""
 msgid "[Global] return"
 msgstr ""
 
-#: ../scm/generic-predict.scm:117
+#: ../scm/generic-predict.scm:111
 msgid "unknown prediction method"
 msgstr ""
 
@@ -5077,13 +5082,13 @@ msgstr ""
 msgid "Alternative input method"
 msgstr ""
 
-#: ../scm/im-custom.scm:397 ../scm/japanese-custom.scm:482
+#: ../scm/im-custom.scm:397 ../scm/japanese-custom.scm:476
 #: ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:458
 #: ../scm/social-ime-custom.scm:370 ../scm/yahoo-jp-custom.scm:376
 msgid "uim"
 msgstr "uim"
 
-#: ../scm/im-custom.scm:397 ../scm/japanese-custom.scm:482
+#: ../scm/im-custom.scm:397 ../scm/japanese-custom.scm:476
 #: ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:458
 msgid "uim native"
 msgstr "uim natif"
@@ -5144,7 +5149,7 @@ msgstr ""
 msgid "Based on mode"
 msgstr ""
 
-#: ../scm/im-custom.scm:460 ../scm/tutcode-custom.scm:225
+#: ../scm/im-custom.scm:460 ../scm/tutcode-custom.scm:237
 msgid "Never"
 msgstr ""
 
@@ -5893,39 +5898,39 @@ msgstr "Yoruba"
 msgid "Zulu"
 msgstr "Zoulou"
 
-#: ../scm/japanese-custom.scm:472
+#: ../scm/japanese-custom.scm:466
 msgid "Japanese Romaji-Kana"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:476
+#: ../scm/japanese-custom.scm:470
 msgid "Composing rule"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:483
+#: ../scm/japanese-custom.scm:477
 msgid "Custom"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:484
+#: ../scm/japanese-custom.scm:478
 msgid "Composing rule type"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:491
+#: ../scm/japanese-custom.scm:485
 msgid "Input"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:492
+#: ../scm/japanese-custom.scm:486
 msgid "Next input"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:493
+#: ../scm/japanese-custom.scm:487
 msgid "Output"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:494
+#: ../scm/japanese-custom.scm:488
 msgid "Custom composing rule"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:500
+#: ../scm/japanese-custom.scm:494
 msgid "Keep consonant Romaji not convertible to Kana"
 msgstr ""
 
@@ -7159,7 +7164,7 @@ msgstr ""
 msgid "Dictionary files"
 msgstr ""
 
-#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:226
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:238
 msgid "Commit candidate by heading label keys"
 msgstr ""
 
@@ -7702,233 +7707,241 @@ msgid "Number of candidates to be excluded from mazegaki learning"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:110
-msgid "Use Dvorak keyboard"
+msgid "Show pending key sequences"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:116
-msgid "Enable two stroke kigou mode"
+msgid "Use Dvorak keyboard"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:122
-msgid "Enable fallback of surrounding text API"
+msgid "Enable two stroke kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:128
-msgid "Keep key sequence not convertible to Kanji"
+msgid "Enable fallback of surrounding text API"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:134
-msgid "Delete leading delimiter on postfix kanji to sequence conversion"
+msgid "Keep key sequence not convertible to Kanji"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:140
-msgid "History size"
+msgid "Delete leading delimiter on postfix kanji to sequence conversion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:146
-msgid "Maximum length of yomi for postfix mazegaki conversion"
+msgid "History size"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:152
-msgid "Enable inflection in mazegaki conversion"
+msgid "Maximum length of yomi for postfix mazegaki conversion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:158
+msgid "Enable inflection in mazegaki conversion"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:164
 msgid "Maximum length of yomi suffix for mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:165
+#: ../scm/tutcode-custom.scm:171
 msgid "tc-2.1+[tcode-ml:1925]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:167
+#: ../scm/tutcode-custom.scm:173
 msgid "Kanchoku Win YAMANOBE"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:168
+#: ../scm/tutcode-custom.scm:174
 msgid "tc-2.3.1-22.6"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:169
+#: ../scm/tutcode-custom.scm:175
 msgid "Bushu conversion algorithm"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:175
+#: ../scm/tutcode-custom.scm:181
 msgid "Enable interactive bushu conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:182
+#: ../scm/tutcode-custom.scm:188
 msgid "bushu.index2 file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:189
+#: ../scm/tutcode-custom.scm:195
 msgid "bushu.expand file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:195
+#: ../scm/tutcode-custom.scm:201
 msgid "bushu.help file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:211
-msgid "qwerty-jis"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:211
-msgid "Qwerty JIS"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:212
-msgid "qwerty-us"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:212
-msgid "Qwerty US"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:213
-msgid "dvorak"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:213
-msgid "Dvorak"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:214
-msgid "Key layout of table style candidate window"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:220
-msgid "always"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:220
-msgid "All keys as label key"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:221
-msgid "which have candidate"
-msgstr ""
-
-#: ../scm/tutcode-custom.scm:222
-msgid "Enable keys which have candidate"
+#: ../scm/tutcode-custom.scm:217
+msgid "Use pseudo table style layout"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:223
-msgid "while candidate window is shown"
+msgid "qwerty-jis"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:223
+msgid "Qwerty JIS"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:224
-msgid "Enable while candidate window is shown"
+msgid "qwerty-us"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:224
+msgid "Qwerty US"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:225
+msgid "dvorak"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:225
+msgid "Dvorak"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:226
+msgid "Key layout of table style candidate window"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:232
+msgid "always"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:232
+msgid "All keys as label key"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:233
+msgid "which have candidate"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:234
+msgid "Enable keys which have candidate"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:235
+msgid "while candidate window is shown"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:236
+msgid "Enable while candidate window is shown"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:237
 msgid "never"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:244
+#: ../scm/tutcode-custom.scm:256
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:250
+#: ../scm/tutcode-custom.scm:262
 msgid "Number of candidates in candidate window at a time for prediction"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:256
+#: ../scm/tutcode-custom.scm:268
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:262
+#: ../scm/tutcode-custom.scm:274
 msgid "Number of candidates in candidate window at a time for history"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:268
+#: ../scm/tutcode-custom.scm:280
 msgid "Use stroke help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:274
+#: ../scm/tutcode-custom.scm:286
 msgid "Show stroke help window on no input"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:280
+#: ../scm/tutcode-custom.scm:292
 msgid "Use auto help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:286
+#: ../scm/tutcode-custom.scm:298
 msgid "Show real keys on auto help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:292
+#: ../scm/tutcode-custom.scm:304
 msgid "Use delay showing candidate window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:298
+#: ../scm/tutcode-custom.scm:310
 msgid "Delay before showing candidate window for mazegaki [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:304
+#: ../scm/tutcode-custom.scm:316
 msgid "Delay before showing candidate window for stroke help [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:310
+#: ../scm/tutcode-custom.scm:322
 msgid "Delay before showing candidate window for auto help [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:316
+#: ../scm/tutcode-custom.scm:328
 msgid "Delay before showing candidate window for completion [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:322
+#: ../scm/tutcode-custom.scm:334
 msgid "Delay before showing candidate window for prediction [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:328
+#: ../scm/tutcode-custom.scm:340
 msgid "Delay before showing candidate window for bushu prediction [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:334
+#: ../scm/tutcode-custom.scm:346
 msgid ""
 "Delay before showing candidate window for interactive bushu conversion [s]"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:341
+#: ../scm/tutcode-custom.scm:353
 msgid "Enable completion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:347
+#: ../scm/tutcode-custom.scm:359
 msgid "Minimum character length for completion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:353
+#: ../scm/tutcode-custom.scm:365
 msgid "Maximum character length for completion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:359
+#: ../scm/tutcode-custom.scm:371
 msgid "Enable input prediction for mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:371
+#: ../scm/tutcode-custom.scm:383
 msgid "Enable Kanji combination guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:377
+#: ../scm/tutcode-custom.scm:389
 msgid "Full stroke help"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:378
+#: ../scm/tutcode-custom.scm:390
 msgid "Guide only"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:379
+#: ../scm/tutcode-custom.scm:391
 msgid "Disable"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:380
+#: ../scm/tutcode-custom.scm:392
 msgid "Show stroke help temporarily by keys in kanji combination guide"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:386
+#: ../scm/tutcode-custom.scm:398
 msgid "Enable input prediction for bushu conversion"
 msgstr ""
 
@@ -7957,358 +7970,394 @@ msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:69
-msgid "[TUT-Code] toggle kigou mode"
+msgid "[TUT-Code] katakana mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:75
-msgid "[TUT-Code] toggle two stroke kigou mode"
+msgid "[TUT-Code] hiragana mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:81
-msgid "[TUT-Code] mazegaki conversion mode"
+msgid "[TUT-Code] toggle kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:87
-msgid "[TUT-Code] bushu conversion mode"
+msgid "[TUT-Code] toggle two stroke kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:93
-msgid "[TUT-Code] interactive bushu conversion mode"
+msgid "[TUT-Code] mazegaki conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:99
-msgid "[TUT-Code] latin conversion mode"
+msgid "[TUT-Code] bushu conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:105
-msgid "[TUT-Code] kanji code input mode"
+msgid "[TUT-Code] interactive bushu conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:111
-msgid "[TUT-Code] history"
+msgid "[TUT-Code] latin conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:117
-msgid "[TUT-Code] display last auto help"
+msgid "[TUT-Code] kanji code input mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:123
-msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
+msgid "[TUT-Code] history"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:129
-msgid "[TUT-Code] toggle use of stroke help window"
+msgid "[TUT-Code] display last auto help"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:135
-msgid "[TUT-Code] begin completion"
+msgid "[TUT-Code] commit last auto help content"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:141
-msgid "[TUT-Code] begin conversion"
+msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:147
-msgid "[TUT-Code] commit"
+msgid "[TUT-Code] toggle use of stroke help window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:153
-msgid "[TUT-Code] cancel"
+msgid "[TUT-Code] begin completion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:159
-msgid "[TUT-Code] next candidate"
+msgid "[TUT-Code] begin conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:165
-msgid "[TUT-Code] previous candidate"
+msgid "[TUT-Code] commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:171
-msgid "[TUT-Code] undo last commit"
+msgid "[TUT-Code] cancel"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:177
-msgid "[TUT-Code] display help for char at current position"
+msgid "[TUT-Code] next candidate"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:183
-msgid "[TUT-Code] display help for string on clipboard"
+msgid "[TUT-Code] previous candidate"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:189
-msgid "[TUT-Code] paste from clipboard"
+msgid "[TUT-Code] undo last commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:195
-msgid "[TUT-Code] sequence to kanji conversion on clipboard"
+msgid "[TUT-Code] display help for char at current position"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:201
-msgid "[TUT-Code] mazegaki conversion on selection"
+msgid "[TUT-Code] display help for string on clipboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:207
-msgid "[TUT-Code] mazegaki conversion with inflection on selection"
+msgid "[TUT-Code] paste from clipboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:213
-msgid "[TUT-Code] katakana conversion on selection"
+msgid "[TUT-Code] sequence to kanji conversion on clipboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:219
-msgid "[TUT-Code] kanji to sequence conversion on selection"
+msgid "[TUT-Code] mazegaki conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:225
-msgid "[TUT-Code] sequence to kanji conversion on selection"
+msgid "[TUT-Code] mazegaki conversion with inflection on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:231
-msgid "[TUT-Code] next page of candidate window"
+msgid "[TUT-Code] katakana conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:237
-msgid "[TUT-Code] previous page of candidate window"
+msgid "[TUT-Code] kanji to sequence conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:243
-msgid "[TUT-Code] backspace"
+msgid "[TUT-Code] sequence to kanji conversion on selection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:249
-msgid "[TUT-Code] return"
+msgid "[TUT-Code] next page of candidate window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:255
-msgid "[TUT-Code] ESC keys on vi-cooperative mode"
+msgid "[TUT-Code] previous page of candidate window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:261
-msgid "[TUT-Code] register new entry to dictionary"
+msgid "[TUT-Code] backspace"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:267
-msgid "[TUT-Code] purge the entry from dictionary"
+msgid "[TUT-Code] return"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:273
-msgid "[TUT-Code] relimit yomi to left in mazegaki"
+msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:279
-msgid "[TUT-Code] relimit yomi to right in mazegaki"
+msgid "[TUT-Code] register new entry to dictionary"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:285
-msgid "[TUT-Code] insert pending key strokes"
+msgid "[TUT-Code] purge the entry from dictionary"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:291
-msgid "[TUT-Code] postfix bushu conversion"
+msgid "[TUT-Code] relimit yomi to left in mazegaki"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:297
-msgid "[TUT-Code] postfix mazegaki conversion"
+msgid "[TUT-Code] relimit yomi to right in mazegaki"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:303
-msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
+msgid "[TUT-Code] insert pending key strokes"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:309
-msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
+msgid "[TUT-Code] postfix bushu conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:315
-msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
+msgid "[TUT-Code] postfix mazegaki conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:321
-msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:327
-msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:333
-msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:339
-msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:345
-msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:351
-msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:357
-msgid "[TUT-Code] postfix mazegaki conversion with inflection"
+msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:363
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
+msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:369
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
+msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:375
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:381
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:387
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:393
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:399
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:405
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:411
-msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:417
-msgid "[TUT-Code] postfix katakana conversion"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:423
-msgid "[TUT-Code] postfix katakana conversion of 1 character"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:429
-msgid "[TUT-Code] postfix katakana conversion of 2 characters"
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:435
-msgid "[TUT-Code] postfix katakana conversion of 3 characters"
+msgid "[TUT-Code] postfix katakana conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:441
-msgid "[TUT-Code] postfix katakana conversion of 4 characters"
+msgid "[TUT-Code] postfix katakana conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:447
-msgid "[TUT-Code] postfix katakana conversion of 5 characters"
+msgid "[TUT-Code] postfix katakana conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:453
-msgid "[TUT-Code] postfix katakana conversion of 6 characters"
+msgid "[TUT-Code] postfix katakana conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:459
-msgid "[TUT-Code] postfix katakana conversion of 7 characters"
+msgid "[TUT-Code] postfix katakana conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:465
-msgid "[TUT-Code] postfix katakana conversion of 8 characters"
+msgid "[TUT-Code] postfix katakana conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:471
-msgid "[TUT-Code] postfix katakana conversion of 9 characters"
+msgid "[TUT-Code] postfix katakana conversion of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:477
-msgid "[TUT-Code] postfix kanji to sequence conversion"
+msgid "[TUT-Code] postfix katakana conversion of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:483
-msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
+msgid "[TUT-Code] postfix katakana conversion of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:489
-msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
+msgid "[TUT-Code] postfix katakana conversion of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:495
-msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:501
-msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:507
-msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:513
-msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:519
-msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:525
-msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:531
-msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 6 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:537
-msgid "[TUT-Code] postfix sequence to kanji conversion"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 7 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:543
-msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 8 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:549
-msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
+msgid "[TUT-Code] postfix kanji to sequence conversion of 9 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:555
-msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:561
-msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 1 character"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:567
-msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 2 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:573
-msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 3 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:579
-msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 4 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:585
-msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
+msgid "[TUT-Code] postfix sequence to kanji conversion of 5 characters"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:591
+msgid "[TUT-Code] postfix sequence to kanji conversion of 6 characters"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:597
+msgid "[TUT-Code] postfix sequence to kanji conversion of 7 characters"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:603
+msgid "[TUT-Code] postfix sequence to kanji conversion of 8 characters"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:609
 msgid "[TUT-Code] postfix sequence to kanji conversion of 9 characters"
 msgstr ""
 
-#: ../scm/tutcode.scm:905
+#: ../scm/tutcode-rule-custom.scm:39
+msgid "tutcode-rule"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:40
+msgid "Settings for tutcode-rule.scm"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:45
+msgid "Use TUT+ Code which supports shin joyo kanji"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:51
+msgid "Use uppercase rule to input opposite kana"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:57
+msgid "Exclude uppercase katakana rule"
+msgstr ""
+
+#: ../scm/tutcode-rule-custom.scm:63
+msgid "Exclude uppercase kigou in katakana rule"
+msgstr ""
+
+#: ../scm/tutcode.scm:911
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr ""
 
@@ -8716,18 +8765,18 @@ msgstr ""
 msgid "[Yahoo-Jp] Previous prediction candidate"
 msgstr ""
 
-#: ../scm/yahoo-jp.scm:114
+#: ../scm/yahoo-jp.scm:109
 msgid ""
 "Please regist Api key from <a href='http://developer.yahoo.co.jp/'>developer "
 "network</a> and set value on advanced menu."
 msgstr ""
 
 #: ../uim.desktop.in.in.h:1
-msgid "Customize uim input method environment"
+msgid "Input Method"
 msgstr ""
 
 #: ../uim.desktop.in.in.h:2
-msgid "Input Method"
+msgid "Customize uim input method environment"
 msgstr ""
 
 #: ../uim/m17nlib.c:482
