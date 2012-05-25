@@ -15,6 +15,7 @@ Overview of changes from 1.8.0 to 1.8.1
     * New command to dump last help content shown on candidate window
     * Pseudo table style for bridge which does not support
       table style candidate window
+    * Updated trycode composition table retrieved 2012-05-26
 
 Overview of changes from 1.8.0-beta to 1.8.0
 ============================================
