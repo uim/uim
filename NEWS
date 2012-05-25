@@ -1,8 +1,20 @@
 Overview of changes from 1.8.0 to 1.8.1
 =======================================
 * Fixes
+  - uim-tutcode
+    * Fix bug: key which is not in rule (ex. "5")
+      is not entered on (interactive) bushu conversion
 
 * Enhancements
+  - uim-tutcode
+    * New customs
+      - Show pending key sequences
+      - New custom group for tutcode-rule.scm: support TUT+ code
+        which has rules for Shin Joyo Kanji
+      - Key sequences to change katakana/hiragana mode (not toggle)
+    * New command to dump last help content shown on candidate window
+    * Pseudo table style for bridge which does not support
+      table style candidate window
 
 Overview of changes from 1.8.0-beta to 1.8.0
 ============================================
