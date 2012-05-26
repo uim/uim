@@ -1,9 +1,26 @@
 Overview of changes from 1.8.0 to 1.8.1
 =======================================
 * Fixes
+  - uim-toolbar-gtk3-systray
+  - uim-toolbar-gtk-systray
+    * Fix bug: prevent from becoming a zombie process
+
+  - uim-candwin-gtk3
+  - uim-candwin-gtk
+    * Redraw unselected text with normal color
+
   - uim-tutcode
     * Fix bug: key which is not in rule (ex. "5")
       is not entered on (interactive) bushu conversion
+
+  - po
+    * Correct the path to GNOME_UimApplet.server.in in POTFILES.skip
+
+  - uim-qt4
+    * Honor the environment variable LDFLAGS during build
+
+  - uim-notify
+    * Fix compilation with glib >= 2.32
 
 * Enhancements
   - uim-tutcode
@@ -16,6 +33,12 @@ Overview of changes from 1.8.0 to 1.8.1
     * Pseudo table style for bridge which does not support
       table style candidate window
     * Updated trycode composition table retrieved 2012-05-26
+
+* Others
+  - GTK+2 immodule
+  - uim-xim
+    * Replace deprecated XKeycodeToKeysym() with XkbKeycodeToKeysym()
+
 
 Overview of changes from 1.8.0-beta to 1.8.0
 ============================================
