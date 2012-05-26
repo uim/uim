@@ -31,11 +31,7 @@ release, you have to repeat the following procedure at least three times.
    $ vi NEWS
    $ vi RELNOTE
 
-4. Increment the version numbers in configure.ac
-
-   $ vi configure.ac
-
-   And increment libtool-version.mk too if API/ABI is updated.
+4. Increment libtool-version.mk too if API/ABI is updated.
 
    $ vi uim/libtool-version.mk
 
@@ -151,3 +147,8 @@ release, you have to repeat the following procedure at least three times.
    SHA1 (uim-x.y.z-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
 
    <append RELNOTE here>
+
+12. Increment the version numbers in configure.ac
+
+   $ vi configure.ac
+
