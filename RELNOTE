@@ -1,13 +1,10 @@
-uim 1.8.0 Release Note
+uim 1.8.1 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.8.0 is latest stable release of uim.
-
-This release achieved both considerable internal improvement and many
-user-visible new feature additions.
+This distribution of uim 1.8.1 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -18,8 +15,13 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
+Bug fix for uim-notify with recent versions of glib,
+improvement of uim-tutcode and several fixes.
 
 See NEWS for the fully detailed changes.
+
+What's New in 1.8.0
+-------------------
 
  - New IM uim-google-cgiapi-jp
  - New IM uim-baidu-olime-jp
