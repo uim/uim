@@ -48,6 +48,6 @@ Notes
 
   http://lists.sourceforge.jp/mailman/archives/scim-imengine-dev/2006-May/001092.html (Japanese)
 
-- Use rsvg(1) to convert SVG icons into other formats, as follows
+- Use rsvg-convert(1) to convert SVG icons into other formats, as follows
 
-  $ rsvg -w48 -h48 -fpng skk.svg skk.png
+  $ rsvg-convert -w 48 -h 48 -f png skk.svg -o skk.png
