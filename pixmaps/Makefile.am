@@ -165,10 +165,11 @@ clean-gensvg:
 clean-genpng:
 	rm -f $(GENERATED_PNGS)
 
-# rsvg(1) is required to make a distribution, but does not for build
+# rsvg-convert(1) is required to make a distribution, but does not for build
 # and install from a tarball distribution.
 dist-hook:
-	@test -n "$(RSVG)" || (echo 'rsvg(1) not found: install it'; exit 1)
+	@test -n "$(RSVG)" \
+	    || (echo 'rsvg-convert(1) not found: install it'; exit 1)
 
 install-data-hook:
 if M17NLIB

@@ -23,7 +23,7 @@
 #   - GNU make
 #   - perl
 #   - ruby
-#   - rsvg(1) distributed with librsvg
+#   - rsvg-convert(1) distributed with librsvg
 #   - AsciiDoc
 #
 # And to run tests:
