@@ -1,3 +1,7 @@
+exists(../common.pro) {
+    include(../common.pro)
+}
+
 TEMPLATE = app
 CONFIG -= moc
 DEPENDPATH += .
