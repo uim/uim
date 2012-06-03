@@ -1546,7 +1546,7 @@
      (nr (tutcode-lib-get-nr-predictions pc))
      ;; XXX:熟語ガイドのページ数の方が多い場合、
      ;;     補完候補はループして2順目以降の可能性あり(表形式candwinでない場合)
-     (i (remainder idx nr)))
+     (i (if (zero? nr) -1 (remainder idx nr))))
     (if (>= i 0)
       (begin
         (case mode
