@@ -211,16 +211,15 @@ label_draw(GtkWidget *label, cairo_t *cr, gpointer data)
   UIMCandWinHorizontalGtk *horizontal_cwin = data;
   struct index_button *selected;
   GtkWidget *selected_label = NULL;
-
-  selected = horizontal_cwin->selected;
-  if (selected)
-    selected_label = gtk_bin_get_child(GTK_BIN(selected->button));
-
   GdkRGBA *bg_color, *fg_color;
   GtkStyleContext *context;
   PangoLayout *layout;
   gint x, y;
   GtkStateFlags state;
+
+  selected = horizontal_cwin->selected;
+  if (selected)
+    selected_label = gtk_bin_get_child(GTK_BIN(selected->button));
 
   layout = gtk_label_get_layout(GTK_LABEL(label));
   gtk_label_get_layout_offsets(GTK_LABEL(label), &x, &y);
