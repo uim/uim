@@ -256,7 +256,11 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
   sc_height = gdk_screen_get_height(gdk_screen_get_default());
   sc_width = gdk_screen_get_width(gdk_screen_get_default());
 
+#if GTK_CHECK_VERSION(3, 0, 0)
+  gtk_widget_get_preferred_size(GTK_WIDGET(menu), &requisition, NULL);
+#else
   gtk_widget_size_request(GTK_WIDGET(menu), &requisition);
+#endif
 
   menu_width = requisition.width;
   menu_height = requisition.height;
@@ -428,7 +432,11 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     if (selected != -1) {
       menu_item = gtk_check_menu_item_new();
       label = gtk_label_new(label_list->data);
+#if GTK_CHECK_VERSION(3, 2, 0)
+      hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else
       hbox = gtk_hbox_new(FALSE, 0);
+#endif
 #if GTK_CHECK_VERSION(2, 4, 0)
       gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
 					    TRUE);
@@ -1082,7 +1090,11 @@ toolbar_new(gint type)
   init_icon();
 
   /* create widgets */
+#if GTK_CHECK_VERSION(3, 2, 0)
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else
   hbox = gtk_hbox_new(FALSE, 0);
+#endif
 
   im_menu = gtk_menu_new();
   prop_menu = gtk_menu_new();

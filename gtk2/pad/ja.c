@@ -353,7 +353,11 @@ create_tab(gchar *table[], guint len)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(table, len),
@@ -367,7 +371,11 @@ create_hiragana_tab(void)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(hiragana, sizeof(hiragana)/sizeof(gchar*)),
@@ -384,7 +392,11 @@ create_katakana_tab(void)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(katakana, sizeof(katakana)/sizeof(gchar*)),
@@ -401,7 +413,11 @@ create_eisu_tab(void)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(alphabet_capital, sizeof(alphabet_capital)/sizeof(gchar*)),
@@ -425,7 +441,11 @@ create_symbol_tab(void)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(dot, sizeof(dot)/sizeof(gchar*)),
@@ -449,7 +469,11 @@ create_greek_tab(void)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(greek_capital, sizeof(greek_capital)/sizeof(gchar*)),
@@ -467,7 +491,11 @@ create_cyrillic_tab(void)
 {
   GtkWidget *vbox;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox = gtk_vbox_new(FALSE, 10);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(cyrillic_capital, sizeof(cyrillic_capital)/sizeof(gchar*)),

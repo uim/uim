@@ -177,13 +177,21 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->sub_window.active          = FALSE;
 
   /* build window */
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+#else
   vbox = gtk_vbox_new(FALSE, 0);
+#endif
 
   gtk_box_pack_start(GTK_BOX(vbox), cwin->scrolled_window, TRUE, TRUE, 0);
   uim_cand_win_gtk_set_scrollable(cwin, FALSE);
 
   /* hbox with prev and next page button: [[<] num_label [>]] */
+#if GTK_CHECK_VERSION(3, 2, 0)
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else
   hbox = gtk_hbox_new(FALSE, 0);
+#endif
   cwin->prev_page_button = gtk_button_new_with_label("<");
   cwin->next_page_button = gtk_button_new_with_label(">");
   gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(cwin->prev_page_button),
@@ -712,7 +720,11 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
+#if GTK_CHECK_VERSION(3, 0, 0)
+  gtk_widget_get_preferred_size(GTK_WIDGET(cwin), &req, NULL);
+#else
   gtk_widget_size_request(GTK_WIDGET(cwin), &req);
+#endif
   cw_wi = req.width;
   cw_he = req.height;
 
