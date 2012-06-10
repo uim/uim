@@ -137,18 +137,30 @@ word_window_init(WordWindow *window)
   GtkWidget *button_add, *button_clear;
 #endif
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+#else
   vbox1 = gtk_vbox_new(FALSE, 10);
+#endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 10);
 
   /* Necessary infomation area */
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+#else
   vbox2 = gtk_vbox_new(FALSE, 6);
+#endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
   label = gtk_label_new(_("Necessary infomation"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else
   hbox = gtk_hbox_new(FALSE, 0);
+#endif
   gtk_box_pack_start(GTK_BOX(vbox2), hbox, TRUE, TRUE, 0);
 
   label = gtk_label_new("     ");
@@ -161,14 +173,22 @@ word_window_init(WordWindow *window)
 		    word_window_necessary_create(window));
 
   /* Additional infomation area */
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+#else
   vbox2 = gtk_vbox_new(FALSE, 6);
+#endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
   label = gtk_label_new (_("Additional infomation"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 1.0);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else
   hbox = gtk_hbox_new(FALSE, 0);
+#endif
   gtk_box_pack_start(GTK_BOX(vbox2), hbox, TRUE, TRUE, 0);
 
   label = gtk_label_new("     ");

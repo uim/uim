@@ -72,16 +72,30 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   GdkCursor *cursor;
   GtkWidget *toolbar;
   gint height, width;
+#if GTK_CHECK_VERSION(3, 0, 0)
+  GdkDevice *device = gtk_get_current_event_device();
+#endif
 
   switch (event->type) {
   case GDK_BUTTON_PRESS:
     cursor = gdk_cursor_new(GDK_FLEUR);
+#if GTK_CHECK_VERSION(3, 0, 0)
+    gdk_device_grab(device, gtk_widget_get_window(widget),
+                     GDK_OWNERSHIP_NONE, FALSE,
+#else
     gdk_pointer_grab(gtk_widget_get_window(widget), FALSE,
+#endif
 		     GDK_BUTTON_RELEASE_MASK |
 		     GDK_POINTER_MOTION_MASK,
+#if !GTK_CHECK_VERSION(3, 0, 0)
 		     NULL,
+#endif
 		     cursor, event->time);
+#if GTK_CHECK_VERSION(3, 0, 0)
+    g_object_unref(cursor);
+#else
     gdk_cursor_unref(cursor);
+#endif
 
     gtk_window_get_position(GTK_WINDOW(widget),
 		    	    &window_drag_start_x,
@@ -177,7 +191,11 @@ button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   if (!toolbar_dragging)
     return FALSE;
 
+#if GTK_CHECK_VERSION(3, 0, 0)
+  gdk_device_ungrab(gtk_get_current_event_device(), event->time);
+#else
   gdk_pointer_ungrab(event->time);
+#endif
 
   pointer_drag_start_x = -1;
   pointer_drag_start_y = -1;
@@ -290,7 +308,11 @@ main(int argc, char *argv[])
   gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
   gtk_container_add(GTK_CONTAINER(window), frame);
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else
   hbox = gtk_hbox_new(FALSE, 0);
+#endif
   gtk_container_add(GTK_CONTAINER(frame), hbox);
 
   handle = gtk_drawing_area_new();

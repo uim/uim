@@ -87,7 +87,11 @@ int main( int   argc,
     g_signal_connect(G_OBJECT (window), "delete_event",
                        G_CALLBACK(exit), NULL);
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+    vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
     vbox = gtk_vbox_new (FALSE, 0);
+#endif
     gtk_container_add (GTK_CONTAINER (window), vbox);
     gtk_widget_show (vbox);
 
@@ -103,7 +107,11 @@ int main( int   argc,
     gtk_box_pack_start (GTK_BOX (vbox), entry, TRUE, TRUE, 0);
     gtk_widget_show (entry);
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+#else
     hbox = gtk_hbox_new (FALSE, 0);
+#endif
     gtk_container_add (GTK_CONTAINER (vbox), hbox);
     gtk_widget_show (hbox);
                                   

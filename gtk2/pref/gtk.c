@@ -377,7 +377,11 @@ create_setting_button_box(const char *group_name)
   GtkWidget *setting_button_box;
   GtkWidget *button;
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  setting_button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+#else
   setting_button_box = gtk_hbutton_box_new();
+#endif
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
   gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
 
@@ -430,7 +434,11 @@ create_group_widget(const char *group_name)
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
 				 GTK_POLICY_NEVER,
 				 GTK_POLICY_AUTOMATIC);
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+#else
   vbox = gtk_vbox_new(FALSE, 8);
+#endif
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_win),
 					vbox);
 
@@ -485,7 +493,11 @@ static void create_sub_group_widgets(GtkWidget *parent_widget, const char *paren
 	  continue;
 	}
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+#else
 	vbox = gtk_vbox_new(FALSE, 8);
+#endif
 	if (strcmp(*sgrp_sym, "main")) {
 	  frame = gtk_frame_new(sgrp->label);
 	  gtk_frame_set_label_align(GTK_FRAME(frame), 0.02, 0.5);
@@ -533,7 +545,11 @@ create_pref_window(void)
 		   G_CALLBACK (key_press_cb), NULL);
 
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  pref_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+#else
   pref_hbox = gtk_hbox_new(FALSE, 8);
+#endif
 
   scrolled_win = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_win),
@@ -545,7 +561,11 @@ create_pref_window(void)
 
   gtk_container_add(GTK_CONTAINER(scrolled_win), create_pref_treeview());
 
+#if GTK_CHECK_VERSION(3, 2, 0)
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+#else
   vbox = gtk_vbox_new(FALSE, 8);
+#endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox), 8);
   gtk_box_pack_start(GTK_BOX(vbox), pref_hbox, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), create_setting_button_box("dummy-group-name"), FALSE, TRUE, 0);
