@@ -35,26 +35,16 @@ IM_UIM_SOURCES = \
 	../../gtk2/immodule/compose.c ../../gtk2/immodule/compose.h \
 	../../gtk2/immodule/text-util.c ../../gtk2/immodule/text-util.h
 
-noinst_PROGRAMS = gtk3-rc-get-immodule-file
-gtk3_rc_get_immodule_file_SOURCES = \
-	../../gtk2/immodule/gtk-rc-get-immodule-file.c
-gtk3_rc_get_immodule_file_CFLAGS = @GTK3_CFLAGS@
-gtk3_rc_get_immodule_file_LDADD = @GTK3_LIBS@
-GTK3_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk3/immodule/gtk3-rc-get-immodule-file
 QUERY_COMMAND = gtk-query-immodules-3.0
 
-install-data-hook: gtk3-rc-get-immodule-file
+install-data-hook:
 	if test -z $(DESTDIR); then \
 	  if test $(libdir) = $(GTK3_LIBDIR); then \
 	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
 	      $(QUERY_COMMAND) --update-cache; \
-	      echo "*** \"`$(GTK3_RC_GET_IMMODULE_FILE)`\" is updated. ***";  \
 	    else \
 	      echo "********************** Warning ***********************"; \
 	      echo " $(QUERY_COMMAND) not found"; \
-	      echo " Please make sure to update"; \
-	      echo " \"`$(GTK3_RC_GET_IMMODULE_FILE)`\""; \
-	      echo " manually."; \
 	      echo "******************************************************"; \
 	    fi \
 	  else \
