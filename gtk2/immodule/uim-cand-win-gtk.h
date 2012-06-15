@@ -73,6 +73,7 @@ struct _UIMCandWinGtk {
   UimCandWinPos	 position;
 
   GdkRectangle	 cursor;
+  gboolean block_index_selection;
 
   /* sub window */
   struct sub_window {

@@ -1094,7 +1094,7 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
-                                 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+                                 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
   cwin->sub_window.text_view = text_view = gtk_text_view_new();
   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);

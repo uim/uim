@@ -168,6 +168,8 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 
   uim_cand_win_gtk_get_window_pos_type(cwin);
 
+  cwin->block_index_selection = FALSE;
+
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
 
@@ -331,8 +333,11 @@ uim_cand_win_gtk_set_nr_candidates(UIMCandWinGtk *cwin,
   /* remove old data */
   if (cwin->page_index >= 0 && cwin->page_index < (int) cwin->stores->len) {
     /* Remove data from current page to shrink the window */
-    if (cwin->stores->pdata[cwin->page_index])
+    if (cwin->stores->pdata[cwin->page_index]) {
+      cwin->block_index_selection = TRUE;
       gtk_list_store_clear(cwin->stores->pdata[cwin->page_index]);
+      cwin->block_index_selection = FALSE;
+    }
   }
   for (i = cwin->stores->len - 1; i >= 0; i--) {
     GtkListStore *store = g_ptr_array_remove_index(cwin->stores, i);
@@ -803,7 +808,7 @@ uim_cand_win_gtk_real_create_sub_window(UIMCandWinGtk *cwin)
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
-				 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+				 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
   cwin->sub_window.text_view = text_view = gtk_text_view_new();
   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
