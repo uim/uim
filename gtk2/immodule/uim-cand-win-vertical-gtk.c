@@ -198,6 +198,9 @@ tree_selection_change(GtkTreeSelection *selection,
 
   if (!cwin)
     return TRUE;
+ 
+  if (cwin->block_index_selection)
+    return TRUE;
 
   indicies = gtk_tree_path_get_indices(path);
   g_return_val_if_fail(indicies, TRUE);
