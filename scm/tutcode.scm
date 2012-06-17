@@ -5948,9 +5948,10 @@
 (define (tutcode-focus-in-handler tc) #f)
 
 (define (tutcode-focus-out-handler c)
-  (let* ((tc (tutcode-find-descendant-context c))
-         (rkc (tutcode-context-rk-context tc)))
-    (rk-flush rkc)))
+  (if (not tutcode-show-pending-rk?)
+    (let* ((tc (tutcode-find-descendant-context c))
+           (rkc (tutcode-context-rk-context tc)))
+      (rk-flush rkc))))
 
 (define tutcode-place-handler tutcode-focus-in-handler)
 (define tutcode-displace-handler tutcode-focus-out-handler)
