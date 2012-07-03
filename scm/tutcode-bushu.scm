@@ -902,7 +902,7 @@
                 ((seq1 (tutcode-auto-help-get-stroke (car lis) rule))
                  (diff (if seq1
                         (tutcode-bushu-subtract-set
-                          (tutcode-bushu-for-char (car lis) bushu-list))
+                          (tutcode-bushu-for-char (car lis)) bushu-list)
                         ())))
                 (if seq1
                   (let loop2
