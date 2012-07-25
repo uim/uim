@@ -146,6 +146,12 @@
 	       (N_ "[SKK] cancel")
 	       (N_ "long description will be here"))
 
+(define-custom 'skk-sticky-key '()
+               '(skk-keys1)
+	       '(key)
+	       (N_ "[SKK] sticky")
+	       (N_ "long description will be here"))
+
 ;;
 ;; advanced 1
 ;;
