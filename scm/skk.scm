@@ -1047,6 +1047,10 @@
       (skk-context-set-state! sc 'skk-state-kanji)
       (skk-context-set-latin-conv! sc #t)
       #f)
+     ((skk-sticky-key? key key-state)
+      (skk-context-set-state! sc 'skk-state-kanji)
+      (skk-context-set-latin-conv! sc #f)
+      #f)
      ((skk-kanji-mode-key? key key-state)
       (skk-context-set-state! sc 'skk-state-kanji)
       (skk-context-set-latin-conv! sc #f)
@@ -1156,6 +1160,15 @@
 		 (skk-commit sc (skk-get-string sc residual-kana kana)))
 	     (skk-context-set-state! sc 'skk-state-kanji)
 	     (skk-context-set-latin-conv! sc #t)
+	     #f)
+	   #t)
+       (if (and (skk-sticky-key? key key-state)
+		(not (rk-expect-key? rkc key-str)))
+	   (let* ((residual-kana (rk-push-key-last! rkc)))
+	     (if residual-kana
+		 (skk-commit sc (skk-get-string sc residual-kana kana)))
+	     (skk-context-set-state! sc 'skk-state-kanji)
+	     (skk-context-set-latin-conv! sc #f)
 	     #f)
 	   #t)
        (if (and (skk-kanji-mode-key? key key-state)
@@ -1528,6 +1541,16 @@
 	     (skk-append-string sc '(">" ">" ">"))
 	     (skk-begin-conversion sc)
 	     #f)
+	   #t)
+       (if (skk-sticky-key? key key-state)
+	   (if (null? (skk-context-head sc))
+	     (begin
+	       (skk-commit sc (charcode->string key))
+	       (skk-flush sc)
+	       #f)
+	     (begin
+	       (skk-context-set-state! sc 'skk-state-okuri)
+	       #f))
 	   #t)
        (if (and (skk-ichar-upper-case? key)
 		(not (null? (skk-context-head sc))))
@@ -2071,6 +2094,14 @@
 	     #f)
 	   #t)
        (begin
+	 (if (string=? (skk-context-okuri-head sc) "")
+             (if (skk-rk-pending? sc)
+               (skk-context-set-okuri-head-using-alist!
+                 sc
+                 (car (reverse (rk-context-seq rkc))))
+               (skk-context-set-okuri-head-using-alist!
+                 sc
+                 (charcode->string (skk-ichar-downcase key)))))
 	 (set! res
 	       (rk-push-key!
 		rkc
