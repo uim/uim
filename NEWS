@@ -1,6 +1,11 @@
 Overview of changes from 1.8.1 to 1.8.2
 =======================================
 * Fixes
+  - uim-tutcode
+    * Fix error when label key is typed just after entering
+      interactive bushu mode
+    * Fix error on auto help after bushu conversion for some kanji
+    * Fix mismatch between preedit display and pending keys after focus out
 
 * Enhancements
 
