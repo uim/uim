@@ -1,6 +1,10 @@
 Overview of changes from 1.8.1 to 1.8.2
 =======================================
 * Fixes
+  - uim-gtk3
+    * Avoid problem with the wrap mode
+    * Prevent selection if needed
+
   - uim-tutcode
     * Fix error when label key is typed just after entering
       interactive bushu mode
@@ -8,6 +12,26 @@ Overview of changes from 1.8.1 to 1.8.2
     * Fix mismatch between preedit display and pending keys after focus out
 
 * Enhancements
+  - uim-skk
+    * Support sticky key
+
+* Others
+  - uim-candwin-qt4
+  - uim-chardict-qt4
+  - uim-pref-qt4
+  - uim-im-switcher-qt4
+  - uim-toolbar-qt4
+  - uim-qt4
+    * Honor CPPFLAGS in compilation
+
+  - uim-candiwn-gtk3
+  - uim-dict-gtk3
+  - uim-input-pad-ja-gtk3
+  - uim-pref-gtk3
+  - uim-im-switcher-gtk3
+  - uim-toolbar-gtk3
+  - uim-gtk3
+    * Replace deprecated functions
 
 
 Overview of changes from 1.8.0 to 1.8.1
