@@ -2061,7 +2061,6 @@ AC_CONFIG_FILES([Makefile
 		 notify/Makefile
 		 uim.pc
 		 uim.desktop.in
-		 uim.spec
 		 ])
 
 AC_OUTPUT
