@@ -5863,14 +5863,17 @@
   (let ((pc (tutcode-find-descendant-context c)))
     (case (tutcode-context-state pc)
       ((tutcode-state-on)
-       (tutcode-proc-state-on pc key key-state)
-       (if (or (and tutcode-show-pending-rk?
-                    (pair? (rk-context-seq (tutcode-context-rk-context pc))))
-             ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
-             (tutcode-state-has-preedit? c)
-             ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
-             (not (eq? (tutcode-find-descendant-context c) pc)))
-         (tutcode-update-preedit pc)))
+       (let* ((rkc (tutcode-context-rk-context pc))
+              (prev-pending-rk (rk-context-seq rkc)))
+         (tutcode-proc-state-on pc key key-state)
+         (if (or (and tutcode-show-pending-rk?
+                      (or (pair? (rk-context-seq rkc))
+                          (pair? prev-pending-rk))) ; prev-pending-rk消去用
+               ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
+               (tutcode-state-has-preedit? c)
+               ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
+               (not (eq? (tutcode-find-descendant-context c) pc)))
+           (tutcode-update-preedit pc))))
       ((tutcode-state-kigou)
        (tutcode-proc-state-kigou pc key key-state)
        (tutcode-update-preedit pc))
