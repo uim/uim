@@ -5864,7 +5864,8 @@
     (case (tutcode-context-state pc)
       ((tutcode-state-on)
        (tutcode-proc-state-on pc key key-state)
-       (if (or tutcode-show-pending-rk?
+       (if (or (and tutcode-show-pending-rk?
+                    (pair? (rk-context-seq (tutcode-context-rk-context pc))))
              ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
              (tutcode-state-has-preedit? c)
              ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
@@ -5902,7 +5903,8 @@
        (tutcode-update-preedit pc))
       (else
        (tutcode-proc-state-off pc key key-state)
-       (if (or tutcode-show-pending-rk?
+       (if (or (and tutcode-show-pending-rk?
+                    (pair? (rk-context-seq (tutcode-context-rk-context pc))))
                (tutcode-state-has-preedit? c)) ; 再帰学習時
          (tutcode-update-preedit pc))))
     (if (or tutcode-use-stroke-help-window?
