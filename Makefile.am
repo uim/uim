@@ -45,8 +45,8 @@ ChangeLog: FORCE
 	fi
 
 sum:
-	$(MD5) $(DIST_ARCHIVES) >$(DIST_SUM_LIST)
-	$(SHA1) $(DIST_ARCHIVES) >>$(DIST_SUM_LIST)
+	$(MD5) $(DIST_ARCHIVES)  | $(SED) 's/^/MD5:  /' >$(DIST_SUM_LIST)
+	$(SHA1) $(DIST_ARCHIVES) | $(SED) 's/^/SHA1: /' >>$(DIST_SUM_LIST)
 
 distclean-local:
 	if test '$(top_srcdir)' != '$(top_builddir)'; then      \
