@@ -74,6 +74,7 @@ struct _UIMCandWinGtk {
 
   GdkRectangle	 cursor;
   gboolean block_index_selection;
+  gboolean index_changed;
 
   /* sub window */
   struct sub_window {
