@@ -52,7 +52,7 @@ uim_look_look_internal(struct uim_look_look_internal_args *args)
 {
   uim_lisp ret_ = uim_scm_null();
   int words = args->words;
-  char buf[4096];
+  char buf[8192];
   size_t len = strlen(args->dict_str);
 
   while (uim_look_get(args->dict_str, buf, sizeof(buf), args->ctx) != 0) {
