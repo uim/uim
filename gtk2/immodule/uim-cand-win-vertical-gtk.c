@@ -209,7 +209,13 @@ tree_selection_change(GtkTreeSelection *selection,
   if (!path_currently_selected && cwin->candidate_index != idx) {
     if (cwin->candidate_index >= 0) {
       cwin->candidate_index = idx;
-      g_signal_emit_by_name(G_OBJECT(cwin), "index-changed");
+      /* if emit "index-changed" here and IM deactivates this candwin,
+       * activates new candwin and selects a candidate on new candwin
+       * from index-changed callback, SEGV occurs in gtk because gtk tries to
+       * select on old candwin after return of this tree_selection_change().
+       * To avoid SEGV, instead of emitting before selection change by gtk,
+       * emit after selection changed by gtk. */
+      cwin->index_changed = TRUE;
     }
 
     uim_cand_win_gtk_update_label(cwin);
@@ -262,6 +268,11 @@ tree_selection_changed(GtkTreeSelection *selection,
       gtk_widget_hide(cwin->sub_window.window);
       cwin->sub_window.active = FALSE;
     }
+  }
+
+  if (cwin->index_changed) {
+    cwin->index_changed = FALSE;
+    g_signal_emit_by_name(G_OBJECT(cwin), "index-changed");
   }
 
   return TRUE;

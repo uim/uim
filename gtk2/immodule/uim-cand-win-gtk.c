@@ -169,6 +169,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   uim_cand_win_gtk_get_window_pos_type(cwin);
 
   cwin->block_index_selection = FALSE;
+  cwin->index_changed = FALSE;
 
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
