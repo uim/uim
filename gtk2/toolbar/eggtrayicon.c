@@ -469,10 +469,13 @@ egg_tray_icon_get_visual_property (EggTrayIcon *icon)
   gdk_visual_get_green_pixel_details(visual, NULL, NULL, &green_prec);
   depth = gdk_visual_get_depth(visual);
 #else
-  red_prec = visual->red_prec;
-  blue_prec = visual->blue_prec;
-  green_prec = visual->blue_prec;
-  depth = visual->depth;
+  if (visual)
+    {
+      red_prec = visual->red_prec;
+      blue_prec = visual->blue_prec;
+      green_prec = visual->blue_prec;
+      depth = visual->depth;
+    }
 #endif
   icon->manager_visual_rgba = visual != NULL &&
     (red_prec + blue_prec + green_prec < depth);
