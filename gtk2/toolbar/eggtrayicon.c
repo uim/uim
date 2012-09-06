@@ -473,7 +473,7 @@ egg_tray_icon_get_visual_property (EggTrayIcon *icon)
     {
       red_prec = visual->red_prec;
       blue_prec = visual->blue_prec;
-      green_prec = visual->blue_prec;
+      green_prec = visual->green_prec;
       depth = visual->depth;
     }
 #endif
