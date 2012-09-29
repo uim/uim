@@ -29,8 +29,8 @@ server_in_in_files = $(server_in_files:=.in)
 @INTLTOOL_SERVER_RULE@
 
 $(server_in_files): $(server_in_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
-	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
+	$(SED) s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
+	$(SED) s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
 DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server \
 		 GNOME_UimApplet.server.in.tmp
