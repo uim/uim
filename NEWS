@@ -1,6 +1,11 @@
 Overview of changes from 1.8.2 to 1.8.3
 =======================================
 * Fixes
+  - uim-toolbar-gtk-systray
+  - uim-toolbar-gtk3-systray
+    * Avoid SEGV in some environments ([uim-ja 337])
+    * Fix typo ([uim-ja 339])
+
   - uim-tutcode
     * Fix bug: <Shift>left/right key erases current selection text
       on Google Chrome
