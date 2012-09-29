@@ -24,8 +24,8 @@ applet_in_files = $(applet_DATA:=.in)
 applet_in_in_files = $(applet_in_files:=.in)
 
 $(applet_in_files): $(applet_in_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
-	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
+	$(SED) s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
+	$(SED) s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
 po_files = $(wildcard $(top_srcdir)/po/*.po)
 $(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files)
