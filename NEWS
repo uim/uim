@@ -10,10 +10,6 @@ Overview of changes from 1.8.2 to 1.8.3
     * Fix bug: <Shift>left/right key erases current selection text
       on Google Chrome
 
-* Enhancements
-
-* Others
-
 
 Overview of changes from 1.8.1 to 1.8.2
 =======================================
