@@ -1,10 +1,10 @@
-uim 1.8.2 Release Note
+uim 1.8.3 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.8.2 is the latest stable release of uim.
+This distribution of uim 1.8.3 is the latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -16,11 +16,18 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
+  - Avoid SEGV in uim-toolbar-gtk-systray
+  - Fix behavior of uim-tutcode on Google Chrome
+
+See NEWS for the fully detailed changes.
+
+
+What's New in 1.8.2
+-------------------
+
   - Support sticky key for uim-skk
   - Fix GTK+3 bridge behavior
   - Improved uim-tutcode
-
-See NEWS for the fully detailed changes.
 
 
 What's New in 1.8.1
@@ -28,6 +35,7 @@ What's New in 1.8.1
 
   - Bug fix for uim-notify with recent versions of glib
   - Improved uim-tutcode
+
 
 What's New in 1.8.0
 -------------------
