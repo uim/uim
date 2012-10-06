@@ -851,7 +851,7 @@ uim_set_mode_list_update_cb(uim_context uc,
  * completely, adding separated surrounding text deletion interface is better
  * solution at now.  -- YamaKen 2006-10-07
  *
- * http://uim.googlecode.com/git-history/composer/scm/event.scm
+ * https://github.com/uim/uim/blob/composer/scm/event.scm
  *
  * (define-event 'commit
  *   upward-event-rec-spec
