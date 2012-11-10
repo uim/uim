@@ -8,7 +8,7 @@ LIBGCROOTS_TAG="libgcroots-0.2.3"
 CONF_MAINT="--enable-maintainer-mode"
 CONF_NOWERROR="--disable-warnings-into-error"
 CONF_COMMON="$CONF_MAINT $CONF_NOWERROR"
-CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-gnome-applet --disable-kde-applet --disable-pref --disable-dict --without-anthy --without-canna --without-mana --without-prime --without-skk --without-x --without-xft --without-m17nlib --without-scim --without-gtk2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
+CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-gnome-applet --disable-kde-applet --disable-pref --disable-dict --without-anthy --without-canna --without-mana --without-prime --without-skk --without-x --without-xft --without-m17nlib --without-gtk2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
 CONF_DEFAULT="$CONF_COMMON"
 
 for file in "/etc/eb.conf" "/usr/lib64/eb.conf" "/usr/lib/eb.conf" \
@@ -24,9 +24,8 @@ if test -z "$EB_CONF"; then
     exit 1
 fi
 
-# --without-scim since it is broken
 # --without-qt
-CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-gnome3-applet --enable-kde-applet --enable-kde4-applet --enable-pref --enable-dict --enable-notify=libnotify,knotify4 --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gtk3 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=$EB_CONF --with-libedit --with-qt4 --with-qt4-immodule --with-qt5 --with-qt5-immodule"
+CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-gnome3-applet --enable-kde-applet --enable-kde4-applet --enable-pref --enable-dict --enable-notify=libnotify,knotify4 --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --with-gtk2 --with-gtk3 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=$EB_CONF --with-libedit --with-qt4 --with-qt4-immodule --with-qt5 --with-qt5-immodule"
 CONF_FULL="$CONF_MAINT $CONF_FULL_WO_MAINT"
 
 git submodule update --init --recursive

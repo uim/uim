@@ -4399,7 +4399,6 @@ msgid "direct"
 msgstr "直接入力"
 
 #: ../scm/direct.scm:54 ../scm/generic.scm:72 ../scm/m17nlib.scm:50
-#: ../scm/scim.scm:63
 msgid "Direct Input Mode"
 msgstr "直接入力モード"
 
@@ -4856,16 +4855,14 @@ msgid "unknown prediction method"
 msgstr "不明な予測方法"
 
 #: ../scm/generic.scm:71 ../scm/m17nlib-custom.scm:48 ../scm/m17nlib.scm:49
-#: ../scm/scim.scm:62
 msgid "off"
 msgstr "オフ"
 
 #: ../scm/generic.scm:86 ../scm/m17nlib-custom.scm:53 ../scm/m17nlib.scm:63
-#: ../scm/scim.scm:76
 msgid "on"
 msgstr "オン"
 
-#: ../scm/generic.scm:87 ../scm/m17nlib.scm:64 ../scm/scim.scm:77
+#: ../scm/generic.scm:87 ../scm/m17nlib.scm:64
 msgid " Mode"
 msgstr " モード"
 
@@ -6787,10 +6784,6 @@ msgstr "ピンイン (繁体字)"
 #: ../scm/pyload.scm:69
 msgid "Pinyin input method (Traditional Chinese version)"
 msgstr "ピンイン入力方式 (繁体字版)"
-
-#: ../scm/scim.scm:338
-msgid "An input method provided by the scim library"
-msgstr "SCIMライブラリが提供する入力方式"
 
 #: ../scm/sj3-custom.scm:35
 msgid "SJ3"
