@@ -87,7 +87,6 @@ scm/prime-key-custom.scm
 scm/prime.scm
 scm/process.scm
 scm/pyload.scm
-scm/scim.scm
 scm/sj3-custom.scm
 scm/sj3-key-custom.scm
 scm/sj3.scm
