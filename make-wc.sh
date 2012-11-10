@@ -5,7 +5,7 @@
 #
 # Usage:
 #
-#     $ git clone https://code.google.com/p/uim/
+#     $ git clone https://github.com/uim/uim.git
 #     $ cd uim
 #     $ ./make-wc.sh
 #     $ make
