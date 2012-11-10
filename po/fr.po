@@ -4273,7 +4273,6 @@ msgid "direct"
 msgstr ""
 
 #: ../scm/direct.scm:54 ../scm/generic.scm:72 ../scm/m17nlib.scm:50
-#: ../scm/scim.scm:63
 msgid "Direct Input Mode"
 msgstr ""
 
@@ -4728,16 +4727,14 @@ msgid "unknown prediction method"
 msgstr ""
 
 #: ../scm/generic.scm:71 ../scm/m17nlib-custom.scm:48 ../scm/m17nlib.scm:49
-#: ../scm/scim.scm:62
 msgid "off"
 msgstr "Désactivée"
 
 #: ../scm/generic.scm:86 ../scm/m17nlib-custom.scm:53 ../scm/m17nlib.scm:63
-#: ../scm/scim.scm:76
 msgid "on"
 msgstr "Activée"
 
-#: ../scm/generic.scm:87 ../scm/m17nlib.scm:64 ../scm/scim.scm:77
+#: ../scm/generic.scm:87 ../scm/m17nlib.scm:64
 msgid " Mode"
 msgstr ""
 
@@ -6649,10 +6646,6 @@ msgstr "Pinyin (traditionnel)"
 
 #: ../scm/pyload.scm:69
 msgid "Pinyin input method (Traditional Chinese version)"
-msgstr ""
-
-#: ../scm/scim.scm:338
-msgid "An input method provided by the scim library"
 msgstr ""
 
 #: ../scm/sj3-custom.scm:35

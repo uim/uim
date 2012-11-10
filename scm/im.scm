@@ -131,7 +131,7 @@
 		get-candidate set-candidate-index prop input-string
 		focus-in focus-out place displace)
     ;; Rejects symbols that cannot be valid external representation such
-    ;; as "scim-Probhat(phonetic)", "3foo", "#foo", ...
+    ;; as "3foo", "#foo", ...
     (if (guard (err (else #t))
 	  (not (eq? name
 		    (read (open-input-string (symbol->string name))))))

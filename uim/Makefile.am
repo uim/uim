@@ -9,9 +9,7 @@ EXTRA_DIST = encoding-table.c test-gc.c version.h.in
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
 CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
-# FIXME: $(SCIM_CFLAGS) should only affect on scim.cpp
-# 'if SCIM' makes this workaround broken
-CXXFLAGS = @CXXFLAGS@ $(SCIM_CFLAGS)
+CXXFLAGS = @CXXFLAGS@
 
 lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la
 noinst_LTLIBRARIES = libuim-bsdlook.la
@@ -84,14 +82,6 @@ if M17NLIB
   libuim_m17nlib_la_LIBADD = @M17NLIB_LIBS@ libuim-scm.la libuim.la
   libuim_m17nlib_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_m17nlib_la_CPPFLAGS = -I$(top_srcdir) @M17NLIB_CFLAGS@
-endif
-
-if SCIM
-  uim_plugin_LTLIBRARIES += libuim-scim.la
-  libuim_scim_la_SOURCES = scim.cpp
-  libuim_scim_la_LIBADD = @SCIM_LIBS@ libuim-scm.la libuim.la
-  libuim_scim_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-  libuim_scim_la_CXXFLAGS = -I$(top_srcdir) @SCIM_CFLAGS@
 endif
 
 if WNN

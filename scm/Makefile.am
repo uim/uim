@@ -46,7 +46,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  look.scm look-custom.scm \
  m17nlib.scm m17nlib-custom.scm \
  zaurus.scm \
- scim.scm \
  social-ime.scm social-ime-custom.scm social-ime-key-custom.scm \
  ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
  yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
@@ -110,9 +109,6 @@ module_names += "xmload"
 # less preferable IMs
 module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"
-if SCIM
-  module_names += "scim"
-endif
 # web based IMs
   module_names += "ajax-ime" "social-ime" "google-cgiapi-jp" "baidu-olime-jp"
 if EXPAT

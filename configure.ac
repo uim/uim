@@ -87,23 +87,6 @@ AC_ARG_WITH(m17nlib,
 AC_SUBST(M17NLIB_LIBS)
 AC_SUBST(m17n_db_dir)
 
-
-AC_ARG_WITH(scim,
-  AC_HELP_STRING([--with-scim],
-                 [build against SCIM (broken)
-		  @<:@default=no@:>@]),
-  [
-    case $with_scim in
-      no)
-        use_scim="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(SCIM, scim >= 1.3.0, use_scim="yes",use_scim="no")
-      ;;
-    esac
-  ],
-  [use_scim="no"] )
-
 # ***********************
 # *** Tests for Anthy ***
 # ***********************
@@ -1297,7 +1280,6 @@ AC_SUBST(UI_XML_CANNA_END)
 
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
-AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(ANTHY_UTF8, test x$use_anthy_utf8 = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
@@ -1862,13 +1844,6 @@ else
   AX_CFLAGS_GCC_OPTION([-Wno-unused-function], [UIM_SCM_CFLAGS])
   AX_LANG_WNOERROR  # end AC_LANG_WERROR
 
-  # Suppress the warnings of libuim-scim
-  AC_LANG_WERROR  # Turn warning-only unknown options into error.
-  AX_CFLAGS_GCC_OPTION([-Wno-unused-function],  [SCIM_CFLAGS])
-  AX_CFLAGS_GCC_OPTION([-Wno-unused-parameter], [SCIM_CFLAGS])
-  AX_CFLAGS_GCC_OPTION([-Wno-unused-variable],  [SCIM_CFLAGS])
-  AX_LANG_WNOERROR  # end AC_LANG_WERROR
-
   QT_CONFIG_OPTS="release"
 fi
 
@@ -1892,11 +1867,9 @@ AC_ARG_ENABLE(warnings-into-error,
 	      AX_CFLAGS_GCC_OPTION([-Werror])
 	      AX_CXXFLAGS_GCC_OPTION([-Werror])
   	      AX_CFLAGS_GCC_OPTION([-Wno-error], [UIM_SCM_CFLAGS])
-  	      AX_CFLAGS_GCC_OPTION([-Wno-error], [SCIM_CFLAGS])
 	    fi
     ])
 AC_SUBST(UIM_SCM_CFLAGS)
-AC_SUBST(SCIM_CFLAGS)
 AC_SUBST(QT_CONFIG_OPTS)
 
 dnl *************************
@@ -2161,7 +2134,6 @@ Configure Result :
    SKK             : ${use_skk}
    Wnn             : ${use_wnn}
    m17n-lib        : ${use_m17nlib}
-   SCIM            : ${use_scim}
    cURL            : ${use_curl}
    expat           : ${expat_found}
    OpenSSL         : ${use_openssl}
