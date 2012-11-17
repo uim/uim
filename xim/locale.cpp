@@ -101,6 +101,7 @@ static struct {
     {"he", "he_IL", "ISO8859-8:CP1255:UTF-8"},
     {"hi", "hi_IN", "ISCII-DEV:UTF-8"},
     {"hr", "hr_HR", "ISO8859-2:UTF-8"},
+    {"hu", "hu_HU", "ISO8859-2:UTF-8"},
     {"hy", "hy_AM", NULL},
     {"id", "id_ID", NULL},
     {"is", "is_IS", "ISO8859-1:ISO8859-15:UTF-8"},
