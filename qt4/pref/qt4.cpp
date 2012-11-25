@@ -428,7 +428,7 @@ void GroupPageWidget::setupWidgets()
     vLayout->setSpacing( 3 );
     
     struct uim_custom_group *group
-        = uim_custom_group_get( m_group_sym.toAscii().constData() );
+        = uim_custom_group_get( m_group_sym.toLatin1().constData() );
     if( group == 0 )
         return;
 
@@ -470,7 +470,7 @@ void GroupPageWidget::setupWidgets()
     }
 #else
     char **sub_groups
-        = uim_custom_group_subgroups( m_group_sym.toAscii().constData() );
+        = uim_custom_group_subgroups( m_group_sym.toLatin1().constData() );
     char **sgrp;
     for( sgrp = sub_groups; *sgrp; sgrp++ )
     {
@@ -494,7 +494,7 @@ void GroupPageWidget::setupWidgets()
         groups += " '";
         groups += *sgrp;
         char **custom_syms
-            = uim_custom_collect_by_group( groups.toAscii().constData() );
+            = uim_custom_collect_by_group( groups.toLatin1().constData() );
         if( !custom_syms )
             continue;
 
