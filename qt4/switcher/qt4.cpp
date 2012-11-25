@@ -280,7 +280,7 @@ void UimImSwitcher::slotStdinActivated()
 
             /* convert to unicode */
             QTextCodec *codec
-                = QTextCodec::codecForName( QByteArray( charset.toAscii() ) );
+                = QTextCodec::codecForName( QByteArray( charset.toLatin1() ) );
             msg = codec->toUnicode( s );
         }
         else
