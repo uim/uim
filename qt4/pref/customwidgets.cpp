@@ -1304,7 +1304,11 @@ TableEditForm::TableEditForm( QWidget *parent )
     verticalHeader->setDefaultSectionSize( 
             QFontMetrics( m_table->font() ).height() + 2 );
     QHeaderView *horizontalHeader = m_table->horizontalHeader();
+#if QT_VERSION < 0x050000
     horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
+#else
+    horizontalHeader->setSectionResizeMode( QHeaderView::ResizeToContents );
+#endif
     horizontalHeader->setStretchLastSection( true );
     connect( m_table, SIGNAL( itemSelectionChanged() ),
             this, SLOT( slotItemSelectionChanged() ) );

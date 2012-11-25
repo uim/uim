@@ -72,11 +72,21 @@ CandidateWindow::CandidateWindow(QWidget *parent, bool vertical)
         cList->setColumnCount(hasAnnotation ? 4 : 3);
     else
         cList->setRowCount(2);
+#if QT_VERSION < 0x050000
     cList->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#else
+    cList->horizontalHeader()->setSectionResizeMode(
+        QHeaderView::ResizeToContents);
+#endif
     cList->horizontalHeader()->setStretchLastSection(true);
     if (!isVertical) {
+#if QT_VERSION < 0x050000
         cList->verticalHeader()
             ->setResizeMode(QHeaderView::ResizeToContents);
+#else
+        cList->verticalHeader()
+            ->setSectionResizeMode(QHeaderView::ResizeToContents);
+#endif
         cList->verticalHeader()->setStretchLastSection(true);
     }
     cList->horizontalHeader()->hide();
