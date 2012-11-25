@@ -92,7 +92,12 @@ XimCandidateWindow::XimCandidateWindow(QWidget *parent)
     cList->setSelectionBehavior(QAbstractItemView::SelectRows);
     // the last column is dummy for adjusting size.
     cList->setColumnCount(3);
+#if QT_VERSION < 0x050000
     cList->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#else
+    cList->horizontalHeader()->setSectionResizeMode(
+        QHeaderView::ResizeToContents);
+#endif
     cList->horizontalHeader()->setStretchLastSection(true);
     cList->horizontalHeader()->hide();
     cList->verticalHeader()->hide();

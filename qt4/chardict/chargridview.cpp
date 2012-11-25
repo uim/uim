@@ -54,14 +54,22 @@ CharGridView::CharGridView( int x, int y, QWidget *parent )
     header->setVisible( false );
     for ( int i = 0; i < x; i++)
     {
+#if QT_VERSION < 0x050000
         header->setResizeMode( i, QHeaderView::Fixed );
+#else
+        header->setSectionResizeMode( i, QHeaderView::Fixed );
+#endif
         header->resizeSection( i, 30 );
     }
     header = verticalHeader();
     header->setVisible( false );
     for ( int i = 0; i < y; i++)
     {
+#if QT_VERSION < 0x050000
         header->setResizeMode( i, QHeaderView::Fixed );
+#else
+        header->setSectionResizeMode( i, QHeaderView::Fixed );
+#endif
         header->resizeSection( i, 30 );
     }
     setSelectionBehavior( QAbstractItemView::SelectItems );
@@ -136,13 +144,21 @@ void CharGridView::setCharacters( const QStringList &charList )
     QHeaderView *header = horizontalHeader();
     for ( int i = prevCols + 1; i < cols; i++)
     {
+#if QT_VERSION < 0x050000
         header->setResizeMode( i, QHeaderView::Fixed );
+#else
+        header->setSectionResizeMode( i, QHeaderView::Fixed );
+#endif
         header->resizeSection( i, header->sectionSize( 0 ) );
     }
     header = verticalHeader();
     for ( int i = prevRows + 1; i < rows; i++)
     {
+#if QT_VERSION < 0x050000
         header->setResizeMode( i, QHeaderView::Fixed );
+#else
+        header->setSectionResizeMode( i, QHeaderView::Fixed );
+#endif
         header->resizeSection( i, header->sectionSize( 0 ) );
     }
     for ( int i = 0; i < rows; i++)
