@@ -287,7 +287,7 @@ void UimStateIndicator::slotStdinActivated()
 
             /* convert to unicode */
             QTextCodec *codec
-                = QTextCodec::codecForName( QByteArray( charset.toAscii() ) );
+                = QTextCodec::codecForName( QByteArray( charset.toLatin1() ) );
             tmp = codec->toUnicode( s );
         }
         else
@@ -395,5 +395,5 @@ void QHelperPopupMenu::slotMenuActivated( QAction *action )
     QString msg = msgDict.find( action ).value();
     msg.prepend( "prop_activate\n" );
     msg.append( "\n" );
-    uim_helper_send_message( uim_fd, msg.toAscii().constData() );
+    uim_helper_send_message( uim_fd, msg.toLatin1().constData() );
 }

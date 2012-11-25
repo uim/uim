@@ -153,7 +153,7 @@ void XimCandidateWindow::activateCand(const QStringList &list)
         && list[1].startsWith(QLatin1String("charset")))
     {
         const QStringList l = list[1].split('=', QString::SkipEmptyParts);
-        codec = QTextCodec::codecForName(l[1].toAscii());
+        codec = QTextCodec::codecForName(l[1].toLatin1());
     }
 
     // get display_limit
@@ -180,7 +180,7 @@ void XimCandidateWindow::activateCand(const QStringList &list)
         CandData d;
         QString headString;
         if (codec)
-            headString = codec->toUnicode(l[0].toAscii());
+            headString = codec->toUnicode(l[0].toLatin1());
         else
             headString = l [0];
 
@@ -190,7 +190,7 @@ void XimCandidateWindow::activateCand(const QStringList &list)
         QString candString = l [0];
 
         if (codec)
-            d.str = codec->toUnicode(candString.toAscii());
+            d.str = codec->toUnicode(candString.toLatin1());
         else
             d.str = candString;
 
@@ -323,7 +323,7 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
         && list[1].startsWith(QLatin1String("charset")))
     {
         const QStringList l = list[1].split('=', QString::SkipEmptyParts);
-        codec = QTextCodec::codecForName(l[1].toAscii());
+        codec = QTextCodec::codecForName(l[1].toLatin1());
     }
 
     // get page
@@ -348,7 +348,7 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
         CandData &d = stores[page * displayLimit + i - 3];
         QString headString;
         if (codec)
-            headString = codec->toUnicode(l [0].toAscii());
+            headString = codec->toUnicode(l [0].toLatin1());
         else
             headString = l [0];
 
@@ -358,7 +358,7 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
         QString candString = l [0];
 
         if (codec)
-            d.str = codec->toUnicode(candString.toAscii());
+            d.str = codec->toUnicode(candString.toLatin1());
         else
             d.str = candString;
 
