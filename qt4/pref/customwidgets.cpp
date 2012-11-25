@@ -788,7 +788,7 @@ void CustomKeyEdit::slotKeyButtonClicked()
 
         for( int i = 0; i < num; i++ )
         {
-            const char *keystr = keyStrList[i].toAscii().data();
+            const char *keystr = keyStrList[i].toLatin1().data();
 
             struct uim_custom_key *item = (struct uim_custom_key *)malloc(sizeof(struct uim_custom_key));
             item->type        = UCustomKey_Regular;
@@ -1304,7 +1304,11 @@ TableEditForm::TableEditForm( QWidget *parent )
     verticalHeader->setDefaultSectionSize( 
             QFontMetrics( m_table->font() ).height() + 2 );
     QHeaderView *horizontalHeader = m_table->horizontalHeader();
+#if QT_VERSION < 0x050000
     horizontalHeader->setResizeMode( QHeaderView::ResizeToContents );
+#else
+    horizontalHeader->setSectionResizeMode( QHeaderView::ResizeToContents );
+#endif
     horizontalHeader->setStretchLastSection( true );
     connect( m_table, SIGNAL( itemSelectionChanged() ),
             this, SLOT( slotItemSelectionChanged() ) );
