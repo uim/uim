@@ -231,7 +231,7 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
 
     int key = 0;
     if (isascii(qkey) && isprint(qkey)) {
-        int ascii = keyevent->text()[0].toAscii();
+        int ascii = keyevent->text()[0].toLatin1();
         if (isalpha(ascii)) {
             key = ascii;  // uim needs lower/upper encoded key
         } else {
