@@ -156,6 +156,13 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
     return uc;
 }
 
+void QUimPlatformInputContext::createCandidateWindow()
+{
+    proxy = new CandidateWindowProxy;
+    proxy->setQUimPlatformInputContext(this);
+    proxy->hide();
+}
+
 void QUimPlatformInputContext::setFocus()
 {
 #ifdef ENABLE_DEBUG

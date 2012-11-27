@@ -100,6 +100,7 @@ private slots:
 
 private:
     uim_context createUimContext(const char *imname);
+    void createCandidateWindow();
     void setFocus();
     void unsetFocus();
 
