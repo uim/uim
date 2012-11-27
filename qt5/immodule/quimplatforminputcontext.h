@@ -35,7 +35,8 @@
 #define UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 
 #include <QtGui/QInputMethodEvent>
-#include <QtGui/QPlatformInputContext>
+
+#include <qpa/qplatforminputcontext.h>
 
 #include <uim.h>
 
@@ -95,11 +96,10 @@ public:
 
     void setCandwinActive() { candwinIsActive = true; }
 
-private slots:
-    void slotInputItemChanged();
-
 private:
     uim_context createUimContext(const char *imname);
+    void createCandidateWindow();
+    void setFocusObject(QObject *object);
     void setFocus();
     void unsetFocus();
 

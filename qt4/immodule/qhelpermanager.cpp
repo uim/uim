@@ -132,9 +132,9 @@ void QUimHelperManager::parseHelperStr( const QString &str )
 
                     /* convert to unicode */
                     QTextCodec *codec
-                        = QTextCodec::codecForName( charset.toAscii() );
+                        = QTextCodec::codecForName( charset.toLatin1() );
                     if ( codec && !lines[ 2 ].isEmpty() )
-                        commit_str = codec->toUnicode( lines[ 2 ].toAscii() );
+                        commit_str = codec->toUnicode( lines[ 2 ].toLatin1() );
                 } else {
                     commit_str = lines[ 1 ];
                 }
