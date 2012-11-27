@@ -85,9 +85,6 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 
     // read configuration
     updatePosition();
-
-    connect(qApp->inputMethod(), SIGNAL(inputItemChanged()),
-        this, SLOT(slotInputItemChanged()));
 }
 
 QUimPlatformInputContext::~QUimPlatformInputContext()
@@ -107,9 +104,9 @@ QUimPlatformInputContext::~QUimPlatformInputContext()
     }
 }
 
-void QUimPlatformInputContext::slotInputItemChanged()
+void QUimPlatformInputContext::setFocusObject(QObject *object)
 {
-    if (qApp->inputMethod()->inputItem())
+    if (object)
         setFocus();
     else
         unsetFocus();

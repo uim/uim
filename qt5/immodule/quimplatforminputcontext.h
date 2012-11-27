@@ -95,12 +95,10 @@ public:
 
     void setCandwinActive() { candwinIsActive = true; }
 
-private slots:
-    void slotInputItemChanged();
-
 private:
     uim_context createUimContext(const char *imname);
     void createCandidateWindow();
+    void setFocusObject(QObject *object);
     void setFocus();
     void unsetFocus();
 
