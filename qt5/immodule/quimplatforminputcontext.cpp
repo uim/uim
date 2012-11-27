@@ -777,6 +777,12 @@ void QUimPlatformInputContext::switch_app_global_im(const char *name)
         "custom-preserved-default-im-name", im_name_sym.toUtf8().data());
 }
 
+void QUimPlatformInputContext::switch_system_global_im(const char *name)
+{
+    switch_app_global_im(name);
+    QUimHelperManager::send_im_change_whole_desktop(name);
+}
+
 void QUimPlatformInputContext::updatePosition()
 {
     char * leftp = uim_scm_symbol_value_str("candidate-window-position");
