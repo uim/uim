@@ -79,17 +79,12 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
     if (imname)
         m_uc = createUimContext(imname);
 
-    proxy = new CandidateWindowProxy;
-    proxy->setQUimPlatformInputContext(this);
-    proxy->hide();
+    createCandidateWindow();
 
     m_textUtil = new QUimTextUtil(this);
 
     // read configuration
     updatePosition();
-
-    connect(qApp->inputMethod(), SIGNAL(inputItemChanged()),
-        this, SLOT(slotInputItemChanged()));
 }
 
 QUimPlatformInputContext::~QUimPlatformInputContext()
@@ -109,9 +104,9 @@ QUimPlatformInputContext::~QUimPlatformInputContext()
     }
 }
 
-void QUimPlatformInputContext::slotInputItemChanged()
+void QUimPlatformInputContext::setFocusObject(QObject *object)
 {
-    if (qApp->inputMethod()->inputItem())
+    if (object)
         setFocus();
     else
         unsetFocus();
@@ -154,6 +149,13 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
     uim_prop_list_update(uc);
 
     return uc;
+}
+
+void QUimPlatformInputContext::createCandidateWindow()
+{
+    proxy = new CandidateWindowProxy;
+    proxy->setQUimPlatformInputContext(this);
+    proxy->hide();
 }
 
 void QUimPlatformInputContext::setFocus()
@@ -229,7 +231,7 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
 
     int key = 0;
     if (isascii(qkey) && isprint(qkey)) {
-        int ascii = keyevent->text()[0].toAscii();
+        int ascii = keyevent->text()[0].toLatin1();
         if (isalpha(ascii)) {
             key = ascii;  // uim needs lower/upper encoded key
         } else {
@@ -596,7 +598,7 @@ void QUimPlatformInputContext::commitString(const QString& str)
 {
     QInputMethodEvent e;
     e.setCommitString(str);
-    QCoreApplication::sendEvent(qApp->inputMethod()->inputItem(), &e);
+    QCoreApplication::sendEvent(qApp->focusObject(), &e);
 
     m_isAnimating = false;
 }
@@ -627,13 +629,25 @@ void QUimPlatformInputContext::updatePreedit()
 
     if (!newString.isEmpty()) {
         QInputMethodEvent e(newString, getPreeditAttrs());
-        QCoreApplication::sendEvent(qApp->inputMethod()->inputItem(), &e);
+        QCoreApplication::sendEvent(qApp->focusObject(), &e);
         // Qt4.3.1 does not call back update() here
         update();
     } else {
         // Complete conversion implicitly since the preedit is empty
         commitString("");
     }
+}
+
+void QUimPlatformInputContext::saveContext()
+{
+    // just send QInputMethodEvent and keep preedit string
+    if (isAnimating())
+        commitString("");
+}
+
+void QUimPlatformInputContext::restoreContext()
+{
+    updatePreedit();
 }
 
 QString QUimPlatformInputContext::getPreeditString()
@@ -650,10 +664,30 @@ QString QUimPlatformInputContext::getPreeditString()
     return pstr;
 }
 
+int QUimPlatformInputContext::getPreeditCursorPosition()
+{
+    if (proxy->isAlwaysLeftPosition())
+        return 0;
+
+    int cursorPos = 0;
+    for (int i = 0, j = preeditSegments.count(); i < j; i++) {
+        if (preeditSegments[i].attr & UPreeditAttr_Cursor) {
+            return cursorPos;
+        } else if (preeditSegments[i].attr & UPreeditAttr_Separator
+                && preeditSegments[i].str.isEmpty()) {
+            cursorPos += QString(DEFAULT_SEPARATOR_STR).length();
+        } else {
+            cursorPos += preeditSegments[i].str.length();
+        }
+    }
+
+    return cursorPos;
+}
+
 static QColor getUserDefinedColor(const char *symbol)
 {
     char *literal = uim_scm_symbol_value_str(symbol);
-    QColor color(QString::fromAscii(literal));
+    QColor color(QString::fromLatin1(literal));
     free(literal);
     return color;
 }
@@ -725,11 +759,44 @@ QList<QInputMethodEvent::Attribute> QUimPlatformInputContext::getPreeditAttrs()
     return attrs;
 }
 
+void QUimPlatformInputContext::switch_app_global_im(const char *name)
+{
+    QString im_name_sym = "'";
+    im_name_sym += name;
+
+    for (int i = 0, j = contextList.count(); i < j; i++) {
+        if (contextList[i] != this) {
+            uim_switch_im(contextList[i]->uimContext(), name);
+            contextList[i]->updatePosition();
+        }
+    }
+    uim_prop_update_custom(this->uimContext(),
+        "custom-preserved-default-im-name", im_name_sym.toUtf8().data());
+}
+
+void QUimPlatformInputContext::switch_system_global_im(const char *name)
+{
+    switch_app_global_im(name);
+    QUimHelperManager::send_im_change_whole_desktop(name);
+}
+
 void QUimPlatformInputContext::updatePosition()
 {
     char * leftp = uim_scm_symbol_value_str("candidate-window-position");
     proxy->setAlwaysLeftPosition(leftp && !strcmp(leftp, "left"));
     free(leftp);
+}
+
+void QUimPlatformInputContext::updateStyle()
+{
+    // don't update window style if deprecated uim-candwin-prog is set
+    char *candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+    if (candwinprog) {
+        free(candwinprog);
+        return;
+    }
+    delete proxy;
+    createCandidateWindow();
 }
 
 void QUimPlatformInputContext::updateIndicator(const QString &str)

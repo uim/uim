@@ -1,4 +1,6 @@
 include(../../qt4/common.pro)
+
+PLUGIN_TYPE = platforminputcontexts
 load(qt_plugin)
 
 # to include util.h and for quimplatforminputcontext.cpp
@@ -7,7 +9,7 @@ INCLUDEPATH += @srcdir@/../../qt4/candwin \
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
-QT += platformsupport-private
+QT += gui-private
 
 # Input
 HEADERS += @srcdir@/quimplatforminputcontext.h \

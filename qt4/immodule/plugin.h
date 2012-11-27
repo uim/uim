@@ -38,7 +38,7 @@
 #if QT_VERSION < 0x050000
 # include <QtGui/QInputContextPlugin>
 #else
-# include <private/qplatforminputcontextplugin_qpa_p.h>
+# include <qpa/qplatforminputcontextplugin_p.h>
 #endif
 
 class QStringList;
