@@ -641,6 +641,13 @@ void QUimPlatformInputContext::updatePreedit()
     }
 }
 
+void QUimPlatformInputContext::saveContext()
+{
+    // just send QInputMethodEvent and keep preedit string
+    if (isAnimating())
+        commitString("");
+}
+
 QString QUimPlatformInputContext::getPreeditString()
 {
     QString pstr;
