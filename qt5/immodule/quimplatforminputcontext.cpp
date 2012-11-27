@@ -648,6 +648,11 @@ void QUimPlatformInputContext::saveContext()
         commitString("");
 }
 
+void QUimPlatformInputContext::restoreContext()
+{
+    updatePreedit();
+}
+
 QString QUimPlatformInputContext::getPreeditString()
 {
     QString pstr;
