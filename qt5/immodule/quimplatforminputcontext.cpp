@@ -79,9 +79,7 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
     if (imname)
         m_uc = createUimContext(imname);
 
-    proxy = new CandidateWindowProxy;
-    proxy->setQUimPlatformInputContext(this);
-    proxy->hide();
+    createCandidateWindow();
 
     m_textUtil = new QUimTextUtil(this);
 
