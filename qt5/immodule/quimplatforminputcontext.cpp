@@ -598,7 +598,7 @@ void QUimPlatformInputContext::commitString(const QString& str)
 {
     QInputMethodEvent e;
     e.setCommitString(str);
-    QCoreApplication::sendEvent(qApp->inputMethod()->inputItem(), &e);
+    QCoreApplication::sendEvent(qApp->focusObject(), &e);
 
     m_isAnimating = false;
 }
@@ -629,7 +629,7 @@ void QUimPlatformInputContext::updatePreedit()
 
     if (!newString.isEmpty()) {
         QInputMethodEvent e(newString, getPreeditAttrs());
-        QCoreApplication::sendEvent(qApp->inputMethod()->inputItem(), &e);
+        QCoreApplication::sendEvent(qApp->focusObject(), &e);
         // Qt4.3.1 does not call back update() here
         update();
     } else {
