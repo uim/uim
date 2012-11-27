@@ -790,6 +790,18 @@ void QUimPlatformInputContext::updatePosition()
     free(leftp);
 }
 
+void QUimPlatformInputContext::updateStyle()
+{
+    // don't update window style if deprecated uim-candwin-prog is set
+    char *candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+    if (candwinprog) {
+        free(candwinprog);
+        return;
+    }
+    delete proxy;
+    createCandidateWindow();
+}
+
 void QUimPlatformInputContext::updateIndicator(const QString &str)
 {
     Q_UNUSED(str);
