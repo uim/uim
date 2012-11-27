@@ -667,6 +667,26 @@ QString QUimPlatformInputContext::getPreeditString()
     return pstr;
 }
 
+int QUimPlatformInputContext::getPreeditCursorPosition()
+{
+    if (proxy->isAlwaysLeftPosition())
+        return 0;
+
+    int cursorPos = 0;
+    for (int i = 0, j = preeditSegments.count(); i < j; i++) {
+        if (preeditSegments[i].attr & UPreeditAttr_Cursor) {
+            return cursorPos;
+        } else if (preeditSegments[i].attr & UPreeditAttr_Separator
+                && preeditSegments[i].str.isEmpty()) {
+            cursorPos += QString(DEFAULT_SEPARATOR_STR).length();
+        } else {
+            cursorPos += preeditSegments[i].str.length();
+        }
+    }
+
+    return cursorPos;
+}
+
 static QColor getUserDefinedColor(const char *symbol)
 {
     char *literal = uim_scm_symbol_value_str(symbol);
