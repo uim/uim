@@ -687,7 +687,7 @@ int QUimPlatformInputContext::getPreeditCursorPosition()
 static QColor getUserDefinedColor(const char *symbol)
 {
     char *literal = uim_scm_symbol_value_str(symbol);
-    QColor color(QString::fromAscii(literal));
+    QColor color(QString::fromLatin1(literal));
     free(literal);
     return color;
 }
