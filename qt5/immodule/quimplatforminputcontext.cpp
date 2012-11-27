@@ -762,6 +762,21 @@ QList<QInputMethodEvent::Attribute> QUimPlatformInputContext::getPreeditAttrs()
     return attrs;
 }
 
+void QUimPlatformInputContext::switch_app_global_im(const char *name)
+{
+    QString im_name_sym = "'";
+    im_name_sym += name;
+
+    for (int i = 0, j = contextList.count(); i < j; i++) {
+        if (contextList[i] != this) {
+            uim_switch_im(contextList[i]->uimContext(), name);
+            contextList[i]->updatePosition();
+        }
+    }
+    uim_prop_update_custom(this->uimContext(),
+        "custom-preserved-default-im-name", im_name_sym.toUtf8().data());
+}
+
 void QUimPlatformInputContext::updatePosition()
 {
     char * leftp = uim_scm_symbol_value_str("candidate-window-position");
