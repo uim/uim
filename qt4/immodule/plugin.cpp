@@ -51,6 +51,7 @@
 #include "quiminfomanager.h"
 #if QT_VERSION >= 0x050000
 # undef Bool
+# undef CursorShape
 # undef Expose
 # undef FocusIn
 # undef FocusOut
