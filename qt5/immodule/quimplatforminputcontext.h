@@ -35,7 +35,8 @@
 #define UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 
 #include <QtGui/QInputMethodEvent>
-#include <QtGui/QPlatformInputContext>
+
+#include <qpa/qplatforminputcontext.h>
 
 #include <uim.h>
 

@@ -41,7 +41,7 @@
 #if QT_VERSION < 0x050000
 # include <QtGui/QInputContext>
 #else
-# include <QtGui/QPlatformInputContext>
+# include <qpa/qplatforminputcontext.h>
 #endif
 
 #include "uim/uim.h"
