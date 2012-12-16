@@ -3968,40 +3968,19 @@
 ;;;         (tutcode-begin-postfix-katakana-conversion pc -1))))))
 (define (tutcode-begin-postfix-katakana-conversion pc yomi-len)
   (let*
-    ;; 指定した1文字が漢字(ひらがな、カタカナ、記号以外)かどうかを返す
-    ((kanji?
-      (lambda (str)
-        (let ((ch (tutcode-euc-jp-string->ichar str)))
-          (and ch (>= ch #xaea1))))) ; EUC-JIS-2004
-     ;; カタカナへの変換対象文字(ひらがな、・ー)かどうかを返す
-     (tokatakana?
-      (lambda (str)
-        (let ((ch (tutcode-euc-jp-string->ichar str)))
-          (and ch
-            (or (<= #xa4a1 ch #xa4f3) ; ぁ-ん
-                (= ch #xa1bc) ; ー
-                ;; TODO: ・はtutcode-postfix-mazegaki-terminate-char-listに
-                ;; 有るのでtutcode-postfix-mazegaki-acquire-yomiでは
-                ;; 取得されないが、カタカナ変換対象には含めたい
-                (= ch #xa1a6)))))) ; ・
-     (former-all (tutcode-postfix-mazegaki-acquire-yomi pc
+    ((former-all (tutcode-postfix-katakana-acquire-yomi pc
       (if (and yomi-len (<= yomi-len 0)) #f yomi-len)))
      (former-seq
       (cond
         ((not yomi-len)
-          (take-while
-            (lambda (elem)
-              (not (kanji? elem))) ; 漢字があったら、そこで中断
-            former-all))
-        ((> yomi-len 0)
+          former-all)
+        ((>= yomi-len 0)
           former-all)
         (else
-          (let ((hiraseq (take-while tokatakana? former-all))
-                (len (- yomi-len)))
-            (if (or (= len 0)
-                    (<= (length hiraseq) len))
-              hiraseq
-              (drop-right hiraseq len)))))))
+          (let ((len (- yomi-len)))
+            (if (<= (length former-all) len)
+              ()
+              (drop-right former-all len)))))))
     (if yomi-len
       (let ((katakana (tutcode-katakana-convert former-seq
                         (not (tutcode-context-katakana-mode? pc)))))
@@ -4014,6 +3993,25 @@
             (tutcode-katakana-convert former-seq
               (not (tutcode-context-katakana-mode? pc))))
           (tutcode-context-set-state! pc 'tutcode-state-postfix-katakana))))))
+
+;;; 後置型カタカナ変換の対象文字列を取得する
+;;; @param yomi-len 指定された文字数。指定されてない場合は#f。
+;;; @return 取得した文字列(文字列の逆順リスト)
+(define (tutcode-postfix-katakana-acquire-yomi pc yomi-len)
+  (let ((former-seq (tutcode-postfix-acquire-text pc
+                     (or yomi-len tutcode-mazegaki-yomi-max)))
+        ;; カタカナへの変換対象文字(ひらがな、・ー)かどうかを返す
+        (tokatakana?
+          (lambda (str)
+            (or (tutcode-hiragana? str)
+                (member str '("・" "ー"))))))
+    (if yomi-len
+      former-seq
+      (take-while tokatakana? former-seq))))
+
+;;; ひらがなかどうか
+(define (tutcode-hiragana? s)
+  (and (string>=? s "ぁ") (string<=? s "ん")))
 
 ;;; 後置型カタカナ変換モード時のキー入力を処理する。
 ;;; @param key 入力されたキー
