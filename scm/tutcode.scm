@@ -3954,6 +3954,18 @@
 
 ;;; 後置型カタカナ変換を開始する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+;;;   0: ひらがなやーが続く間カタカナに変換する。
+;;;   負の値: 絶対値の文字数をひらがなとして残してカタカナ変換。
+;;;   (カタカナに変換する文字列が長くて文字数を数えるのが面倒な場合向け)
+;;;   「例えばあぷりけーしょん」alw→「例えばアプリケーション」
+;;; ~/.uimでの設定例:
+;;; (tutcode-rule-set-sequences!
+;;;   `(((("a" "l" "l"))
+;;;       (,(lambda (state pc)
+;;;         (tutcode-begin-postfix-katakana-conversion pc 0))))
+;;;     ((("a" "l" "q"))
+;;;       (,(lambda (state pc)
+;;;         (tutcode-begin-postfix-katakana-conversion pc -1))))))
 (define (tutcode-begin-postfix-katakana-conversion pc yomi-len)
   (let*
     ;; 指定した1文字が漢字(ひらがな、カタカナ、記号以外)かどうかを返す
@@ -3961,14 +3973,35 @@
       (lambda (str)
         (let ((ch (tutcode-euc-jp-string->ichar str)))
           (and ch (>= ch #xaea1))))) ; EUC-JIS-2004
-     (former-all (tutcode-postfix-mazegaki-acquire-yomi pc yomi-len))
+     ;; カタカナへの変換対象文字(ひらがな、・ー)かどうかを返す
+     (tokatakana?
+      (lambda (str)
+        (let ((ch (tutcode-euc-jp-string->ichar str)))
+          (and ch
+            (or (<= #xa4a1 ch #xa4f3) ; ぁ-ん
+                (= ch #xa1bc) ; ー
+                ;; TODO: ・はtutcode-postfix-mazegaki-terminate-char-listに
+                ;; 有るのでtutcode-postfix-mazegaki-acquire-yomiでは
+                ;; 取得されないが、カタカナ変換対象には含めたい
+                (= ch #xa1a6)))))) ; ・
+     (former-all (tutcode-postfix-mazegaki-acquire-yomi pc
+      (if (and yomi-len (<= yomi-len 0)) #f yomi-len)))
      (former-seq
-      (if yomi-len
-        former-all
-        (take-while
-          (lambda (elem)
-            (not (kanji? elem))) ; 漢字があったら、そこで中断
-          former-all))))
+      (cond
+        ((not yomi-len)
+          (take-while
+            (lambda (elem)
+              (not (kanji? elem))) ; 漢字があったら、そこで中断
+            former-all))
+        ((> yomi-len 0)
+          former-all)
+        (else
+          (let ((hiraseq (take-while tokatakana? former-all))
+                (len (- yomi-len)))
+            (if (or (= len 0)
+                    (<= (length hiraseq) len))
+              hiraseq
+              (drop-right hiraseq len)))))))
     (if yomi-len
       (let ((katakana (tutcode-katakana-convert former-seq
                         (not (tutcode-context-katakana-mode? pc)))))
