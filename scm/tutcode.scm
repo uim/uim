@@ -4012,7 +4012,10 @@
             (split-at yomi (- yomi-len count))
             (values () yomi))
           (let ((str (string-list-concat
-                      (append (tutcode-katakana-convert kata #t) hira))))
+                      (append
+                        (tutcode-katakana-convert kata
+                          (not (tutcode-context-katakana-mode? pc)))
+                        hira))))
             (tutcode-commit pc str)
             ;; shrinkを繰り返した際にcount文字ずつカタカナを縮められるように
             (tutcode-undo-prepare pc 'tutcode-state-off
@@ -4026,16 +4029,24 @@
                      (or yomi-len tutcode-mazegaki-yomi-max))))
     (if yomi-len
       former-seq
-      (take-while tutcode-postfix-katakana-acquire-char? former-seq))))
+      (take-while
+        (lambda (char)
+          (tutcode-postfix-katakana-acquire-char? pc char))
+        former-seq))))
 
 ;;; 後置型カタカナ変換対象文字(ひらがな、ー)かどうかを返す
-(define (tutcode-postfix-katakana-acquire-char? char)
-  (or (tutcode-hiragana? char)
+(define (tutcode-postfix-katakana-acquire-char? pc char)
+  (or (if (tutcode-context-katakana-mode? pc)
+        (tutcode-katakana? char) ; カタカナモード時はカタカナ対象
+        (tutcode-hiragana? char))
       (member char tutcode-postfix-katakana-char-list)))
 
 ;;; ひらがなかどうか
 (define (tutcode-hiragana? s)
   (and (string>=? s "ぁ") (string<=? s "ん")))
+;;; カタカナかどうか
+(define (tutcode-katakana? s)
+  (and (string>=? s "ァ") (string<=? s "ン")))
 
 ;;; 後置型カタカナ変換モード時のキー入力を処理する。
 ;;; @param key 入力されたキー
