@@ -3997,6 +3997,27 @@
               (not (tutcode-context-katakana-mode? pc))))
           (tutcode-context-set-state! pc 'tutcode-state-postfix-katakana))))))
 
+;;; 直前の後置型カタカナ変換を縮める
+;;; @param count 縮める文字数
+(define (tutcode-postfix-katakana-shrink pc count)
+  (let ((undo (tutcode-context-undo pc)))
+    (if (and (pair? undo)
+             (eq? (list-ref undo 0) 'tutcode-state-off)) ; 後置型変換
+      (let* ((commit-len (list-ref undo 1))
+             (yomi (list-ref undo 2))
+             (yomi-len (length yomi)))
+        (tutcode-postfix-delete-text pc commit-len)
+        (receive (kata hira)
+          (if (< count yomi-len)
+            (split-at yomi (- yomi-len count))
+            (values () yomi))
+          (let ((str (string-list-concat
+                      (append (tutcode-katakana-convert kata #t) hira))))
+            (tutcode-commit pc str)
+            ;; shrinkを繰り返した際にcount文字ずつカタカナを縮められるように
+            (tutcode-undo-prepare pc 'tutcode-state-off
+              (string-list-concat kata) kata)))))))
+
 ;;; 後置型カタカナ変換の対象文字列を取得する
 ;;; @param yomi-len 指定された文字数。指定されてない場合は#f。
 ;;; @return 取得した文字列(文字列の逆順リスト)
