@@ -609,6 +609,9 @@
 (define tutcode-postfix-mazegaki-terminate-char-list
   '("\n" "\t" " " "、" "。" "，" "．" "・" "「" "」" "（" "）"))
 
+;;; 後置型カタカナ変換の対象取得時に、(ひらがなに加えて)対象にする文字のリスト
+(define tutcode-postfix-katakana-char-list '("ー"))
+
 ;;; 後置型漢字→入力シーケンス変換の読み取得時に、読みに含めない文字のリスト。
 ;;; スペースを含む英単語の変換を楽にしたい場合、'(":")等にすることを想定。
 ;;; ("\n" "\t"は別扱い。tutcode-delete-leading-delimiter-on-postfix-kanji2seq?
@@ -3999,15 +4002,15 @@
 ;;; @return 取得した文字列(文字列の逆順リスト)
 (define (tutcode-postfix-katakana-acquire-yomi pc yomi-len)
   (let ((former-seq (tutcode-postfix-acquire-text pc
-                     (or yomi-len tutcode-mazegaki-yomi-max)))
-        ;; カタカナへの変換対象文字(ひらがな、・ー)かどうかを返す
-        (tokatakana?
-          (lambda (str)
-            (or (tutcode-hiragana? str)
-                (member str '("・" "ー"))))))
+                     (or yomi-len tutcode-mazegaki-yomi-max))))
     (if yomi-len
       former-seq
-      (take-while tokatakana? former-seq))))
+      (take-while tutcode-postfix-katakana-acquire-char? former-seq))))
+
+;;; 後置型カタカナ変換対象文字(ひらがな、ー)かどうかを返す
+(define (tutcode-postfix-katakana-acquire-char? char)
+  (or (tutcode-hiragana? char)
+      (member char tutcode-postfix-katakana-char-list)))
 
 ;;; ひらがなかどうか
 (define (tutcode-hiragana? s)
