@@ -127,10 +127,28 @@
 ;;;    活用する語に関しては、読みは指定された文字数で固定して語幹のみ伸縮。
 ;;;      例(「あおい」に対して3文字指定):「あおい―」>「あお―」>「あ―」
 ;;; * 後置型カタカナ変換は、以下の開始キーを設定すると使用可能になります。
-;;;            tutcode-postfix-katakana-start-sequence
-;;;  読み1文字 tutcode-postfix-katakana-1-start-sequence
+;;;  対象伸縮モード   tutcode-postfix-katakana-start-sequence
+;;;    カタカナ変換対象の文字列を選択するモードを開始(後置型交ぜ書き変換同様)。
+;;;  ひらがなが続く間 tutcode-postfix-katakana-0-start-sequence
+;;;    ひらがなや「ー」が続く間対象文字列として、カタカナに置換。
+;;;  対象1文字        tutcode-postfix-katakana-1-start-sequence
 ;;;   ...
-;;;  読み9文字 tutcode-postfix-katakana-9-start-sequence
+;;;  対象9文字        tutcode-postfix-katakana-9-start-sequence
+;;;    指定文字数をカタカナに置換。
+;;;  1文字除いて置換  tutcode-postfix-katakana-exclude-1-sequence
+;;;   ...
+;;;  6文字除いて置換  tutcode-postfix-katakana-exclude-6-sequence
+;;;    指定文字数をひらがなとして残してカタカナに置換。
+;;;    (カタカナに変換する文字列が長くて文字数を数えるのが面倒な場合向け)
+;;;    例:「例えばあぷりけーしょん」2文字除いて置換→「例えばアプリケーション」
+;;;  1文字縮める      tutcode-postfix-katakana-shrink-1-sequence
+;;;   ...
+;;;  6文字縮める      tutcode-postfix-katakana-shrink-6-sequence
+;;;    直前の後置型カタカナ変換を指定文字数縮めます。繰り返し実行可能。
+;;;    例:「例えばあぷりけーしょん」ひらがなが続く間置換
+;;;     →「例エバアプリケーション」1文字縮める
+;;;     →「例えバアプリケーション」1文字縮める
+;;;     →「例えばアプリケーション」
 ;;; * 後置型漢字→入力シーケンス変換
 ;;;   TUT-Codeオン・オフのモード切り替えなしで英単語を入力して、
 ;;;   後から英字化するための機能です。
@@ -2264,6 +2282,7 @@
                 ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
                 ((tutcode-selection-katakana-start) "カs")
                 ((tutcode-postfix-katakana-start) "カ")
+                ((tutcode-postfix-katakana-0-start) "カ0")
                 ((tutcode-postfix-katakana-1-start) "カ1")
                 ((tutcode-postfix-katakana-2-start) "カ2")
                 ((tutcode-postfix-katakana-3-start) "カ3")
@@ -2273,6 +2292,18 @@
                 ((tutcode-postfix-katakana-7-start) "カ7")
                 ((tutcode-postfix-katakana-8-start) "カ8")
                 ((tutcode-postfix-katakana-9-start) "カ9")
+                ((tutcode-postfix-katakana-exclude-1) "ヵ1")
+                ((tutcode-postfix-katakana-exclude-2) "ヵ2")
+                ((tutcode-postfix-katakana-exclude-3) "ヵ3")
+                ((tutcode-postfix-katakana-exclude-4) "ヵ4")
+                ((tutcode-postfix-katakana-exclude-5) "ヵ5")
+                ((tutcode-postfix-katakana-exclude-6) "ヵ6")
+                ((tutcode-postfix-katakana-shrink-1) "か1")
+                ((tutcode-postfix-katakana-shrink-2) "か2")
+                ((tutcode-postfix-katakana-shrink-3) "か3")
+                ((tutcode-postfix-katakana-shrink-4) "か4")
+                ((tutcode-postfix-katakana-shrink-5) "か5")
+                ((tutcode-postfix-katakana-shrink-6) "か6")
                 ((tutcode-selection-kanji2seq-start) "/s")
                 ((tutcode-postfix-kanji2seq-start) "/@")
                 ((tutcode-postfix-kanji2seq-1-start) "/1")
@@ -3375,6 +3406,8 @@
                     (tutcode-begin-postfix-mazegaki-inflection-conversion pc 9))
                   ((tutcode-postfix-katakana-start)
                     (tutcode-begin-postfix-katakana-conversion pc #f))
+                  ((tutcode-postfix-katakana-0-start)
+                    (tutcode-begin-postfix-katakana-conversion pc 0))
                   ((tutcode-postfix-katakana-1-start)
                     (tutcode-begin-postfix-katakana-conversion pc 1))
                   ((tutcode-postfix-katakana-2-start)
@@ -3393,6 +3426,30 @@
                     (tutcode-begin-postfix-katakana-conversion pc 8))
                   ((tutcode-postfix-katakana-9-start)
                     (tutcode-begin-postfix-katakana-conversion pc 9))
+                  ((tutcode-postfix-katakana-exclude-1)
+                    (tutcode-begin-postfix-katakana-conversion pc -1))
+                  ((tutcode-postfix-katakana-exclude-2)
+                    (tutcode-begin-postfix-katakana-conversion pc -2))
+                  ((tutcode-postfix-katakana-exclude-3)
+                    (tutcode-begin-postfix-katakana-conversion pc -3))
+                  ((tutcode-postfix-katakana-exclude-4)
+                    (tutcode-begin-postfix-katakana-conversion pc -4))
+                  ((tutcode-postfix-katakana-exclude-5)
+                    (tutcode-begin-postfix-katakana-conversion pc -5))
+                  ((tutcode-postfix-katakana-exclude-6)
+                    (tutcode-begin-postfix-katakana-conversion pc -6))
+                  ((tutcode-postfix-katakana-shrink-1)
+                    (tutcode-postfix-katakana-shrink pc 1))
+                  ((tutcode-postfix-katakana-shrink-2)
+                    (tutcode-postfix-katakana-shrink pc 2))
+                  ((tutcode-postfix-katakana-shrink-3)
+                    (tutcode-postfix-katakana-shrink pc 3))
+                  ((tutcode-postfix-katakana-shrink-4)
+                    (tutcode-postfix-katakana-shrink pc 4))
+                  ((tutcode-postfix-katakana-shrink-5)
+                    (tutcode-postfix-katakana-shrink pc 5))
+                  ((tutcode-postfix-katakana-shrink-6)
+                    (tutcode-postfix-katakana-shrink pc 6))
                   ((tutcode-postfix-kanji2seq-start)
                     (tutcode-begin-postfix-kanji2seq-conversion pc #f))
                   ((tutcode-postfix-kanji2seq-1-start)
@@ -3961,14 +4018,6 @@
 ;;;   負の値: 絶対値の文字数をひらがなとして残してカタカナ変換。
 ;;;   (カタカナに変換する文字列が長くて文字数を数えるのが面倒な場合向け)
 ;;;   「例えばあぷりけーしょん」alw→「例えばアプリケーション」
-;;; ~/.uimでの設定例:
-;;; (tutcode-rule-set-sequences!
-;;;   `(((("a" "l" "l"))
-;;;       (,(lambda (state pc)
-;;;         (tutcode-begin-postfix-katakana-conversion pc 0))))
-;;;     ((("a" "l" "q"))
-;;;       (,(lambda (state pc)
-;;;         (tutcode-begin-postfix-katakana-conversion pc -1))))))
 (define (tutcode-begin-postfix-katakana-conversion pc yomi-len)
   (let*
     ((former-all (tutcode-postfix-katakana-acquire-yomi pc
@@ -6657,6 +6706,8 @@
             '(tutcode-postfix-mazegaki-inflection-9-start))
           (make-subrule tutcode-postfix-katakana-start-sequence
             '(tutcode-postfix-katakana-start))
+          (make-subrule tutcode-postfix-katakana-0-start-sequence
+            '(tutcode-postfix-katakana-0-start))
           (make-subrule tutcode-postfix-katakana-1-start-sequence
             '(tutcode-postfix-katakana-1-start))
           (make-subrule tutcode-postfix-katakana-2-start-sequence
@@ -6675,6 +6726,30 @@
             '(tutcode-postfix-katakana-8-start))
           (make-subrule tutcode-postfix-katakana-9-start-sequence
             '(tutcode-postfix-katakana-9-start))
+          (make-subrule tutcode-postfix-katakana-exclude-1-sequence
+            '(tutcode-postfix-katakana-exclude-1))
+          (make-subrule tutcode-postfix-katakana-exclude-2-sequence
+            '(tutcode-postfix-katakana-exclude-2))
+          (make-subrule tutcode-postfix-katakana-exclude-3-sequence
+            '(tutcode-postfix-katakana-exclude-3))
+          (make-subrule tutcode-postfix-katakana-exclude-4-sequence
+            '(tutcode-postfix-katakana-exclude-4))
+          (make-subrule tutcode-postfix-katakana-exclude-5-sequence
+            '(tutcode-postfix-katakana-exclude-5))
+          (make-subrule tutcode-postfix-katakana-exclude-6-sequence
+            '(tutcode-postfix-katakana-exclude-6))
+          (make-subrule tutcode-postfix-katakana-shrink-1-sequence
+            '(tutcode-postfix-katakana-shrink-1))
+          (make-subrule tutcode-postfix-katakana-shrink-2-sequence
+            '(tutcode-postfix-katakana-shrink-2))
+          (make-subrule tutcode-postfix-katakana-shrink-3-sequence
+            '(tutcode-postfix-katakana-shrink-3))
+          (make-subrule tutcode-postfix-katakana-shrink-4-sequence
+            '(tutcode-postfix-katakana-shrink-4))
+          (make-subrule tutcode-postfix-katakana-shrink-5-sequence
+            '(tutcode-postfix-katakana-shrink-5))
+          (make-subrule tutcode-postfix-katakana-shrink-6-sequence
+            '(tutcode-postfix-katakana-shrink-6))
           (make-subrule tutcode-postfix-kanji2seq-start-sequence
             '(tutcode-postfix-kanji2seq-start))
           (make-subrule tutcode-postfix-kanji2seq-1-start-sequence

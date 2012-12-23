@@ -435,6 +435,12 @@
 	       (N_ "[TUT-Code] postfix katakana conversion")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-postfix-katakana-0-start-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion while hiragana continues")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-postfix-katakana-1-start-sequence ""
                '(tutcode-keys3)
 	       '(string ".*")
@@ -488,6 +494,78 @@
 	       '(string ".*")
 	       (N_ "[TUT-Code] postfix katakana conversion of 9 characters")
 	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-exclude-1-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion excluding 1 character")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-exclude-2-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion excluding 2 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-exclude-3-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion excluding 3 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-exclude-4-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion excluding 4 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-exclude-5-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion excluding 5 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-exclude-6-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion excluding 6 characters")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-katakana-shrink-1-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion shrink 1 character")
+	       (N_ "shrink last postfix katakana conversion by 1 character"))
+
+(define-custom 'tutcode-postfix-katakana-shrink-2-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion shrink 2 characters")
+	       (N_ "shrink last postfix katakana conversion by 2 characters"))
+
+(define-custom 'tutcode-postfix-katakana-shrink-3-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion shrink 3 characters")
+	       (N_ "shrink last postfix katakana conversion by 3 characters"))
+
+(define-custom 'tutcode-postfix-katakana-shrink-4-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion shrink 4 characters")
+	       (N_ "shrink last postfix katakana conversion by 4 characters"))
+
+(define-custom 'tutcode-postfix-katakana-shrink-5-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion shrink 5 characters")
+	       (N_ "shrink last postfix katakana conversion by 5 characters"))
+
+(define-custom 'tutcode-postfix-katakana-shrink-6-sequence ""
+               '(tutcode-keys3)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix katakana conversion shrink 6 characters")
+	       (N_ "shrink last postfix katakana conversion by 6 characters"))
 
 (define-custom 'tutcode-postfix-kanji2seq-start-sequence ""
                '(tutcode-keys3)
