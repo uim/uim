@@ -2,6 +2,13 @@ Overview of changes from 1.8.3 to 1.8.4
 =======================================
 * Fixes
 * Enhancements
+  - uim-tutcode
+    * Enhance postfix katakana conversion
+      - Take characters while hiragana continues
+      - Exclude specified number of characters
+      - Shrink last postfix katakana conversion
+    * Updated trycode composition table retrieved 2012-11-22
+
 * Others
 
 
