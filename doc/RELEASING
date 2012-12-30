@@ -40,7 +40,7 @@ release, you have to repeat the following procedure at least three times.
 
 5. Export a fresh tree from the Git repository.
 
-   $ git clone https://github.com/uim/uim.git
+   $ git clone git@github.com:uim/uim.git
    $ cd uim
 
    On an alpha release, create a branch
