@@ -4078,10 +4078,17 @@
                      (or yomi-len tutcode-mazegaki-yomi-max))))
     (if yomi-len
       former-seq
-      (take-while
-        (lambda (char)
-          (tutcode-postfix-katakana-acquire-char? pc char))
-        former-seq))))
+      (let ((hira (take-while
+                    (lambda (char)
+                      (tutcode-postfix-katakana-acquire-char? pc char))
+                    former-seq)))
+        ;; 「キーとばりゅー」に対して、1文字残してカタカナ変換で
+        ;; 「キーとバリュー」になるように、ひらがな列が「ー」で始まる場合は除去
+        (reverse
+          (drop-while
+            (lambda (char)
+              (member char tutcode-postfix-katakana-char-list))
+            (reverse hira)))))))
 
 ;;; 後置型カタカナ変換対象文字(ひらがな、ー)かどうかを返す
 (define (tutcode-postfix-katakana-acquire-char? pc char)
