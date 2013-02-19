@@ -668,7 +668,8 @@ update_cb(void *ptr)
   if (uic->prev_preedit_len == 0 && preedit_len)
     g_signal_emit_by_name(uic, "preedit_start");
 
-  g_signal_emit_by_name(uic, "preedit_changed");
+  if (uic->prev_preedit_len || preedit_len)
+    g_signal_emit_by_name(uic, "preedit_changed");
 
   if (uic->prev_preedit_len && preedit_len == 0)
     g_signal_emit_by_name(uic, "preedit_end");
