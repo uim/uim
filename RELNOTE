@@ -1,10 +1,10 @@
-uim 1.8.4 Release Note
+uim 1.8.5 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.8.4 is the latest stable release of uim.
+This distribution of uim 1.8.5 is the latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -16,10 +16,17 @@ Bug tracking system: https://github.com/uim/uim/issues?state=open
 What's New
 ----------
 
-  - Add Hungarian locale support to uim-xim
-  - Improved uim-tutcode
+  - Avoid an infinite recursion in uim-gtk when no preedit is started
+  - Fix uim-tutcode behavior of postfix katakana conversion
 
 See NEWS for the fully detailed changes.
+
+
+What's New in 1.8.4
+-------------------
+
+  - Add Hungarian locale support to uim-xim
+  - Improved uim-tutcode
 
 
 What's New in 1.8.3
