@@ -1,10 +1,12 @@
 Overview of changes from 1.8.4 to 1.8.5
 =======================================
 * Fixes
+  - uim-gtk2
+  - uim-gtk3
+    * Avoid an infinite recursion when no preedit is started (by tagoh)
+
   - uim-tutcode
     * Fix behavior of postfix katakana conversion
-* Enhancements
-* Others
 
 
 Overview of changes from 1.8.3 to 1.8.4
