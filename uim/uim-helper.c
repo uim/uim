@@ -165,6 +165,7 @@ uim_bool
 uim_helper_get_pathname(char *helper_path, int len)
 {
   struct passwd *pw;
+  char *runtimedir;
 
   if (len <= 0)
     return UIM_FALSE;
@@ -172,27 +173,39 @@ uim_helper_get_pathname(char *helper_path, int len)
   if (UIM_CATCH_ERROR_BEGIN())
     return UIM_FALSE;
 
-  pw = getpwuid(getuid());
-  if (!pw) {
+  runtimedir = getenv("XDG_RUNTIME_DIR");
+  if (runtimedir && runtimedir[0]) {
+    if (strlcpy(helper_path, runtimedir, len) >= (size_t)len)
+      goto path_error;
+    if (strlcat(helper_path, "/uim", len) >= (size_t)len)
+      goto path_error;
+  } else {
+    pw = getpwuid(getuid());
+    if (!pw) {
+      endpwent();
+      goto path_error;
+    }
+
+    if (strlcpy(helper_path, pw->pw_dir, len) >= (size_t)len) {
+      endpwent();
+      goto path_error;
+    }
+    if (strlcat(helper_path, "/.uim.d", len) >= (size_t)len) {
+      endpwent();
+      goto path_error;
+    }
     endpwent();
-    goto path_error;
   }
 
-  if (strlcpy(helper_path, pw->pw_dir, len) >= (size_t)len) {
-    endpwent();
-    goto path_error;
-  }
-  if (strlcat(helper_path, "/.uim.d", len) >= (size_t)len) {
-    endpwent();
-    goto path_error;
-  }
-  endpwent();
-
-  /* check ~/.uim.d/ */
+  /* check $XDG_RUNTIME_DIR/uim/ if $XDG_RUNTIME_DIR is available.
+   * otherwise ~/.uim.d/
+   */
   if (!check_dir(helper_path))
     goto path_error;
 
-  /* check ~/.uim.d/socket/ */
+  /* check $XDG_RUNTIME_DIR/uim/socket/ if $XDG_RUNTIME_DIR is available.
+   * otherwise ~/.uim.d/socket/
+   */
   if (strlcat(helper_path, "/socket", len) >= (size_t)len)
     goto path_error;
 
