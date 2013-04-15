@@ -197,11 +197,15 @@ uim_helper_get_pathname(char *helper_path, int len)
     endpwent();
   }
 
-  /* check ~/.uim.d/ */
+  /* check $XDG_RUNTIME_DIR/uim/ if $XDG_RUNTIME_DIR is available.
+   * otherwise ~/.uim.d/
+   */
   if (!check_dir(helper_path))
     goto path_error;
 
-  /* check ~/.uim.d/socket/ */
+  /* check $XDG_RUNTIME_DIR/uim/socket/ if $XDG_RUNTIME_DIR is available.
+   * otherwise ~/.uim.d/socket/
+   */
   if (strlcat(helper_path, "/socket", len) >= (size_t)len)
     goto path_error;
 
