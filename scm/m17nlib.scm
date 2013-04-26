@@ -142,9 +142,10 @@
 	    (m17nlib-context-set-showing-candidate! mc #f)))
 
       (if (and
+     generic-use-candidate-window?
 	   (or
 	    candidates-changed?
-	    (and 
+	    (and
 	     (not showing-candidate?)
 	     (m17nlib-lib-candidate-show? mid)))
 	   (not (= nrcands 0)))
