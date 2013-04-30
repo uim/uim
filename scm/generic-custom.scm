@@ -36,6 +36,12 @@
 		     (N_ "Other input methods")
 		     (N_ "long description will be here."))
 
+(define-custom 'generic-im-default-state-on? #f
+  '(other-ims miscellaneous)
+  '(boolean)
+  (N_ "Default input mode is on")
+  (N_ "long description will be here."))
+
 (define-custom 'generic-use-candidate-window? #t
   '(other-ims candwin)
   '(boolean)

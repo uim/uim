@@ -40,13 +40,16 @@
 (define generic-widgets '(widget_generic_input_mode))
 
 ;; default activity for each widgets
-(define default-widget_generic_input_mode 'action_generic_off)
+(define default-widget_generic_input_mode
+  (cond
+    (generic-im-default-state-on? 'action_generic_on)
+    (else 'action_generic_off)
+  ))
 
 ;; actions of widget_generic_input_mode
 (define generic-input-mode-actions
   '(action_generic_off
     action_generic_on))
-
 
 ;;; implementations
 
@@ -61,6 +64,9 @@
   (lambda (gc)
     (let ((rkc (generic-context-rk-context gc)))
       (rk-flush rkc)
+      (cond
+        (generic-im-default-state-on? 'action_generic_on)
+        (else 'action_generic_off))
       (generic-update-preedit gc))))
 
 (register-action 'action_generic_off
