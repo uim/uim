@@ -30,6 +30,7 @@
 
 (require-custom "generic-key-custom.scm")
 (require-custom "m17nlib-custom.scm")
+(require-custom "generic-custom.scm")
 
 ;;; user configs
 
