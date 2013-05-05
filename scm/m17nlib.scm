@@ -30,6 +30,7 @@
 
 (require-custom "generic-key-custom.scm")
 (require-custom "m17nlib-custom.scm")
+(require-custom "generic-custom.scm")
 
 ;;; user configs
 
@@ -142,9 +143,10 @@
 	    (m17nlib-context-set-showing-candidate! mc #f)))
 
       (if (and
+     generic-use-candidate-window?
 	   (or
 	    candidates-changed?
-	    (and 
+	    (and
 	     (not showing-candidate?)
 	     (m17nlib-lib-candidate-show? mid)))
 	   (not (= nrcands 0)))
