@@ -124,3 +124,13 @@
 		 'custom-set-hooks
 		 (lambda ()
 		   (m17nlib-configure-widgets)))
+
+;;
+;; candidate window
+;;
+
+(define-custom 'm17nlib-use-candidate-window? #t
+  '(m17nlib candwin)
+  '(boolean)
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
