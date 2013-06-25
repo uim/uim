@@ -236,7 +236,8 @@
 
 (define (canna-lib-open-with-server server)
   (let ((server-name (if (equal? server "")
-                         "localhost")))
+                         "localhost"
+                         server)))
     (if canna-server-name
         (tcp-connect server-name "canna")
         (unix-domain-socket-connect "/tmp/.iroha_unix/IROHA"))))
