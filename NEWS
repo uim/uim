@@ -11,6 +11,8 @@ Overview of changes from 1.8.5 to 1.8.6
 * Enhancements
   - uim-m17nlib
     * Add an option to set a candidate windows to be visiable or hidden.
+  - uim-tutcode
+    * Updated trycode composition table retrieved 2013-06-26.
 
 
 Overview of changes from 1.8.4 to 1.8.5
