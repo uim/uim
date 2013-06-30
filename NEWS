@@ -2,17 +2,17 @@ Overview of changes from 1.8.5 to 1.8.6
 =======================================
 * Fixes
   - libuim
-    * Add XDG_RUNTIME_DIR support.
+    * Add XDG_RUNTIME_DIR support (by tagoh)
   - po
-    * List language names on each line in LINGUAS.
+    * List language names on each line in LINGUAS (by naota)
   - uim-canna
-    * Avoid a crash when a Canna server name is specified.
+    * Avoid a crash when a Canna server name is specified (by Kouichi ONO)
 
 * Enhancements
   - uim-m17nlib
-    * Add an option to set a candidate windows to be visiable or hidden.
+    * Add an option to set a candidate windows to be visiable or hidden
   - uim-tutcode
-    * Updated trycode composition table retrieved 2013-06-26.
+    * Updated trycode composition table retrieved 2013-06-26
 
 
 Overview of changes from 1.8.4 to 1.8.5
