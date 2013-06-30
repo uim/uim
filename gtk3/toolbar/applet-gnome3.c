@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2012 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -131,7 +131,7 @@ display_about_dialog(GtkAction *action, gpointer data)
   gtk_show_about_dialog(NULL,
 			   "program-name", _("uim Applet"),
 			   "version", VERSION,
-			   "copyright", "Copyright \xc2\xa9 2003-2012 uim Project.",
+			   "copyright", "Copyright \xc2\xa9 2003-2013 uim Project.",
 			   "comments", _("Applet for indicating uim's status"),
 			   "authors", authors,
 			   "translator-credits",

@@ -1,6 +1,6 @@
 ;;; google-cgiapi-jp.scm: google-cgiapi-jp for uim.
 ;;;
-;;; Copyright (c) 2011-2012 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2011-2013 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

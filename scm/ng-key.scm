@@ -1,6 +1,6 @@
 ;;; ng-key.scm: Key definitions and utilities (next generation)
 ;;;
-;;; Copyright (c) 2005-2012 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
