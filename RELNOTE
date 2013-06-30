@@ -1,10 +1,10 @@
-uim 1.8.5 Release Note
+uim 1.8.6 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.8.5 is the latest stable release of uim.
+This distribution of uim 1.8.6 is the latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -16,10 +16,20 @@ Bug tracking system: https://github.com/uim/uim/issues?state=open
 What's New
 ----------
 
-  - Avoid an infinite recursion in uim-gtk when no preedit is started
-  - Fix uim-tutcode behavior of postfix katakana conversion
+  - Add XDG_RUNTIME_DIR support
+  - Fix LINGUAS
+  - Avoid a crash when a Canna server name is specified
+  - Add an option to uim-m17nlib
+  - Update trycode composition table
 
 See NEWS for the fully detailed changes.
+
+
+What's New in 1.8.5
+-------------------
+
+  - Avoid an infinite recursion in uim-gtk when no preedit is started
+  - Fix uim-tutcode behavior of postfix katakana conversion
 
 
 What's New in 1.8.4
