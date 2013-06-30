@@ -1,6 +1,6 @@
 ;;; dict.scm: rfc2229 (a dictionary server protocol) for uim.
 ;;;
-;;; Copyright (c) 2010-2012 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2010-2013 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

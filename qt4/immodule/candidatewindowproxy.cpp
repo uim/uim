@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2012 uim Project http://code.google.com/p/uim/
+  copyright (c) 2012-2013 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
