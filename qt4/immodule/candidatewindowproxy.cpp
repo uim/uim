@@ -569,9 +569,7 @@ bool CandidateWindowProxy::eventFilter(QObject *obj, QEvent *event)
                 QRect rect
                     = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
                 QPoint p = widget->mapToGlobal(rect.topLeft());
-                execute("layout_window\f" + QString::number(p.x()) + '\f'
-                    + QString::number(p.y()) + '\f'
-                    + QString::number(rect.height()));
+                layoutWindow(p.x(), p.y(), rect.height());
             } else {
                 QMoveEvent *moveEvent = static_cast<QMoveEvent *>(event);
                 QPoint p = moveEvent->pos() - moveEvent->oldPos();
