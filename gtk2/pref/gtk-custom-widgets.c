@@ -1280,18 +1280,30 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 		     FALSE, FALSE, 4);
   gtk_widget_show(vbox);
 
+#if GTK_CHECK_VERSION(3, 4, 0)
+  table = gtk_grid_new();
+  gtk_grid_set_row_spacing(GTK_GRID(table), 3);
+  gtk_grid_set_column_spacing(GTK_GRID(table), 3);
+#else
   table = gtk_table_new(3, 6, FALSE);
   gtk_table_set_row_spacings(GTK_TABLE(table), 3);
   gtk_table_set_col_spacings(GTK_TABLE(table), 3);
+#endif
   gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
   gtk_widget_show(table);
 
   /* up button */
   button = gtk_button_new();
   olist_pref_win.up_button = button;
+#if GTK_CHECK_VERSION(3, 4, 0)
+  gtk_widget_set_hexpand(button, TRUE);
+  gtk_widget_set_vexpand(button, TRUE);
+  gtk_grid_attach(GTK_GRID(table), button, 1, 0, 1, 1);
+#else
   gtk_table_attach_defaults(GTK_TABLE(table), button,
 			    1, 2,
 			    0, 1);
+#endif
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_UP, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
@@ -1302,9 +1314,15 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   /* down button */
   button = gtk_button_new();
   olist_pref_win.down_button = button;
+#if GTK_CHECK_VERSION(3, 4, 0)
+  gtk_widget_set_hexpand(button, TRUE);
+  gtk_widget_set_vexpand(button, TRUE);
+  gtk_grid_attach(GTK_GRID(table), button, 1, 2, 1, 1);
+#else
   gtk_table_attach_defaults(GTK_TABLE(table), button,
 			    1, 2,
 			    2, 3);
+#endif
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
@@ -1315,9 +1333,15 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   /* left button */
   button = gtk_button_new();
   olist_pref_win.left_button = button;
+#if GTK_CHECK_VERSION(3, 4, 0)
+  gtk_widget_set_hexpand(button, TRUE);
+  gtk_widget_set_vexpand(button, TRUE);
+  gtk_grid_attach(GTK_GRID(table), button, 0, 1, 1, 1);
+#else
   gtk_table_attach_defaults(GTK_TABLE(table), button,
 			    0, 1,
 			    1, 2);
+#endif
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_LEFT, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
@@ -1328,9 +1352,15 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   /* right button */
   button = gtk_button_new();
   olist_pref_win.right_button = button;
+#if GTK_CHECK_VERSION(3, 4, 0)
+  gtk_widget_set_hexpand(button, TRUE);
+  gtk_widget_set_vexpand(button, TRUE);
+  gtk_grid_attach(GTK_GRID(table), button, 2, 1, 1, 1);
+#else
   gtk_table_attach_defaults(GTK_TABLE(table), button,
 			    2, 3,
 			    1, 2);
+#endif
   gtk_widget_show(button);
   arrow = gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(button), arrow);
