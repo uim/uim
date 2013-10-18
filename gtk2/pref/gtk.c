@@ -439,8 +439,12 @@ create_group_widget(const char *group_name)
 #else
   vbox = gtk_vbox_new(FALSE, 8);
 #endif
+#if GTK_CHECK_VERSION(3, 8, 0)
+  gtk_container_add(GTK_CONTAINER(scrolled_win), vbox);
+#else
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_win),
 					vbox);
+#endif
 
   gtk_container_set_border_width(GTK_CONTAINER(vbox), 4);
 
