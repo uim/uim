@@ -20,6 +20,7 @@
 /libtool
 /ltmain.sh
 /missing
+/test-driver
 /uim.desktop.in
 /uim.desktop
 /uim.pc
