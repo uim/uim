@@ -727,8 +727,14 @@ egg_tray_icon_realize (GtkWidget *widget)
   if (icon->manager_visual_rgba)
     {
       /* Set a transparent background */
+#if GTK_CHECK_VERSION(3, 4, 0)
+      GdkRGBA transparent = { 0, 0, 0, 0 };
+      gdk_window_set_background_rgba (gtk_widget_get_window(widget),
+                                      &transparent);
+#else
       GdkColor transparent = { 0, 0, 0, 0 }; /* Only pixel=0 matters */
       gdk_window_set_background (gtk_widget_get_window(widget), &transparent);
+#endif
     }
   else
     {
