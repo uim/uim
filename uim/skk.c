@@ -3850,6 +3850,8 @@ close_skkserv()
   if (skkservsock >= 0) {
     fprintf(wserv, "0\n");
     fflush(wserv);
+    close(skkservsock);
+    skkservsock = -1;
   }
 }
 
