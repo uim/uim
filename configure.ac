@@ -795,8 +795,8 @@ LOCALEDIR=`eval eval echo ${datadir}/locale`
 # backward compatibility
 localedir=$LOCALEDIR
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
-AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
-AC_DEFINE_UNQUOTED(GNOME3LOCALEDIR, "$LOCALEDIR", [locale dir for gnome3])
+AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for GNOME])
+AC_DEFINE_UNQUOTED(GNOME3LOCALEDIR, "$LOCALEDIR", [locale dir for GNOME3])
 # define XLIB directory for Compose file
 if test "x$x11_use_new_dir" = "xyes"; then
   AC_DEFINE_UNQUOTED(XLIB_DIR, "`$PKG_CONFIG x11 --variable=prefix`/share", [X11 Library Directory])
@@ -807,12 +807,12 @@ uim_pixmapsdir=`eval eval echo ${datadir}/${PACKAGE_TARNAME}/pixmaps`
 AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${uim_pixmapsdir}", [pixmaps directory])
 AC_SUBST(uim_pixmapsdir)
 
-dnl *****************************
-dnl *** Check for Gtk Library ***
-dnl *****************************
+dnl ******************************
+dnl *** Check for GTK+ Library ***
+dnl ******************************
 AC_ARG_WITH(gtk2,
   AC_HELP_STRING([--without-gtk2],
-                 [don't build against Gtk+2]),
+                 [don't build against GTK+2]),
   [
     case $with_gtk2 in
       no)
@@ -829,7 +829,7 @@ AC_ARG_WITH(gtk2,
 
 AC_ARG_ENABLE(gnome-applet,
   AC_HELP_STRING([--disable-gnome-applet],
-                 [disable uim applet for Gnome panel]),
+                 [disable uim applet for GNOME panel]),
   [
     case $enable_gnome_applet in
       no)
@@ -851,9 +851,9 @@ if test x"$panelapplet_have_set_background_api" = xyes; then
 fi
 
 
-dnl ******************************
-dnl *** Check for Gtk3 Library ***
-dnl ******************************
+dnl *******************************
+dnl *** Check for GTK+3 Library ***
+dnl *******************************
 AC_ARG_WITH(gtk3,
   AC_HELP_STRING([--with-gtk3],
                  [build GTK+3 immodule and helper applications
@@ -874,7 +874,7 @@ AC_ARG_WITH(gtk3,
 
 AC_ARG_ENABLE(gnome3-applet,
   AC_HELP_STRING([--enable-gnome3-applet],
-                 [enable uim applet for Gnome3 panel
+                 [enable uim applet for GNOME3 panel
             @<:@default=yes@:>@]),
   [
     case $enable_gnome3_applet in
@@ -1329,11 +1329,11 @@ AC_SUBST(GTK3_BINARY_VERSION)
 AC_SUBST(GTK3_LIBDIR)
 
 if test x$use_gtk2 = xyes ; then
-AC_DEFINE(USE_GTK2, 1, [use gtk2])
+AC_DEFINE(USE_GTK2, 1, [use gtk+2])
 fi
 
 if test x$use_gtk3 = xyes ; then
-    AC_DEFINE(USE_GTK3, 1, [use gtk3])
+    AC_DEFINE(USE_GTK3, 1, [use gtk+3])
 fi
 
 if test x$use_qt = xyes ; then
@@ -1628,7 +1628,7 @@ AC_ARG_ENABLE(pref,
 	  use_pref="yes"
 	else
 	  use_pref="no"
-	  AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
+	  AC_MSG_WARN([uim-pref needs GTK+ or Qt toolkit, disabled...])
 	fi
 	;;
     esac ],
@@ -1650,7 +1650,7 @@ AC_ARG_ENABLE(pref,
       use_pref="yes"
     else
       use_pref="no"
-      AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
+      AC_MSG_WARN([uim pref needs GTK+ or Qt toolkit, disabled...])
     fi
   ])
 AM_CONDITIONAL(PREF, test x"$use_pref" = "xyes")
@@ -2139,10 +2139,10 @@ Configure Result :
    OpenSSL         : ${use_openssl}
    SQLite3         : ${use_sqlite3}
    ffi             : ${use_ffi}
-   Gtk+            : ${use_gtk2}
-   Gnome Applet    : ${use_applet_gnome}
-   Gtk+3           : ${use_gtk3}
-   Gnome3 Applet   : ${use_applet_gnome3}
+   GTK+            : ${use_gtk2}
+   GNOME Applet    : ${use_applet_gnome}
+   GTK+3           : ${use_gtk3}
+   GNOME3 Applet   : ${use_applet_gnome3}
    Qt3             : ${use_qt}
    Qt3 immodule    : ${use_qtimmodule}
    Qt4             : ${use_qt4}
