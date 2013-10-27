@@ -735,7 +735,6 @@ if test "x$ac_cv_have_struct_addrinfo" = xyes; then
 		[define if you have struct addrinfo data type])
 fi
 
-
 GETTEXT_PACKAGE=uim
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[gettext package name])
@@ -824,7 +823,6 @@ if test x"$panelapplet_have_set_background_api" = xyes; then
 fi
 
 AM_CONDITIONAL(APPLET_GNOME, test "x$enable_gnome_applet" = xyes)
-
 
 dnl *******************************
 dnl *** Check for GTK+3 Library ***
@@ -1078,6 +1076,24 @@ if test "x$with_qt4" = xyes || test "x$with_qt4_immodule" = xyes; then
   fi
 fi
 
+# Generate Makefiles for Qt4 by qmake
+if test "x$with_qt4" = xyes; then
+  if test "x$with_qt4_immodule" = xyes; then
+    qt4_immodule_option="DEFINES+=QT4_IMMODULE"
+  fi
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
+    ${qt4_immodule_option} \
+    ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/switcher/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
+fi
+
 dnl *****************************************
 dnl *** test for Qt3Support module in Qt4 ***
 dnl *****************************************
@@ -1096,8 +1112,19 @@ if test "x$enable_qt4_qt3support" != xno; then
       AC_MSG_WARN([No Qt3Support found])
     fi
   else
-      enable_qt4_qt3support=no
+    enable_qt4_qt3support=no
   fi
+fi
+
+if test "x$with_qt4_immodule" = xyes; then
+  if test "x$enable_qt4_qt3support" = xyes; then
+    qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
+  fi
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
+    ${qt4_qt3support_option} \
+    ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
+    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
 
 dnl *****************************
@@ -1124,6 +1151,31 @@ if test "x$with_qt5" = xyes || test "x$with_qt5_immodule" = xyes; then
 fi
 
 AM_CONDITIONAL(QT5_IMMODULE, test "x$with_qt5_immodule" = xyes)
+
+# Generate Makefiles for Qt5 by qmake
+if test "x$with_qt5" = xyes; then
+  if test "x$with_qt5_immodule" = xyes; then
+    qt5_immodule_option="DEFINES+=QT5_IMMODULE"
+  fi
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/chardict/uim-chardict-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/pref/Makefile.qmake \
+    ${qt5_immodule_option} \
+    ${ac_abs_top_builddir}/qt5/pref/uim-pref-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/switcher/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
+fi
+
+if test "x$with_qt5_immodule" = xyes; then
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
+    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+fi
 
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
@@ -1338,8 +1390,6 @@ AM_CONDITIONAL(GCC, test "x$ac_cv_c_compiler_gnu" = xyes)
 AM_CONDITIONAL(GXX, test "x$ac_cv_cxx_compiler_gnu" = xyes)
 
 IT_PROG_INTLTOOL([0.36.3], [no-xml])
-
-
 
 dnl **********************************
 dnl *** test for KDE3 applet.. XXX ***
@@ -1585,7 +1635,6 @@ AM_CONDITIONAL(KNOTIFY3, test "x$use_knotify3" = xyes)
 AM_CONDITIONAL(KNOTIFY4, test "x$use_knotify4" = xyes)
 AM_CONDITIONAL(GROWL, test "x$use_growl" = xyes)
 
-
 AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based error handlings])
 
 #
@@ -1705,9 +1754,7 @@ fi
 AM_CONDITIONAL(DO_CHECK_IN_TEST,
                test "x$have_gosh_and_gaunit" = xyes -a "x$enable_debug" = xyes)
 
-
 # Checks for system services
-
 
 AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
@@ -1820,88 +1867,40 @@ AC_CONFIG_FILES([Makefile
 AC_OUTPUT
 
 if test "x$CMAKE" != xno; then
-    if test "x$enable_debug" = xyes; then
-        cmake_build_type=Debug
-    else
-        cmake_build_type=Release
-    fi
-    # FIXME: move CMAKE_CXX_FLAGS into cmake_option
-    cmake_option="-DCMAKE_BUILD_TYPE=${cmake_build_type}"
-    cmake_option="${cmake_option} -DCMAKE_INSTALL_PREFIX=${prefix}"
-    cmake_option="${cmake_option} -DCMAKE_SKIP_RPATH=true"
-    cmake_option="${cmake_option} -DKDE4_USE_ALWAYS_FULL_RPATH=false"
+  if test "x$enable_debug" = xyes; then
+    cmake_build_type=Debug
+  else
+    cmake_build_type=Release
+  fi
+  # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+  cmake_option="-DCMAKE_BUILD_TYPE=${cmake_build_type}"
+  cmake_option="${cmake_option} -DCMAKE_INSTALL_PREFIX=${prefix}"
+  cmake_option="${cmake_option} -DCMAKE_SKIP_RPATH=true"
+  cmake_option="${cmake_option} -DKDE4_USE_ALWAYS_FULL_RPATH=false"
 fi
-# Generate Makefiles for Qt4 by qmake
-if test "x$with_qt4" = xyes; then
-    if test "x$with_qt4_immodule" = xyes; then
-        qt4_immodule_option="DEFINES+=QT4_IMMODULE"
-    fi
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
-        ${qt4_immodule_option} \
-        ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/switcher/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
 
-    # Generate a Makefile for KDE4 applet by cmake
-    if test "x$enable_kde4_applet" = xyes; then
-        mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
-        cd ${ac_abs_top_builddir}/qt4/toolbar/build
-        # FIXME: move CMAKE_CXX_FLAGS into cmake_option
-        ${CMAKE} -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
-            ${cmake_option} ${ac_abs_top_srcdir}/qt4/toolbar
-        cd -
-    fi
-fi
-if test "x$with_qt4_immodule" = xyes; then
-    if test "x$enable_qt4_qt3support" = xyes; then
-        qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
-    fi
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
-                ${qt4_qt3support_option} \
-                ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
-                 ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
-fi
-if test "x$use_knotify4" = xyes; then
-    # Generate a Makefile for KNotify plugin by cmake
-    mkdir -p ${ac_abs_top_builddir}/notify/build
-    cd ${ac_abs_top_builddir}/notify/build
+if test "x$with_qt4" = xyes; then
+  # Generate a Makefile for KDE4 applet by cmake
+  if test "x$enable_kde4_applet" = xyes; then
+    mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
+    cd ${ac_abs_top_builddir}/qt4/toolbar/build
     # FIXME: move CMAKE_CXX_FLAGS into cmake_option
     ${CMAKE} -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
-        -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
-        ${cmake_option} ${ac_abs_top_srcdir}/notify
+      ${cmake_option} ${ac_abs_top_srcdir}/qt4/toolbar
     cd -
-fi
-# Generate Makefiles for Qt5 by qmake
-if test "x$with_qt5" = xyes; then
-    if test "x$with_qt5_immodule" = xyes; then
-        qt5_immodule_option="DEFINES+=QT5_IMMODULE"
-    fi
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt5/chardict/uim-chardict-qt5.pro
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/pref/Makefile.qmake \
-        ${qt5_immodule_option} \
-        ${ac_abs_top_builddir}/qt5/pref/uim-pref-qt5.pro
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/switcher/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
-        ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
-fi
-if test "x$with_qt5_immodule" = xyes; then
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
-         ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
-    ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
-                 ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+  fi
 fi
 
+if test "x$use_knotify4" = xyes; then
+  # Generate a Makefile for KNotify plugin by cmake
+  mkdir -p ${ac_abs_top_builddir}/notify/build
+  cd ${ac_abs_top_builddir}/notify/build
+  # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+  ${CMAKE} -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+    -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
+    ${cmake_option} ${ac_abs_top_srcdir}/notify
+  cd -
+fi
 
 AC_MSG_RESULT([
 Configure Result :
