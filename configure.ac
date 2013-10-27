@@ -63,61 +63,46 @@ dnl *************************
 dnl *** Tests for m17nlib ***
 dnl *************************
 
-use_m17nlib="no"
 AC_ARG_WITH(m17nlib,
   AS_HELP_STRING([--without-m17nlib],
-                 [Don't build against m17nlib]),
-  [
-  if test "x$with_m17nlib" = "xyes"; then
-    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1, use_m17nlib="yes",use_m17nlib="no")
-    AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
-    if test -n "$M17NDB"; then
-      m17n_db_dir=`$M17NDB`
-    fi
+    [do not build against m17nlib]),
+  [],
+  [with_m17nlib=yes])
+
+if test "x$with_m17nlib" != xno; then
+  PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1,
+                    with_m17nlib=yes, with_m17nlib=no)
+  AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
+  if test -n "$M17NDB"; then
+    m17n_db_dir=`$M17NDB`
   fi
-  ],
-  [
-    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1, use_m17nlib="yes",use_m17nlib="no")
-    AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
-    if test -n "$M17NDB"; then
-      m17n_db_dir=`$M17NDB`
-    fi
-])
+fi
 
 AC_SUBST(M17NLIB_LIBS)
 AC_SUBST(m17n_db_dir)
+AM_CONDITIONAL(M17NLIB, test "x$with_m17nlib" = xyes)
 
 # ***********************
 # *** Tests for Anthy ***
 # ***********************
 AC_ARG_WITH(anthy,
-  AC_HELP_STRING([--without-anthy], [Don't build with libanthy]),
-  [
-    if test "x$with_anthy" = "xyes"; then
-      AC_CHECK_HEADERS([anthy/anthy.h],
-        [
-          saved_LIBS=$LIBS
-          LIBS="$LIBS -lanthy -lanthydic"
-          AC_CHECK_LIB([anthy], [anthy_init], [use_anthy="yes"], [use_anthy="no"])
-          LIBS=$saved_LIBS
-        ],
-        [use_anthy="no"])
-    else
-      use_anthy="no"
-    fi
-  ],
-  [
-    AC_CHECK_HEADERS([anthy/anthy.h],
-     [
-       saved_LIBS=$LIBS
-       LIBS="$LIBS -lanthy -lanthydic"
-       AC_CHECK_LIB([anthy], [anthy_init], [use_anthy="yes"], [use_anthy="no"])
-       LIBS=$saved_LIBS
-     ],
-     [use_anthy="no"])
-  ])
+  AC_HELP_STRING([--without-anthy],
+    [do not build with libanthy]),
+  [],
+  [with_anthy=yes])
 
-if test "x$use_anthy" = "xyes"; then
+if test "x$with_anthy" != xno; then
+  AC_CHECK_HEADERS([anthy/anthy.h],
+    [
+      saved_LIBS=$LIBS
+      LIBS="$LIBS -lanthy -lanthydic"
+      AC_CHECK_LIB([anthy], [anthy_init], [with_anthy=yes], [with_anthy=no])
+      LIBS=$saved_LIBS
+    ],
+    [with_anthy=no])
+fi
+
+if test "x$with_anthy" = xyes; then
   ANTHY_LIBS="-lanthy -lanthydic"
   ANTHY_CFLAGS=""
   PKG_CHECK_EXISTS(anthy >= 8622,
@@ -126,220 +111,203 @@ if test "x$use_anthy" = "xyes"; then
 fi
 AC_SUBST(ANTHY_LIBS)
 AC_SUBST(ANTHY_CFLAGS)
+AM_CONDITIONAL(ANTHY, test "x$with_anthy" = xyes)
 
 # *******************************
 # *** Tests for Anthy (UTF-8) ***
 # *******************************
 AC_ARG_WITH(anthy-utf8,
   AC_HELP_STRING([--with-anthy-utf8],
-		 [build with libanthy (UTF-8)
-		 @<:@default=no@:>@]),
-  [
-    case $with_anthy_utf8 in
-      no)
-        use_anthy_utf8="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(ANTHY_UTF8, anthy >= 8622,
-			  [use_anthy_utf8="yes"
-			   AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
-				     [libanthy can handle UTF-8])],
-			   use_anthy_utf8="no")
-      ;;
-    esac
-  ],
-  [use_anthy_utf8="no"])
+    [build with libanthy (UTF-8)]),
+  [],
+  [with_anthy_utf8=no])
+
+if test "x$with_anthy_utf8" != xno; then
+  PKG_CHECK_MODULES(ANTHY_UTF8, anthy >= 8622,
+                    [with_anthy_utf8=yes
+                     AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
+                     [libanthy can handle UTF-8])],
+                     with_anthy_utf8=no)
+fi
+
+AM_CONDITIONAL(ANTHY_UTF8, test "x$with_anthy_utf8" = xyes)
+
+dnl for uim-dict.xml.in
+if test "x$with_anthy" = xyes || test "x$with_anthy_utf8" = xyes; then
+  UI_XML_ANTHY_START=""
+  UI_XML_ANTHY_END=""
+else
+  UI_XML_ANTHY_START="<!--"
+  UI_XML_ANTHY_END="-->"
+fi
+AC_SUBST(UI_XML_ANTHY_START)
+AC_SUBST(UI_XML_ANTHY_END)
 
 # ***********************
 # *** Tests for Canna ***
 # ***********************
 AC_ARG_WITH(canna,
-	AS_HELP_STRING([--with-canna], [Use Canna
-					@<:@default=no@:>@]),
-	[
-	if test "x$with_canna" = "xyes"; then
-    		 use_canna="yes"
-	else
-		use_canna="no"
-	fi
-	],[
-	use_canna="no"
-])
+  AS_HELP_STRING([--with-canna],
+    [use Canna]),
+    [],
+    [with_canna=no])
+
+AM_CONDITIONAL(CANNA, test "x$with_canna" = xyes)
 
 # *********************
 # *** Tests for Wnn ***
 # *********************
 AC_ARG_WITH(wnn,
-	AS_HELP_STRING([--with-wnn], [Build with libwnn
-					@<:@default=no@:>@]),
-	[
-	if test "x$with_wnn" = "xyes"; then
-	   	AM_PATH_WNN(use_wnn=yes, use_wnn=no)
-	fi
-	],[
-	use_wnn="no"
-])
+  AS_HELP_STRING([--with-wnn],
+    [build with libwnn]),
+  [],
+  [with_wnn=no])
+
+if test "x$with_wnn" != xno; then
+  AM_PATH_WNN(with_wnn=yes, with_wnn=no)
+fi
+
+AM_CONDITIONAL(WNN, test "x$with_wnn" = xyes)
 
 # ***********************
 # *** Tests for Mana ***
 # ***********************
 AC_ARG_WITH(mana,
-	AS_HELP_STRING([--with-mana], [Build a plugin for Mana
-				       @<:@default=yes@:>@]),
-	[
-	if test "x$with_mana" = "xyes"; then
-	        AC_CHECK_PROG(MANA, mana, mana)
-		if test -n "$MANA"; then
-			use_mana="yes"
-		else
-			use_mana="no"
-		fi
-	else
-		use_mana="no"
-	fi
-	],[
-	        AC_CHECK_PROG(MANA, mana, mana)
-		if test -n "$MANA"; then
-			use_mana="yes"
-		else
-			use_mana="no"
-		fi
-])
+  AS_HELP_STRING([--without-mana],
+    [do not build a plugin for Mana]),
+  [],
+  [with_mana=yes])
+
+if test "x$with_mana" != xno; then
+  AC_CHECK_PROG(MANA, mana, mana)
+  if test -z "$MANA"; then
+    with_mana=no
+  fi
+fi
+
+AM_CONDITIONAL(MANA, test "x$with_mana" = xyes)
 
 # ***********************
 # *** Tests for PRIME ***
 # ***********************
 AC_ARG_WITH(prime,
-	AS_HELP_STRING([--with-prime], [Build a plugin for PRIME
-					@<:@default=yes@:>@]),
-	[
-	if test "x$with_prime" = "xyes"; then
-	        use_prime="yes"
-	else
-		use_prime="no"
-	fi
-	],[
-	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
-])
+  AS_HELP_STRING([--without-prime],
+    [do not build a plugin for PRIME]),
+  [],
+  [with_prime=yes])
 
-# ***********************
+if test "x$with_prime" != xno; then
+  PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, with_prime=yes, with_prime=no)
+fi
+
+AM_CONDITIONAL(PRIME, test "x$with_prime" = xyes)
+
+# *********************
 # *** Tests for SJ3 ***
-# ***********************
+# *********************
 AC_ARG_WITH(sj3,
-	AS_HELP_STRING([--with-sj3], [Use SJ3
-					@<:@default=no@:>@]),
-	[
-	if test "x$with_sj3" = "xyes"; then
-		use_sj3="yes"
-	else
-		use_sj3="no"
-	fi
-	],[
-	        use_sj3="no"
-])
+  AS_HELP_STRING([--with-sj3],
+    [use SJ3]),
+  [],
+  [with_sj3=no])
 
-# ***********************
+AM_CONDITIONAL(SJ3, test "x$with_sj3" = xyes)
+
+# *********************
 # *** Tests for SKK ***
-# ***********************
+# *********************
 AC_ARG_WITH(skk,
-	AS_HELP_STRING([--with-skk], [Build a plugin for SKK
-					@<:@default=yes@:>@]),
-	[
-	if test "x$with_skk" = "xyes"; then
-		use_skk="yes"
-	else
-		use_skk="no"
-	fi
-	],[
-	        use_skk="yes"
-])
+  AS_HELP_STRING([--without-skk],
+    [do not build a plugin for SKK]),
+  [],
+  [with_skk=yes])
 
+AM_CONDITIONAL(SKK, test "x$with_skk" = xyes)
 
-# ***********************
+# **********************
 # *** Tests for cURL ***
-# ***********************
+# **********************
 AC_ARG_WITH(curl,
-	AS_HELP_STRING([--with-curl], [Build with libcurl
-					@<:@default=no@:>@]),
-	[
-	if test "x$with_curl" = "xyes"; then
-		PKG_CHECK_MODULES(CURL, libcurl >= 7.16.4, use_curl="yes", use_curl="no")
-	else
-		use_curl="no"
-	fi
-	],[
-	use_curl="no"
-])
+  AS_HELP_STRING([--with-curl],
+    [build with libcurl]),
+  [],
+  [with_curl=no])
+
+if test "x$with_curl" != xno; then
+  PKG_CHECK_MODULES(CURL, libcurl >= 7.16.4, with_curl=yes, with_curl=no)
+fi
+
+AM_CONDITIONAL(CURL, test "x$with_curl" = xyes)
 
 # ***********************
 # *** Tests for expat ***
 # ***********************
 expat_found=no
 AM_WITH_EXPAT
+AM_CONDITIONAL(EXPAT, test "x$expat_found" = xyes)
 
-# ***********************
+# *************************
 # *** Tests for OpenSSL ***
-# ***********************
+# *************************
 AC_ARG_ENABLE(openssl,
   AC_HELP_STRING([--enable-openssl],
-                 [enable openssl @<:@default=no@:>@]),
-  [
-    use_openssl="yes"
-    AM_WITH_OPENSSL
-  ],
-  [
-    use_openssl="no"
-  ])
+    [enable openssl]),
+  [],
+  [enable_openssl=no])
 
+if test "x$enable_openssl" != xno; then
+  AM_WITH_OPENSSL
+fi
+
+AM_CONDITIONAL(OPENSSL, test "x$enable_openssl" = xyes)
 
 # *************************
 # *** Tests for SQLite3 ***
 # *************************
 AC_ARG_WITH(sqlite3,
-	AS_HELP_STRING([--with-sqlite3], [Build with SQLite3
-					@<:@default=no@:>@]),
-	[
-	if test "x$with_sqlite3" = "xyes"; then
-		PKG_CHECK_MODULES(SQLITE3, sqlite3 >= 3.0.0, use_sqlite3="yes", use_sqlite3="no")
-	else
-		use_sqlite3="no"
-	fi
-	],[
-	use_sqlite3="no"
-])
+  AS_HELP_STRING([--with-sqlite3],
+    [build with SQLite3]),
+  [],
+  [with_sqlite3=yes])
+
+if test "x$with_sqlite3" = xyes; then
+  PKG_CHECK_MODULES(SQLITE3, sqlite3 >= 3.0.0,
+                    with_sqlite3=yes, with_sqlite3=no)
+fi
+
+AM_CONDITIONAL(SQLITE3, test "x$with_sqlite3" = xyes)
 
 # ************************
 # *** Tests for libffi ***
 # ************************
 AC_ARG_WITH(ffi,
-	AS_HELP_STRING([--with-ffi], [Build with libffi
-					@<:@default=no@:>@]),
-	[
-	if test "x$with_ffi" = "xyes"; then
-		PKG_CHECK_MODULES(FFI, libffi >= 3.0.0, use_ffi="yes", use_ffi="no")
-	else
-		use_ffi="no"
-	fi
-	],[
-	use_ffi="no"
-])
+  AS_HELP_STRING([--with-ffi],
+    [build with libffi]),
+  [],
+  [with_ffi=no])
 
-PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
+if test "x$with_ffi" = xyes; then
+  PKG_CHECK_MODULES(FFI, libffi >= 3.0.0, with_ffi=yes, with_ffi=no)
+fi
+
+AM_CONDITIONAL(FFI, test "x$with_ffi" = xyes)
+
+PKG_CHECK_MODULES(X11, x11, x11_use_new_dir=yes, x11_use_new_dir=no)
 AC_PATH_XTRA
 
-use_xim="no"
-if test x"$have_x" != "xdisabled" && test x"$have_x" != "xno"; then
-   PKG_CHECK_MODULES(XIM, xext, use_xim="yes", use_xim="no")
-   if test x"$use_xim" = "xyes"; then
+use_xim=no
+if test x"$have_x" != xdisabled && test x"$have_x" != xno; then
+   PKG_CHECK_MODULES(XIM, xext, use_xim=yes, use_xim=no)
+   if test "x$use_xim" = xyes; then
      AC_CXX_NAMESPACES
      AC_CXX_HAVE_STL
      if test $ac_cv_cxx_have_stl = no; then
-       use_xim="no"
+       use_xim=no
      fi
    fi
    AC_MSG_CHECKING([whether to have Xft support])
    AM_PATH_XFT(yes, XFT=true, XFT=false)
-   if test x"$XFT" = "xtrue" ; then
+   if test x"$XFT" = xtrue; then
      saved_CFLAGS=$CFLAGS
      saved_LIBS=$LIBS
      CFLAGS="$CFLAGS $XFT_CFLAGS"
@@ -368,7 +336,9 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
      LIBS=$saved_LIBS
    fi
 fi
-AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
+
+AM_CONDITIONAL(XIM, test x"$use_xim" = xyes)
+AM_CONDITIONAL(WITH_XFT, test x"$XFT" = xtrue)
 
 # Checks for header files
 AC_HEADER_STDC
@@ -600,7 +570,7 @@ str = gai_strerror(0);],[
                 [Define if gai_strerror() returns const char *])])])
 
 # Check for broken snprintf
-if test "x$ac_cv_func_snprintf" = "xyes" ; then
+if test "x$ac_cv_func_snprintf" = xyes; then
 	AC_MSG_CHECKING([whether snprintf correctly terminates long strings])
 	AC_RUN_IFELSE(
 		[AC_LANG_SOURCE([[
@@ -621,8 +591,8 @@ fi
 # If we don't have a working asprintf, then we strongly depend on vsnprintf
 # returning the right thing on overflow: the number of characters it tried to
 # create (as per SUSv3)
-if test "x$ac_cv_func_asprintf" != "xyes" && \
-   test "x$ac_cv_func_vsnprintf" = "xyes" ; then
+if test "x$ac_cv_func_asprintf" != xyes && \
+   test "x$ac_cv_func_vsnprintf" = xyes; then
 	AC_MSG_CHECKING([whether vsnprintf returns correct values on overflow])
 	AC_RUN_IFELSE(
 		[AC_LANG_SOURCE([[
@@ -690,11 +660,11 @@ AC_CACHE_CHECK([for struct sockaddr_storage], ac_cv_have_struct_sockaddr_storage
 #include <sys/socket.h>
 		],
 		[ struct sockaddr_storage s; ],
-		[ ac_cv_have_struct_sockaddr_storage="yes" ],
-		[ ac_cv_have_struct_sockaddr_storage="no" ]
+		[ ac_cv_have_struct_sockaddr_storage=yes ],
+		[ ac_cv_have_struct_sockaddr_storage=no ]
 	)
 ])
-if test "x$ac_cv_have_struct_sockaddr_storage" = "xyes" ; then
+if test "x$ac_cv_have_struct_sockaddr_storage" = xyes; then
 	AC_DEFINE(HAVE_STRUCT_SOCKADDR_STORAGE, 1,
 		[define if you have struct sockaddr_storage data type])
 fi
@@ -707,11 +677,11 @@ AC_CACHE_CHECK([for struct cmsgcred], ac_cv_have_struct_cmsgcred, [
 #include <sys/socket.h>
 		],
 		[ struct cmsgcred s; ],
-		[ ac_cv_have_struct_cmsgcred="yes" ],
-		[ ac_cv_have_struct_cmsgcred="no" ]
+		[ ac_cv_have_struct_cmsgcred=yes ],
+		[ ac_cv_have_struct_cmsgcred=no ]
 	)
 ])
-if test "x$ac_cv_have_struct_cmsgcred" = "xyes" ; then
+if test "x$ac_cv_have_struct_cmsgcred" = xyes; then
 	AC_DEFINE(HAVE_STRUCT_CMSGCRED, 1,
 		[define if you have struct cmsgcred data type])
 fi
@@ -723,11 +693,11 @@ AC_CACHE_CHECK([for struct sockaddr_in6], ac_cv_have_struct_sockaddr_in6, [
 #include <netinet/in.h>
 		],
 		[ struct sockaddr_in6 s; s.sin6_family = 0; ],
-		[ ac_cv_have_struct_sockaddr_in6="yes" ],
-		[ ac_cv_have_struct_sockaddr_in6="no" ]
+		[ ac_cv_have_struct_sockaddr_in6=yes ],
+		[ ac_cv_have_struct_sockaddr_in6=no ]
 	)
 ])
-if test "x$ac_cv_have_struct_sockaddr_in6" = "xyes" ; then
+if test "x$ac_cv_have_struct_sockaddr_in6" = xyes; then
 	AC_DEFINE(HAVE_STRUCT_SOCKADDR_IN6, 1,
 		[define if you have struct sockaddr_in6 data type])
 fi
@@ -739,11 +709,11 @@ AC_CACHE_CHECK([for struct in6_addr], ac_cv_have_struct_in6_addr, [
 #include <netinet/in.h>
 		],
 		[ struct in6_addr s; s.s6_addr[0] = 0; ],
-		[ ac_cv_have_struct_in6_addr="yes" ],
-		[ ac_cv_have_struct_in6_addr="no" ]
+		[ ac_cv_have_struct_in6_addr=yes ],
+		[ ac_cv_have_struct_in6_addr=no ]
 	)
 ])
-if test "x$ac_cv_have_struct_in6_addr" = "xyes" ; then
+if test "x$ac_cv_have_struct_in6_addr" = xyes; then
 	AC_DEFINE(HAVE_STRUCT_IN6_ADDR, 1,
 		[define if you have struct in6_addr data type])
 fi
@@ -756,11 +726,11 @@ AC_CACHE_CHECK([for struct addrinfo], ac_cv_have_struct_addrinfo, [
 #include <netdb.h>
 		],
 		[ struct addrinfo s; s.ai_flags = AI_PASSIVE; ],
-		[ ac_cv_have_struct_addrinfo="yes" ],
-		[ ac_cv_have_struct_addrinfo="no" ]
+		[ ac_cv_have_struct_addrinfo=yes ],
+		[ ac_cv_have_struct_addrinfo=no ]
 	)
 ])
-if test "x$ac_cv_have_struct_addrinfo" = "xyes" ; then
+if test "x$ac_cv_have_struct_addrinfo" = xyes; then
 	AC_DEFINE(HAVE_STRUCT_ADDRINFO, 1,
 		[define if you have struct addrinfo data type])
 fi
@@ -774,10 +744,10 @@ AM_GNU_GETTEXT([external], [need-ngettext])
 AM_GNU_GETTEXT_VERSION([0.17])
 
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
-if test x$prefix = xNONE; then
+if test "x$prefix" = xNONE; then
    prefix=$ac_default_prefix
 fi
-if test x$exec_prefix = xNONE; then
+if test "x$exec_prefix" = xNONE; then
    exec_prefix=$prefix
 fi
 
@@ -798,7 +768,7 @@ AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for GNOME])
 AC_DEFINE_UNQUOTED(GNOME3LOCALEDIR, "$LOCALEDIR", [locale dir for GNOME3])
 # define XLIB directory for Compose file
-if test "x$x11_use_new_dir" = "xyes"; then
+if test "x$x11_use_new_dir" = xyes; then
   AC_DEFINE_UNQUOTED(XLIB_DIR, "`$PKG_CONFIG x11 --variable=prefix`/share", [X11 Library Directory])
 else
   AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
@@ -812,531 +782,97 @@ dnl *** Check for GTK+ Library ***
 dnl ******************************
 AC_ARG_WITH(gtk2,
   AC_HELP_STRING([--without-gtk2],
-                 [don't build against GTK+2]),
-  [
-    case $with_gtk2 in
-      no)
-        use_gtk2="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0 gdk-x11-2.0, use_gtk2="yes",use_gtk2="no")
-        PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0 gdk-x11-2.0, use_gtk2_4="yes",use_gtk2_4="no")
-      ;;
-    esac
-  ],
-  [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0 gdk-x11-2.0, use_gtk2="yes",use_gtk2="no")
-    PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0 gdk-x11-2.0, use_gtk2_4="yes",use_gtk2_4="no") ])
-
-AC_ARG_ENABLE(gnome-applet,
-  AC_HELP_STRING([--disable-gnome-applet],
-                 [disable uim applet for GNOME panel]),
-  [
-    case $enable_gnome_applet in
-      no)
-        use_applet_gnome="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
-        PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
-      ;;
-    esac
-  ],
-  [
-    PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
-    PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
-  ])
-
-if test x"$panelapplet_have_set_background_api" = xyes; then
-  AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
-fi
-
-
-dnl *******************************
-dnl *** Check for GTK+3 Library ***
-dnl *******************************
-AC_ARG_WITH(gtk3,
-  AC_HELP_STRING([--with-gtk3],
-                 [build GTK+3 immodule and helper applications
-                  @<:@default=yes@:>@]),
-  [
-    case $with_gtk3 in
-      no)
-        use_gtk3="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(GTK3, gtk+-3.0, use_gtk3="yes",use_gtk3="no")
-      ;;
-    esac
-  ],
-  [ 
-    PKG_CHECK_MODULES(GTK3, gtk+-3.0, use_gtk3="yes",use_gtk3="no")
-  ])
-
-AC_ARG_ENABLE(gnome3-applet,
-  AC_HELP_STRING([--enable-gnome3-applet],
-                 [enable uim applet for GNOME3 panel
-            @<:@default=yes@:>@]),
-  [
-    case $enable_gnome3_applet in
-      no)
-        use_applet_gnome3="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-4.0, use_applet_gnome3="yes",use_applet_gnome3="no")
-      ;;
-    esac
-  ],
-  [
-    PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-4.0, use_applet_gnome3="yes",use_applet_gnome3="no")
-  ])
-
-dnl ****************************
-dnl *** Check for Qt Library ***
-dnl ****************************
-AC_ARG_WITH(qt,
-  AC_HELP_STRING([--with-qt],
-                 [build qt helper applications
-		  @<:@default=no@:>@]),
-  [
-    case $with_qt in
-      no)
-        use_qt="no"
-      ;;
-      yes|*)
-        use_qt="yes"
-      ;;
-    esac
-  ],
-  [
-    use_qt="no"
-  ])
-
-AC_ARG_WITH(qt-immodule,
-  AC_HELP_STRING([--with-qt-immodule],
-                 [Build qt-immodule extension
-		  @<:@default=no@:>@]),
-  [
-    case $with_qtimmodule in
-      no)
-        use_qtimmodule="no"
-      ;;
-      yes|*)
-        use_qtimmodule="yes"
-      ;;
-    esac
-
-  ],
-  [
-    use_qtimmodule="no"
-  ])
-
-dnl *****************************
-dnl *** Check for Qt4 Library ***
-dnl *****************************
-AC_ARG_WITH(qt4,
-  AC_HELP_STRING([--with-qt4],
-                 [build qt4 helper applications
-		  @<:@default=no@:>@]),
-  [
-    case $with_qt4 in
-      no)
-        use_qt4="no"
-      ;;
-      yes|*)
-        use_qt4="yes"
-      ;;
-    esac
-  ],
-  [
-    use_qt4="no"
-  ])
-
-
-AC_ARG_WITH(qt4-immodule,
-  AC_HELP_STRING([--with-qt4-immodule],
-                 [Build qt4-immodule extension
-		  @<:@default=no@:>@]),
-  [
-    case $with_qt4_immodule in
-      no)
-        use_qt4_immodule="no"
-      ;;
-      yes|*)
-        use_qt4_immodule="yes"
-      ;;
-    esac
-
-  ],
-  [
-    use_qt4_immodule="no"
-  ])
-if test x$use_qt4 = xyes || test x$use_qt4_immodule = xyes; then
-    if test -z "$QMAKE4"; then
-        AC_MSG_ERROR([no qmake for Qt4 found])
-    fi
-fi
-
-dnl *****************************************
-dnl *** test for Qt3Support module in Qt4 ***
-dnl *****************************************
-AC_ARG_ENABLE(qt4-qt3support,
-  AC_HELP_STRING([--enable-qt4-qt3support],
-        [enable support for Qt3Support module in Qt4 
-            @<:@default=yes@:>@]),
-        enable_qt4_qt3support=$enableval,
-        enable_qt4_qt3support=yes)
-case "$enable_qt4_qt3support" in
-  no)
-    use_qt4_qt3support="no"
-    ;;
-  yes|*)
-    if test "x$use_qt4_immodule" = "xyes"; then
-        if test -f `${QMAKE4} -query QT_INSTALL_LIBS`/libQt3Support.so; then
-            use_qt4_qt3support="yes"
-        else
-            use_qt4_qt3support="no"
-            AC_MSG_WARN([No Qt3Support found])
-        fi
-    else
-        use_qt4_qt3support="no"
-    fi
-    ;;
-esac
-
-dnl *****************************
-dnl *** Check for Qt5 Library ***
-dnl *****************************
-AC_ARG_WITH(qt5,
-  AC_HELP_STRING([--with-qt5],
-                 [build qt5 helper applications
-		  @<:@default=no@:>@]),
-  [
-    case $with_qt5 in
-      no)
-        use_qt5="no"
-      ;;
-      yes|*)
-        use_qt5="yes"
-      ;;
-    esac
-  ],
-  [
-    use_qt5="no"
-  ])
-
-
-AC_ARG_WITH(qt5-immodule,
-  AC_HELP_STRING([--with-qt5-immodule],
-                 [Build qt5-immodule extension
-		  @<:@default=no@:>@]),
-  [
-    case $with_qt5_immodule in
-      no)
-        use_qt5_immodule="no"
-      ;;
-      yes|*)
-        use_qt5_immodule="yes"
-      ;;
-    esac
-
-  ],
-  [
-    use_qt5_immodule="no"
-  ])
-if test x$use_qt5 = xyes || test x$use_qt5_immodule = xyes; then
-    if test -z "$QMAKE5"; then
-        AC_MSG_ERROR([no qmake for Qt5 found])
-    fi
-fi
-
-default_toolkit="gtk"
-AC_ARG_ENABLE(default-toolkit,
-  AC_HELP_STRING([--enable-default-toolkit],
-                 [Determine default toolkit (gtk, gtk3, qt, qt4 or qt5)
-		  @<:@default=gtk@:>@]),
-  [
-  if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
-     default_toolkit="gtk"
-  fi
-  if test x"$enable_default_toolkit" = "xgtk3" && test x"$use_gtk3" = "xyes"; then
-     default_toolkit="gtk3"
-  fi
-  if test x"$enable_default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
-     default_toolkit="qt"
-  fi
-  if test x"$enable_default_toolkit" = "xqt4" && test x"$use_qt4" = "xyes"; then
-     default_toolkit="qt4"
-  fi
-  if test x"$enable_default_toolkit" = "xqt5" && test x"$use_qt5" = "xyes"; then
-     default_toolkit="qt5"
-  fi
-  ],
-  [])
-
-AC_ARG_ENABLE(debug,
-  AC_HELP_STRING([--enable-debug],
-                 [enable debugging @<:@default=no@:>@]),
+    [do not build against GTK+2]),
   [],
-  [
-    enable_debug="no"
-  ])
+  [with_gtk2=yes])
 
-AC_ARG_ENABLE(fep,
-  AC_HELP_STRING([--disable-fep],
-                 [disable uim-fep]),
-  [
-    case $enable_fep in
-      no)
-        use_uim_fep="no"
-      ;;
-      yes|*)
-        use_uim_fep="yes"
-	AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
-	  [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-	    AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);use_uim_fep="no")])
-	AC_CHECK_FUNCS(forkpty)
-	if test $ac_cv_func_forkpty = no; then
-	  AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
-	fi
-	AC_SUBST(FEP_LIBADD)
-      ;;
-    esac
-  ],
-  [ use_uim_fep="yes"
-    AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
-      [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
-        AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);use_uim_fep="no")])
-    AC_CHECK_FUNCS(forkpty)
-    if test $ac_cv_func_forkpty = no; then
-      AC_CHECK_LIB(util, forkpty, [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
-    fi
-    AC_SUBST(FEP_LIBADD)
-  ])
-
-AC_ARG_ENABLE(emacs,
-  AC_HELP_STRING([--disable-emacs],
-                 [disable uim.el]),
-  [
-    case $enable_emacs in
-      no)
-        use_uim_el="no"
-      ;;
-      yes|*)
-        use_uim_el="yes"
-        AM_PATH_LISPDIR
-        AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
-      ;;
-    esac
-  ],
-  [ use_uim_el="yes"
-    AM_PATH_LISPDIR
-    AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
-  ])
-
-AC_ARG_ENABLE(dict,
-  AC_HELP_STRING([--enable-dict],
-                 [build dictionary utility for uim (Anthy and Canna)
-		  @<:@default=no@:>@]),
-  [
-    case $enable_dict in
-      no)
-        use_dict="no"
-      ;;
-      yes|*)
-        PKG_CHECK_MODULES(DICT, gtk+-2.0 >= 2.4.0,
-            use_dict="yes", use_dict="no")
-        if test "x$use_dict" = "xno"; then
-            PKG_CHECK_MODULES(DICT, gtk+-3.0, use_dict="yes", use_dict="no")
-        fi
-        if test "x$use_dict" = "xno"; then
-           AC_MSG_WARN([dict needs GTK+ 2 (> 2.4) or GTK+ 3. dict disabled...])
-        fi
-
-      dnl Tests for -lcanna for dict
-      if test "x$use_dict" = "xyes"; then
-	      AC_CHECK_HEADERS([canna/RK.h],
-			       [AC_CHECK_LIB(canna, RkInitialize, use_dict_canna="yes", use_dict_canna="no")],
-			       [use_dict_canna="no"],
-			       [ #undef _WCHAR_T ])
-      else
-	      use_dict_canna="no"
-      fi
-
-      if test "x$use_dict_canna" = "xno" && \
-	 test "x$use_anthy" = "xno" && \
-	 test "x$use_anthy_utf8" = "xno"; then
-	 AC_MSG_WARN([no dictionary backend is usable.  disabled...])
-	 use_dict="no"
-      fi
-      ;;
-    esac
-  ],
-  [ use_dict="no" ])
-AM_CONDITIONAL(DICT_CANNA, test "x$use_dict_canna" = "xyes")
-
-dnl ****************************
-dnl *** Tests for EB Library ***
-dnl ****************************
-
-AC_ARG_WITH(eb,
-  AS_HELP_STRING([--with-eb],
-                 [Build with EB @<:@default=no@:>@]),
-  [
-  if test "x$with_eb" = "xyes"; then
-    eb_LIB_EB4()
-    use_eb="$try_eb"
-  else
-    use_eb="no"
-  fi
-  ],
-  [
-  use_eb="no"
-])
-if test "x$use_eb" = "xyes"; then
-  AC_DEFINE(HAVE_EBLIB, 1, [Define to 1 if you have EB library and header file])
+if test "x$with_gtk2" != xno; then
+  PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0 gdk-x11-2.0,
+                    with_gtk2=yes, with_gtk2=no)
+  PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0 gdk-x11-2.0,
+                    with_gtk2_4=yes, with_gtk2_4=no)
 fi
 
-dnl test for OS X
-AC_ARG_WITH(osx-dcs,
-  AS_HELP_STRING([--with-osx-dcs],
-		 [Build with OS X Dictionary Services @<:@default=no@:>@]),
-  [
-  if test "x$with_osx_dcs" = "xyes"; then
-    case $host_os in
-    darwin*)
-      use_osx_dcs="yes"
-      ;;
-    *)
-      use_osx_dcs="no"
-      ;;
-    esac
-  else
-    use_osx_dcs="no"
-  fi
-  ],
-   use_osx_dcs="no"
-)
-AM_CONDITIONAL(OSX_DCS, test x"$use_osx_dcs" = "xyes")
-
-# Check whether user wants libedit support
-# This code was based on openssh-4.1p1
-
-AC_ARG_WITH(libedit,
-AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
-				      @<:@default=yes@:>@]),
-  [
-   if test "x$with_libedit" != "xno"; then
-        use_libedit="yes"
-	if test "x$withval" = "xyes"; then
-		libedit_path=/usr
-	else
-		libedit_path="$withval"
-	fi
-   else
-        use_libedit="no"
-   fi
-  ],
-  [use_libedit="yes"])
-
-if test "x$use_libedit" != "xno"; then
-    saved_CPPFLAGS=$CPPFLAGS
-    saved_LDFLAGS=$LDFLAGS
-    CPPFLAGS="${CPPFLAGS} -I$libedit_path/include"
-    LDFLAGS="${LDFLAGS} -L$libedit_path/lib"
-    AC_CHECK_LIB(curses, tgetent, LIBEDIT_LIBS="-lcurses",
-        [AC_CHECK_LIB(ncurses, tgetent, LIBEDIT_LIBS="-lncurses",
-            AC_MSG_WARN("libedit needs libcurses or libncurses. disabled...")
-            use_libedit="no")])
-    if test "x$use_libedit" != "xno"; then
-        AC_CHECK_LIB(edit, el_init,
-            [LIBEDIT_LIBS="-ledit $LIBEDIT_LIBS -L$libedit_path/lib"
-                AC_SUBST(LIBEDIT_LIBS)],
-            [AC_MSG_WARN("libedit not found. Disabled...")
-                use_libedit="no"])
-    fi
-    CPPFLAGS=$saved_CPPFLAGS
-    LDFLAGS=$saved_LDFLAGS
-fi
-
-dnl for uim-dict.xml.in
-if test "x$use_anthy" = "xyes" || test "x$use_anthy_utf8" = "xyes"; then
-  UI_XML_ANTHY_START=""
-  UI_XML_ANTHY_END=""
-else
-  UI_XML_ANTHY_START="<!--"
-  UI_XML_ANTHY_END="-->"
-fi
-if test "x$use_dict_canna" = "xyes"; then
-  UI_XML_CANNA_START=""
-  UI_XML_CANNA_END=""
-else
-  UI_XML_CANNA_START="<!--"
-  UI_XML_CANNA_END="-->"
-fi
-AC_SUBST(UI_XML_ANTHY_START)
-AC_SUBST(UI_XML_ANTHY_END)
-AC_SUBST(UI_XML_CANNA_START)
-AC_SUBST(UI_XML_CANNA_END)
-
-
-AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
-AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
-AM_CONDITIONAL(ANTHY_UTF8, test x$use_anthy_utf8 = xyes)
-AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
-AM_CONDITIONAL(WNN, test x$use_wnn = xyes)
-AM_CONDITIONAL(MANA, test x$use_mana = xyes)
-AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
-AM_CONDITIONAL(SJ3, test x$use_sj3 = xyes)
-AM_CONDITIONAL(SKK, test x$use_skk = xyes)
-AM_CONDITIONAL(CURL, test x$use_curl = xyes)
-AM_CONDITIONAL(EXPAT, test x$expat_found = xyes)
-AM_CONDITIONAL(OPENSSL, test x$use_openssl = xyes)
-AM_CONDITIONAL(SQLITE3, test x$use_sqlite3 = xyes)
-AM_CONDITIONAL(FFI, test x$use_ffi = xyes)
-AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
-AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
-AM_CONDITIONAL(GTK3, test x$use_gtk3 = xyes)
-AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
-AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test x$default_toolkit = xgtk3)
-AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
-AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test x$default_toolkit = xqt4)
-AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test x$default_toolkit = xqt5)
-AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
-AM_CONDITIONAL(APPLET_GNOME3, test x$use_applet_gnome3 = xyes)
-AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
-AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
-AM_CONDITIONAL(XIM, test x$use_xim = xyes)
-AM_CONDITIONAL(DICT, test x$use_dict = xyes)
-AM_CONDITIONAL(EB, test x$use_eb = xyes)
-AM_CONDITIONAL(LIBEDIT, test x$use_libedit = xyes)
-AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
-AM_CONDITIONAL(LIBUIM_X_UTIL, test x$have_x = xyes)
-AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
-AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
-AM_CONDITIONAL(GCC, test x$ac_cv_c_compiler_gnu = xyes)
-AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
-
-IT_PROG_INTLTOOL([0.36.3], [no-xml])
+AM_CONDITIONAL(GTK2, test "x$with_gtk2" = xyes)
+AM_CONDITIONAL(GTK2_4, test "x$with_gtk2_4" = xyes)
 
 GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
 GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
 AC_SUBST(GTK_BINARY_VERSION)
 AC_SUBST(GTK_LIBDIR)
 
+if test "x$with_gtk2" = xyes; then
+  AC_DEFINE(USE_GTK2, 1, [use GTK+2])
+fi
+
+AC_ARG_ENABLE(gnome-applet,
+  AC_HELP_STRING([--disable-gnome-applet],
+    [disable uim applet for GNOME panel]),
+  [],
+  [enable_gnome_applet=yes])
+
+if test "x$enable_gnome_applet" != xno; then
+  PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0,
+                    enable_gnome_applet=yes, enable_gnome_applet=no)
+  PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0,
+                    panelapplet_have_set_background_api=yes,
+                    panelapplet_have_set_background_api=no)
+fi
+
+if test x"$panelapplet_have_set_background_api" = xyes; then
+  AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
+fi
+
+AM_CONDITIONAL(APPLET_GNOME, test "x$enable_gnome_applet" = xyes)
+
+
+dnl *******************************
+dnl *** Check for GTK+3 Library ***
+dnl *******************************
+AC_ARG_WITH(gtk3,
+  AC_HELP_STRING([--without-gtk3],
+    [do not build GTK+3 immodule and helper applications]),
+  [],
+  [with_gtk3=yes])
+
+if test "x$with_gtk3" != xno; then
+  PKG_CHECK_MODULES(GTK3, gtk+-3.0, with_gtk3=yes, with_gtk3=no)
+fi
+
+AM_CONDITIONAL(GTK3, test "x$with_gtk3" = xyes)
+
 GTK3_BINARY_VERSION=`$PKG_CONFIG gtk+-3.0 --variable=gtk_binary_version`
 GTK3_LIBDIR=`$PKG_CONFIG gtk+-3.0 --variable=libdir`
 AC_SUBST(GTK3_BINARY_VERSION)
 AC_SUBST(GTK3_LIBDIR)
 
-if test x$use_gtk2 = xyes ; then
-AC_DEFINE(USE_GTK2, 1, [use gtk+2])
+if test "x$with_gtk3" = xyes; then
+    AC_DEFINE(USE_GTK3, 1, [use GTK+3])
 fi
 
-if test x$use_gtk3 = xyes ; then
-    AC_DEFINE(USE_GTK3, 1, [use gtk+3])
+AC_ARG_ENABLE(gnome3-applet,
+  AC_HELP_STRING([--disable-gnome3-applet],
+    [disable uim applet for GNOME3 panel]),
+  [],
+  [enable_gnome3_applet=yes])
+
+if test "x$enable_gnome3_applet" != xno; then
+   PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-4.0,
+                     enable_gnome3_applet=yes, enable_gnome3_applet=no)
 fi
 
-if test x$use_qt = xyes ; then
+AM_CONDITIONAL(APPLET_GNOME3, test "x$enable_gnome3_applet" = xyes)
+
+dnl ****************************
+dnl *** Check for Qt Library ***
+dnl ****************************
+AC_ARG_WITH(qt,
+  AC_HELP_STRING([--with-qt],
+    [build Qt3 helper applications]),
+  [],
+  [with_qt=no])
+
+if test "x$with_qt" = xyes; then
     # minimum version
     QT_VERSION=3.2.0
     QT_VERSION_NUM=0x030200
@@ -1463,11 +999,11 @@ if test x$use_qt = xyes ; then
         #if (QT_VERSION < $QT_VERSION_NUM)
             #error  "QT_VERSION too old"
         #endif
-    ],result="yes",result="no")
+    ],result=yes,result=no)
 
     AC_MSG_RESULT("$result")
-    if test "$result" = "no"; then
-       use_qt="no"
+    if test "x$result" = xno; then
+       with_qt=no
        AC_MSG_WARN([Qt Helper requires at least version $QT_VERSION of Qt])
     fi
     CXXFLAGS=$_SAVE_CXXFLAGS
@@ -1485,8 +1021,8 @@ if test x$use_qt = xyes ; then
 fi
 
 AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
-if test "x$use_qt" = "xyes"; then
-    if test "x$KDE_CONFIG" != "xno"; then
+if test "x$with_qt" = xyes; then
+    if test "x$KDE_CONFIG" != xno; then
 	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
     fi
     if test -z "$KDE_ICONDIR"; then
@@ -1495,79 +1031,385 @@ if test "x$use_qt" = "xyes"; then
     AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
 fi
 
+AM_CONDITIONAL(QT, test "x$with_qt" = xyes)
+
+AC_ARG_WITH(qt-immodule,
+  AC_HELP_STRING([--with-qt-immodule],
+    [build Qt3-immodule extension]),
+  [],
+  [with_qt_immodule=no])
+
+if test "x$with_qt_immodule" = xyes; then
+  AC_MSG_CHECKING(for qt-immodule patch)
+  # Check for immodule for Qt patch
+  if test ! -f $QTINCDIR/qinputcontext.h \
+      || test ! -f $QTINCDIR/qinputcontextplugin.h; then
+    AC_MSG_RESULT(no)
+    with_qt_immodule=no
+  else
+    AC_MSG_RESULT(yes)
+  fi
+fi
+
+AM_CONDITIONAL(QT_IMMODULE, test "x$with_qt_immodule" = xyes)
+
+dnl *****************************
+dnl *** Check for Qt4 Library ***
+dnl *****************************
+AC_ARG_WITH(qt4,
+  AC_HELP_STRING([--with-qt4],
+    [build Qt4 helper applications]),
+  [],
+  [with_qt4=no])
+
+AM_CONDITIONAL(QT4, test "x$with_qt4" = xyes)
+
+AC_ARG_WITH(qt4-immodule,
+  AC_HELP_STRING([--with-qt4-immodule],
+    [build Qt4-immodule extension]),
+  [],
+  [with_qt4_immodule=no])
+
+AM_CONDITIONAL(QT4_IMMODULE, test "x$with_qt4_immodule" = xyes)
+
+if test "x$with_qt4" = xyes || test "x$with_qt4_immodule" = xyes; then
+  if test -z "$QMAKE4"; then
+    AC_MSG_ERROR([no qmake for Qt4 found])
+  fi
+fi
+
+dnl *****************************************
+dnl *** test for Qt3Support module in Qt4 ***
+dnl *****************************************
+AC_ARG_ENABLE(qt4-qt3support,
+  AC_HELP_STRING([--disable-qt4-qt3support],
+    [disable support for Qt3Support module in Qt4]),
+  [],
+  [enable_qt4_qt3support=yes])
+
+if test "x$enable_qt4_qt3support" != xno; then
+  if test "x$with_qt4_immodule" = xyes; then
+    if test -f `${QMAKE4} -query QT_INSTALL_LIBS`/libQt3Support.so; then
+      enable_qt4_qt3support=yes
+    else
+      enable_qt4_qt3support=no
+      AC_MSG_WARN([No Qt3Support found])
+    fi
+  else
+      enable_qt4_qt3support=no
+  fi
+fi
+
+dnl *****************************
+dnl *** Check for Qt5 Library ***
+dnl *****************************
+AC_ARG_WITH(qt5,
+  AC_HELP_STRING([--with-qt5],
+    [build Qt5 helper applications]),
+  [],
+  [with_qt5=no])
+
+AM_CONDITIONAL(QT5, test "x$with_qt5" = xyes)
+
+AC_ARG_WITH(qt5-immodule,
+  AC_HELP_STRING([--with-qt5-immodule],
+    [build Qt5-immodule extension]),
+  [],
+  [with_qt5_immodule=no])
+
+if test "x$with_qt5" = xyes || test "x$with_qt5_immodule" = xyes; then
+    if test -z "$QMAKE5"; then
+        AC_MSG_ERROR([no qmake for Qt5 found])
+    fi
+fi
+
+AM_CONDITIONAL(QT5_IMMODULE, test "x$with_qt5_immodule" = xyes)
+
+AC_ARG_ENABLE(default-toolkit,
+  AC_HELP_STRING([--enable-default-toolkit],
+    [Determine default toolkit (gtk, gtk3, qt, qt4 or qt5) @<:@default=gtk@:>@]),
+  [],
+  [enable_default_toolkit=no])
+
+default_toolkit=gtk
+if test "x$enable_default_toolkit" != xno; then
+  if test "x$enable_default_toolkit" = xgtk && \
+     test "x$with_gtk2" = xyes; then
+    default_toolkit=gtk
+  elif test "x$enable_default_toolkit" = xgtk3 && \
+       test "x$with_gtk3" = xyes; then
+    default_toolkit=gtk3
+  elif test "x$enable_default_toolkit" = xqt && \
+       test "x$with_qt" = xyes; then
+    default_toolkit=qt
+  elif test "x$enable_default_toolkit" = xqt4 && \
+       test "x$with_qt4" = xyes; then
+    default_toolkit=qt4
+  elif test "x$enable_default_toolkit" = xqt5 && \
+       test "x$with_qt5" = xyes; then
+    default_toolkit=qt5
+  fi
+fi
+
+AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test "x$default_toolkit" = xgtk)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test "x$default_toolkit" = xqt5)
+
+AC_ARG_ENABLE(debug,
+  AC_HELP_STRING([--enable-debug],
+    [enable debugging]),
+  [],
+  [enable_debug=no])
+
+AM_CONDITIONAL(DEBUG, test "x$enable_debug" = xyes)
+
+AC_ARG_ENABLE(fep,
+  AC_HELP_STRING([--disable-fep],
+    [disable uim-fep]),
+  [],
+  [enable_fep=yes])
+
+if test "x$enable_fep" != xno; then
+  enable_fep=yes
+  AC_CHECK_LIB(curses, setupterm, FEP_LIBADD="-lcurses $FEP_LIBADD",
+    [AC_CHECK_LIB(ncurses, setupterm, FEP_LIBADD="-lncurses $FEP_LIBADD",
+      AC_MSG_WARN([fep needs setupterm in libcurses or libncurses. disabled...]);enable_fep=no)])
+  AC_CHECK_FUNCS(forkpty)
+  if test "x$ac_cv_func_forkpty" = xno; then
+    AC_CHECK_LIB(util, forkpty,
+      [AC_DEFINE(HAVE_FORKPTY) FEP_LIBADD="-lutil $FEP_LIBADD"])
+  fi
+  AC_SUBST(FEP_LIBADD)
+fi
+
+AM_CONDITIONAL(UIM_FEP, test "x$enable_fep" = xyes)
+
+AC_ARG_ENABLE(emacs,
+  AC_HELP_STRING([--disable-emacs],
+    [disable uim.el]),
+  [],
+  [enable_emacs=yes])
+
+if test "x$enable_emacs" != xno; then
+  AM_PATH_LISPDIR
+  AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
+fi
+
+AM_CONDITIONAL(UIM_EL, test "x$enable_emacs" = xyes)
+
+AC_ARG_ENABLE(dict,
+  AC_HELP_STRING([--enable-dict],
+    [build dictionary utility for uim (Anthy and Canna)]),
+  [],
+  [enable_dict=no])
+
+if test "x$enable_dict" != xno; then
+  PKG_CHECK_MODULES(DICT, gtk+-2.0 >= 2.4.0,
+    enable_dict=yes, enable_dict=no)
+
+  if test "x$enable_dict" = xno; then
+    PKG_CHECK_MODULES(DICT, gtk+-3.0, enable_dict=yes, enable_dict=no)
+  fi
+
+  if test "x$enable_dict" = xno; then
+     AC_MSG_WARN([dict needs GTK+ 2 (> 2.4) or GTK+ 3. dict disabled...])
+  fi
+
+  dnl Tests for -lcanna for dict
+  if test "x$enable_dict" = xyes; then
+    AC_CHECK_HEADERS([canna/RK.h],
+      [AC_CHECK_LIB(canna, RkInitialize,
+        enable_dict_canna=yes, enable_dict_canna=no)],
+      [enable_dict_canna=no],
+      [ #undef _WCHAR_T ])
+  else
+    enable_dict_canna=no
+  fi
+
+  if test "x$enable_dict_canna" = xno && \
+      test "x$with_anthy" = xno && \
+      test "x$with_anthy_utf8" = xno; then
+    AC_MSG_WARN([no dictionary backend is usable.  disabled...])
+    enable_dict=no
+  fi
+fi
+
+AM_CONDITIONAL(DICT, test "x$enable_dict" = xyes)
+AM_CONDITIONAL(DICT_CANNA, test "x$enable_dict_canna" = xyes)
+
+if test "x$enable_dict_canna" = xyes; then
+  UI_XML_CANNA_START=""
+  UI_XML_CANNA_END=""
+else
+  UI_XML_CANNA_START="<!--"
+  UI_XML_CANNA_END="-->"
+fi
+AC_SUBST(UI_XML_CANNA_START)
+AC_SUBST(UI_XML_CANNA_END)
+
+dnl ****************************
+dnl *** Tests for EB Library ***
+dnl ****************************
+
+AC_ARG_WITH(eb,
+  AS_HELP_STRING([--with-eb],
+    [build with EB]),
+  [],
+  [with_eb=no])
+
+if test "x$with_eb" = xyes; then
+  eb_LIB_EB4()
+  with_eb=$try_eb
+fi
+
+if test "x$with_eb" = xyes; then
+  AC_DEFINE(HAVE_EBLIB, 1,
+    [Define to 1 if you have EB library and header file])
+fi
+
+AM_CONDITIONAL(EB, test "x$with_eb" = xyes)
+
+dnl test for OS X
+AC_ARG_WITH(osx-dcs,
+  AS_HELP_STRING([--with-osx-dcs],
+    [build with OS X Dictionary Services]),
+  [],
+  [with_osx_dcs=no])
+
+if test "x$with_osx_dcs" = xyes; then
+  case $host_os in
+  darwin*)
+    with_osx_dcs=yes
+    ;;
+  *)
+    with_osx_dcs=no
+    ;;
+  esac
+fi
+
+AM_CONDITIONAL(OSX_DCS, test "x$with_osx_dcs" = xyes)
+
+# Check whether user wants libedit support
+# This code was based on openssh-4.1p1
+
+AC_ARG_WITH(libedit,
+  AC_HELP_STRING([--with-libedit[=DIR]],
+    [enable libedit support @<:@default=yes@:>@]),
+  [],
+  [with_libedit=yes])
+
+if test "x$with_libedit" != xno; then
+  if test "x$with_libedit" = xyes; then
+    libedit_path=/usr
+  else
+    with_libedit=yes
+    libedit_path="$with_libedit"
+  fi
+
+  saved_CPPFLAGS=$CPPFLAGS
+  saved_LDFLAGS=$LDFLAGS
+  CPPFLAGS="${CPPFLAGS} -I$libedit_path/include"
+  LDFLAGS="${LDFLAGS} -L$libedit_path/lib"
+  AC_CHECK_LIB(curses, tgetent, LIBEDIT_LIBS="-lcurses",
+    [AC_CHECK_LIB(ncurses, tgetent, LIBEDIT_LIBS="-lncurses",
+      AC_MSG_WARN("libedit needs libcurses or libncurses. disabled...")
+        with_libedit=no)])
+
+  if test "x$with_libedit" != xno; then
+      AC_CHECK_LIB(edit, el_init,
+        [LIBEDIT_LIBS="-ledit $LIBEDIT_LIBS -L$libedit_path/lib"
+          AC_SUBST(LIBEDIT_LIBS)],
+        [AC_MSG_WARN("libedit not found. Disabled...")
+          with_libedit=no])
+  fi
+  CPPFLAGS=$saved_CPPFLAGS
+  LDFLAGS=$saved_LDFLAGS
+fi
+
+AM_CONDITIONAL(LIBEDIT, test "x$with_libedit" != xno)
+
+AM_CONDITIONAL(LIBUIM_X_UTIL, test "x$have_x" = xyes)
+AM_CONDITIONAL(NEED_SETENV_C,
+              test "x$ac_cv_func_setenv" = xno -o "x$ac_cv_func_unsetenv" = xno)
+AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
+AM_CONDITIONAL(GCC, test "x$ac_cv_c_compiler_gnu" = xyes)
+AM_CONDITIONAL(GXX, test "x$ac_cv_cxx_compiler_gnu" = xyes)
+
+IT_PROG_INTLTOOL([0.36.3], [no-xml])
+
+
+
 dnl **********************************
 dnl *** test for KDE3 applet.. XXX ***
 dnl **********************************
 AC_ARG_ENABLE(kde-applet,
-  AC_HELP_STRING([--enable-kde-applet],
-  		 [build uim applet for KDE panel
-		  @<:@default=yes@:>@]),
-		 enable_kde_applet=$enableval,
-		 enable_kde_applet=yes)
-case "$enable_kde_applet" in
-  no)
-    use_applet_kde="no"
-    ;;
-  yes|*)
-    if test "x$use_qt" = "xyes"; then
-      if test "x$KDE_CONFIG" != "xno"; then
-	KDE_PREFIX=`kde-config --prefix`
-	KDE_LIB_DIR=`kde-config --expandvars --install lib`
-	KDE_DATA_DIR=`kde-config --expandvars --install data`
-	saved_cppflags="${CPPFLAGS}"
-	CPPFLAGS="-I${KDE_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
-	AC_LANG_PUSH(C++)
-	AC_CHECK_HEADER([${KDE_PREFIX}/include/kde/kpanelapplet.h],
-			[use_applet_kde="yes" KDE_INCLUDE_DIR="${KDE_PREFIX}/include/kde"], [use_applet_kde="no"])
-	if test "x$use_applet_kde" = "xno"; then
-	  CPPFLAGS="-I${KDE_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
-	  AC_CHECK_HEADER([${KDE_PREFIX}/include/kglobal.h],
-	  		  [use_applet_kde="yes" KDE_INCLUDE_DIR="${KDE_PREFIX}/include"], [use_applet_kde="no"])
-	fi
-	CPPFLAGS="${saved_cppflags}"
-	AC_LANG_POP(C++)
-      else
-	use_applet_kde="no"
+  AC_HELP_STRING([--disable-kde-applet],
+    [do not build uim applet for KDE3 panel]),
+  [],
+  [enable_kde_applet=yes])
+
+if test "x$enable_kde_applet" != xno; then
+  if test "x$with_qt" = xyes; then
+    if test "x$KDE_CONFIG" != xno; then
+      KDE_PREFIX=`kde-config --prefix`
+      KDE_LIB_DIR=`kde-config --expandvars --install lib`
+      KDE_DATA_DIR=`kde-config --expandvars --install data`
+
+      saved_cppflags="${CPPFLAGS}"
+      CPPFLAGS="-I${KDE_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
+      AC_LANG_PUSH(C++)
+      AC_CHECK_HEADER([${KDE_PREFIX}/include/kde/kpanelapplet.h],
+        [enable_kde_applet=yes KDE_INCLUDE_DIR="${KDE_PREFIX}/include/kde"],
+        [enable_kde_applet=no])
+      if test "x$enable_kde_applet" = xno; then
+        CPPFLAGS="-I${KDE_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
+        AC_CHECK_HEADER([${KDE_PREFIX}/include/kglobal.h],
+          [enable_kde_applet=yes KDE_INCLUDE_DIR="${KDE_PREFIX}/include"],
+          [enable_kde_applet=no])
       fi
+      CPPFLAGS="${saved_cppflags}"
+      AC_LANG_POP(C++)
     else
-      use_applet_kde="no"
+      enable_kde_applet=no
     fi
-    ;;
-esac
+  else
+    enable_kde_applet=no
+  fi
+fi
+
 AC_SUBST(KDE_PREFIX)
 AC_SUBST(KDE_LIB_DIR)
 AC_SUBST(KDE_DATA_DIR)
 AC_SUBST(KDE_INCLUDE_DIR)
 
+AM_CONDITIONAL(APPLET_KDE, test "x$enable_kde_applet" = xyes)
+
 dnl ****************************
 dnl *** test for KDE4 applet ***
 dnl ****************************
 AC_ARG_ENABLE(kde4-applet,
-  AC_HELP_STRING([--enable-kde4-applet],
-        [build uim applet for KDE4 panel (experimental)
-            @<:@default=no@:>@]),
-        enable_kde4_applet=$enableval,
-        enable_kde4_applet=no)
-case "$enable_kde4_applet" in
-  no)
-    use_applet_kde4="no"
-    ;;
-  yes|*)
-    if test "x$use_qt4" = "xyes"; then
-        use_applet_kde4="yes"
-    else
-        use_applet_kde4="no"
-    fi
-    ;;
-esac
-AC_PATH_PROG(CMAKE, [cmake], [no])
-if test "x$use_applet_kde4" = "xyes" && test "x$CMAKE" = "xno"; then
-    AC_MSG_WARN([no CMake found])
-    use_applet_kde4="no"
+  AC_HELP_STRING([--disable-kde4-applet],
+    [do not build uim KDE4 Plasma widget]),
+  [],
+  [enable_kde4_applet=yes])
+
+if test "x$enable_kde4_applet" != xno; then
+  if test "x$with_qt4" != xyes; then
+    enable_kde4_applet=no
+  fi
 fi
+
+AC_PATH_PROG(CMAKE, [cmake], [no])
+if test "x$enable_kde4_applet" = xyes && test "x$CMAKE" = xno; then
+    AC_MSG_WARN([no CMake found])
+    enable_kde4_applet=no
+fi
+
 AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
-if test "x$use_qt4" = "xyes" || test "x$use_qt5" = "xyes"; then
-    if test "x$KDE4_CONFIG" != "xno"; then
+if test "x$with_qt4" = xyes || test "x$with_qt5" = xyes; then
+    if test "x$KDE4_CONFIG" != xno; then
         KDE4_ICONDIR=`$KDE4_CONFIG --expandvars --install icon`
     fi
     if test -z "$KDE4_ICONDIR"; then
@@ -1575,121 +1417,60 @@ if test "x$use_qt4" = "xyes" || test "x$use_qt5" = "xyes"; then
     fi
     AC_DEFINE_UNQUOTED(KDE4_ICONDIR, "$KDE4_ICONDIR", [kde4 icon directory])
 fi
-if test "x$use_applet_kde4" = "xyes" && test "x$KDE4_CONFIG" = "xno"; then
+
+if test "x$enable_kde4_applet" = xyes && test "x$KDE4_CONFIG" = xno; then
     AC_MSG_WARN([no kde4-config found])
-    use_applet_kde4="no"
+    enable_kde4_applet=no
 fi
 
-if test x$use_qtimmodule = xyes ; then
-    AC_MSG_CHECKING(for qt-immodule patch)
-    # Check for immodule for Qt patch
-    if test ! -f $QTINCDIR/qinputcontext.h  || test ! -f $QTINCDIR/qinputcontextplugin.h; then
-      AC_MSG_RESULT(no)
-      use_qtimmodule="cannot"
-    else
-      AC_MSG_RESULT(yes)
-    fi
-fi
-
-
-AM_CONDITIONAL(QT, test x$use_qt = xyes)
-AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
-AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
-AM_CONDITIONAL(QT4, test x$use_qt4 = xyes)
-AM_CONDITIONAL(QT4_IMMODULE, test x$use_qt4_immodule = xyes)
-AM_CONDITIONAL(APPLET_KDE4, test x$use_applet_kde4 = xyes)
-AM_CONDITIONAL(QT5, test x$use_qt5 = xyes)
-AM_CONDITIONAL(QT5_IMMODULE, test x$use_qt5_immodule = xyes)
+AM_CONDITIONAL(APPLET_KDE4, test "x$enable_kde4_applet" = xyes)
 
 AC_ARG_ENABLE(pref,
-  AC_HELP_STRING([--enable-pref],
-		 [build graphical utility to edit user settings
-		  @<:@default=yes@:>@]),
-[
-    case $enable_pref in
-      no)
-        use_pref="no"
-	;;
-      yes|*)
-	if test x"$default_toolkit" = "xgtk" && \
-	   test x"$use_gtk2_4" = "xyes"; then
-	  use_pref="yes"
-	elif test x"$default_toolkit" = "xgtk3" && \
-	     test x"$use_gtk3" = "xyes"; then
-	  use_pref="yes"
-	elif test x"$default_toolkit" = "xqt" && \
-	     test x"$use_qt" = "xyes"; then
-	  use_pref="yes"
-	elif test x"$default_toolkit" = "xqt4" && \
-	     test x"$use_qt4" = "xyes"; then
-	  use_pref="yes"
-	elif test x"$default_toolkit" = "xqt5" && \
-	     test x"$use_qt5" = "xyes"; then
-	  use_pref="yes"
-	else
-	  use_pref="no"
-	  AC_MSG_WARN([uim-pref needs GTK+ or Qt toolkit, disabled...])
-	fi
-	;;
-    esac ],
-  [
-    if test x"$default_toolkit" = "xgtk" && \
-       test x"$use_gtk2_4" = "xyes"; then
-      use_pref="yes"
-    elif test x"$default_toolkit" = "xgtk3" && \
-         test x"$use_gtk3" = "xyes"; then
-      use_pref="yes"
-    elif test x"$default_toolkit" = "xqt" && \
-         test x"$use_qt" = "xyes"; then
-      use_pref="yes"
-    elif test x"$default_toolkit" = "xqt4" && \
-         test x"$use_qt4" = "xyes"; then
-      use_pref="yes"
-    elif test x"$default_toolkit" = "xqt5" && \
-         test x"$use_qt5" = "xyes"; then
-      use_pref="yes"
-    else
-      use_pref="no"
-      AC_MSG_WARN([uim pref needs GTK+ or Qt toolkit, disabled...])
-    fi
-  ])
-AM_CONDITIONAL(PREF, test x"$use_pref" = "xyes")
+  AC_HELP_STRING([--disable-pref],
+    [do not build graphical utility to edit user settings]),
+  [],
+  [enable_pref=yes])
+
+if test "x$enable_pref" != xno; then
+  if test x"$default_toolkit" = xgtk && \
+     test x"$with_gtk2_4" = xyes; then
+    enable_pref=yes
+  elif test x"$default_toolkit" = xgtk3 && \
+       test x"$with_gtk3" = xyes; then
+    enable_pref=yes
+  elif test x"$default_toolkit" = xqt && \
+       test x"$with_qt" = xyes; then
+    enable_pref=yes
+  elif test x"$default_toolkit" = xqt4 && \
+       test x"$with_qt4" = xyes; then
+    enable_pref=yes
+  elif test x"$default_toolkit" = xqt5 && \
+       test x"$with_qt5" = xyes; then
+    enable_pref=yes
+  else
+    enable_pref=no
+    AC_MSG_WARN([uim-pref needs GTK+ or Qt toolkit, disabled...])
+  fi
+fi
+
+AM_CONDITIONAL(PREF, test x"$enable_pref" = xyes)
 
 AC_ARG_ENABLE(anthy-static,
-    AC_HELP_STRING([--enable-anthy-static],
-		   [@<:@default=no@:>@]),
-    [
-        case $enable_anthy_static in
-	yes)
-	    build_anthy_static="yes"
-	    ;;
-	no|*)
-	    build_anthy_static="no"
-	    ;;
-	esac
-    ], [
-	    build_anthy_static="no"
-    ])
+  AC_HELP_STRING([--enable-anthy-static],
+    [enable static Anthy]),
+  [],
+  [enable_anthy_static=no])
 
-AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test x$build_anthy_static = xyes)
+AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test "x$enable_anthy_static" = xyes)
 
 AC_ARG_ENABLE(anthy-utf8-static,
-    AC_HELP_STRING([--enable-anthy-utf8-static],
-		   [@<:@default=no@:>@]),
-    [
-        case $enable_anthy_utf8_static in
-	yes)
-	    build_anthy_utf8_static="yes"
-	    ;;
-	no|*)
-	    build_anthy_utf8_static="no"
-	    ;;
-	esac
-    ], [
-	    build_anthy_utf8_static="no"
-    ])
+  AC_HELP_STRING([--enable-anthy-utf8-static],
+    [enable static Anthy-UTF8]),
+  [],
+  [enable_anthy_utf8_static=no])
 
-AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
+AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC,
+               test "x$enable_anthy_utf8_static" = xyes)
 
 # ****************************
 # *** Tests for uim-notify ***
@@ -1698,17 +1479,16 @@ notify_targets='stderr libnotify knotify3 knotify4 growl'
 
 AC_ARG_ENABLE(notify,
   AS_HELP_STRING([--enable-notify@<:@=agent-list@:>@ (HIGHLY EXPERIMENTAL)],
-                 [enable system message notification for users
-		  (specify comma separated notification agent list
-		  from stderr, libnotify, knotify3, knotify4 and growl)]),
-  [ enable_notify=$enableval
-    have_notify_opt=yes ],
-  [ enable_notify=yes
-    have_notify_opt=no ])
+    [enable system message notification for users
+     (specify comma separated notification agent list from
+      stderr, libnotify, knotify3, knotify4 and growl)]),
+  [],
+  [enable_notify=yes])
 
 if test "x$enable_notify" != xno; then
-  AC_DEFINE(UIM_USE_NOTIFY_PLUGINS, 1, [Define to 1 if you want to use uim-notify plugins])
-  use_notify="${use_notify}stderr "
+  AC_DEFINE(UIM_USE_NOTIFY_PLUGINS, 1,
+            [Define to 1 if you want to use uim-notify plugins])
+  use_notify="stderr "
 
   for i in `echo $enable_notify | ${SED} 's/,/ /g'`; do
     eval "au_enable_$i=yes"
@@ -1718,9 +1498,9 @@ fi
 AC_MSG_CHECKING([whether libnotify is requested])
 if test "x$au_enable_libnotify" = xyes; then
   AC_MSG_RESULT([yes])
-  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4, use_libnotify="yes",
-					       use_libnotify="no")
-  if test "x$use_libnotify" = "xyes"; then
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4,
+                    use_libnotify=yes, use_libnotify=no)
+  if test "x$use_libnotify" = xyes; then
     AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
     AC_SUBST(LIBNOTIFY_LIBS)
     AC_SUBST(LIBNOTIFY_CFLAGS)
@@ -1733,11 +1513,11 @@ fi
 AC_MSG_CHECKING([whether knotify3 is requested])
 if test "x$au_enable_knotify3" = xyes; then
   AC_MSG_RESULT([yes])
-  if test "x$use_qt4_immodule" = "xyes"; then
-    AC_MSG_WARN([knotify3 couldn't be used with qt4-immodule enabled])
-    use_knotify3="no"
-  elif test "x$use_qt" = "xyes"; then
-    if test "x$KDE_CONFIG" != "xno"; then
+  if test "x$with_qt4_immodule" = xyes; then
+    AC_MSG_WARN([knotify3 could not be used with qt4-immodule enabled])
+    use_knotify3=no
+  elif test "x$with_qt" = xyes; then
+    if test "x$KDE_CONFIG" != xno; then
       KNOTIFY3_PREFIX=`kde-config --prefix`
       KNOTIFY3_LIB_DIR=`kde-config --expandvars --install lib`
       KNOTIFY3_DATA_DIR=`kde-config --expandvars --install data`
@@ -1745,24 +1525,25 @@ if test "x$au_enable_knotify3" = xyes; then
       CPPFLAGS="-I${KNOTIFY3_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
       AC_LANG_PUSH(C++)
       AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/kde/knotifyclient.h],
-                      [use_knotify3="yes" KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include/kde"], [use_knotify3="no"])
-      if test "x$use_knotify3" = "xno"; then
+                      [use_knotify3=yes KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include/kde"], [use_knotify3=no])
+      if test "x$use_knotify3" = xno; then
         CPPFLAGS="-I${KNOTIFY3_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
         AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/knotifyclient.h],
-                        [use_knotify3="yes" KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include"], [use_knotify3="no"])
+                        [use_knotify3=yes KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include"], [use_knotify3=no])
       fi
       CPPFLAGS="${saved_cppflags}"
       AC_LANG_POP(C++)
     else
-      use_knotify3="no"
+      use_knotify3=no
     fi
   else
-    use_knotify3="no"
+    use_knotify3=no
   fi
 else
   AC_MSG_RESULT(no)
 fi
-if test "x$use_knotify3" = "xyes"; then
+
+if test "x$use_knotify3" = xyes; then
   AC_DEFINE(ENABLE_KNOTIFY3, 1, [set notify interface with knotify3])
   AC_SUBST(KNOTIFY3_PREFIX)
   AC_SUBST(KNOTIFY3_LIB_DIR)
@@ -1773,13 +1554,13 @@ fi
 
 AC_MSG_CHECKING([whether knotify4 is requested])
 if test "x$au_enable_knotify4" = xyes; then
-  if test "x$CMAKE" != "xno"; then
+  if test "x$CMAKE" != xno; then
     AC_MSG_RESULT([yes])
-    use_knotify4="yes"
+    use_knotify4=yes
     use_notify="${use_notify}knotify4 "
   else
     AC_MSG_WARN([no CMake found])
-    use_knotify4="no"
+    use_knotify4=no
   fi
 else
   AC_MSG_RESULT(no)
@@ -1788,21 +1569,21 @@ fi
 AC_MSG_CHECKING([whether growl is requested])
 if test "x$au_enable_growl" = xyes; then
   AC_MSG_RESULT([yes])
-  use_growl="yes"
+  use_growl=yes
   use_notify="${use_notify}growl "
 else
   AC_MSG_RESULT(no)
 fi
 
-if test "x$use_notify" = "x"; then
+if test "x$use_notify" = x; then
   use_notify=none
 fi
 
 AM_CONDITIONAL(NOTIFY, test "x$enable_notify" != xno)
-AM_CONDITIONAL(LIBNOTIFY, test x$use_libnotify = xyes)
-AM_CONDITIONAL(KNOTIFY3, test x$use_knotify3 = xyes)
-AM_CONDITIONAL(KNOTIFY4, test x$use_knotify4 = xyes)
-AM_CONDITIONAL(GROWL, test x$use_growl = xyes)
+AM_CONDITIONAL(LIBNOTIFY, test "x$use_libnotify" = xyes)
+AM_CONDITIONAL(KNOTIFY3, test "x$use_knotify3" = xyes)
+AM_CONDITIONAL(KNOTIFY4, test "x$use_knotify4" = xyes)
+AM_CONDITIONAL(GROWL, test "x$use_growl" = xyes)
 
 
 AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based error handlings])
@@ -1848,8 +1629,8 @@ else
 fi
 
 AC_ARG_ENABLE(warnings-into-error,
-    AC_HELP_STRING([--enable-warnings-into-error],
-		   [Treat compiler warnings as error @<:@default=no if !debug@:>@]),
+  AC_HELP_STRING([--enable-warnings-into-error],
+    [Treat compiler warnings as error @<:@default=no if !debug@:>@]),
     [
         case $enable_warnings_into_error in
 	no)
@@ -1863,7 +1644,7 @@ AC_ARG_ENABLE(warnings-into-error,
 	    # Enable -Werror by default if --enable-debug. But since
 	    # the C89 string length limit always cause the warnings, I
 	    # disable it for uim-scm.c.  -- YamaKen 2007-07-19
-	    if test x$enable_debug = xyes; then
+	    if test "x$enable_debug" = xyes; then
 	      AX_CFLAGS_GCC_OPTION([-Werror])
 	      AX_CXXFLAGS_GCC_OPTION([-Werror])
   	      AX_CFLAGS_GCC_OPTION([-Wno-error], [UIM_SCM_CFLAGS])
@@ -1910,19 +1691,19 @@ if test -n "$GOSH" && test -n "$GAUCHE_CONFIG"; then
            test "$gaunit_major_version" -eq 0 -a \
                 "$gaunit_minor_version" -eq 1 -a \
                 "$gaunit_micro_version" -ge 6; then
-          have_gosh_and_gaunit="yes"
+          have_gosh_and_gaunit=yes
         fi
       fi
     fi
   fi
 fi
-if test x$have_gosh_and_gaunit = xyes; then
+if test "x$have_gosh_and_gaunit" = xyes; then
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
 fi
 AM_CONDITIONAL(DO_CHECK_IN_TEST,
-	       test x$have_gosh_and_gaunit = xyes -a x$enable_debug = xyes)
+	       test "x$have_gosh_and_gaunit" = xyes -a "x$enable_debug" = xyes)
 
 
 # Checks for system services
@@ -2038,7 +1819,7 @@ AC_CONFIG_FILES([Makefile
 
 AC_OUTPUT
 
-if test "x$CMAKE" != "xno"; then
+if test "x$CMAKE" != xno; then
     if test "x$enable_debug" = xyes; then
         cmake_build_type=Debug
     else
@@ -2051,8 +1832,8 @@ if test "x$CMAKE" != "xno"; then
     cmake_option="${cmake_option} -DKDE4_USE_ALWAYS_FULL_RPATH=false"
 fi
 # Generate Makefiles for Qt4 by qmake
-if test x$use_qt4 = xyes; then
-    if test x$use_qt4_immodule = xyes; then
+if test "x$with_qt4" = xyes; then
+    if test "x$with_qt4_immodule" = xyes; then
         qt4_immodule_option="DEFINES+=QT4_IMMODULE"
     fi
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
@@ -2068,7 +1849,7 @@ if test x$use_qt4 = xyes; then
         ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
 
     # Generate a Makefile for KDE4 applet by cmake
-    if test x$use_applet_kde4 = xyes; then
+    if test "x$enable_kde4_applet" = xyes; then
         mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
         cd ${ac_abs_top_builddir}/qt4/toolbar/build
         # FIXME: move CMAKE_CXX_FLAGS into cmake_option
@@ -2077,8 +1858,8 @@ if test x$use_qt4 = xyes; then
         cd -
     fi
 fi
-if test x$use_qt4_immodule = xyes; then
-    if test x$use_qt4_qt3support = xyes; then
+if test "x$with_qt4_immodule" = xyes; then
+    if test "x$enable_qt4_qt3support" = xyes; then
         qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
     fi
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
@@ -2098,8 +1879,8 @@ if test "x$use_knotify4" = xyes; then
     cd -
 fi
 # Generate Makefiles for Qt5 by qmake
-if test x$use_qt5 = xyes; then
-    if test x$use_qt5_immodule = xyes; then
+if test "x$with_qt5" = xyes; then
+    if test "x$with_qt5_immodule" = xyes; then
         qt5_immodule_option="DEFINES+=QT5_IMMODULE"
     fi
     ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
@@ -2114,7 +1895,7 @@ if test x$use_qt5 = xyes; then
     ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
         ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
 fi
-if test x$use_qt5_immodule = xyes; then
+if test "x$with_qt5_immodule" = xyes; then
     ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
          ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
     ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
@@ -2125,46 +1906,46 @@ fi
 AC_MSG_RESULT([
 Configure Result :
 
-   Anthy           : ${use_anthy}
-   Anthy (UTF-8)   : ${use_anthy_utf8}
-   Canna           : ${use_canna}
-   Mana            : ${use_mana}
-   PRIME           : ${use_prime}
-   SJ3             : ${use_sj3}
-   SKK             : ${use_skk}
-   Wnn             : ${use_wnn}
-   m17n-lib        : ${use_m17nlib}
-   cURL            : ${use_curl}
+   Anthy           : ${with_anthy}
+   Anthy (UTF-8)   : ${with_anthy_utf8}
+   Canna           : ${with_canna}
+   Mana            : ${with_mana}
+   PRIME           : ${with_prime}
+   SJ3             : ${with_sj3}
+   SKK             : ${with_skk}
+   Wnn             : ${with_wnn}
+   m17n-lib        : ${with_m17nlib}
+   cURL            : ${with_curl}
    expat           : ${expat_found}
-   OpenSSL         : ${use_openssl}
-   SQLite3         : ${use_sqlite3}
-   ffi             : ${use_ffi}
-   GTK+            : ${use_gtk2}
-   GNOME Applet    : ${use_applet_gnome}
-   GTK+3           : ${use_gtk3}
-   GNOME3 Applet   : ${use_applet_gnome3}
-   Qt3             : ${use_qt}
-   Qt3 immodule    : ${use_qtimmodule}
-   Qt4             : ${use_qt4}
-   Qt4 immodule    : ${use_qt4_immodule}
-   Qt4 Qt3Support  : ${use_qt4_qt3support}
-   Qt5             : ${use_qt5}
-   Qt5 immodule    : ${use_qt5_immodule}
-   KDE3 Applet     : ${use_applet_kde}
-   KDE4 Applet     : ${use_applet_kde4}
-   FEP             : ${use_uim_fep}
-   Emacs           : ${use_uim_el}
+   OpenSSL         : ${enable_openssl}
+   SQLite3         : ${with_sqlite3}
+   ffi             : ${with_ffi}
+   GTK+2           : ${with_gtk2}
+   GNOME2 Applet   : ${enable_gnome_applet}
+   GTK+3           : ${with_gtk3}
+   GNOME3 Applet   : ${enable_gnome3_applet}
+   Qt3             : ${with_qt}
+   Qt3 immodule    : ${with_qt_immodule}
+   Qt4             : ${with_qt4}
+   Qt4 immodule    : ${with_qt4_immodule}
+   Qt4 Qt3Support  : ${enable_qt4_qt3support}
+   Qt5             : ${with_qt5}
+   Qt5 immodule    : ${with_qt5_immodule}
+   KDE3 Applet     : ${enable_kde_applet}
+   KDE4 Applet     : ${enable_kde4_applet}
+   FEP             : ${enable_fep}
+   Emacs           : ${enable_emacs}
    XIM             : ${use_xim}
-   Pref            : ${use_pref}
-   DICT            : ${use_dict}
-   EB              : ${use_eb}
-   OSX dictionary  : ${use_osx_dcs}
-   libedit         : ${use_libedit}
+   Pref            : ${enable_pref}
+   DICT            : ${enable_dict}
+   EB              : ${with_eb}
+   OSX dictionary  : ${with_osx_dcs}
+   libedit         : ${with_libedit}
    notify          : ${use_notify}
    Default toolkit : ${default_toolkit}
 ])
 
-if test x$enable_debug = xyes; then
+if test "x$enable_debug" = xyes; then
 AC_MSG_RESULT([
 Configure Result for developers:
 

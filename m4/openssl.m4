@@ -48,7 +48,7 @@ AC_CHECK_LIB(ssl, SSL_CTX_new,
 		LIBS="-lssl $LIBS"
 	], [
 	AC_MSG_WARN("libssl not found. OpenSSL Disabled...")
-		use_openssl="no"
+		enable_openssl="no"
 	])
 
 AC_TRY_LINK_FUNC(RAND_add, AC_DEFINE(HAVE_OPENSSL, 1,
@@ -65,7 +65,7 @@ AC_TRY_LINK_FUNC(RAND_add, AC_DEFINE(HAVE_OPENSSL, 1,
 		AC_TRY_LINK_FUNC(RAND_add, AC_DEFINE(HAVE_OPENSSL),
 			[
 				AC_MSG_WARN([*** Can't find recent OpenSSL libcrypto (see config.log for details) ***])
-				use_openssl="no"
+				enable_openssl="no"
 			]
 		)
 	]
@@ -100,7 +100,7 @@ int main(void) {
 	[
 		AC_MSG_RESULT(not found)
 		AC_MSG_WARN(OpenSSL version header not found.)
-		use_openssl="no"
+		enable_openssl="no"
 	],
 	[
 		AC_MSG_WARN([cross compiling: not checking])
@@ -137,7 +137,7 @@ int main(void) {
 	[
 		AC_MSG_RESULT(not found)
 		AC_MSG_WARN(OpenSSL library not found.)
-		use_openssl="no"
+		enable_openssl="no"
 	],
 	[
 		AC_MSG_WARN([cross compiling: not checking])
@@ -172,12 +172,12 @@ If you are sure your installation is consistent, you can disable the check
 by running "./configure --without-openssl-header-check".
 Also see contrib/findssl.sh for help identifying header/library mismatches.
 ])
-			use_openssl="no"
+			enable_openssl="no"
 		else
 			AC_MSG_WARN([Your OpenSSL headers do not match your
 library. Check config.log for details.
 Also see contrib/findssl.sh for help identifying header/library mismatches.])
-			use_openssl="no"
+			enable_openssl="no"
 		fi
 	],
 	[
