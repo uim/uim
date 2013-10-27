@@ -251,7 +251,7 @@ AM_CONDITIONAL(EXPAT, test "x$expat_found" = xyes)
 # *************************
 AC_ARG_ENABLE(openssl,
   AC_HELP_STRING([--enable-openssl],
-    [enable openssl]),
+    [enable OpenSSL]),
   [],
   [enable_openssl=no])
 
@@ -807,7 +807,7 @@ fi
 
 AC_ARG_ENABLE(gnome-applet,
   AC_HELP_STRING([--disable-gnome-applet],
-    [disable uim applet for GNOME panel]),
+    [disable uim applet for GNOME2 panel]),
   [],
   [enable_gnome_applet=yes])
 
@@ -1127,7 +1127,7 @@ AM_CONDITIONAL(QT5_IMMODULE, test "x$with_qt5_immodule" = xyes)
 
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-    [Determine default toolkit (gtk, gtk3, qt, qt4 or qt5) @<:@default=gtk@:>@]),
+    [determine default toolkit (gtk, gtk3, qt, qt4 or qt5) @<:@default=gtk@:>@]),
   [],
   [enable_default_toolkit=no])
 
@@ -1630,7 +1630,7 @@ fi
 
 AC_ARG_ENABLE(warnings-into-error,
   AC_HELP_STRING([--enable-warnings-into-error],
-    [Treat compiler warnings as error @<:@default=no if !debug@:>@]),
+    [treat compiler warnings as error @<:@default=no if !debug@:>@]),
     [
         case $enable_warnings_into_error in
 	no)
