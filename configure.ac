@@ -106,8 +106,8 @@ if test "x$with_anthy" = xyes; then
   ANTHY_LIBS="-lanthy -lanthydic"
   ANTHY_CFLAGS=""
   PKG_CHECK_EXISTS(anthy >= 8622,
-		   [AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
-		    "libanthy can handle UTF-8")])
+                   [AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
+                    "libanthy can handle UTF-8")])
 fi
 AC_SUBST(ANTHY_LIBS)
 AC_SUBST(ANTHY_CFLAGS)
@@ -1022,13 +1022,13 @@ fi
 
 AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
 if test "x$with_qt" = xyes; then
-    if test "x$KDE_CONFIG" != xno; then
-	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
-    fi
-    if test -z "$KDE_ICONDIR"; then
-      KDE_ICONDIR="$prefix/share/icons"
-    fi
-    AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
+  if test "x$KDE_CONFIG" != xno; then
+    KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
+  fi
+  if test -z "$KDE_ICONDIR"; then
+    KDE_ICONDIR="$prefix/share/icons"
+  fi
+  AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
 fi
 
 AM_CONDITIONAL(QT, test "x$with_qt" = xyes)
@@ -1703,7 +1703,7 @@ else
   AC_MSG_RESULT(no)
 fi
 AM_CONDITIONAL(DO_CHECK_IN_TEST,
-	       test "x$have_gosh_and_gaunit" = xyes -a "x$enable_debug" = xyes)
+               test "x$have_gosh_and_gaunit" = xyes -a "x$enable_debug" = xyes)
 
 
 # Checks for system services
@@ -1733,89 +1733,89 @@ ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --
 AC_CONFIG_SUBDIRS([sigscheme])
 
 AC_CONFIG_FILES([Makefile
-		 po/Makefile.in
-		 m4/Makefile
-		 doc/Makefile
-		 uim/Makefile
-		 uim/version.h
-		 scm/Makefile
-		 gtk2/Makefile
-		 gtk2/candwin/Makefile
-		 gtk2/dict/Makefile
-		 gtk2/dict/uim-dict-ui.xml
-		 gtk2/immodule/Makefile
-		 gtk2/pad/Makefile
-		 gtk2/pref/Makefile
-		 gtk2/switcher/Makefile
-		 gtk2/test/Makefile
-		 gtk2/test/test.sh
-		 gtk2/toolbar/Makefile
-		 gtk3/Makefile
-		 gtk3/candwin/Makefile
-		 gtk3/dict/Makefile
-		 gtk3/immodule/Makefile
-		 gtk3/pad/Makefile
-		 gtk3/pref/Makefile
-		 gtk3/switcher/Makefile
-		 gtk3/test/Makefile
-		 gtk3/toolbar/Makefile
-		 qt3/Makefile
-		 qt3/candwin/Makefile
-		 qt3/chardict/Makefile
-		 qt3/immodule/Makefile
-		 qt3/pref/Makefile
-		 qt3/switcher/Makefile
-		 qt3/test/Makefile
-		 qt3/toolbar/Makefile
-		 qt3/toolbar/uimapplet.desktop
-		 qt4/Makefile
-		 qt4/common.pro
-		 qt4/candwin/Makefile
-		 qt4/candwin/uim-candwin-qt4.pro
-		 qt4/chardict/Makefile
-		 qt4/chardict/uim-chardict-qt4.pro
-		 qt4/edittest/Makefile
-		 qt4/immodule/quiminputcontextplugin.pro
-		 qt4/immodule/Makefile
-		 qt4/pref/uim-pref-qt4.pro
-		 qt4/pref/Makefile
-		 qt4/switcher/uim-im-switcher-qt4.pro
-		 qt4/switcher/Makefile
-		 qt4/toolbar/plasma-applet-uim.desktop
-		 qt4/toolbar/uim-toolbar-qt4.pro
-		 qt4/toolbar/Makefile
-		 qt5/Makefile
-		 qt5/candwin/Makefile
-		 qt5/candwin/uim-candwin-qt5.pro
-		 qt5/chardict/Makefile
-		 qt5/chardict/uim-chardict-qt5.pro
-		 qt5/edittest/Makefile
-		 qt5/immodule/quimplatforminputcontextplugin.pro
-		 qt5/immodule/Makefile
-		 qt5/pref/uim-pref-qt5.pro
-		 qt5/pref/Makefile
-		 qt5/switcher/uim-im-switcher-qt5.pro
-		 qt5/switcher/Makefile
-		 qt5/toolbar/uim-toolbar-qt5.pro
-		 qt5/toolbar/Makefile
-		 xim/Makefile
-		 fep/Makefile
-		 emacs/Makefile
-		 emacs/uim-version.el
-		 tables/Makefile
-		 byeoru-data/Makefile
-		 test/Makefile
-		 test2/Makefile
-		 test2/run-singletest.sh
-		 examples/Makefile
-		 examples/uim-custom/Makefile
-		 pixmaps/Makefile
-		 pixmaps/uim-m17nlib-relink-icons
-		 replace/Makefile
-		 notify/Makefile
-		 uim.pc
-		 uim.desktop.in
-		 ])
+                 po/Makefile.in
+                 m4/Makefile
+                 doc/Makefile
+                 uim/Makefile
+                 uim/version.h
+                 scm/Makefile
+                 gtk2/Makefile
+                 gtk2/candwin/Makefile
+                 gtk2/dict/Makefile
+                 gtk2/dict/uim-dict-ui.xml
+                 gtk2/immodule/Makefile
+                 gtk2/pad/Makefile
+                 gtk2/pref/Makefile
+                 gtk2/switcher/Makefile
+                 gtk2/test/Makefile
+                 gtk2/test/test.sh
+                 gtk2/toolbar/Makefile
+                 gtk3/Makefile
+                 gtk3/candwin/Makefile
+                 gtk3/dict/Makefile
+                 gtk3/immodule/Makefile
+                 gtk3/pad/Makefile
+                 gtk3/pref/Makefile
+                 gtk3/switcher/Makefile
+                 gtk3/test/Makefile
+                 gtk3/toolbar/Makefile
+                 qt3/Makefile
+                 qt3/candwin/Makefile
+                 qt3/chardict/Makefile
+                 qt3/immodule/Makefile
+                 qt3/pref/Makefile
+                 qt3/switcher/Makefile
+                 qt3/test/Makefile
+                 qt3/toolbar/Makefile
+                 qt3/toolbar/uimapplet.desktop
+                 qt4/Makefile
+                 qt4/common.pro
+                 qt4/candwin/Makefile
+                 qt4/candwin/uim-candwin-qt4.pro
+                 qt4/chardict/Makefile
+                 qt4/chardict/uim-chardict-qt4.pro
+                 qt4/edittest/Makefile
+                 qt4/immodule/quiminputcontextplugin.pro
+                 qt4/immodule/Makefile
+                 qt4/pref/uim-pref-qt4.pro
+                 qt4/pref/Makefile
+                 qt4/switcher/uim-im-switcher-qt4.pro
+                 qt4/switcher/Makefile
+                 qt4/toolbar/plasma-applet-uim.desktop
+                 qt4/toolbar/uim-toolbar-qt4.pro
+                 qt4/toolbar/Makefile
+                 qt5/Makefile
+                 qt5/candwin/Makefile
+                 qt5/candwin/uim-candwin-qt5.pro
+                 qt5/chardict/Makefile
+                 qt5/chardict/uim-chardict-qt5.pro
+                 qt5/edittest/Makefile
+                 qt5/immodule/quimplatforminputcontextplugin.pro
+                 qt5/immodule/Makefile
+                 qt5/pref/uim-pref-qt5.pro
+                 qt5/pref/Makefile
+                 qt5/switcher/uim-im-switcher-qt5.pro
+                 qt5/switcher/Makefile
+                 qt5/toolbar/uim-toolbar-qt5.pro
+                 qt5/toolbar/Makefile
+                 xim/Makefile
+                 fep/Makefile
+                 emacs/Makefile
+                 emacs/uim-version.el
+                 tables/Makefile
+                 byeoru-data/Makefile
+                 test/Makefile
+                 test2/Makefile
+                 test2/run-singletest.sh
+                 examples/Makefile
+                 examples/uim-custom/Makefile
+                 pixmaps/Makefile
+                 pixmaps/uim-m17nlib-relink-icons
+                 replace/Makefile
+                 notify/Makefile
+                 uim.pc
+                 uim.desktop.in
+])
 
 AC_OUTPUT
 
