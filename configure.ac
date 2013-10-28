@@ -297,44 +297,44 @@ AC_PATH_XTRA
 
 use_xim=no
 if test x"$have_x" != xdisabled && test x"$have_x" != xno; then
-   PKG_CHECK_MODULES(XIM, xext, use_xim=yes, use_xim=no)
-   if test "x$use_xim" = xyes; then
-     AC_CXX_NAMESPACES
-     AC_CXX_HAVE_STL
-     if test $ac_cv_cxx_have_stl = no; then
-       use_xim=no
-     fi
-   fi
-   AC_MSG_CHECKING([whether to have Xft support])
-   AM_PATH_XFT(yes, XFT=true, XFT=false)
-   if test x"$XFT" = xtrue; then
-     saved_CFLAGS=$CFLAGS
-     saved_LIBS=$LIBS
-     CFLAGS="$CFLAGS $XFT_CFLAGS"
-     LIBS="$LIBS $XFT_LIBS"
-     AC_TRY_LINK([
+  PKG_CHECK_MODULES(XIM, xext, use_xim=yes, use_xim=no)
+  if test "x$use_xim" = xyes; then
+    AC_CXX_NAMESPACES
+    AC_CXX_HAVE_STL
+    if test $ac_cv_cxx_have_stl = no; then
+      use_xim=no
+    fi
+  fi
+  AC_MSG_CHECKING([whether to have Xft support])
+  AM_PATH_XFT(yes, XFT=true, XFT=false)
+  if test x"$XFT" = xtrue; then
+    saved_CFLAGS=$CFLAGS
+    saved_LIBS=$LIBS
+    CFLAGS="$CFLAGS $XFT_CFLAGS"
+    LIBS="$LIBS $XFT_LIBS"
+    AC_TRY_LINK([
 #include <X11/Xft/Xft.h>], [ XftFontClose(0, 0); return 1; ], 
-       [
-         AC_DEFINE(WITH_XFT, 1, [font antialiasing support])
-         AC_MSG_CHECKING([Xft UTF-8 support])
-         AC_TRY_LINK([
+      [
+        AC_DEFINE(WITH_XFT, 1, [font antialiasing support])
+        AC_MSG_CHECKING([Xft UTF-8 support])
+        AC_TRY_LINK([
 #include <X11/Xft/Xft.h>
-           ], [ 
+          ], [ 
 XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; 
-           ],
-             AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
-             AC_MSG_RESULT(yes),
-             AC_MSG_RESULT(no)) 
-       ],
-       [
-         AC_MSG_RESULT([***Could not link with Xft. Install Xft if you want support for it***])
-         XFT=false
-         XFT_CFLAGS=
-         XFT_LIBS=
-       ])
-     CFLAGS=$saved_CFLAGS
-     LIBS=$saved_LIBS
-   fi
+          ],
+            AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
+            AC_MSG_RESULT(yes),
+            AC_MSG_RESULT(no)) 
+      ],
+      [
+        AC_MSG_RESULT([***Could not link with Xft. Install Xft if you want support for it***])
+        XFT=false
+        XFT_CFLAGS=
+        XFT_LIBS=
+      ])
+    CFLAGS=$saved_CFLAGS
+    LIBS=$saved_LIBS
+  fi
 fi
 
 AM_CONDITIONAL(XIM, test x"$use_xim" = xyes)
@@ -744,10 +744,10 @@ AM_GNU_GETTEXT_VERSION([0.17])
 
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
 if test "x$prefix" = xNONE; then
-   prefix=$ac_default_prefix
+  prefix=$ac_default_prefix
 fi
 if test "x$exec_prefix" = xNONE; then
-   exec_prefix=$prefix
+  exec_prefix=$prefix
 fi
 
 # FIXME: complicated directory handlings  -- YamaKen 2006-07-08
@@ -855,8 +855,8 @@ AC_ARG_ENABLE(gnome3-applet,
   [enable_gnome3_applet=yes])
 
 if test "x$enable_gnome3_applet" != xno; then
-   PKG_CHECK_MODULES(GNOME3_APPLET, libpanelapplet-4.0,
-                     enable_gnome3_applet=yes, enable_gnome3_applet=no)
+  PKG_CHECK_MODULES(GNOME3_APPLET, libpanelapplet-4.0,
+                    enable_gnome3_applet=yes, enable_gnome3_applet=no)
 fi
 
 AM_CONDITIONAL(GNOME3_APPLET, test "x$enable_gnome3_applet" = xyes)
@@ -871,151 +871,151 @@ AC_ARG_WITH(qt,
   [with_qt=no])
 
 if test "x$with_qt" = xyes; then
-    # minimum version
-    QT_VERSION=3.2.0
-    QT_VERSION_NUM=0x030200
+  # minimum version
+  QT_VERSION=3.2.0
+  QT_VERSION_NUM=0x030200
 
-    # GUESS $QTDIR
-    if test ! -d "$QTDIR"; then
-      QTDIR="/usr/lib/qt3"
-    fi
-    if test ! -d "$QTDIR"; then
-      QTDIR="/usr/lib/qt"
-    fi
-    if test ! -d "$QTDIR"; then
-      QTDIR="/usr"
-    fi
-    AC_MSG_CHECKING(for Qt3 library dir)
-    if test ! -d "$QTDIR"; then
-      AC_MSG_RESULT(no)
-    else
-      AC_MSG_RESULT($QTDIR)
-    fi
+  # GUESS $QTDIR
+  if test ! -d "$QTDIR"; then
+    QTDIR="/usr/lib/qt3"
+  fi
+  if test ! -d "$QTDIR"; then
+    QTDIR="/usr/lib/qt"
+  fi
+  if test ! -d "$QTDIR"; then
+    QTDIR="/usr"
+  fi
+  AC_MSG_CHECKING(for Qt3 library dir)
+  if test ! -d "$QTDIR"; then
+    AC_MSG_RESULT(no)
+  else
+    AC_MSG_RESULT($QTDIR)
+  fi
 
-    # GUESS $QTINCDIR from $QTDIR
-    QTINCDIR="$QTDIR/include/qt"
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="$QTDIR/include/X11/qt"
-    fi
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="$QTDIR/include/qt3"
-    fi
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="$QTDIR/include"
-    fi
-    # GUESS $QTINCDIR independently
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="/usr/include/X11/qt"
-    fi
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="/usr/include/qt3"
-    fi
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="/usr/include/qt"
-    fi
-    if test ! -d "$QTINCDIR"; then
-       QTINCDIR="/usr/include"
-    fi
+  # GUESS $QTINCDIR from $QTDIR
+  QTINCDIR="$QTDIR/include/qt"
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="$QTDIR/include/X11/qt"
+  fi
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="$QTDIR/include/qt3"
+  fi
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="$QTDIR/include"
+  fi
+  # GUESS $QTINCDIR independently
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="/usr/include/X11/qt"
+  fi
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="/usr/include/qt3"
+  fi
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="/usr/include/qt"
+  fi
+  if test ! -d "$QTINCDIR"; then
+    QTINCDIR="/usr/include"
+  fi
 
-    # GUESS $QTLIBDIR
-    QTLIBDIR="$QTDIR/lib64"
-    if test ! -d "$QTLIBDIR"; then
-       QTLIBDIR="$QTDIR/lib"
-    fi
-    if test ! -d "$QTLIBDIR"; then
-       QTLIBDIR="/usr/lib/qt3"
-    fi
-    if test ! -d "$QTLIBDIR"; then
-       QTLIBDIR="/usr/lib/qt"
-    fi
-    if test ! -d "$QTLIBDIR"; then
-       QTLIBDIR="/usr/lib"
-    fi
+  # GUESS $QTLIBDIR
+  QTLIBDIR="$QTDIR/lib64"
+  if test ! -d "$QTLIBDIR"; then
+    QTLIBDIR="$QTDIR/lib"
+  fi
+  if test ! -d "$QTLIBDIR"; then
+    QTLIBDIR="/usr/lib/qt3"
+  fi
+  if test ! -d "$QTLIBDIR"; then
+    QTLIBDIR="/usr/lib/qt"
+  fi
+  if test ! -d "$QTLIBDIR"; then
+    QTLIBDIR="/usr/lib"
+  fi
 
-    # Check For MOC
-    if test -x "$QTDIR/bin/moc"; then
-      HOST_MOC="$QTDIR/bin/moc"
-    else
-      AC_CHECK_PROGS(HOST_MOC, moc-qt3 moc, "")
-    fi
-    if test -z "$HOST_MOC"; then
-      AC_MSG_ERROR([no acceptable moc( meta object compiler ) found])
-    fi
-    MOC=$HOST_MOC
+  # Check For MOC
+  if test -x "$QTDIR/bin/moc"; then
+    HOST_MOC="$QTDIR/bin/moc"
+  else
+    AC_CHECK_PROGS(HOST_MOC, moc-qt3 moc, "")
+  fi
+  if test -z "$HOST_MOC"; then
+    AC_MSG_ERROR([no acceptable moc( meta object compiler ) found])
+  fi
+  MOC=$HOST_MOC
 
-    # Check For UIC
-    if test -x "$QTDIR/bin/uic"; then
-      HOST_UIC="$QTDIR/bin/uic"
-    else
-      AC_CHECK_PROGS(HOST_UIC, uic-qt3 uic, "")
-    fi
-    if test -z "$HOST_UIC"; then
-      AC_MSG_ERROR([no acceptable uic( user interface compiler ) found])
-    fi
-    UIC=$HOST_UIC
+  # Check For UIC
+  if test -x "$QTDIR/bin/uic"; then
+    HOST_UIC="$QTDIR/bin/uic"
+  else
+    AC_CHECK_PROGS(HOST_UIC, uic-qt3 uic, "")
+  fi
+  if test -z "$HOST_UIC"; then
+    AC_MSG_ERROR([no acceptable uic( user interface compiler ) found])
+  fi
+  UIC=$HOST_UIC
 
-    # GUESS plugins dir for immodule installation
-    AC_MSG_CHECKING(for qt-immodule plugins dir)
-    if test ! -d "$QTDIR/plugins"; then
-      AC_MSG_RESULT(no)
-    else
-      QT_PLUGINSDIR=$QTDIR/plugins
-      AC_MSG_RESULT($QT_PLUGINSDIR)
-      AC_SUBST(QT_PLUGINSDIR)
-    fi
+  # GUESS plugins dir for immodule installation
+  AC_MSG_CHECKING(for qt-immodule plugins dir)
+  if test ! -d "$QTDIR/plugins"; then
+    AC_MSG_RESULT(no)
+  else
+    QT_PLUGINSDIR=$QTDIR/plugins
+    AC_MSG_RESULT($QT_PLUGINSDIR)
+    AC_SUBST(QT_PLUGINSDIR)
+  fi
 
-    # Process for compiler & linker flags
-    QT_CXXFLAGS="-I${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
-    if test -z "$enable_debug"; then
-      QT_CXXFLAGS="$QT_CXXFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
-    fi
-    _SAVE_LDFLAGS=$LDFLAGS
-    QT_LDFLAGS=-L${QTLIBDIR}
-    LDFLAGS="$LDFLAGS $QT_LDFLAGS"
-    AC_LANG_SAVE
-    AC_LANG_CPLUSPLUS
-    AC_CHECK_LIB(qt, main, QT_LIB=-lqt,
-        AC_CHECK_LIB(qt-mt, main, QT_LIB=-lqt-mt,
-            AC_MSG_ERROR([Cannot find QT libraries.])))
+  # Process for compiler & linker flags
+  QT_CXXFLAGS="-I${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
+  if test -z "$enable_debug"; then
+    QT_CXXFLAGS="$QT_CXXFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
+  fi
+  _SAVE_LDFLAGS=$LDFLAGS
+  QT_LDFLAGS=-L${QTLIBDIR}
+  LDFLAGS="$LDFLAGS $QT_LDFLAGS"
+  AC_LANG_SAVE
+  AC_LANG_CPLUSPLUS
+  AC_CHECK_LIB(qt, main, QT_LIB=-lqt,
+      AC_CHECK_LIB(qt-mt, main, QT_LIB=-lqt-mt,
+          AC_MSG_ERROR([Cannot find QT libraries.])))
 
-    if test "$QT_LIB" = "-lqt-mt"; then
-      QT_CXXFLAGS="$QT_CXXFLAGS -DQT_THREAD_SUPPORT"
-    fi
+  if test "$QT_LIB" = "-lqt-mt"; then
+    QT_CXXFLAGS="$QT_CXXFLAGS -DQT_THREAD_SUPPORT"
+  fi
 
-    LDFLAGS=$_SAVE_LDFLAGS
-    QT_LIBS="$X_LIBS $QT_LDFLAGS $QT_LIB -lXext -lX11"
+  LDFLAGS=$_SAVE_LDFLAGS
+  QT_LIBS="$X_LIBS $QT_LDFLAGS $QT_LIB -lXext -lX11"
 
-    _SAVE_CXXFLAGS=$CXXFLAGS
-    _SAVE_LIBS=$LIBS
+  _SAVE_CXXFLAGS=$CXXFLAGS
+  _SAVE_LIBS=$LIBS
 
-    CXXFLAGS="$CXXFLAGS $QT_CXXFLAGS"
-    LIBS="$LIBS $QT_LIBS"
+  CXXFLAGS="$CXXFLAGS $QT_CXXFLAGS"
+  LIBS="$LIBS $QT_LIBS"
 
-    AC_MSG_CHECKING(Qt - version >= $QT_VERSION)
-    AC_TRY_COMPILE([#include <qglobal.h>],
-    [
-        #if (QT_VERSION < $QT_VERSION_NUM)
-            #error  "QT_VERSION too old"
-        #endif
-    ],result=yes,result=no)
+  AC_MSG_CHECKING(Qt - version >= $QT_VERSION)
+  AC_TRY_COMPILE([#include <qglobal.h>],
+  [
+      #if (QT_VERSION < $QT_VERSION_NUM)
+          #error  "QT_VERSION too old"
+      #endif
+  ],result=yes,result=no)
 
-    AC_MSG_RESULT("$result")
-    if test "x$result" = xno; then
-       with_qt=no
-       AC_MSG_WARN([Qt Helper requires at least version $QT_VERSION of Qt])
-    fi
-    CXXFLAGS=$_SAVE_CXXFLAGS
-    LIBS=$_SAVE_LIBS
+  AC_MSG_RESULT("$result")
+  if test "x$result" = xno; then
+    with_qt=no
+    AC_MSG_WARN([Qt Helper requires at least version $QT_VERSION of Qt])
+  fi
+  CXXFLAGS=$_SAVE_CXXFLAGS
+  LIBS=$_SAVE_LIBS
 
-    AC_LANG_RESTORE
+  AC_LANG_RESTORE
 
-    UIM_QT_LDFLAGS=$QT_LIBS
-    UIM_QT_CXXFLAGS=$QT_CXXFLAGS
+  UIM_QT_LDFLAGS=$QT_LIBS
+  UIM_QT_CXXFLAGS=$QT_CXXFLAGS
 
-    AC_SUBST(MOC)
-    AC_SUBST(UIC)
-    AC_SUBST(UIM_QT_CXXFLAGS)
-    AC_SUBST(UIM_QT_LDFLAGS)
+  AC_SUBST(MOC)
+  AC_SUBST(UIC)
+  AC_SUBST(UIM_QT_CXXFLAGS)
+  AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
 AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
@@ -1266,7 +1266,7 @@ if test "x$enable_dict" != xno; then
   fi
 
   if test "x$enable_dict" = xno; then
-     AC_MSG_WARN([dict needs GTK+ 2 (> 2.4) or GTK+ 3. dict disabled...])
+    AC_MSG_WARN([dict needs GTK+ 2 (> 2.4) or GTK+ 3. dict disabled...])
   fi
 
   dnl Tests for -lcanna for dict
