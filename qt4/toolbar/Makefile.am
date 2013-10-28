@@ -4,7 +4,7 @@
 if QT4
 all clean mocclean install uninstall:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake INSTALL_ROOT=$(DESTDIR) $@
-if APPLET_KDE4
+if KDE4_APPLET
 	( cd build; $(MAKE) $(AM_MAKEFLAGS) $@ )
 endif
 endif

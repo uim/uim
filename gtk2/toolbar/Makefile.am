@@ -2,15 +2,15 @@ EXTRA_DIST = GNOME_UimApplet.server.in.in
 
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
-if APPLET_GNOME
+if GNOME_APPLET
 libexec_PROGRAMS =  uim-toolbar-applet
 
-uim_toolbar_applet_LDADD = @GTK2_LIBS@ @APPLET_GNOME_LIBS@ \
+uim_toolbar_applet_LDADD = @GTK2_LIBS@ @GNOME_APPLET_LIBS@ \
 			   $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
 uim_toolbar_applet_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
-uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_GNOME_CFLAGS@
+uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @GNOME_APPLET_CFLAGS@
 if GCC
 # to cancel "-std=gnu89 -pedantic -Werror" and accept the string
 # uim_menu_xml longer than ISO C 89 maximum length (509)

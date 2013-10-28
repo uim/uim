@@ -9,7 +9,7 @@ HEADER_FILES = \
 	common-quimhelpertoolbar.h \
 	common-uimstateindicator.h \
 	standalone-qt.h
-if APPLET_KDE
+if KDE_APPLET
 HEADER_FILES += \
 	applet-kde.h
 endif
@@ -18,7 +18,7 @@ MOC_FILES = \
 	common-quimhelpertoolbar.moc \
 	common-uimstateindicator.moc \
 	standalone-qt.moc
-if APPLET_KDE
+if KDE_APPLET
 MOC_FILES += \
 	applet-kde.moc
 endif
@@ -27,7 +27,7 @@ noinst_HEADERS = $(HEADER_FILES)
 
 bin_PROGRAMS = uim-toolbar-qt
 
-if APPLET_KDE
+if KDE_APPLET
 applet_LTLIBRARIES = uim_panelapplet.la
 appletdir = @KDE_LIB_DIR@/kde3
 
@@ -56,7 +56,7 @@ uim_toolbar_qt_LDADD    = $(top_builddir)/uim/libuim-scm.la \
 standalone-qt.cpp: standalone-qt.moc
 
 # Toolbar applet
-if APPLET_KDE
+if KDE_APPLET
 uim_panelapplet_la_SOURCES = applet-kde.cpp applet-kde.h ../qtgettext.h \
 			 common-quimhelpertoolbar.h common-uimstateindicator.h
 uim_panelapplet_la_CXXFLAGS = -I@KDE_INCLUDE_DIR@ $(QT_CXXFLAGS)

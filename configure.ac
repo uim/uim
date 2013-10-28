@@ -811,7 +811,7 @@ AC_ARG_ENABLE(gnome-applet,
   [enable_gnome_applet=yes])
 
 if test "x$enable_gnome_applet" != xno; then
-  PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0,
+  PKG_CHECK_MODULES(GNOME_APPLET, libpanelapplet-2.0,
                     enable_gnome_applet=yes, enable_gnome_applet=no)
   PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0,
                     panelapplet_have_set_background_api=yes,
@@ -822,7 +822,7 @@ if test x"$panelapplet_have_set_background_api" = xyes; then
   AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
 fi
 
-AM_CONDITIONAL(APPLET_GNOME, test "x$enable_gnome_applet" = xyes)
+AM_CONDITIONAL(GNOME_APPLET, test "x$enable_gnome_applet" = xyes)
 
 dnl *******************************
 dnl *** Check for GTK+3 Library ***
@@ -855,11 +855,11 @@ AC_ARG_ENABLE(gnome3-applet,
   [enable_gnome3_applet=yes])
 
 if test "x$enable_gnome3_applet" != xno; then
-   PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-4.0,
+   PKG_CHECK_MODULES(GNOME3_APPLET, libpanelapplet-4.0,
                      enable_gnome3_applet=yes, enable_gnome3_applet=no)
 fi
 
-AM_CONDITIONAL(APPLET_GNOME3, test "x$enable_gnome3_applet" = xyes)
+AM_CONDITIONAL(GNOME3_APPLET, test "x$enable_gnome3_applet" = xyes)
 
 dnl ****************************
 dnl *** Check for Qt Library ***
@@ -1434,7 +1434,7 @@ AC_SUBST(KDE_LIB_DIR)
 AC_SUBST(KDE_DATA_DIR)
 AC_SUBST(KDE_INCLUDE_DIR)
 
-AM_CONDITIONAL(APPLET_KDE, test "x$enable_kde_applet" = xyes)
+AM_CONDITIONAL(KDE_APPLET, test "x$enable_kde_applet" = xyes)
 
 dnl ****************************
 dnl *** test for KDE4 applet ***
@@ -1473,7 +1473,7 @@ if test "x$enable_kde4_applet" = xyes && test "x$KDE4_CONFIG" = xno; then
     enable_kde4_applet=no
 fi
 
-AM_CONDITIONAL(APPLET_KDE4, test "x$enable_kde4_applet" = xyes)
+AM_CONDITIONAL(KDE4_APPLET, test "x$enable_kde4_applet" = xyes)
 
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--disable-pref],
