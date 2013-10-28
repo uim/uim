@@ -162,11 +162,11 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         }
     }
 
-    char *display_time
-        = uim_scm_c_symbol( uim_scm_symbol_value( "toolbar-display-time" ) );
 #ifdef PLASMA_APPLET_UIM
     bool isHidden = true;
 #else
+    char *display_time
+        = uim_scm_c_symbol( uim_scm_symbol_value( "toolbar-display-time" ) );
     bool isHidden = strcmp( display_time, "mode" );
 #endif
     foreach ( const QString &line, lines )
