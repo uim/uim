@@ -845,7 +845,7 @@ AC_SUBST(GTK3_BINARY_VERSION)
 AC_SUBST(GTK3_LIBDIR)
 
 if test "x$with_gtk3" = xyes; then
-    AC_DEFINE(USE_GTK3, 1, [use GTK+3])
+  AC_DEFINE(USE_GTK3, 1, [use GTK+3])
 fi
 
 AC_ARG_ENABLE(gnome3-applet,
@@ -1145,9 +1145,9 @@ AC_ARG_WITH(qt5-immodule,
   [with_qt5_immodule=no])
 
 if test "x$with_qt5" = xyes || test "x$with_qt5_immodule" = xyes; then
-    if test -z "$QMAKE5"; then
-        AC_MSG_ERROR([no qmake for Qt5 found])
-    fi
+  if test -z "$QMAKE5"; then
+    AC_MSG_ERROR([no qmake for Qt5 found])
+  fi
 fi
 
 AM_CONDITIONAL(QT5_IMMODULE, test "x$with_qt5_immodule" = xyes)
@@ -1281,8 +1281,8 @@ if test "x$enable_dict" != xno; then
   fi
 
   if test "x$enable_dict_canna" = xno && \
-      test "x$with_anthy" = xno && \
-      test "x$with_anthy_utf8" = xno; then
+     test "x$with_anthy" = xno && \
+     test "x$with_anthy_utf8" = xno; then
     AC_MSG_WARN([no dictionary backend is usable.  disabled...])
     enable_dict=no
   fi
@@ -1453,24 +1453,24 @@ fi
 
 AC_PATH_PROG(CMAKE, [cmake], [no])
 if test "x$enable_kde4_applet" = xyes && test "x$CMAKE" = xno; then
-    AC_MSG_WARN([no CMake found])
-    enable_kde4_applet=no
+  AC_MSG_WARN([no CMake found])
+  enable_kde4_applet=no
 fi
 
 AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
 if test "x$with_qt4" = xyes || test "x$with_qt5" = xyes; then
-    if test "x$KDE4_CONFIG" != xno; then
-        KDE4_ICONDIR=`$KDE4_CONFIG --expandvars --install icon`
-    fi
-    if test -z "$KDE4_ICONDIR"; then
-        KDE4_ICONDIR="$prefix/share/icons"
-    fi
-    AC_DEFINE_UNQUOTED(KDE4_ICONDIR, "$KDE4_ICONDIR", [kde4 icon directory])
+  if test "x$KDE4_CONFIG" != xno; then
+    KDE4_ICONDIR=`$KDE4_CONFIG --expandvars --install icon`
+  fi
+  if test -z "$KDE4_ICONDIR"; then
+    KDE4_ICONDIR="$prefix/share/icons"
+  fi
+  AC_DEFINE_UNQUOTED(KDE4_ICONDIR, "$KDE4_ICONDIR", [kde4 icon directory])
 fi
 
 if test "x$enable_kde4_applet" = xyes && test "x$KDE4_CONFIG" = xno; then
-    AC_MSG_WARN([no kde4-config found])
-    enable_kde4_applet=no
+  AC_MSG_WARN([no kde4-config found])
+  enable_kde4_applet=no
 fi
 
 AM_CONDITIONAL(KDE4_APPLET, test "x$enable_kde4_applet" = xyes)
