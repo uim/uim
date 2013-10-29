@@ -1076,24 +1076,6 @@ if test "x$with_qt4" = xyes || test "x$with_qt4_immodule" = xyes; then
   fi
 fi
 
-# Generate Makefiles for Qt4 by qmake
-if test "x$with_qt4" = xyes; then
-  if test "x$with_qt4_immodule" = xyes; then
-    qt4_immodule_option="DEFINES+=QT4_IMMODULE"
-  fi
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
-    ${qt4_immodule_option} \
-    ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/switcher/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
-fi
-
 dnl *****************************************
 dnl *** test for Qt3Support module in Qt4 ***
 dnl *****************************************
@@ -1114,17 +1096,6 @@ if test "x$enable_qt4_qt3support" != xno; then
   else
     enable_qt4_qt3support=no
   fi
-fi
-
-if test "x$with_qt4_immodule" = xyes; then
-  if test "x$enable_qt4_qt3support" = xyes; then
-    qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
-  fi
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
-    ${qt4_qt3support_option} \
-    ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
-  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
-    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
 
 dnl *****************************
@@ -1151,31 +1122,6 @@ if test "x$with_qt5" = xyes || test "x$with_qt5_immodule" = xyes; then
 fi
 
 AM_CONDITIONAL(QT5_IMMODULE, test "x$with_qt5_immodule" = xyes)
-
-# Generate Makefiles for Qt5 by qmake
-if test "x$with_qt5" = xyes; then
-  if test "x$with_qt5_immodule" = xyes; then
-    qt5_immodule_option="DEFINES+=QT5_IMMODULE"
-  fi
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt5/chardict/uim-chardict-qt5.pro
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/pref/Makefile.qmake \
-    ${qt5_immodule_option} \
-    ${ac_abs_top_builddir}/qt5/pref/uim-pref-qt5.pro
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/switcher/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
-fi
-
-if test "x$with_qt5_immodule" = xyes; then
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
-    ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
-  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
-    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
-fi
 
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
@@ -1880,6 +1826,22 @@ if test "x$CMAKE" != xno; then
 fi
 
 if test "x$with_qt4" = xyes; then
+  if test "x$with_qt4_immodule" = xyes; then
+    qt4_immodule_option="DEFINES+=QT4_IMMODULE"
+  fi
+  # Generate Makefiles for Qt4 by qmake
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
+    ${qt4_immodule_option} \
+    ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/switcher/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
+
   # Generate a Makefile for KDE4 applet by cmake
   if test "x$enable_kde4_applet" = xyes; then
     mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
@@ -1891,6 +1853,17 @@ if test "x$with_qt4" = xyes; then
   fi
 fi
 
+if test "x$with_qt4_immodule" = xyes; then
+  if test "x$enable_qt4_qt3support" = xyes; then
+    qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
+  fi
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
+    ${qt4_qt3support_option} \
+    ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
+  ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
+    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+fi
+
 if test "x$use_knotify4" = xyes; then
   # Generate a Makefile for KNotify plugin by cmake
   mkdir -p ${ac_abs_top_builddir}/notify/build
@@ -1900,6 +1873,31 @@ if test "x$use_knotify4" = xyes; then
     -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
     ${cmake_option} ${ac_abs_top_srcdir}/notify
   cd -
+fi
+
+# Generate Makefiles for Qt5 by qmake
+if test "x$with_qt5" = xyes; then
+  if test "x$with_qt5_immodule" = xyes; then
+    qt5_immodule_option="DEFINES+=QT5_IMMODULE"
+  fi
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/chardict/uim-chardict-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/pref/Makefile.qmake \
+    ${qt5_immodule_option} \
+    ${ac_abs_top_builddir}/qt5/pref/uim-pref-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/switcher/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
+fi
+
+if test "x$with_qt5_immodule" = xyes; then
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
+  ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
+    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
 
 AC_MSG_RESULT([
