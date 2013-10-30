@@ -795,12 +795,11 @@ fi
 AM_CONDITIONAL(GTK2, test "x$with_gtk2" = xyes)
 AM_CONDITIONAL(GTK2_4, test "x$with_gtk2_4" = xyes)
 
-GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
-GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
-AC_SUBST(GTK_BINARY_VERSION)
-AC_SUBST(GTK_LIBDIR)
-
 if test "x$with_gtk2" = xyes; then
+  GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
+  GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
+  AC_SUBST(GTK_BINARY_VERSION)
+  AC_SUBST(GTK_LIBDIR)
   AC_DEFINE(USE_GTK2, 1, [use GTK+2])
 fi
 
@@ -839,13 +838,12 @@ fi
 
 AM_CONDITIONAL(GTK3, test "x$with_gtk3" = xyes)
 
-GTK3_BINARY_VERSION=`$PKG_CONFIG gtk+-3.0 --variable=gtk_binary_version`
-GTK3_LIBDIR=`$PKG_CONFIG gtk+-3.0 --variable=libdir`
-AC_SUBST(GTK3_BINARY_VERSION)
-AC_SUBST(GTK3_LIBDIR)
-
 if test "x$with_gtk3" = xyes; then
   AC_DEFINE(USE_GTK3, 1, [use GTK+3])
+  GTK3_BINARY_VERSION=`$PKG_CONFIG gtk+-3.0 --variable=gtk_binary_version`
+  GTK3_LIBDIR=`$PKG_CONFIG gtk+-3.0 --variable=libdir`
+  AC_SUBST(GTK3_BINARY_VERSION)
+  AC_SUBST(GTK3_LIBDIR)
 fi
 
 AC_ARG_ENABLE(gnome3-applet,
