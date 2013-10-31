@@ -605,14 +605,11 @@ tool_button_destroy(gpointer data, gpointer user_data)
   gtk_widget_destroy(GTK_WIDGET(data));
 }
 
-static GtkWidget *
-prop_button_create(GtkWidget *widget, const gchar *icon_name,
-		   const gchar *label, const gchar *tip_text)
+static GtkWidget*
+button_create(GtkWidget *widget, GtkSizeGroup *sg, const gchar *icon_name,
+              const gchar *label, gint type)
 {
   GtkWidget *button;
-  GtkSizeGroup *sg;
-
-  sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
 
   if (register_icon(icon_name)) {
     GtkWidget *img = gtk_image_new_from_stock(icon_name, GTK_ICON_SIZE_MENU);
@@ -622,18 +619,36 @@ prop_button_create(GtkWidget *widget, const gchar *icon_name,
     button = gtk_button_new_with_label(label);
   }
 
-  if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
-		      OBJECT_DATA_TOOLBAR_TYPE)) == TYPE_ICON)
+  if (type == TYPE_ICON)
     set_button_style(button);
 
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE,
 		    GINT_TO_POINTER(BUTTON_PROP));
-  gtk_widget_set_tooltip_text(button, tip_text);
 
   g_signal_connect(G_OBJECT(button), "button-press-event",
 		   G_CALLBACK(button_pressed), widget);
+
+  return button;
+}
+
+static GtkWidget *
+prop_button_create(GtkWidget *widget, const gchar *icon_name,
+		   const gchar *label, const gchar *tip_text)
+{
+  GtkWidget *button;
+  GtkSizeGroup *sg;
+  gint type;
+
+  sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
+  type = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+		         OBJECT_DATA_TOOLBAR_TYPE));
+
+  button = button_create(widget, sg, icon_name, label, type);
+
+  gtk_widget_set_tooltip_text(button, tip_text);
+
   g_signal_connect(G_OBJECT(button), "button-release-event",
 		   G_CALLBACK(prop_button_released), widget);
 
@@ -1102,24 +1117,9 @@ toolbar_new(gint type)
   sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 
   /* prop menu button */
-  if (register_icon("uim-icon")) {
-    GtkWidget *img = gtk_image_new_from_stock("uim-icon", GTK_ICON_SIZE_MENU);
-    button = gtk_button_new();
-    gtk_container_add(GTK_CONTAINER(button), img);
-  } else {
-    button = gtk_button_new_with_label(" x");
-  }
+  button = button_create(hbox, sg, "uim-icon", " x", type);
 
-  if (type == TYPE_ICON)
-    set_button_style(button);
-
-  gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-  gtk_size_group_add_widget(sg, button);
-  g_signal_connect(G_OBJECT(button), "button-press-event",
-		   G_CALLBACK(button_pressed), hbox);
   gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE,
-		    GINT_TO_POINTER(BUTTON_PROP));
 
   prop_buttons = g_list_append(prop_buttons, button);
 
