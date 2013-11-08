@@ -910,7 +910,9 @@ static void make_page_strs(void)
         free(old_str);
         free(index_str);
       }
-      free(s_candidate.page_strs[page]);
+      if (page < s_candidate.nr_pages) {
+        free(s_candidate.page_strs[page]);
+      }
       s_candidate.page_strs[page] = uim_strdup(page_str);
       page++; 
 
