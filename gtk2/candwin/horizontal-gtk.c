@@ -181,7 +181,11 @@ static void candwin_set_page_candidates(gchar **str);
 static void candwin_show_page(gchar **str);
 static void str_parse(char *str);
 static void clear_button(struct index_button *idxbutton, gint cell_index);
+#if GTK_CHECK_VERSION(3, 4, 0)
+static void show_table(GtkGrid *view, GPtrArray *buttons);
+#else
 static void show_table(GtkTable *view, GPtrArray *buttons);
+#endif
 static void scale_label(GtkEventBox *button, double factor);
 
 static void index_changed_cb(UIMCandidateWindow *cwin)
@@ -481,8 +485,13 @@ candidate_window_init(UIMCandidateWindow *cwin)
 				 GTK_POLICY_NEVER);
   gtk_box_pack_start(GTK_BOX(cwin->vbox), cwin->scrolled_window, TRUE, TRUE, 0);
 
+#if GTK_CHECK_VERSION(3, 4, 0)
+  cwin->view = gtk_grid_new();
+  gtk_grid_set_column_spacing(GTK_GRID(cwin->view), 10);
+#else
   cwin->view = gtk_table_new(1, DEFAULT_NR_CELLS, FALSE);
   gtk_table_set_col_spacings(GTK_TABLE(cwin->view), 10);
+#endif
   g_signal_connect(G_OBJECT(cwin->view), "destroy",
   		   G_CALLBACK(cb_table_view_destroy), cwin->stores);
   cwin->viewport = gtk_viewport_new(NULL, NULL);
@@ -505,7 +514,13 @@ candidate_window_init(UIMCandidateWindow *cwin)
 #else
     g_signal_connect_after(label, "expose-event", G_CALLBACK(label_exposed), cwin);
 #endif
+#if GTK_CHECK_VERSION(3, 4, 0)
+    gtk_widget_set_hexpand(button, TRUE);
+    gtk_widget_set_vexpand(button, TRUE);
+    gtk_grid_attach(GTK_GRID(cwin->view), button, col, 0, 1, 1);
+#else
     gtk_table_attach_defaults(GTK_TABLE(cwin->view), button, col, col + 1, 0, 1);
+#endif
     idxbutton = g_malloc(sizeof(struct index_button));
     if (idxbutton) {
       idxbutton->button = GTK_EVENT_BOX(button);
@@ -579,7 +594,13 @@ assign_cellbutton(GPtrArray *buttons, gint cand_index, gint display_limit)
 #else
     g_signal_connect_after(label, "expose-event", G_CALLBACK(label_exposed), cwin);
 #endif
+#if GTK_CHECK_VERSION(3, 4, 0)
+    gtk_widget_set_hexpand(button, TRUE);
+    gtk_widget_set_vexpand(button, TRUE);
+    gtk_grid_attach(GTK_GRID(cwin->view), button, cand_index, 0, 1, 1);
+#else
     gtk_table_attach_defaults(GTK_TABLE(cwin->view), button, cand_index, cand_index + 1, 0, 1);
+#endif
     idxbutton = g_malloc(sizeof(struct index_button));
     if (idxbutton) {
       idxbutton->button = GTK_EVENT_BOX(button);
@@ -1157,8 +1178,9 @@ update_table_button(GtkTreeModel *model, GPtrArray *buttons, gint display_limit)
       g_free(idxbutton);
       g_ptr_array_remove_index(buttons, i);
     }
-
+#if !GTK_CHECK_VERSION(3, 4, 0)
     gtk_table_resize(GTK_TABLE(cwin->view), 1, cand_index);
+#endif
   }
 }
 
@@ -1185,7 +1207,11 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
   if (cwin->stores->pdata[new_page]) {
     update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
                         cwin->buttons, cwin->display_limit);
+#if GTK_CHECK_VERSION(3, 4, 0)
+    show_table(GTK_GRID(cwin->view), cwin->buttons);
+#else
     show_table(GTK_TABLE(cwin->view), cwin->buttons);
+#endif
   }
 
   cwin->page_index = new_page;
@@ -1372,7 +1398,11 @@ uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
   gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x3, y);
 }
 static void
+#if GTK_CHECK_VERSION(3, 4, 0)
+show_table(GtkGrid *view, GPtrArray *buttons)
+#else
 show_table(GtkTable *view, GPtrArray *buttons)
+#endif
 {
   gint col;
 
