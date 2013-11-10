@@ -298,8 +298,7 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
   prev_selected = horizontal_cwin->selected;
   if (prev_selected) {
     GtkWidget *label = gtk_bin_get_child(GTK_BIN(prev_selected->button));
-    gtk_widget_unmap(label);
-    gtk_widget_map(label);
+    gtk_widget_queue_draw(label);
   }
 
   for (i = 0; i < (gint)horizontal_cwin->buttons->len; i++) {
@@ -313,8 +312,7 @@ button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
     if (p == button) {
       GtkWidget *label = gtk_bin_get_child(GTK_BIN(button));
       idx = idxbutton->cand_index_in_page;
-      gtk_widget_unmap(label);
-      gtk_widget_map(label);
+      gtk_widget_queue_draw(label);
       horizontal_cwin->selected = idxbutton;
       break;
     }
@@ -454,12 +452,10 @@ uim_cand_win_horizontal_gtk_set_index(UIMCandWinHorizontalGtk *horizontal_cwin, 
     prev_selected = (gpointer)horizontal_cwin->selected;
     if (prev_selected && prev_index != cwin->candidate_index) {
       label = gtk_bin_get_child(GTK_BIN(prev_selected->button));
-      gtk_widget_unmap(label);
-      gtk_widget_map(label);
+      gtk_widget_queue_draw(label);
     }
     label = gtk_bin_get_child(GTK_BIN(idxbutton->button));
-    gtk_widget_unmap(label);
-    gtk_widget_map(label);
+    gtk_widget_queue_draw(label);
     horizontal_cwin->selected = idxbutton;
 
     /* show subwin */
