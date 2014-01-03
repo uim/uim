@@ -1752,7 +1752,7 @@
     (im-select-candidate bc compensated-n)))
 
 (define (byeoru-cancel-conv bc)
-  (im-deactivate-candidate-selector bc)
+  (byeoru-deactivate-candidate-selector bc)
   (case (byeoru-context-mode bc)
     ((conv)
      (byeoru-context-set-mode! bc 'hangul)
@@ -1779,7 +1779,7 @@
     (byeoru-context-set-conv-hist!
      bc (byeoru-exclusive-cons (cons key (car cand))
 			       (byeoru-context-conv-hist bc)))
-    (im-deactivate-candidate-selector bc)
+    (byeoru-deactivate-candidate-selector bc)
     (byeoru-context-set-mode! bc 'hangul)
     (ustr-set-former-seq! word (ustr-latter-seq convr))))
 
@@ -1792,7 +1792,7 @@
        bc (byeoru-take (byeoru-exclusive-cons str cache string=?)
 		       byeoru-symbol-cache-size)))
 
-    (im-deactivate-candidate-selector bc)
+    (byeoru-deactivate-candidate-selector bc)
     (case (byeoru-context-mode bc)
       ((menu)
        (let ((cand (list-ref cands (byeoru-context-menu-no bc))))
@@ -1956,7 +1956,11 @@
 
 (define (byeoru-deactivate-candidate-selector bc)
   (if (not (eq? (byeoru-context-mode bc) 'hangul))
-      (im-deactivate-candidate-selector bc)))
+      (let ((cand-no (byeoru-context-cand-no bc))
+	    (menu-no (byeoru-context-menu-no bc)))
+	(im-deactivate-candidate-selector bc)
+	(byeoru-context-set-cand-no! bc cand-no)
+	(byeoru-context-set-menu-no! bc menu-no))))
 
 (define (byeoru-reset-handler bc)
   (if (byeoru-context-on? bc)
