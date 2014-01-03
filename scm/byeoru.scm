@@ -1784,8 +1784,8 @@
     (ustr-set-former-seq! word (ustr-latter-seq convr))))
 
 (define (byeoru-select-menu-or-symbol bc)
-  (let* ((cands (byeoru-context-cands bc))
-	 (cache (byeoru-context-cache bc)))
+  (let ((cands (byeoru-context-cands bc))
+	(cache (byeoru-context-cache bc)))
 
     (define (update-cache str)
       (byeoru-context-set-cache!
