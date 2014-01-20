@@ -727,6 +727,9 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
 #if GTK_CHECK_VERSION(3, 0, 0)
+ #if GTK_CHECK_VERSION(3, 7, 8)
+  gtk_widget_queue_resize(GTK_WIDGET(cwin->view));
+ #endif
   gtk_widget_get_preferred_size(GTK_WIDGET(cwin), &req, NULL);
 #else
   gtk_widget_size_request(GTK_WIDGET(cwin), &req);
