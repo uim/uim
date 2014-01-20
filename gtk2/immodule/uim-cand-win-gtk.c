@@ -728,7 +728,8 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
 
 #if GTK_CHECK_VERSION(3, 0, 0)
  #if GTK_CHECK_VERSION(3, 7, 8)
-  gtk_widget_queue_resize(GTK_WIDGET(cwin->view));
+  if (GTK_IS_TREE_VIEW(cwin->view))
+    gtk_widget_queue_resize(GTK_WIDGET(cwin->view));
  #endif
   gtk_widget_get_preferred_size(GTK_WIDGET(cwin), &req, NULL);
 #else
