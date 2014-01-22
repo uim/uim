@@ -727,10 +727,6 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
 #if GTK_CHECK_VERSION(3, 0, 0)
- #if GTK_CHECK_VERSION(3, 7, 8)
-  if (GTK_IS_TREE_VIEW(cwin->view))
-    gtk_widget_queue_resize_no_redraw(GTK_WIDGET(cwin->view));
- #endif
   gtk_widget_get_preferred_size(GTK_WIDGET(cwin), &req, NULL);
 #else
   gtk_widget_size_request(GTK_WIDGET(cwin), &req);
@@ -769,6 +765,10 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   }
 
   gtk_window_move(GTK_WINDOW(cwin), x, y);
+#if GTK_CHECK_VERSION(3, 7, 8)
+  if (gtk_widget_get_mapped(cwin->view) && GTK_IS_TREE_VIEW(cwin->view))
+    gtk_widget_queue_resize_no_redraw(cwin->view);
+#endif
 
   uim_cand_win_gtk_layout_sub_window(cwin);
 }
