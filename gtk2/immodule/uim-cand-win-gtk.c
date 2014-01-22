@@ -765,6 +765,10 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   }
 
   gtk_window_move(GTK_WINDOW(cwin), x, y);
+#if GTK_CHECK_VERSION(3, 7, 8)
+  if (gtk_widget_get_mapped(cwin->view) && GTK_IS_TREE_VIEW(cwin->view))
+    gtk_widget_queue_resize_no_redraw(cwin->view);
+#endif
 
   uim_cand_win_gtk_layout_sub_window(cwin);
 }

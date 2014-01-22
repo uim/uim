@@ -801,6 +801,9 @@ candwin_show_page(gchar **str)
 
   uim_cand_win_gtk_set_page(cwin, page);
   gtk_widget_show_all(GTK_WIDGET(cwin));
+#if GTK_CHECK_VERSION(3, 7, 8)
+  gtk_widget_queue_resize_no_redraw(cwin->view);
+#endif
 }
 
 static void str_parse(gchar *str)
