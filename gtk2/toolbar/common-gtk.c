@@ -171,31 +171,61 @@ static gboolean prop_menu_showing = FALSE;
 static gboolean custom_enabled;
 static gboolean with_dark_bg;
 
-static void set_button_style(GtkWidget *button);
+static void set_button_style(GtkWidget *button, gint type);
 static const char *safe_gettext(const char *msgid);
 static gboolean has_n_strs(gchar **str_list, guint n);
 static gboolean register_icon(const gchar *name);
 static void reset_icon(void);
 
 static void
-set_button_style(GtkWidget *button)
+set_button_style(GtkWidget *button, gint type)
 {
 #if GTK_CHECK_VERSION(2, 90, 0)
     GtkStyleContext *context = gtk_widget_get_style_context(button);
     GtkCssProvider *provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(provider,
-                                    "#uim-systray-button {\n"
-                                    " -GtkWidget-focus-line-width: 0;\n"
-                                    " -GtkWidget-focus-padding: 0;\n"
-                                    " padding-top: 0;\n"
-                                    " padding-bottom: 0;\n"
-                                    "}\n", -1, NULL);
+    switch (type) {
+    case TYPE_ICON:
+        gtk_css_provider_load_from_data(provider,
+                                        "#uim-systray-button {\n"
+                                        " -GtkWidget-focus-line-width: 0;\n"
+                                        " -GtkWidget-focus-padding: 0;\n"
+                                        " padding-top: 0;\n"
+                                        " padding-bottom: 0;\n"
+                                        " padding-left: 2px;\n"
+                                        " padding-right: 2px;\n"
+                                        "}\n", -1, NULL);
+	break;
+    case TYPE_STANDALONE:
+        gtk_css_provider_load_from_data(provider,
+                                        "#uim-toolbar-button {\n"
+                                        " padding-left: 5px;\n"
+                                        " padding-right: 5px;\n"
+                                        "}\n", -1, NULL);
+	break;
+    case TYPE_APPLET:
+         gtk_css_provider_load_from_data(provider,
+                                        "#uim-applet-button {\n"
+                                        " padding-left: 2px;\n"
+                                        " padding-right: 2px;\n"
+                                        "}\n", -1, NULL);
+	break;
+   }
     gtk_style_context_add_provider(context,
                                    GTK_STYLE_PROVIDER(provider),
                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     g_object_unref(provider);
 #endif
-    gtk_widget_set_name(button, "uim-systray-button");
+    switch (type) {
+    case TYPE_ICON:
+        gtk_widget_set_name(button, "uim-systray-button");
+	break;
+    case TYPE_STANDALONE:
+        gtk_widget_set_name(button, "uim-toolbar-button");
+	break;
+    case TYPE_APPLET:
+        gtk_widget_set_name(button, "uim-applet-button");
+	break;
+    }
 }
 
 static const char *
@@ -619,8 +649,7 @@ button_create(GtkWidget *widget, GtkSizeGroup *sg, const gchar *icon_name,
     button = gtk_button_new_with_label(label);
   }
 
-  if (type == TYPE_ICON)
-    set_button_style(button);
+  set_button_style(button, type);
 
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
@@ -844,9 +873,9 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 
     tool_button = gtk_button_new();
 
-    if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
-			OBJECT_DATA_TOOLBAR_TYPE)) == TYPE_ICON)
-      set_button_style(tool_button);
+    set_button_style(tool_button,
+                     GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+                                     OBJECT_DATA_TOOLBAR_TYPE)));
 
     g_object_set_data(G_OBJECT(tool_button), OBJECT_DATA_BUTTON_TYPE,
 		      GINT_TO_POINTER(BUTTON_TOOL));
