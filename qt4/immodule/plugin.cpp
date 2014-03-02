@@ -34,6 +34,8 @@
 
 #include "plugin.h"
 
+#include <clocale>
+
 #include <QtCore/QStringList>
 #ifdef Q_WS_X11
 # include <QtGui/QX11Info>
