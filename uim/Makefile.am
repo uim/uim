@@ -6,7 +6,7 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = encoding-table.c test-gc.c version.h.in
 
-uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
+uim_defs = -DSCM_FILES=\"$(datadir)/uim:$(sysconfdir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
 CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
 CXXFLAGS = @CXXFLAGS@
@@ -310,7 +310,7 @@ if LIBEDIT
 endif
 
 uim_module_manager_LIBS =
-uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"
+uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\" -DUIM_CONFDIR=\""$(sysconfdir)/uim"\"
 uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim-scm.la libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
