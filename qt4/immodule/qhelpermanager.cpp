@@ -95,11 +95,13 @@ void QUimHelperManager::checkHelperConnection()
 
 void QUimHelperManager::slotStdinActivated()
 {
-    QString tmp;
-
+    char *tmp;
     uim_helper_read_proc( im_uim_fd );
-    while ( !( tmp = QString::fromUtf8( uim_helper_get_message() ) ).isEmpty() )
-        parseHelperStr( tmp );
+    while ((tmp = uim_helper_get_message()))
+    {
+        parseHelperStr(QString::fromUtf8(tmp));
+        free(tmp);
+    }
 }
 
 void QUimHelperManager::parseHelperStr( const QString &str )
