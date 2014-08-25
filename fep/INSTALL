@@ -1,10 +1,10 @@
-* ɬ�פʥ饤�֥��
+* 必要なライブラリ
 
-  o libncurses��libcurses
+  o libncursesかlibcurses
 
-o ����ѥ�����ˡ
+o コンパイル方法
 
-  ����Ū�ˤϤ����OK�Ǥ���/usr/local/bin�˥��󥹥ȡ��뤵��ޤ���
+  基本的にはこれでOKです。/usr/local/binにインストールされます。
   
    $ ./configure
    $ make
@@ -12,21 +12,21 @@ o ����ѥ�����ˡ
    # make install
 
 
-* anthy�Υ��󥹥ȡ���
-  anthy��Ȥ�����ˤ�anthy�򥤥󥹥ȡ��뤹��ɬ�פ�����ޤ���
+* anthyのインストール
+  anthyを使うためにはanthyをインストールする必要があります。
   http://sourceforge.jp/projects/anthy/
 
 
-* prime�Υ��󥹥ȡ���
-  prime��Ȥ�����ˤ�prime�򥤥󥹥ȡ��뤹��ɬ�פ�����ޤ���
+* primeのインストール
+  primeを使うためにはprimeをインストールする必要があります。
   http://taiyaki.org/prime/
 
 
-* skk�Υ��󥹥ȡ���
-  skk��Ȥ�����ˤ�SKK-JISYO.L��/usr/share/skk���֤�ɬ�פ�����ޤ���
+* skkのインストール
+  skkを使うためにはSKK-JISYO.Lを/usr/share/skkに置く必要があります。
   http://openlab.ring.gr.jp/skk/dic-ja.html
 
 
-* canna�Υ��󥹥ȡ���
-  canna��Ȥ�����ˤ�canna�򥤥󥹥ȡ��뤷��cannaserver��ư����ɬ�פ�����ޤ���
+* cannaのインストール
+  cannaを使うためにはcannaをインストールしてcannaserverを起動する必要があります。
   http://canna.sourceforge.jp/

@@ -1,46 +1,46 @@
-uim-fep��uim�����Ѥ��ƥ��󥽡����¿��������Ϥ��뤿���fep�Ǥ���
+uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
 
 
-* ���󥹥ȡ���
-  INSTALL�򸫤Ƥ���������
+* インストール
+  INSTALLを見てください。
 
 
-* �Ȥ���
-  LANG�˻��Ѥ������ȥ��󥳡��ǥ��󥰤����ꤷ�ޤ���
-  LC_ALL��LC_CTYPE�Ǥ⤤���Ǥ���
-  ���ݡ��Ȥ���Ƥ������ȥ��󥳡��ǥ��󥰤�
+* 使い方
+  LANGに使用する言語とエンコーディングを設定します。
+  LC_ALLかLC_CTYPEでもいいです。
+  サポートされている言語とエンコーディングは
   locale -a
-  �ǳ�ǧ�Ǥ���Ȼפ��ޤ���
+  で確認できると思います。
 
-  �� sh�Ϥ�ja_JP.euc-jp�ˤ���
+  例 sh系でja_JP.euc-jpにする
   $ LANG=ja_JP.eucjp ; export LANG
 
-  �� csh�Ϥ�ja_JP.utf-8�ˤ���
+  例 csh系でja_JP.utf-8にする
   % setenv LANG ja_JP.utf8
 
-  �� Solaris��euc-jp�ǻȤ�
+  例 Solarisでeuc-jpで使う
   $ LANG=ja ; export LANG
   % setenv LANG ja
 
   $ uim-fep
-  SHELL����ư���ޤ��������Х���ɤʤɤ�uim�Υޥ˥奢��򸫤Ƥ���������
+  SHELLが起動します。キーバインドなどはuimのマニュアルを見てください。
 
-  �Ѵ����󥸥��~/.uim��
+  変換エンジンは~/.uimに
   (define default-im-name 'anthy)
-  �Τ褦�˽񤭤ޤ���
+  のように書きます。
 
-  ����
-  �ǥե���ȤΥ����Х���ɤǤϡ�uim-fep�Ǥϰʲ������Ԥ��ޤ���
+  注意
+  デフォルトのキーバインドでは、uim-fepでは以下の操作が行えません。
   anthy
-  ʸ���̤��
+  文節を縮める
   prime
-  ���ѱѿ��⡼�ɤ˥⡼���ѹ�
+  全角英数モードにモード変更
   canna
-  ʸ���̤��
+  文節を縮める
 
-  ����������Ԥ�����ˤ�uim-pref�ǥ����Х���ɤ����ꤹ�뤫~/.uim�˼��Τ褦�˽񤭤ޤ���
+  これらの操作を行うためにはuim-prefでキーバインドを設定するか~/.uimに次のように書きます。
 
-  ��
+  例
   (require-module "anthy")
   (define-key anthy-shrink-segment-key? '("tab" "<IgnoreCase><Control>i" "<Shift>left"))
   (require-module "prime")
@@ -49,68 +49,68 @@ uim-fep��uim�����Ѥ��ƥ��󥽡����¿��������Ϥ��뤿���fep�Ǥ���
   (define-key canna-shrink-segment-key? '("tab" "<IgnoreCase><Control>i" "<Shift>left"))
 
 
-* �Ķ��ѿ�
+* 環境変数
   o TERM
-    terminfo/termcap��ü��̾����ꤷ�ޤ���
-    ���줬Ŭ�ڤ����ꤵ��Ƥ��ʤ��ȻȤ��ޤ���
+    terminfo/termcapの端末名を指定します。
+    これが適切に設定されていないと使えません。
 
   o SHELL
-    -e���ץ���󤬻��ꤵ��Ƥ��ʤ��Ȥ��˵�ư����륳�ޥ�ɤ���ꤷ�ޤ���
-    ���ޥ��̾�����Хѥ������ꤷ�Ƥ���������
+    -eオプションが指定されていないときに起動されるコマンドを指定します。
+    コマンド名か絶対パスを設定してください。
 
   o LC_ALL LC_CTYPE LANG
-    ʸ�������ɤ����Ȥ��ˤ��ν��֤Ǹ��ޤ���
+    文字コードを決めるときにこの順番で見ます。
 
   o WINDOW
-    backtick��ȤäƤ���Ȥ���ɽ������ޤ���
+    backtickを使っているときに表示されます。
 
   o UIM_FEP_PID
-    uim-fep��PID�����ꤵ��ޤ���
+    uim-fepのPIDが設定されます。
 
   o UIM_FEP_GETMODE
-    uim-fep�Υ⡼�ɤ��񤭹��ޤ��ե�����Ǥ���
+    uim-fepのモードが書き込まれるファイルです。
 
   o UIM_FEP_SETMODE
-    ���Υե�����˥⡼�ɤ�񤭹����uim-fep�Υ⡼�ɤ��Ѥ��ޤ���
+    このファイルにモードを書き込むとuim-fepのモードが変わります。
     $ echo 0 > $UIM_FEP_SETMODE
 
   o LIBUIM_USER_SCM_FILE
-    uim������ե��������ꤷ�ޤ����������Ƥ��ʤ���~/.uim�ˤʤ�ޤ���
+    uimの設定ファイルを指定します。定義されていないと~/.uimになります。
 
 
-* ���ץ����
+* オプション
 
   o -u <engine>
-    �Ѵ����󥸥����ꤷ�ޤ���
+    変換エンジンを指定します。
 
   o -s lastline | backtick | none
-    ���ơ������饤���ɽ��������ꤷ�ޤ���
-    -sl, -sb, -sn�Τ褦�˾�ά�Ǥ��ޤ���
+    ステータスラインの表示場所を指定します。
+    -sl, -sb, -snのように省略できます。
 
   o -b <file>
-    backtick�ǻȤ�socket�Υѥ�����ꤷ�ޤ������Хѥ��ΤȤ��ϡ�~/.uim.d/fep/
-    ����Υѥ��ˤʤ�ޤ���
+    backtickで使うsocketのパスを指定します。相対パスのときは、~/.uim.d/fep/
+    からのパスになります。
 
-  o -w <����>
-    ���ơ������饤������Ǥ���
+  o -w <数値>
+    ステータスラインの幅です。
   
-  o -t <��>
-    rsh��ȤäƤ����"F1", "up", "<Alt>a"�ʤɤ�ǧ������ʤ����Ȥ�����
-    �ޤ�������ϥ��������ץ������󥹤����٤����Ϥ���ʤ�����Ǥ���
-    ���Τ褦�ʾ��Ϥ��Υ��ץ����ǥ��������פΤ��Ȥ��Ԥ����֤����ꤷ
-    �ޤ������Υ��ץ������դ��ʤ��Ȥ����Ԥ����֤�0�äǤ���
-    �� �Ԥ����֤�0.1�äˤ���
+  o -t <秒>
+    rshを使っていると"F1", "up", "<Alt>a"などが認識されないことがあり
+    ます。これはエスケープシーケンスが一度に入力されないからです。
+    そのような場合はこのオプションでエスケープのあとの待ち時間を設定し
+    ます。このオプションを付けないときの待ち時間は0秒です。
+    例 待ち時間を0.1秒にする
     $ uim-fep -t 0.1
 
   o -C [<foreground color>]:[<background color>]
-     �ץꥨ�ǥ��åȤ�-s lastline�ΤȤ��Υ��ơ������饤��ο�����ꤷ��
-     �������Ѥ��륢�ץꥱ���������طʿ����̾���طʿ��Ȱ㤦���ˤ�
-     �Υ��ץ����ǿ����碌�Ƥ���������
+     プリエディットや-s lastlineのときのステータスラインの色を指定しま
+     す。使用するアプリケーションの背景色が通常の背景色と違う場合にこ
+     のオプションで色を合わせてください。
 
-     <foreground color>��<background color>����ʬ�ϼ���16�����Ȥ��ޤ���
-     lightblack��겼�ο���ɽ���Ǥ��ʤ�ü��������ޤ���
+     <foreground color>、<background color>の部分は次の16色が使えます。
+     lightblackより下の色は表示できない端末があります。
 
-                 ��ά��ˡ
+                 省略記法
      black          k
      red            r
      green          g
@@ -128,310 +128,310 @@ uim-fep��uim�����Ѥ��ƥ��󥽡����¿��������Ϥ��뤿���fep�Ǥ���
      lightcyan      lc
      lightwhite     lw
 
-     �� ���ʿ������طʿ�����ˤ���jed��ư����
+     例 前景色を白、背景色を黒にしてjedを起動する
      $ uim-fep -C white:black -e jed
-     �� �طʿ����Ĥˤ���
+     例 背景色を青にする
      $ uim-fep -C :blue
-     �� ���ʿ��򲫿��ˤ���
+     例 前景色を黄色にする
      $ uim-fep -C yellow:
 
   o -c
-    ����������֤�ʸ����ȿžɽ�����ޤ���
-    kterm, aterm, rxvt, teraterm(�����������Ǥʤ��ξ���)�ʤɤ�ü��
-    �Ǥ�ȿž���줿ʸ���˥������뤬�����ȿž���ä��뤳�Ȥ�����ޤ���
-    ���Τ褦�ʾ��Ϥ��Υ��ץ������դ����ȿžʸ���˥������뤬
-    ����Ȥ���ȿž�����褦�ˤʤ�ޤ���
+    カーソル位置の文字を反転表示します。
+    kterm, aterm, rxvt, teraterm(カーソル点滅なしの状態)などの端末
+    では反転された文字にカーソルがあると反転が消えることがあります。
+    このような場合はこのオプションを付けると反転文字にカーソルが
+    あるときに反転されるようになります。
 
   o -i
-    ���ơ������饤������褷�Ƥ���Ȥ���ץꥨ�ǥ��å�(̤����ʸ����)
-    �������ʳ����Խ����Ƥ���Ȥ��˥����������Ū�˾ä��ޤ�������
-    ����λ��������ˤʤ�Ȥ��Ϥ��Υ��ץ������դ��Ƥ���������
+    ステータスラインを描画しているときやプリエディット(未確定文字列)
+    の末尾以外を編集しているときにカーソルを一時的に消します。カー
+    ソルの残像が気になるときはこのオプションを付けてください。
 
   o -o
-    �ץꥨ�ǥ��åȤ�ɽ�����������On The Spot�ˤ��ޤ���jed�ʤɤ���
-    �ʿ������륢�ץꥱ��������Ȥ��ȱ�ü���طʿ����ä��뤳�Ȥ���
-    ��ޤ���
+    プリエディットの表示スタイルをOn The Spotにします。jedなどの背
+    景色があるアプリケーションを使うと右端の背景色が消えることがあ
+    ります。
 
   o -S
-    GNU screen�ǥե��륿�Ȥ��ƻȤ���褦�ˤ��ޤ���(GNU screen 4.0.2�ʹ�)
-    �㤨�С�~/.screenrc��
+    GNU screenでフィルタとして使えるようにします。(GNU screen 4.0.2以降)
+    例えば、~/.screenrcに
 
     bind J exec | uim-fep -S
     bind K eval 'exec cat' kill redisplay
 
-    ���Τ褦�˽񤱤С�C-a J��uim-fep��ե��륿�Ȥ��Ƶ�ư����C-a K
-    �ǽ�λ�Ǥ���褦�ˤʤ�ޤ���
+    このように書けば、C-a Jでuim-fepをフィルタとして起動し、C-a K
+    で終了できるようになります。
 
-    -s���ץ����ˤ�����餺�⡼��ɽ���ˤ�
-    backtick���Ȥ��ޤ���
+    -sオプションにかかわらずモード表示には
+    backtickが使われます。
 
-    UIM_FEP_SETMODE, UIM_FEP_GETMODE���ͤ�
+    UIM_FEP_SETMODE, UIM_FEP_GETMODEの値は
     $HOME/.uim.d/fep/setmode-$STY-$WINDOW-screen
     $HOME/.uim.d/fep/getmode-$STY-$WINDOW-screen
-    �ˤʤ�ޤ���
+    になります。
 
   o -f str
-    $UIM_FEP_SETMODE��$UIM_FEP_GETMODE�Υե�����̾��
+    $UIM_FEP_SETMODEと$UIM_FEP_GETMODEのファイル名を
     setmode-{str}
     setmode-{str}
-    �ˤ��ޤ���{str}��-f���ץ����ΰ����Ǥ���
-    UIM_FEP_SETMODE��UIM_FEP_GETMODE���֤����ǥ��쥯�ȥ��
-    ~/.uim.d/fep/�Ǥ���
+    にします。{str}は-fオプションの引数です。
+    UIM_FEP_SETMODEとUIM_FEP_GETMODEが置かれるディレクトリは
+    ~/.uim.d/fep/です。
 
   o -d
-    ���������ɽ�����������ddskk�Τ褦�ˤ��ޤ���
+    候補一覧の表示スタイルをddskkのようにします。
 
   o -K
-    �����줿������~/.uim�Ǥ�ɽ���򼨤��ޤ���
-    -t���ץ����ʳ��Υ��ץ�����̵�뤵��ޤ���
+    押されたキーの~/.uimでの表記を示します。
+    -tオプション以外のオプションは無視されます。
 
   o -e command arg1 arg2 ...
-    ��ư���륳�ޥ�ɤ���ꤷ�ޤ������Υ��ץ����ʹߤΰ�����
-    command���Ϥ���ޤ���
+    起動するコマンドを指定します。このオプション以降の引数は
+    commandに渡されます。
 
-  o -h �إ�ץ�å�������ɽ�����ޤ���
+  o -h ヘルプメッセージを表示します。
 
-  o -v �С�������ɽ�����ޤ���
+  o -v バージョンを表示します。
 
 
-* backtick�λȤ���
-  GNU screen 3.9.15�ʹߤ�ɬ�פǤ���
+* backtickの使い方
+  GNU screen 3.9.15以降が必要です。
 
-  uim-fep-tick��PATH���̤ä��Ȥ������֤��Ƥ���������
-  ~/.screenrc��
+  uim-fep-tickをPATHの通ったところに置いてください。
+  ~/.screenrcに
 
     backtick 0 0 0 uim-fep-tick
     hardstatus alwayslastline "%0`"
 
-  �Ƚ񤭤ޤ���
-  screen�Υ�����ɥ���
+  と書きます。
+  screenのウィンドウで
 
     $ uim-fep -s backtick
 
-  �ȵ�ư���ޤ���
+  と起動します。
 
-  o uim-fep-tick�Υ��ץ����
+  o uim-fep-tickのオプション
     * -s <file>
-      socket�Υѥ������Ǥ��ޤ������Хѥ��ΤȤ��ϡ�~/.uim.d/fep/
-      ����Υѥ��ˤʤ�ޤ���
+      socketのパスを指定できます。相対パスのときは、~/.uim.d/fep/
+      からのパスになります。
 
-    * -h �إ�ץ�å�������ɽ�����ޤ���
+    * -h ヘルプメッセージを表示します。
 
-    * -v �С�������ɽ�����ޤ���
+    * -v バージョンを表示します。
   
-  o uim-fep��screen���ʣ���Υ�����ɥ��ǵ�ư�Ǥ��ޤ���
+  o uim-fepはscreen内の複数のウィンドウで起動できます。
 
-  o uim-fep-tick��screen���鵯ư����뤿�ᡢscreen�δĶ��ѿ��������Ѥ�
-    ��ޤ���
+  o uim-fep-tickはscreenから起動されるため、screenの環境変数が引き継が
+    れます。
 
-  o backtick��ȿ�����ʤ��ʤä���
+  o backtickの反応がなくなったら
     $ screen -X backtick 0 0 0 uim-fep-tick
-    �ȵ�ư���Ƥ���������
+    と起動してください。
 
 
-* ~/.uim��񤯤Ȥ���������
-  o ������ɽ��ˡ�ˤĤ��Ƥ�README.key�򻲾Ȥ��Ƥ���������
+* ~/.uimを書くときの注意点
+  o キーの表記法についてはREADME.keyを参照してください。
 
-  o Alt������Ȥ��ˤ�Alt�򲡤��ʤ���¾�Υ����򲡤����Ȥ��ˡ�^[�����Ϥ�
-  ���褦�ˤ��ޤ���
-  mlterm�ξ���~/.mlterm/main�˼��Τ褦�˽񤭤ޤ���
+  o Altキーを使うにはAltを押しながら他のキーを押したときに、^[が出力さ
+  れるようにします。
+  mltermの場合は~/.mlterm/mainに次のように書きます。
     mod_meta_mode=esc
-  kterm�ξ���~/.Xresource��~/.Xdefaults�˼��Τ褦�˽񤭤ޤ���
+  ktermの場合は~/.Xresourceか~/.Xdefaultsに次のように書きます。
     KTerm*EightBitInput: false
 
-  o "<Alt>F1", "<Alt>right"�ʤɤ��Ȥ���ü���⤢��ޤ���
+  o "<Alt>F1", "<Alt>right"などが使える端末もあります。
 
-  o shift-space�����ϤǤ��ޤ���
+  o shift-spaceは入力できません。
 
-  o prime-wide-latin-key?��"<Control>L"�����ϤǤ��ޤ���
+  o prime-wide-latin-key?の"<Control>L"は入力できません。
 
-  o shift-backspace�����ϤǤ��ޤ���
+  o shift-backspaceは入力できません。
 
 
-* ������쥯�Ȥ�ư��
-  ɸ����ϤΥ�����쥯�Ȥ�uim-fep�Ȼҥץ�����(������)�Τ��٤Ƥν��Ϥ��ѹ����ޤ���
+* リダイレクトの動作
+  標準出力のリダイレクトはuim-fepと子プロセス(シェル)のすべての出力を変更します。
 
-  ��: log�ˤ��٤Ƥν��Ϥ�񤭹���(script���ޥ�ɤ�Ʊ��)
+  例: logにすべての出力を書き込む(scriptコマンドと同じ)
   $ uim-fep|tee log
 
-  ���ϤΥ�����쥯�Ȥϻҥץ�������ɸ�����Ϥ��ѹ����ޤ���
+  入力のリダイレクトは子プロセスの標準入力を変更します。
 
-  ��: ls�ν��Ϥ�w3m�Ǹ���
+  例: lsの出力をw3mで見る
   $ ls|uim-fep -e w3m
 
 
-* ������
-  o �ץꥨ�ǥ��å��Խ����ü���Υ��������ѹ�������ɽ�������뤳�Ȥ�
-    ����ޤ���
+* 問題点
+  o プリエディット編集中に端末のサイズが変更されると表示が乱れることが
+    あります。
 
-  o screen�����uim-fep��-s lastline�ǻȤäƤ���Ȥ�ü���Υ��������ѹ�
-    ����ȵ���screen��˽�����뤳�Ȥ�����ޤ���
+  o screenの中でuim-fepを-s lastlineで使っているとき端末のサイズを変更
+    すると稀にscreenが暴走することがあります。
 
-  o ̵ȿ���ˤʤä���˽�������ꤷ����
-    $ kill -INT <uim-fep��pid>
-    ���Υ��ޥ�ɤ�ľ��Ȼפ��ޤ����������Ѵ��ϤǤ��ʤ��ʤ�ޤ���
-
-
-* ����
-  ��ܥ��󥯥�å���Shift+Insert�Υڡ����Ȥʤɤǰ��٤����̤����Ϥ��줿
-  �Ȥ����Ѵ������ˤ��Τޤ޽��Ϥ���ޤ���
-  �ץꥨ�ǥ��åȤ�������˥ڡ����Ȥ����̵���ˤʤ�ޤ���
-
-  ü���α�ü�ǥץꥨ�ǥ��åȤ򳫻Ϥ���ȼ��ιԤ˰ܤ�ޤ��� 
+  o 無反応になったり暴走したりしたら
+    $ kill -INT <uim-fepのpid>
+    このコマンドで直ると思います。ただし変換はできなくなります。
 
 
-* ����
+* 注意
+  中ボタンクリックやShift+Insertのペーストなどで一度に大量に入力された
+  ときは変換せずにそのまま出力されます。
+  プリエディットを入力中にペーストすると無効になります。
+
+  端末の右端でプリエディットを開始すると次の行に移ります。 
+
+
+* 履歴
   o 2005/6/15
-    * ������쥯�Ȥ�ư����ѹ����ޤ�����(��Ρ֥�����쥯�Ȥ�ư��פ򸫤Ƥ�������)
+    * リダイレクトの動作を変更しました。(上の「リダイレクトの動作」を見てください)
 
   o 2005/5/16
-    * -K���ץ������ɲä��ޤ�����
+    * -Kオプションを追加しました。
 
   o 2005/5/15
-    * -d���ץ������ɲä��ޤ�����
-    * Cygwin��ư���褦�ˤ��ޤ�����(EUC-JP�Τ��б�)
-    * DOS�ץ���ץȤ�ư���褦�ˤ��ޤ�����
-    * ������ɽ��������ѹ����ޤ�����
-      Ctrl + m��"<Control>m"����"return" �ʤ�
-      README.key�򻲾Ȥ��Ƥ���������
+    * -dオプションを追加しました。
+    * Cygwinで動くようにしました。(EUC-JPのみ対応)
+    * DOSプロンプトで動くようにしました。
+    * キーの表記を一部変更しました。
+      Ctrl + mを"<Control>m"から"return" など
+      README.keyを参照してください。
 
   o 2005/2/11
-    * -S���ץ������ɲä��ޤ�����
+    * -Sオプションを追加しました。
 
   o 2004/8/9  0.4.1
-    * �ץꥨ�ǥ��å����������ǿ�����¸����褦�ˤ��ޤ�����
+    * プリエディット描画の前後で色を保存するようにしました。
 
   o 2004/8/1  0.4.0
-    * -C���ץ������ɲä��ޤ�����
+    * -Cオプションを追加しました。
 
   o 2004/7/29 0.3.9
-    * py������ʤ��褦�ˤ��ޤ�����
+    * pyで落ちないようにしました。
 
   o 2004/7/17 0.3.8
-    * Solaris�ǥ���ѥ���Ǥ���褦�ˤ��ޤ�����
+    * Solarisでコンパイルできるようにしました。
 
   o 2004/7/3 0.3.7
-    * wcswidth���ʤ��Ƥ⥳��ѥ���Ǥ���褦�ˤ��ޤ�����
-    * �Ѵ��������ɽ�����ѹ����ޤ�����(���ܸ�ʳ��Ǥ�"�Ĥ�"��ɽ���Ǥ��ʤ�����)
+    * wcswidthがなくてもコンパイルできるようにしました。
+    * 変換候補数の表示を変更しました。(日本語以外では"残り"が表示できないため)
 
   o 2004/6/29 0.3.6
-    * -l���ץ������ѻߤ��ޤ������Ķ��ѿ�LANG��ȤäƤ���������
-    * euc-jp��Ⱦ�ѥ��ʤ�2�����Ȥ��ư��äƤ����Х��������ޤ�����
-    * euc-jp, utf-8�ʳ��Ǥ�Ȥ���褦�ˤ��ޤ�����
-    * -t���ץ������ɲä��ޤ�����
-    * rsh��Ǥ�Ȥ���褦�ˤ��ޤ�����
+    * -lオプションを廃止しました。環境変数LANGを使ってください。
+    * euc-jpで半角カナを2カラムとして扱っていたバグを修正しました。
+    * euc-jp, utf-8以外でも使えるようにしました。
+    * -tオプションを追加しました。
+    * rsh先でも使えるようにしました。
     
   o 2004/6/21 0.3.5
-    * �ǲ��Ԥǵ�ư����Ȥ��������ʤ�Х��������ޤ�����(0.3.4�ΥХ�)
+    * 最下行で起動するとおかしくなるバグを修正しました。(0.3.4のバグ)
 
   o 2004/6/20 0.3.4
-    * �ץꥨ�ǥ��å�����ι�®�����ޤ�����
-    * �Ԥ�٤����Ѵ��ǥ��ߤ��Ĥ�ʤ��褦�ˤ��ޤ�����
-    * -o���ץ������ѻߤ��ޤ�����
+    * プリエディット描画の高速化しました。
+    * 行を跨いだ変換でゴミが残らないようにしました。
+    * -oオプションを廃止しました。
 
   o 2004/6/17 0.3.3
-    * ��̿Ū�ʥХ��������ޤ�����(0.3.2�����ä��Х��Ǥ�)
-    * ������ɥ����������ѹ����줿�Ȥ��˥��ơ������饤�������褹��褦�ˤ��ޤ�����
-    * �ץꥨ�ǥ��å��Խ���˥�����ɥ����������ѹ����줿�Ȥ��˥ץꥨ�ǥ��åȤ�
-      ��񤭤��Ƥ��ޤ��Х��������ޤ�����
+    * 致命的なバグを修正しました。(0.3.2で入ったバグです)
+    * ウィンドウサイズが変更されたときにステータスラインを再描画するようにしました。
+    * プリエディット編集中にウィンドウサイズが変更されたときにプリエディットを
+      上書きしてしまうバグを修正しました。
 
   o 2004/6/13 0.3.2
-    * TERM=vt100�ʤɤǥ⡼��ɽ�����ä��Ƥ��ޤ��Х��������ޤ�����
-    * ���ϻ��˲��̤򥯥ꥢ���ʤ��褦�ˤ��ޤ�����
-    * skk�ǹ�®�����Ϥ����ɽ�������������ʤ�Х��������ޤ�����
+    * TERM=vt100などでモード表示が消えてしまうバグを修正しました。
+    * 開始時に画面をクリアしないようにしました。
+    * skkで高速に入力すると表示がおかしくなるバグを修正しました。
 
   o 2004/6/7 0.3.1
-    * skk��"tt"�����Ϥ����"��t"�Ƚ��Ϥ���褦�ˤ��ޤ�����
-    * �Ԥ�٤����Ѵ���Ǥ���褦�ˤ��ޤ�����
-    * -o���ץ������ɲä��ޤ�����
-    * prime��ɽ��������Х��������ޤ�����
+    * skkで"tt"と入力すると"つt"と出力するようにしました。
+    * 行を跨いだ変換をできるようにしました。
+    * -oオプションを追加しました。
+    * primeで表示が乱れるバグを修正しました。
 
   o 2004/05/31 0.3.0
-    --mlterm���ץ������ѻߤ��ޤ�����
-    -c, -i���ץ������ɲä��ޤ�����
+    --mltermオプションを廃止しました。
+    -c, -iオプションを追加しました。
 
   o 2004/05/29 0.2.9
-    �ڡ����Ȥ����Ϥ��줿Ĺ��ʸ������Ѵ����ʤ��褦�ˤ��ޤ�����
-    ���ơ������饤������褷�Ƥ���Ȥ���ץꥨ�ǥ��åȤ������ʳ����Խ�
-    ���Ƥ���Ȥ��˥����������Ū�˾ä��褦�ˤ��ޤ�����(���̤Ϥ��ޤ�ʤ��Ǥ���)
-    terminfo��clear��ed����ʸ����ΤȤ�˽������Х��������ޤ�����
+    ペーストで入力された長い文字列を変換しないようにしました。
+    ステータスラインを描画しているときやプリエディットの末尾以外を編集
+    しているときにカーソルを一時的に消すようにしました。(効果はあまりないです。)
+    terminfoのclearかedが空文字列のとき暴走するバグを修正しました。
     
   o 2004/05/18 0.2.8
-    --mlterm���ץ������ɲä��ޤ�����
-    vim������Ǥ���褦�ˤ��ޤ�����(KoRoN����)
+    --mltermオプションを追加しました。
+    vimで制御できるようにしました。(KoRoNさん)
 
   o 2004/05/16 0.2.7
-    -s lastline��uim-fep����screen��ư���Ƥ�ɽ�������ʤ��褦�ˤ��ޤ�����
+    -s lastlineのuim-fepからscreenを起動しても表示が乱れないようにしました。
     uim-fep -s lastline -e screen
     
   o 2004/05/15 0.2.6
-    �����Х��������ޤ�����
-    anthy��Ĺ��ʸ������Ѵ�����Ȥ���Τ���Ĥ��򾯤ʤ����ޤ�����
-    screen��(�ץ쥨�ǥ��åȤ��Խ��ʤɤ�)��ü���鼡�ιԤκ�ü�˰�ư�Ǥ���褦�ˤ��ޤ�����
-    jfbterm�Ǻǲ��ԤΥ��ơ������饤���򤯤ʤ�ʤ��褦�ˤ��ޤ�����
+    落ちるバグを修正しました。
+    anthyで長い文字列を変換するときやのちらつきを少なくしました。
+    screenで(プレエディットの編集などで)右端から次の行の左端に移動できるようにしました。
+    jfbtermで最下行のステータスラインが白くならないようにしました。
 
   o 2004/05/10
-    0.2.5 ���̥��ꥢ���˺ǲ��ԤΥ��ơ������饤�������褹��褦�ˤ�����(mattn����)
-    ��λ���˺ǲ��ԤΥ��ơ������饤���ä��褦�ˤ�����(mattn����)
+    0.2.5 画面クリア時に最下行のステータスラインを再描画するようにした。(mattnさん)
+    終了時に最下行のステータスラインを消すようにした。(mattnさん)
 
   o 2004/05/09
-    0.2.4 skk��C-j, /, C-j, /�ν�˲����Ȳ�����Ϥ���ʤ��ʤ�Х�������
+    0.2.4 skkでC-j, /, C-j, /の順に押すと何も出力されなくなるバグを修正。
 
   o 2004/05/06
-    0.2.3 uim-0.3.6���б� (const���դ�������)
-    -v���ץ������ɲ�
-    ���ơ������饤���ä��Ȥ���clr_eol��Ȥ��褦�ˤ�����
+    0.2.3 uim-0.3.6に対応 (constを付けただけ)
+    -vオプションを追加
+    ステータスラインを消すときにclr_eolを使うようにした。
 
   o 2004/05/04
-    0.2.2 ���ơ������饤�󤫤���䤬�Ϥ߽Фʤ��褦�ˤ�����
-    uim-fep-tick��-w���ץ�����uim-fep�Υ��ץ����ˤ�����
-    uim-fep-tick��-l���ץ������ѻߤ�����
+    0.2.2 ステータスラインから候補がはみ出ないようにした。
+    uim-fep-tickを-wオプションをuim-fepのオプションにした。
+    uim-fep-tickの-lオプションを廃止した。
 
   o 2004/05/03
-    0.2.1 nr-candidate-max��0�ʲ��ˤ��Ƥ���������Х�������
+    0.2.1 nr-candidate-maxを0以下にしていると落ちるバグを修正。
 
   o 2004/05/01
-    0.2 �ǲ��Ԥ򥹥ơ������饤��ˤ��ƥ�����ɥ����������ѹ�����Ⱥǲ�
-    �Ԥ˰�ư�Ǥ��Ƥ��ޤ��Х�������
-    Ʊ�������åȤ�Ȥ�uim-fep-tick�Υץ�������2�İʾ�Ǥ��ʤ��褦�ˤ�����
-    �Ϥ߽Ф�����⶯Ĵ����褦�ˤ�����
-    configure�Υ��ץ�����backtick�������Ѥ����褦�ˤ�����
+    0.2 最下行をステータスラインにしてウィンドウサイズを変更すると最下
+    行に移動できてしまうバグを修正。
+    同じソケットを使うuim-fep-tickのプロセスを2つ以上できないようにした。
+    はみ出た候補も強調するようにした。
+    configureのオプションでbacktickの幅を変えれるようにした。
 
   o 2004/04/26
-    0.1.9 Ϣ³��commit�����Ȥ��������ʤ�Τ�����
+    0.1.9 連続でcommitされるとおかしくなるのを修正。
 
   o 2004/04/26
-    0.1.8 ���ơ������饤��ط��ΥХ�����
-    uim-fep-tick��-l���ץ������ɲ�
+    0.1.8 ステータスライン関係のバグ修正
+    uim-fep-tickに-lオプションを追加
 
   o 2004/04/25
-    0.1.7 configure��Ĥ���
-    <c-\>�ʤɤ����ϤǤ���褦�ˤ�����
-    ���ơ������饤��θ��䤬�Ϥ߽ФƤ�ɽ�������ʤ��褦�ˤ�����
-    ˽�������Ȥ��˻ߤ���褦�ˤ�����
+    0.1.7 configureをつけた
+    <c-\>などを入力できるようにした。
+    ステータスラインの候補がはみ出ても表示が乱れないようにした。
+    暴走したときに止めれるようにした。
           
   o 2004/04/18
-    0.1.6 prime���б�
+    0.1.6 primeに対応
 
   o 2004/04/17
-    0.1.5 utf-8(mattn����Υѥå�) backtick
+    0.1.5 utf-8(mattnさんのパッチ) backtick
 
   o 2004/04/12
-    0.1.4 �Х�����
+    0.1.4 バグ修正
 
   o 2004/04/11
-    0.1.3 ���ơ������饤��
+    0.1.3 ステータスライン
 
   o 2004/04/11
-    0.1.2 �Х�����
+    0.1.2 バグ修正
 
   o 2004/04/10
-    0.1.1 �Х�����
+    0.1.1 バグ修正
 
   o 2004/04/09
-    0.1 °���ȥ�������
+    0.1 属性とカーソル
 
   o 2004/04/03
-    ��ȯ����
+    開発開始
 
-���䡢�Х����ʤɤ� h013177b@ice.nuie.nagoya-u.ac.jp �ˤ��ꤤ���ޤ���
+質問、バグ報告などは h013177b@ice.nuie.nagoya-u.ac.jp にお願いします。

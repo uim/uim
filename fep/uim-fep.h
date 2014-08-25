@@ -40,7 +40,7 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-/* solaris ¤Çwinsize¤ò»È¤¦¤¿¤á¤ËÉ¬Í× */
+/* solaris ã§winsizeã‚’ä½¿ã†ãŸã‚ã«å¿…è¦ */
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
@@ -63,21 +63,21 @@
 #define PROC_FILENO    STDIN_FILENO
 
 struct opt_tag {
-  /* ¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤Î¼ïÎà */
+  /* ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã®ç¨®é¡ */
   int status_type;
-  /* ddskk¤Ë»÷¤¿¸õÊä¤ÎÉ½¼¨ */
+  /* ddskkã«ä¼¼ãŸå€™è£œã®è¡¨ç¤º */
   int ddskk;
-  /* TRUE¤Ê¤é¥«¡¼¥½¥ë°ÌÃÖ¤òÈ¿Å¾¤·¤Ê¤¤ */
+  /* TRUEãªã‚‰ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’åè»¢ã—ãªã„ */
   int cursor_no_reverse;
-  /* ¥«¡¼¥½¥ë¤ò¾Ã¤¹¤« */
+  /* ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™ã‹ */
   int use_civis;
-  /* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òÁŞÆş¤¹¤ë¤« */
+  /* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’æŒ¿å…¥ã™ã‚‹ã‹ */
   int on_the_spot;
-  /* ¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤ÎÉı */
+  /* ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã®å¹… */
   int statusline_width;
-  /* ESC¤Î¸å¤Ë²¿ÉÃÂÔ¤Ä¤« */
+  /* ESCã®å¾Œã«ä½•ç§’å¾…ã¤ã‹ */
   int timeout;
-  /* ¥ì¥İ¡¼¥È¥«¡¼¥½¥ëµ¡Ç½¤¬¤Ê¤¤¤« */
+  /* ãƒ¬ãƒãƒ¼ãƒˆã‚«ãƒ¼ã‚½ãƒ«æ©Ÿèƒ½ãŒãªã„ã‹ */
   int no_report_cursor;
   int print_key;
 };

@@ -59,7 +59,7 @@
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-/* solaris¤Ç¤Ï term.h¤ÎÁ°¤Ëcurses.h¤¬É¬Í× */
+/* solarisã§ã¯ term.hã®å‰ã«curses.hãŒå¿…è¦ */
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
@@ -140,9 +140,9 @@ int g_win_out = STDOUT_FILENO;
 struct winsize *g_win;
 uim_context g_context;
 
-/* µ¿»÷Ã¼Ëö¤Îmaster¤Î¥Õ¥¡¥¤¥ëµ­½Ò»Ò */
+/* ç–‘ä¼¼ç«¯æœ«ã®masterã®ãƒ•ã‚¡ã‚¤ãƒ«è¨˜è¿°å­ */
 static int s_master;
-/* µ¯Æ°»ş¤ÎÃ¼Ëö¾õÂÖ */
+/* èµ·å‹•æ™‚ã®ç«¯æœ«çŠ¶æ…‹ */
 static struct termios s_save_tios;
 
 static char s_path_setmode[MAXPATHLEN];
@@ -182,8 +182,8 @@ static void version(void);
 
 
 /*
- * uim¤ò½é´ü²½¤¹¤ë
- * engine ÊÑ´¹¥¨¥ó¥¸¥ó¤ÎÌ¾Á°
+ * uimã‚’åˆæœŸåŒ–ã™ã‚‹
+ * engine å¤‰æ›ã‚¨ãƒ³ã‚¸ãƒ³ã®åå‰
  */
 static void init_uim(const char *engine)
 {
@@ -503,7 +503,7 @@ opt_end:
       return EXIT_FAILURE;
     }
     if (child == 0) {
-      /* »Ò¥×¥í¥»¥¹ */
+      /* å­ãƒ—ãƒ­ã‚»ã‚¹ */
       if (g_win_in != STDIN_FILENO) {
         close(g_win_in);
       }
@@ -658,7 +658,7 @@ static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *win
     return -2;
   }
   if (pid == 0) {
-    /* »Ò¥×¥í¥»¥¹ */
+    /* å­ãƒ—ãƒ­ã‚»ã‚¹ */
     int redirected_stdin = dup(STDIN_FILENO);
     close(*amaster);
     login_tty(slave);
@@ -752,7 +752,7 @@ static void main_loop(void)
   nfd++;
 
   while (TRUE) {
-    /* ¥³¥ß¥Ã¥È¤µ¤ì¤¿¤È¤­¤Ë¥×¥ê¥¨¥Ç¥£¥Ã¥È¤¬¤¢¤ë¤« */
+    /* ã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã¨ãã«ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆãŒã‚ã‚‹ã‹ */
     if (is_commit_and_preedit()) {
       struct timeval t;
       FD_ZERO(&fds);
@@ -762,10 +762,10 @@ static void main_loop(void)
         FD_SET(s_setmode_fd, &fds);
       }
       t.tv_sec = 0;
-      /* 0.1ÉÃ */
+      /* 0.1ç§’ */
       t.tv_usec = 100000;
       if (my_select(nfd, &fds, &t) == 0) {
-        /* ¥¿¥¤¥à¥¢¥¦¥È¤·¤¿ */
+        /* ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã—ãŸ */
         draw_commit_and_preedit();
         debug2(("<end draw_commit_and_preedit>"));
       }
@@ -782,7 +782,7 @@ static void main_loop(void)
     }
 
     if (my_pselect(nfd, &fds, &s_orig_sigmask) <= 0) {
-      /* signal¤Ç³ä¤ê¹ş¤Ş¤ì¤¿¤È¤­¤Ë¤¯¤ë¡£select¤ÎÊÖ¤êÃÍ¤Ï-1¤Çerrno==EINTR */
+      /* signalã§å‰²ã‚Šè¾¼ã¾ã‚ŒãŸã¨ãã«ãã‚‹ã€‚selectã®è¿”ã‚Šå€¤ã¯-1ã§errno==EINTR */
       debug(("signal flag = %x\n", s_signal_flag));
       if ((s_signal_flag & SIG_FLAG_DONE   ) != 0) {
         s_signal_flag &= ~SIG_FLAG_DONE;
@@ -811,7 +811,7 @@ static void main_loop(void)
       continue;
     }
 
-    /* ¥â¡¼¥É¤òÊÑ¹¹¤¹¤ë */
+    /* ãƒ¢ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã™ã‚‹ */
     if (s_setmode_fd >= 0 && FD_ISSET(s_setmode_fd, &fds)) {
       int start, end;
 
@@ -830,7 +830,7 @@ static void main_loop(void)
 #endif
 
       for (end = len - 1; end >= 0 && !isdigit((unsigned char)buf[end]); --end);
-      /* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òÊÔ½¸Ãæ¤Ç¤Ê¤±¤ì¤Ğ¥â¡¼¥É¤òÊÑ¹¹¤¹¤ë */
+      /* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’ç·¨é›†ä¸­ã§ãªã‘ã‚Œã°ãƒ¢ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã™ã‚‹ */
       if (end >= 0 && !g_start_preedit) {
         int mode;
 
@@ -849,7 +849,7 @@ static void main_loop(void)
     }
 
 
-    /* ¥­¡¼¥Ü¡¼¥É(stdin)¤«¤é¤ÎÆşÎÏ */
+    /* ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰(stdin)ã‹ã‚‰ã®å…¥åŠ› */
     if (FD_ISSET(g_win_in, &fds)) {
       int key_state = 0;
       if (!g_focus_in) {
@@ -857,14 +857,14 @@ static void main_loop(void)
       }
 
       if ((len = read_stdin(buf, sizeof(buf) - 1)) == -1 || len == 0) {
-        /* ¤³¤³¤Ë¤Ï¤³¤Ê¤¤¤È»×¤¦ */
+        /* ã“ã“ã«ã¯ã“ãªã„ã¨æ€ã† */
         return;
       }
       buf[len] = '\0';
       debug(("read \"%s\"\n", buf));
 
       if (len >= 10 && !g_opt.print_key) {
-        /* ¥Ú¡¼¥¹¥È¤Ê¤É¤ÇÂçÎÌ¤ËÆşÎÏ¤µ¤ì¤¿¤È¤­¤ÏÊÑ´¹¤·¤Ê¤¤ */
+        /* ãƒšãƒ¼ã‚¹ãƒˆãªã©ã§å¤§é‡ã«å…¥åŠ›ã•ã‚ŒãŸã¨ãã¯å¤‰æ›ã—ãªã„ */
         if (!g_start_preedit) {
           write(s_master, buf, len);
         }
@@ -888,7 +888,7 @@ static void main_loop(void)
             }
 
             if (not_enough && g_opt.timeout > 0) {
-              /* ÆşÎÏ¤¬Â­¤é¤Ê¤¤¤Î¤ÇºÆ¤ÓÆÉ¤ß½Ğ¤¹ */
+              /* å…¥åŠ›ãŒè¶³ã‚‰ãªã„ã®ã§å†ã³èª­ã¿å‡ºã™ */
               struct timeval t;
               fd_set fds;
               FD_ZERO(&fds);
@@ -949,12 +949,12 @@ static void main_loop(void)
     /* input from pty (child process) */
     if (!g_opt.print_key && FD_ISSET(s_master, &fds)) {
       if ((len = read(s_master, buf, sizeof(buf) - 1)) == -1 || len == 0) {
-        /* »Ò¥×¥í¥»¥¹¤¬½ªÎ»¤·¤¿ */
+        /* å­ãƒ—ãƒ­ã‚»ã‚¹ãŒçµ‚äº†ã—ãŸ */
         return;
       }
       buf[len] = '\0';
 
-      /* ¥¯¥ê¥¢¤µ¤ì¤¿»ş¤Ë¥â¡¼¥É¤òºÆÉÁ²è¤¹¤ë */
+      /* ã‚¯ãƒªã‚¢ã•ã‚ŒãŸæ™‚ã«ãƒ¢ãƒ¼ãƒ‰ã‚’å†æç”»ã™ã‚‹ */
       if (g_opt.status_type == LASTLINE) {
         char *str1 = rstrstr_len(buf, _clear_screen, len);
         char *str2 = rstrstr_len(buf, _clr_eos, len);
@@ -964,7 +964,7 @@ static void main_loop(void)
             str1 = str2;
           }
           str1_len = len - (str1 - buf);
-          /* str1¤Ïclear_screen¤«clr_eos¤Î¼¡¤ÎÊ¸»úÎó¤ò»Ø¤·¤Æ¤¤¤ë */
+          /* str1ã¯clear_screenã‹clr_eosã®æ¬¡ã®æ–‡å­—åˆ—ã‚’æŒ‡ã—ã¦ã„ã‚‹ */
           put_pty_str(buf, len - str1_len);
           draw_statusline_force_restore();
           put_pty_str(str1, str1_len);
@@ -984,7 +984,7 @@ static void main_loop(void)
 }
 
 /*
- * ²¿¤â¤·¤Ê¤¤¥Õ¥£¥ë¥¿
+ * ä½•ã‚‚ã—ãªã„ãƒ•ã‚£ãƒ«ã‚¿
  */
 static void recover_loop(void)
 {
@@ -997,19 +997,19 @@ static void recover_loop(void)
     FD_SET(g_win_in, &fds);
     FD_SET(s_master, &fds);
     if (select(s_master + 1, &fds, NULL, NULL, NULL) <= 0) {
-      /* signal¤Ç³ä¤ê¹ş¤Ş¤ì¤¿¤È¤­¤Ë¤¯¤ë¡£select¤ÎÊÖ¤êÃÍ¤Ï-1¤Çerrno==EINTR */
+      /* signalã§å‰²ã‚Šè¾¼ã¾ã‚ŒãŸã¨ãã«ãã‚‹ã€‚selectã®è¿”ã‚Šå€¤ã¯-1ã§errno==EINTR */
       continue;
     }
     if (FD_ISSET(g_win_in, &fds)) {
       if ((len = read(g_win_in, buf, sizeof(buf))) == -1 || len == 0) {
-        /* ¤³¤³¤Ë¤Ï¤³¤Ê¤¤¤È»×¤¦ */
+        /* ã“ã“ã«ã¯ã“ãªã„ã¨æ€ã† */
         return;
       }
       write(s_master, buf, len);
     }
     if (FD_ISSET(s_master, &fds)) {
       if ((len = read(s_master, buf, sizeof(buf))) == -1 || len == 0) {
-        /* »Ò¥×¥í¥»¥¹¤¬½ªÎ»¤·¤¿ */
+        /* å­ãƒ—ãƒ­ã‚»ã‚¹ãŒçµ‚äº†ã—ãŸ */
         return;
       }
       write(g_win_out, buf, len);
@@ -1018,8 +1018,8 @@ static void recover_loop(void)
 }
 
 /*
- * ¸½ºß¤Î¥¦¥£¥ó¥É¥¦¥µ¥¤¥º¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë
+ * ç¾åœ¨ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹
  */
 static struct winsize *get_winsize(void)
 {
@@ -1036,7 +1036,7 @@ static struct winsize *get_winsize(void)
 }
 
 /*
- * ¥·¥°¥Ê¥ë¥Ï¥ó¥É¥é¤òÀßÄê¤¹¤ë
+ * ã‚·ã‚°ãƒŠãƒ«ãƒãƒ³ãƒ‰ãƒ©ã‚’è¨­å®šã™ã‚‹
  */
 static void set_signal_handler(void)
 {
@@ -1055,10 +1055,10 @@ static void set_signal_handler(void)
   sigaddset(&sigmask, SIGCONT);
   sigprocmask(SIG_BLOCK, &sigmask, &s_orig_sigmask);
 
-  /* ¥·¥°¥Ê¥ë¤ò¥Ö¥í¥Ã¥¯¤·¤Ê¤¤ */
+  /* ã‚·ã‚°ãƒŠãƒ«ã‚’ãƒ–ãƒ­ãƒƒã‚¯ã—ãªã„ */
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
-  /* ¥·¥¹¥Æ¥à¥³¡¼¥ë¤òºÆ¼Â¹Ô¤¹¤ë(¼ÂÁõ°ÍÂ¸) */
+  /* ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒ¼ãƒ«ã‚’å†å®Ÿè¡Œã™ã‚‹(å®Ÿè£…ä¾å­˜) */
   /* act.sa_flags = SA_RESTART; */
 
   act.sa_handler = signal_handler;
@@ -1130,7 +1130,7 @@ static void recover(void)
 }
 
 /*
- * µÙ»ß¥·¥°¥Ê¥ë
+ * ä¼‘æ­¢ã‚·ã‚°ãƒŠãƒ«
  */
 static void sigtstp_handler(void)
 {
@@ -1163,7 +1163,7 @@ static void sigtstp_handler(void)
 }
 
 /*
- * Ã¼Ëö¤Î¥µ¥¤¥º¤¬ÊÑ¤ï¤Ã¤¿¤È¤­¤Ë²¾ÁÛÃ¼Ëö¤ÎÂç¤­¤µ¤ò¹ç¤ï¤»¤ë¡£
+ * ç«¯æœ«ã®ã‚µã‚¤ã‚ºãŒå¤‰ã‚ã£ãŸã¨ãã«ä»®æƒ³ç«¯æœ«ã®å¤§ãã•ã‚’åˆã‚ã›ã‚‹ã€‚
  */
 static void sigwinch_handler(void)
 {
@@ -1214,7 +1214,7 @@ static void sigusr2_handler(void)
 }
 
 /*
- * help¤òÉ½¼¨¤¹¤ë¡£
+ * helpã‚’è¡¨ç¤ºã™ã‚‹ã€‚
  */
 static void usage(void)
 {
@@ -1302,7 +1302,7 @@ static void usage(void)
 }
 
 /*
- * version¤òÉ½¼¨¤¹¤ë
+ * versionã‚’è¡¨ç¤ºã™ã‚‹
  */
 static void version(void)
 {

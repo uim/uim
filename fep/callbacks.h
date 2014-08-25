@@ -35,13 +35,13 @@
 #define UIM_FEP_CALLBACKS_H
 
 struct preedit_tag {
-  /* Ê¸»úÎó¤ÎÉı */
+  /* æ–‡å­—åˆ—ã®å¹… */
   int width;
-  /* ¥«¡¼¥½¥ë°ÌÃÖ¤ÎÁ°¤Ë¤¢¤ëÊ¸»úÎó¤ÎÉı */
+  /* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®å‰ã«ã‚ã‚‹æ–‡å­—åˆ—ã®å¹… */
   int cursor;
-  /* pseg¤ÎÂç¤­¤µ */
+  /* psegã®å¤§ãã• */
   int nr_psegs;
-  /* ÎÙ¤ê¤¢¤¦pseg¤Îattr¤Ï°Û¤Ê¤ë¤è¤¦¤Ë¤¹¤ë */
+  /* éš£ã‚Šã‚ã†psegã®attrã¯ç•°ãªã‚‹ã‚ˆã†ã«ã™ã‚‹ */
   struct preedit_segment_tag {
     int attr;
     char *str;

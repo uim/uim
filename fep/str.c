@@ -87,8 +87,8 @@ void init_str(void)
 }
 
 /*
- * setlocale¤ÇÆÀ¤é¤ì¤ë¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤òÊÖ¤¹
- * ÀßÄê¤µ¤ì¤Æ¤¤¤Ê¤¤¾ì¹ç¤Ï"UTF-8"¤òÊÖ¤¹
+ * setlocaleã§å¾—ã‚‰ã‚Œã‚‹ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¿”ã™
+ * è¨­å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯"UTF-8"ã‚’è¿”ã™
  */
 const char *get_enc(void)
 {
@@ -137,11 +137,11 @@ static int str2wcstr(const char *str, wchar_t **wcstr)
 }
 
 /*
- * str1¤Èstr2¤ÎÀèÆ¬¤«¤é¤Î¶¦ÄÌÉôÊ¬Ê¸»úÎó¤ÎÉı¤òÊÖ¤¹
+ * str1ã¨str2ã®å…ˆé ­ã‹ã‚‰ã®å…±é€šéƒ¨åˆ†æ–‡å­—åˆ—ã®å¹…ã‚’è¿”ã™
  * compare_str("a", "b") = 0
  * compare_str("a", "ab") = 1
- * compare_str("a¤¢", "a¤¢") = 3
- * compare_str("¤¤(0xa4a4)", "¤¢(0xa4a2)") = 0
+ * compare_str("aã‚", "aã‚") = 3
+ * compare_str("ã„(0xa4a4)", "ã‚(0xa4a2)") = 0
  */
 int compare_str(char *str1, char *str2)
 {
@@ -164,11 +164,11 @@ int compare_str(char *str1, char *str2)
 }
 
 /*
- * str1¤Èstr2¤ÎËöÈø¤«¤é¤Î¶¦ÄÌÉôÊ¬Ê¸»úÎó¤ÎÉı¤òÊÖ¤¹
+ * str1ã¨str2ã®æœ«å°¾ã‹ã‚‰ã®å…±é€šéƒ¨åˆ†æ–‡å­—åˆ—ã®å¹…ã‚’è¿”ã™
  * compare_str_rev("a", "b") = 0
  * compare_str_rev("a", "ba") = 1
- * compare_str_rev("a¤¢", "ba¤¢") = 3
- * compare_str_rev("¢¢(0xa2a2)", "¤¢(0xa4a2)") = 0
+ * compare_str_rev("aã‚", "baã‚") = 3
+ * compare_str_rev("â–¡(0xa2a2)", "ã‚(0xa4a2)") = 0
  */
 int compare_str_rev(char *str1, char *str2)
 {
@@ -195,9 +195,9 @@ int compare_str_rev(char *str1, char *str2)
 }
 
 /*
- * Ê¸»úÎó¤ÎÉı¤òÊÖ¤¹
+ * æ–‡å­—åˆ—ã®å¹…ã‚’è¿”ã™
  * strwidth("abc") = 3
- * strwidth("¤¢a") = 3
+ * strwidth("ã‚a") = 3
  * strwidth("")    = 0
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
@@ -238,7 +238,7 @@ int strwidth(const char *str)
       } else {
         /* euc-jp */
         if ((unsigned char)*str == 0x8e) {
-          /* È¾³Ñ¥«¥¿¥«¥Ê */
+          /* åŠè§’ã‚«ã‚¿ã‚«ãƒŠ */
           width++;
           str += 2;
         } else if ((unsigned char)*str == 0x8f) {
@@ -257,15 +257,15 @@ int strwidth(const char *str)
 #endif
 
 /*
- * substr = str¤În¥Ğ¥¤¥È°Ê²¼¤ÎÀèÆ¬¤«¤é¤ÎºÇÄ¹ÉôÊ¬Ê¸»úÎó¤È¤·¤Æ¡¢
- * strwidth(substr)¤òÊÖ¤¹¡£
+ * substr = strã®nãƒã‚¤ãƒˆä»¥ä¸‹ã®å…ˆé ­ã‹ã‚‰ã®æœ€é•·éƒ¨åˆ†æ–‡å­—åˆ—ã¨ã—ã¦ã€
+ * strwidth(substr)ã‚’è¿”ã™ã€‚
  * byte2width("abc", 2)  = 2
- * byte2width("¤¢¤¢", 3) = 2 (euc)
- * byte2width("¤¢¤¢", 4) = 4 (euc)
- * byte2width("¤¢¤¢", 6) = 4 (euc)
- * byte2width("¤¢¤¢", 4) = 2 (utf8)
- * byte2width("¤¢¤¢", 5) = 2 (utf8)
- * byte2width("¤¢¤¢", 6) = 4 (utf8)
+ * byte2width("ã‚ã‚", 3) = 2 (euc)
+ * byte2width("ã‚ã‚", 4) = 4 (euc)
+ * byte2width("ã‚ã‚", 6) = 4 (euc)
+ * byte2width("ã‚ã‚", 4) = 2 (utf8)
+ * byte2width("ã‚ã‚", 5) = 2 (utf8)
+ * byte2width("ã‚ã‚", 6) = 4 (utf8)
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 static int byte2width(char *str, int n)
@@ -338,7 +338,7 @@ static int byte2width(char *str, int n)
       } else {
         /* euc-jp */
         if ((unsigned char)*str == 0x8e) {
-          /* È¾³Ñ¥«¥¿¥«¥Ê */
+          /* åŠè§’ã‚«ã‚¿ã‚«ãƒŠ */
           char_width = 1;
           char_byte = 2;
         } else if ((unsigned char)*str == 0x8f) {
@@ -366,16 +366,16 @@ static int byte2width(char *str, int n)
 #endif
 
 /*
- * substr = str¤În¥Ğ¥¤¥È°Ê¾å¤ÎÀèÆ¬¤«¤é¤ÎºÇÃ»ÉôÊ¬Ê¸»úÎó¤È¤·¤Æ¡¢
- * strwidth(substr)¤òÊÖ¤¹¡£
- * n > strlen(str)¤Î¾ì¹ç¤Ï substr = str
+ * substr = strã®nãƒã‚¤ãƒˆä»¥ä¸Šã®å…ˆé ­ã‹ã‚‰ã®æœ€çŸ­éƒ¨åˆ†æ–‡å­—åˆ—ã¨ã—ã¦ã€
+ * strwidth(substr)ã‚’è¿”ã™ã€‚
+ * n > strlen(str)ã®å ´åˆã¯ substr = str
  * byte2width2("abc", 2)  = 2
- * byte2width2("¤¢¤¢", 3) = 4 (euc)
- * byte2width2("¤¢¤¢", 4) = 4 (euc)
- * byte2width2("¤¢¤¢", 6) = 4 (euc)
- * byte2width2("¤¢¤¢", 4) = 4 (utf8)
- * byte2width2("¤¢¤¢", 5) = 4 (utf8)
- * byte2width2("¤¢¤¢", 6) = 4 (utf8)
+ * byte2width2("ã‚ã‚", 3) = 4 (euc)
+ * byte2width2("ã‚ã‚", 4) = 4 (euc)
+ * byte2width2("ã‚ã‚", 6) = 4 (euc)
+ * byte2width2("ã‚ã‚", 4) = 4 (utf8)
+ * byte2width2("ã‚ã‚", 5) = 4 (utf8)
+ * byte2width2("ã‚ã‚", 6) = 4 (utf8)
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 static int byte2width2(char *str, int n)
@@ -415,7 +415,7 @@ static int byte2width2(char *str, int n)
     width = wcswidth(wcstr, nr_wchars);
   } else {
     mbsrtowcs(wcstr, (const char **)&str, 1, NULL);
-    /* str¤òºÇ¸å¤Ş¤ÇÊÑ´¹¤¹¤ë¤ÈNULL¤Ë¤Ê¤ë */
+    /* strã‚’æœ€å¾Œã¾ã§å¤‰æ›ã™ã‚‹ã¨NULLã«ãªã‚‹ */
     assert(str != NULL);
     save_char = str[0];
     str[0] = '\0';
@@ -451,7 +451,7 @@ static int byte2width2(char *str, int n)
       } else {
         /* euc-jp */
         if ((unsigned char)*str == 0x8e) {
-          /* È¾³Ñ¥«¥¿¥«¥Ê */
+          /* åŠè§’ã‚«ã‚¿ã‚«ãƒŠ */
           char_width = 1;
           char_byte = 2;
         } else if ((unsigned char)*str == 0x8f) {
@@ -476,15 +476,15 @@ static int byte2width2(char *str, int n)
 #endif
 
 /*
- * ÊÖ¤êÃÍ rval[2]
- * substr = str¤ÎÉın°Ê²¼¤ÎÀèÆ¬¤«¤é¤ÎºÇÄ¹ÉôÊ¬Ê¸»úÎó¤È¤·¤Æ¡¢
- * rval[0] = substr¤Î¥Ğ¥¤¥È
- * rval[1] = substr¤ÎÉı
- * width2byte("¤¢¤¢", 3) = [2, 2] (euc)
- * width2byte("¤¢¤¢", 4) = [4, 4] (euc)
- * width2byte("¤¢¤¢", 6) = [4, 4] (euc)
- * width2byte("¤¢¤¢", 3) = [3, 2] (utf8)
- * width2byte("¤¢¤¢", 4) = [6, 4] (utf8)
+ * è¿”ã‚Šå€¤ rval[2]
+ * substr = strã®å¹…nä»¥ä¸‹ã®å…ˆé ­ã‹ã‚‰ã®æœ€é•·éƒ¨åˆ†æ–‡å­—åˆ—ã¨ã—ã¦ã€
+ * rval[0] = substrã®ãƒã‚¤ãƒˆ
+ * rval[1] = substrã®å¹…
+ * width2byte("ã‚ã‚", 3) = [2, 2] (euc)
+ * width2byte("ã‚ã‚", 4) = [4, 4] (euc)
+ * width2byte("ã‚ã‚", 6) = [4, 4] (euc)
+ * width2byte("ã‚ã‚", 3) = [3, 2] (utf8)
+ * width2byte("ã‚ã‚", 4) = [6, 4] (utf8)
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int *width2byte(const char *str, int n)
@@ -579,16 +579,16 @@ int *width2byte(const char *str, int n)
 #endif
 
 /*
- * ÊÖ¤êÃÍ rval[2]
- * substr = str¤ÎÉın°Ê¾å¤ÎÀèÆ¬¤«¤é¤ÎºÇÃ»ÉôÊ¬Ê¸»úÎó¤È¤·¤Æ¡¢
- * rval[0] = substr¤Î¥Ğ¥¤¥È
- * rval[1] = substr¤ÎÉı
- * n > strwidth(str)¤Î¾ì¹ç¤Ï substr = str
- * width2byte2("¤¢¤¢", 1) = [2, 2] (euc)
- * width2byte2("¤¢¤¢", 3) = [4, 4] (euc)
- * width2byte2("¤¢¤¢", 6) = [4, 4] (euc)
- * width2byte2("¤¢¤¢", 1) = [3, 2] (utf8)
- * width2byte2("¤¢¤¢", 4) = [6, 4] (utf8)
+ * è¿”ã‚Šå€¤ rval[2]
+ * substr = strã®å¹…nä»¥ä¸Šã®å…ˆé ­ã‹ã‚‰ã®æœ€çŸ­éƒ¨åˆ†æ–‡å­—åˆ—ã¨ã—ã¦ã€
+ * rval[0] = substrã®ãƒã‚¤ãƒˆ
+ * rval[1] = substrã®å¹…
+ * n > strwidth(str)ã®å ´åˆã¯ substr = str
+ * width2byte2("ã‚ã‚", 1) = [2, 2] (euc)
+ * width2byte2("ã‚ã‚", 3) = [4, 4] (euc)
+ * width2byte2("ã‚ã‚", 6) = [4, 4] (euc)
+ * width2byte2("ã‚ã‚", 1) = [3, 2] (utf8)
+ * width2byte2("ã‚ã‚", 4) = [6, 4] (utf8)
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
 int *width2byte2(const char *str, int n)
@@ -681,12 +681,12 @@ int *width2byte2(const char *str, int n)
 #endif
 
 /*
- * substr = str¤ÎÉın°Ê²¼¤ÎÀèÆ¬¤«¤é¤ÎºÇÄ¹ÉôÊ¬Ê¸»úÎó¤È¤·¤Æ¡¢
+ * substr = strã®å¹…nä»¥ä¸‹ã®å…ˆé ­ã‹ã‚‰ã®æœ€é•·éƒ¨åˆ†æ–‡å­—åˆ—ã¨ã—ã¦ã€
  * str[strlne(substr)] = '\0'
- * strwidth(substr)¤òÊÖ¤¹¡£
- * strhead("¤¢¤¢", 3) = 2 , str = "¤¢"
- * strhead("¤¢¤¢", 4) = 4 , str = "¤¢¤¢"
- * strhead("¤¢¤¢", 6) = 4 , str = "¤¢¤¢"
+ * strwidth(substr)ã‚’è¿”ã™ã€‚
+ * strhead("ã‚ã‚", 3) = 2 , str = "ã‚"
+ * strhead("ã‚ã‚", 4) = 4 , str = "ã‚ã‚"
+ * strhead("ã‚ã‚", 6) = 4 , str = "ã‚ã‚"
  */
 int strhead(char *str, int n)
 {
@@ -697,9 +697,9 @@ int strhead(char *str, int n)
 }
 
 /*
- * haystack¤ÎÃæ¤ÇºÇ¤â±¦¤Ë¸½¤ï¤ì¤ëneedle¤Î¼¡¤ÎÊ¸»úÎó¤Î¥İ¥¤¥ó¥¿¤òÊÖ¤¹
- * needle¤¬¶õÊ¸»úÎó¤Î¾ì¹ç¤ÏNULL¤òÊÖ¤¹
- * needle¤¬NULL¤Î¤È¤­¤ÏNULL¤òÊÖ¤¹
+ * haystackã®ä¸­ã§æœ€ã‚‚å³ã«ç¾ã‚ã‚Œã‚‹needleã®æ¬¡ã®æ–‡å­—åˆ—ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
+ * needleãŒç©ºæ–‡å­—åˆ—ã®å ´åˆã¯NULLã‚’è¿”ã™
+ * needleãŒNULLã®ã¨ãã¯NULLã‚’è¿”ã™
  */
 char *rstrstr_len(const char *haystack, const char *needle, int haystack_len)
 {
@@ -723,10 +723,10 @@ char *rstrstr_len(const char *haystack, const char *needle, int haystack_len)
 }
 
 /*
- * haystack¤Ë'\0'¤¬´Ş¤Ş¤ì¤Æ¤â¤è¤¤strstr
- * haystack¤ÎÄ¹¤µ¤Ïhaystack_len
- * haystack¤Èneedle¤ÏNULL¤Ç¤Ê¤¤
- * needle¤¬""¤Î¤È¤­¤Ïhaystack¤òÊÖ¤¹
+ * haystackã«'\0'ãŒå«ã¾ã‚Œã¦ã‚‚ã‚ˆã„strstr
+ * haystackã®é•·ã•ã¯haystack_len
+ * haystackã¨needleã¯NULLã§ãªã„
+ * needleãŒ""ã®ã¨ãã¯haystackã‚’è¿”ã™
  */
 char *strstr_len(const char *haystack, const char *needle, int haystack_len)
 {
@@ -752,8 +752,8 @@ char *strstr_len(const char *haystack, const char *needle, int haystack_len)
 
 #define TAB_WIDTH 4
 /*
- * tabstr¤Î¥¿¥Ö¤òTAB_WIDTH¸Ä¤Î¥¹¥Ú¡¼¥¹¤ËÃÖ¤­´¹¤¨¤ë¡£
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë¡£
+ * tabstrã®ã‚¿ãƒ–ã‚’TAB_WIDTHå€‹ã®ã‚¹ãƒšãƒ¼ã‚¹ã«ç½®ãæ›ãˆã‚‹ã€‚
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹ã€‚
  */
 char *tab2space(const char *tabstr)
 {

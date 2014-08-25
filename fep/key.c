@@ -85,7 +85,7 @@ int tty2key(char key)
   case 0x7f:
     return UKey_Delete;
   }
-  /* c-a ¤«¤é c-z */
+  /* c-a ã‹ã‚‰ c-z */
   if (key >= 1 && key <= 26) {
     return key + ('a' - 1);
   }
@@ -116,9 +116,9 @@ int tty2key_state(char key)
 }
 
 /*
- * str¤ËÂĞ±ş¤¹¤ë¥­¡¼¥³¡¼¥É¤È¥¨¥¹¥±¡¼¥×¥·¡¼¥±¥ó¥¹¤ÎÄ¹¤µ¤òÊÖ¤¹
- * ¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¤éUKey_Escape¤È¡¢ÅÓÃæ¤Ş¤Ç°ìÃ×¤·¤Æ¤¤¤ë¥¨¥¹¥±¡¼¥×¥·¡¼
- * ¥±¥ó¥¹¤¬¤¢¤ë¾ì¹ç¤ÏTRUE¤Ê¤¤¾ì¹ç¤ÏFALSE¤òÊÖ¤¹
+ * strã«å¯¾å¿œã™ã‚‹ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ã¨ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®é•·ã•ã‚’è¿”ã™
+ * è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰UKey_Escapeã¨ã€é€”ä¸­ã¾ã§ä¸€è‡´ã—ã¦ã„ã‚‹ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼
+ * ã‚±ãƒ³ã‚¹ãŒã‚ã‚‹å ´åˆã¯TRUEãªã„å ´åˆã¯FALSEã‚’è¿”ã™
  */
 int *escape_sequence2key(const char *str, int str_len)
 {
@@ -161,9 +161,9 @@ int *escape_sequence2key(const char *str, int str_len)
 }
 
 /*
- * prefix¤¬str¤Î¸ìÆ¬¤Î¤È¤­strlen(prefix)¤òÊÖ¤¹
- * str¤¬prefix¤Î¸ìÆ¬¤Î¤È¤­-strlen(str)¤òÊÖ¤¹
- * ¤½¤ì°Ê³°¤Ï0¤òÊÖ¤¹
+ * prefixãŒstrã®èªé ­ã®ã¨ãstrlen(prefix)ã‚’è¿”ã™
+ * strãŒprefixã®èªé ­ã®ã¨ã-strlen(str)ã‚’è¿”ã™
+ * ãã‚Œä»¥å¤–ã¯0ã‚’è¿”ã™
  */
 static int strcmp_prefix(const char *str, int str_len, const char *prefix)
 {

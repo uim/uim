@@ -65,7 +65,7 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 
 /*
  * select
- * unget¤¬¤¢¤ë¤È¤­¤Ïselect¤ò¸Æ¤Ğ¤Ê¤¤. 
+ * ungetãŒã‚ã‚‹ã¨ãã¯selectã‚’å‘¼ã°ãªã„. 
  */
 int my_select(int n, fd_set *readfds, struct timeval *timeout)
 {
@@ -79,7 +79,7 @@ int my_select(int n, fd_set *readfds, struct timeval *timeout)
 
 /*
  * pselect
- * unget¤¬¤¢¤ë¤È¤­¤Ïpselect¤ò¸Æ¤Ğ¤Ê¤¤. 
+ * ungetãŒã‚ã‚‹ã¨ãã¯pselectã‚’å‘¼ã°ãªã„. 
  */
 int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask)
 {
@@ -92,8 +92,8 @@ int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask)
 }
 
 /*
- * stdin¤òread¤¹¤ë
- * unget¤¬¤¢¤ë¤È¤­¤Ï¤½¤ì¤òÊÖ¤¹
+ * stdinã‚’readã™ã‚‹
+ * ungetãŒã‚ã‚‹ã¨ãã¯ãã‚Œã‚’è¿”ã™
  */
 ssize_t read_stdin(void *buf, int count)
 {
@@ -114,7 +114,7 @@ ssize_t read_stdin(void *buf, int count)
 }
 
 /*
- * ÆÉ¤ß¼è¤ê¤¹¤®¤¿Ê¸»úÎó¤òÌá¤¹
+ * èª­ã¿å–ã‚Šã™ããŸæ–‡å­—åˆ—ã‚’æˆ»ã™
  */
 void unget_stdin(const char *str, int count)
 {
@@ -134,7 +134,7 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
   sigset_t orig_sigmask;
   sigset_t pending_signals;
 
-  /* ¥·¥°¥Ê¥ë¤¬ÊİÎ±¤µ¤ì¤Æ¤¤¤ë¤« */
+  /* ã‚·ã‚°ãƒŠãƒ«ãŒä¿ç•™ã•ã‚Œã¦ã„ã‚‹ã‹ */
   sigpending(&pending_signals);
   if (
       sigismember(&pending_signals, SIGHUP)   ||
@@ -153,7 +153,7 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     return -1;
   }
 
-  /* timeout ¤Ï»È¤ï¤Ê¤¤ */
+  /* timeout ã¯ä½¿ã‚ãªã„ */
   sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
   ret = select(n, readfds, writefds, exceptfds, NULL);
   sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
