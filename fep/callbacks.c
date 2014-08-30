@@ -32,7 +32,7 @@
 */
 
 /*
- * uim¤Î¥³¡¼¥ë¥Ğ¥Ã¥¯´Ø¿ô
+ * uimã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -57,7 +57,7 @@
 #include <uim/uim-helper.h>
 #include <uim/uim-util.h>
 
-/* ¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤ÎºÇÂçÉı */
+/* ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã®æœ€å¤§å¹… */
 static int s_max_width;
 static char *s_commit_str;
 static char *s_statusline_str;
@@ -93,23 +93,23 @@ static void reset_candidate(void);
 static void set_candidate(void);
 
 struct candidate_tag {
-  /* ¸õÊä¤Î¿ô */
+  /* å€™è£œã®æ•° */
   int nr;
-  /* 1ÅÙ¤ËÉ½¼¨¤¹¤ë¸õÊä¿ô */
+  /* 1åº¦ã«è¡¨ç¤ºã™ã‚‹å€™è£œæ•° */
   int limit;
-  /* Áípage¿ô */
+  /* ç·pageæ•° */
   int nr_pages;
-  /* ¸½ºß¤Î¸õÊä 0¤«¤é»Ï¤Ş¤ë */
+  /* ç¾åœ¨ã®å€™è£œ 0ã‹ã‚‰å§‹ã¾ã‚‹ */
   int index;
-  /* ¸½ºß¤Î¥Ú¡¼¥¸ 0¤«¤é»Ï¤Ş¤ë */
+  /* ç¾åœ¨ã®ãƒšãƒ¼ã‚¸ 0ã‹ã‚‰å§‹ã¾ã‚‹ */
   int page;
-  /* ¥Ú¡¼¥¸Ê¸»úÎó¤ÎÇÛÎó Í×ÁÇ¿ônr_pages */
+  /* ãƒšãƒ¼ã‚¸æ–‡å­—åˆ—ã®é…åˆ— è¦ç´ æ•°nr_pages */
   char **page_strs;
-  /* ¸õÊä¤Î°ÌÃÖ¤ÎÇÛÎó Í×ÁÇ¿ônr */
+  /* å€™è£œã®ä½ç½®ã®é…åˆ— è¦ç´ æ•°nr */
   int *cand_col;
-  /* ¥Ú¡¼¥¸¤ÎºÇ½é¤Î¸õÊä¤Îindex¤ÎÇÛÎó Í×ÁÇ¿ônr_pages */
+  /* ãƒšãƒ¼ã‚¸ã®æœ€åˆã®å€™è£œã®indexã®é…åˆ— è¦ç´ æ•°nr_pages */
   int *page2index;
-  /* ¸½ºß¤Î¸õÊä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤òÉÁ²è¤¹¤ë¥«¥é¥à */
+  /* ç¾åœ¨ã®å€™è£œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æç”»ã™ã‚‹ã‚«ãƒ©ãƒ  */
   int *index_col;
 };
 
@@ -126,7 +126,7 @@ static struct candidate_tag s_candidate = {
 };
 
 /*
- * ½é´ü²½
+ * åˆæœŸåŒ–
  */
 void init_callbacks(void)
 {
@@ -157,7 +157,7 @@ void init_callbacks(void)
 
     if (uim_iconv->is_convertible(enc = get_enc(), "EUC-JP")) {
       void *cd = uim_iconv->create(enc, "EUC-JP");
-      s_nokori_str = uim_iconv->convert(cd, "»Ä¤ê");
+      s_nokori_str = uim_iconv->convert(cd, "æ®‹ã‚Š");
       if (cd) {
         uim_iconv->release(cd);
       }
@@ -186,7 +186,7 @@ int press_key(int key, int key_state)
 
 
 /*
- * Ì¾Á°¤¬Ê¶¤é¤ï¤·¤¤¤¬¡¢uimÂ¦¤«¤éÉÁ²è¤òÍ×µá¤µ¤ì¤¿¤é¸Æ¤Ö¡£
+ * åå‰ãŒç´›ã‚‰ã‚ã—ã„ãŒã€uimå´ã‹ã‚‰æç”»ã‚’è¦æ±‚ã•ã‚ŒãŸã‚‰å‘¼ã¶ã€‚
  */
 void start_callbacks(void)
 {
@@ -199,7 +199,7 @@ void start_callbacks(void)
 }
 
 /*
- * ¥³¡¼¥ë¥Ğ¥Ã¥¯´Ø¿ô¤¬¸Æ¤Ğ¤ì¤Æ¤¤¤Ê¤±¤ì¤Ğ¡¢FALSE¤òÊÖ¤¹
+ * ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ãŒå‘¼ã°ã‚Œã¦ã„ãªã‘ã‚Œã°ã€FALSEã‚’è¿”ã™
  */
 int end_callbacks(void)
 {
@@ -210,7 +210,7 @@ int end_callbacks(void)
 
   s_start_callbacks = FALSE;
 
-  /* cursor¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ê¤¤¤È¤­¤Ï¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎËöÈø¤Ë¤¹¤ë */
+  /* cursorãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„ã¨ãã¯ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®æœ«å°¾ã«ã™ã‚‹ */
   if (s_preedit->cursor == UNDEFINED) {
     s_preedit->cursor = s_preedit->width;
   }
@@ -242,8 +242,8 @@ int end_callbacks(void)
 }
 
 /*
- * ³ÎÄêÊ¸»úÎó¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë
+ * ç¢ºå®šæ–‡å­—åˆ—ã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹
  */
 char *get_commit_str(void)
 {
@@ -257,8 +257,8 @@ char *get_commit_str(void)
 }
 
 /*
- * ¸õÊä°ìÍ÷Ê¸»úÎó¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë
+ * å€™è£œä¸€è¦§æ–‡å­—åˆ—ã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹
  */
 char *get_statusline_str(void)
 {
@@ -267,8 +267,8 @@ char *get_statusline_str(void)
 }
 
 /*
- * ÁªÂòÊ¸»úÎó¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë
+ * é¸æŠæ–‡å­—åˆ—ã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹
  */
 char *get_candidate_str(void)
 {
@@ -277,8 +277,8 @@ char *get_candidate_str(void)
 }
 
 /*
- * ÁªÂò¤µ¤ì¤Æ¤¤¤ë¸õÊä¤Îcolumn¤òÊÖ¤¹
- * ÁªÂò¤µ¤ì¤Æ¤¤¤Ê¤¤¤È¤­¤ÏUNDEFINED¤òÊÖ¤¹
+ * é¸æŠã•ã‚Œã¦ã„ã‚‹å€™è£œã®columnã‚’è¿”ã™
+ * é¸æŠã•ã‚Œã¦ã„ãªã„ã¨ãã¯UNDEFINEDã‚’è¿”ã™
  */
 int get_candidate_col(void)
 {
@@ -287,8 +287,8 @@ int get_candidate_col(void)
 }
 
 /*
- * ÁªÂò¤µ¤ì¤Æ¤¤¤ë¸õÊä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤ÎÊ¸»úÎó¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë
+ * é¸æŠã•ã‚Œã¦ã„ã‚‹å€™è£œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ–‡å­—åˆ—ã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹
  */
 char *get_index_str(void)
 {
@@ -297,8 +297,8 @@ char *get_index_str(void)
 }
 
 /*
- * s_index_str¤òÉÁ²è¤¹¤ë¥«¥é¥à¤òÊÖ¤¹
- * ÁªÂò¤µ¤ì¤Æ¤¤¤Ê¤¤¤È¤­¤ÏUNDEFINED¤òÊÖ¤¹
+ * s_index_strã‚’æç”»ã™ã‚‹ã‚«ãƒ©ãƒ ã‚’è¿”ã™
+ * é¸æŠã•ã‚Œã¦ã„ãªã„ã¨ãã¯UNDEFINEDã‚’è¿”ã™
  */
 int get_index_col(void)
 {
@@ -311,8 +311,8 @@ int get_index_col(void)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤Ïfree¤¹¤ë
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯freeã™ã‚‹
  */
 struct preedit_tag *get_preedit(void)
 {
@@ -321,7 +321,7 @@ struct preedit_tag *get_preedit(void)
 }
 
 /*
- * ¸½ºß¤Î¥â¡¼¥É¤òÊÖ¤¹
+ * ç¾åœ¨ã®ãƒ¢ãƒ¼ãƒ‰ã‚’è¿”ã™
  */
 int get_mode(void)
 {
@@ -330,8 +330,8 @@ int get_mode(void)
 }
 
 /*
- * ¸½ºß¤Î¥â¡¼¥ÉÊ¸»úÎó¤òÊÖ¤¹
- * ÊÖ¤êÃÍ¤ÏNULL¤Ë¤Ê¤ë¤³¤È¤Ï¤Ê¤¯¡¢free¤¹¤ëÉ¬Í×¤¬¤¢¤ë
+ * ç¾åœ¨ã®ãƒ¢ãƒ¼ãƒ‰æ–‡å­—åˆ—ã‚’è¿”ã™
+ * è¿”ã‚Šå€¤ã¯NULLã«ãªã‚‹ã“ã¨ã¯ãªãã€freeã™ã‚‹å¿…è¦ãŒã‚ã‚‹
  */
 char *get_mode_str(void)
 {
@@ -370,10 +370,10 @@ static void switch_system_global_im_cb(void *ptr, const char *name)
 }
 
 /*
- * ¸õÊä°ìÍ÷¤òÉ½¼¨¤¹¤ë¤È¤­¤Ë¸Æ¤Ğ¤ì¤ë¡£
- * s_candidate.nr = nr(¸õÊäÁí¿ô)
- * s_candidate.limit = display_limit(É½¼¨¤¹¤ë¸õÊä¿ô)
- * s_candidate.cand_col¤ÎÎÎ°è¤ò³ÎÊİ¤¹¤ë¡£
+ * å€™è£œä¸€è¦§ã‚’è¡¨ç¤ºã™ã‚‹ã¨ãã«å‘¼ã°ã‚Œã‚‹ã€‚
+ * s_candidate.nr = nr(å€™è£œç·æ•°)
+ * s_candidate.limit = display_limit(è¡¨ç¤ºã™ã‚‹å€™è£œæ•°)
+ * s_candidate.cand_colã®é ˜åŸŸã‚’ç¢ºä¿ã™ã‚‹ã€‚
  * s_candidate.page = 0 (initial page)
  */
 static void activate_cb(void *ptr, int nr, int display_limit)
@@ -386,7 +386,7 @@ static void activate_cb(void *ptr, int nr, int display_limit)
 }
 
 /*
- * ¸õÊä¤¬ÁªÂò¤µ¤ì¤¿¤È¤­¤Ë¸Æ¤Ğ¤ì¤ë¡£
+ * å€™è£œãŒé¸æŠã•ã‚ŒãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã€‚
  * s_candidate.index = index
  */
 static void select_cb(void *ptr, int index)
@@ -413,9 +413,9 @@ static void select_cb(void *ptr, int index)
 }
 
 /*
- * ¥Ú¡¼¥¸¤òÊÑ¤¨¤¿¤È¤­¤Ë¸Æ¤Ğ¤ì¤ë¡£
- * s_candidate.page = 1¥Ú¡¼¥¸Á°¤«¸å(direction¤Ë¤è¤ë)
- * s_candidate.index = page¤ÎºÇ½é¤«ºÇ¸å(direction¤Ë¤è¤ë)
+ * ãƒšãƒ¼ã‚¸ã‚’å¤‰ãˆãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã€‚
+ * s_candidate.page = 1ãƒšãƒ¼ã‚¸å‰ã‹å¾Œ(directionã«ã‚ˆã‚‹)
+ * s_candidate.index = pageã®æœ€åˆã‹æœ€å¾Œ(directionã«ã‚ˆã‚‹)
  */
 static void shift_page_cb(void *ptr, int direction)
 {
@@ -438,8 +438,8 @@ static void shift_page_cb(void *ptr, int direction)
 }
 
 /*
- * ¸õÊä°ìÍ÷¤ò¾Ã¤¹¤È¤­¤Ë¸Æ¤Ğ¤ì¤ë¡£
- * reset_candidate¤ò¸Æ¤Ö¡£
+ * å€™è£œä¸€è¦§ã‚’æ¶ˆã™ã¨ãã«å‘¼ã°ã‚Œã‚‹ã€‚
+ * reset_candidateã‚’å‘¼ã¶ã€‚
  */
 static void deactivate_cb(void *ptr)
 {
@@ -475,8 +475,8 @@ static void clear_cb(void *ptr)
 }
 
 /*
- * clear_cb¤Î¸å¤Ë0²ó°Ê¾å¸Æ¤Ğ¤ì¤ë
- * s_preedit¤ò¹½À®¤¹¤ë
+ * clear_cbã®å¾Œã«0å›ä»¥ä¸Šå‘¼ã°ã‚Œã‚‹
+ * s_preeditã‚’æ§‹æˆã™ã‚‹
  */
 static void pushback_cb(void *ptr, int attr, const char *str)
 {
@@ -494,17 +494,17 @@ static void pushback_cb(void *ptr, int attr, const char *str)
   }
 
   start_callbacks();
-  /* UPreeditAttr_Cursor¤Î¤È¤­¤Ë¶õÊ¸»úÎó¤È¤Ï¸Â¤é¤Ê¤¤ */
+  /* UPreeditAttr_Cursorã®ã¨ãã«ç©ºæ–‡å­—åˆ—ã¨ã¯é™ã‚‰ãªã„ */
   if (attr & UPreeditAttr_Cursor) {
-    /* skk¤Î¼­½ñÅĞÏ¿¤Ï¥«¡¼¥½¥ë¤¬2²Õ½ê¤¢¤ë */
+    /* skkã®è¾æ›¸ç™»éŒ²ã¯ã‚«ãƒ¼ã‚½ãƒ«ãŒ2ç®‡æ‰€ã‚ã‚‹ */
     /* assert(s_preedit->cursor == UNDEFINED); */
     s_preedit->cursor = s_preedit->width;
     attr -= UPreeditAttr_Cursor;
     cursor = TRUE;
   }
-  /* ¶õÊ¸»úÎó¤ÏÌµ»ë */
+  /* ç©ºæ–‡å­—åˆ—ã¯ç„¡è¦– */
   if (width > 0) {
-    /* ¥«¡¼¥½¥ë°ÌÃÖ¤ÎÊ¸»ú¤òÈ¿Å¾¤µ¤»¤Ê¤¤ */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®æ–‡å­—ã‚’åè»¢ã•ã›ãªã„ */
     if (g_opt.cursor_no_reverse && cursor && attr & UPreeditAttr_Reverse && s_preedit->cursor != UNDEFINED) {
       int *rval = width2byte2(str, 1);
       int first_char_byte = rval[0];
@@ -520,7 +520,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
         return;
       }
     }
-    /* attr¤¬Á°¤ÈÆ±¤¸¾ì¹ç¤ÏÁ°¤ÎÊ¸»úÎó¤ËÉÕ¤±Â­¤¹ */
+    /* attrãŒå‰ã¨åŒã˜å ´åˆã¯å‰ã®æ–‡å­—åˆ—ã«ä»˜ã‘è¶³ã™ */
     if (s_preedit->nr_psegs > 0 && s_preedit->pseg[s_preedit->nr_psegs - 1].attr == attr) {
       char *tmp_str = s_preedit->pseg[s_preedit->nr_psegs - 1].str;
 
@@ -543,8 +543,8 @@ static void update_cb(void *ptr)
 }
 
 /*
- * ¥â¡¼¥É¤¬ÊÑ¤ï¤Ã¤¿¤È¤­¤Ë¸Æ¤Ğ¤ì¤ë¡£
- * ¼Âºİ¤ÏÊÑ¤ï¤Ã¤Æ¤¤¤Ê¤¤¤³¤È¤â¤¢¤ë¡£
+ * ãƒ¢ãƒ¼ãƒ‰ãŒå¤‰ã‚ã£ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã€‚
+ * å®Ÿéš›ã¯å¤‰ã‚ã£ã¦ã„ãªã„ã“ã¨ã‚‚ã‚ã‚‹ã€‚
  */
 static void mode_update_cb(void *ptr, int mode)
 {
@@ -561,7 +561,7 @@ static void mode_update_cb(void *ptr, int mode)
 static void prop_list_update_cb(void *ptr, const char *str)
 {
   char *line;
-  int error = TRUE; /* str ¤¬ "" ¤Î¤È¤­¤Ïerror¤Ë¤¹¤ë*/
+  int error = TRUE; /* str ãŒ "" ã®ã¨ãã¯errorã«ã™ã‚‹*/
   char *labels = uim_strdup("");
   char *dup_str;
 
@@ -684,7 +684,7 @@ loop_end:
 }
 
 /*
- * ¿·¤·¤¤¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òºî¤ê¡¤¥İ¥¤¥ó¥¿¤òÊÖ¤¹
+ * æ–°ã—ã„ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’ä½œã‚Šï¼Œãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
  */
 struct preedit_tag *create_preedit(void)
 {
@@ -697,7 +697,7 @@ struct preedit_tag *create_preedit(void)
 }
 
 /*
- * p¤ÎÎÎ°è¤ò³«Êü¤¹¤ë
+ * pã®é ˜åŸŸã‚’é–‹æ”¾ã™ã‚‹
  */
 void free_preedit(struct preedit_tag *p)
 {
@@ -713,7 +713,7 @@ void free_preedit(struct preedit_tag *p)
 }
 
 /*
- * p¤ÎÊ£À½¤òºî¤ê¡¤¥İ¥¤¥ó¥¿¤òÊÖ¤¹
+ * pã®è¤‡è£½ã‚’ä½œã‚Šï¼Œãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
  */
 static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 {
@@ -769,18 +769,18 @@ static void init_candidate(int nr, int display_limit)
 }
 
 /*
- * s_candidate.page_strs = ¥Ú¡¼¥¸Ê¸»úÎó¤ÎÇÛÎó
- * Ê¸»úÎó¤ÎÉı¤¬s_max_width¤ò±Û¤¨¤¿¤È¤­¤Ï¡¢¤Ï¤ß½Ğ¤¿¸õÊä¤ò¼¡¤Î¥Ú¡¼¥¸¤Ë°Ü¤¹¡£
- * 1¤Ä¤·¤«¸õÊä¤¬¤Ê¤¯¤Æ¤Ï¤ß½Ğ¤¿¤È¤­¤Ï¡¢°Ü¤µ¤Ê¤¤¡£
- * s_max_width¤ÏÃ¼Ëö¤ÎÉı¤«¥ª¥×¥·¥ç¥ó¤Ç»ØÄê¤µ¤ì¤¿ÃÍ
- * s_candidate.page2index = ¥Ú¡¼¥¸¤ÎºÇ½é¤Î¸õÊä¤Îindex
- * s_candidate.cand_col = ¸õÊä¤Î°ÌÃÖ
- * s_candidate.nr_pages = ¥Ú¡¼¥¸¤ÎÁí¿ô
- * s_candidate.index_col = ¸õÊä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤Î¥«¥é¥à
+ * s_candidate.page_strs = ãƒšãƒ¼ã‚¸æ–‡å­—åˆ—ã®é…åˆ—
+ * æ–‡å­—åˆ—ã®å¹…ãŒs_max_widthã‚’è¶ŠãˆãŸã¨ãã¯ã€ã¯ã¿å‡ºãŸå€™è£œã‚’æ¬¡ã®ãƒšãƒ¼ã‚¸ã«ç§»ã™ã€‚
+ * 1ã¤ã—ã‹å€™è£œãŒãªãã¦ã¯ã¿å‡ºãŸã¨ãã¯ã€ç§»ã•ãªã„ã€‚
+ * s_max_widthã¯ç«¯æœ«ã®å¹…ã‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æŒ‡å®šã•ã‚ŒãŸå€¤
+ * s_candidate.page2index = ãƒšãƒ¼ã‚¸ã®æœ€åˆã®å€™è£œã®index
+ * s_candidate.cand_col = å€™è£œã®ä½ç½®
+ * s_candidate.nr_pages = ãƒšãƒ¼ã‚¸ã®ç·æ•°
+ * s_candidate.index_col = å€™è£œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚«ãƒ©ãƒ 
  */
 static void make_page_strs(void)
 {
-  /* NULL¤òrealloc¤·¤Æ¥´¥ß¤Ë¤Ê¤é¤Ê¤¤¤è¤¦¤Ë */
+  /* NULLã‚’reallocã—ã¦ã‚´ãƒŸã«ãªã‚‰ãªã„ã‚ˆã†ã« */
   char *page_str = uim_strdup("");
   int page_byte = 0;
   int page_width = 0;
@@ -801,10 +801,10 @@ static void make_page_strs(void)
     nr_in_virtual_page = s_candidate.nr - start;
 
   for (index = start; index < (start + nr_in_virtual_page); index++) {
-    /* A:¹©  S:¹­  D:¸ş  F:¹Í  J:¹½  K:ÚÊ  L:¸å  [»Ä¤ê 227] */
+    /* A:å·¥  S:åºƒ  D:å‘  F:è€ƒ  J:æ§‹  K:æ•²  L:å¾Œ  [æ®‹ã‚Š 227] */
     int next = FALSE; /* flag whether to finish page */
     int add_extra_page = FALSE;
-    /* "[10/20]" ¤ÎÉı */
+    /* "[10/20]" ã®å¹… */
     int index_width;
     uim_candidate cand = uim_get_candidate(g_context, index, index_in_page);
     const char *cand_str_label = uim_candidate_get_heading_label(cand);
@@ -825,7 +825,7 @@ static void make_page_strs(void)
     free(cand_str_cand);
 
     if (page_width + cand_width + index_width > s_max_width && index_in_page != 0) {
-      /* ¤Ï¤ß½Ğ¤¿¤Î¤Ç¼¡¤Î¥Ú¡¼¥¸¤Ë°Ü¤¹ */
+      /* ã¯ã¿å‡ºãŸã®ã§æ¬¡ã®ãƒšãƒ¼ã‚¸ã«ç§»ã™ */
       index--;
       if (g_opt.ddskk) {
         index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - index - 1);
@@ -839,12 +839,12 @@ static void make_page_strs(void)
       s_candidate.cand_col[index] = page_width + cand_label_width + strlen(":");
 
       if (cand_width + index_width > s_max_width && index_in_page == 0) {
-        /* ¤Ï¤ß½Ğ¤¿¤¬¡¢¼¡¤Ë°Ü¤µ¤Ê¤¤ */
+        /* ã¯ã¿å‡ºãŸãŒã€æ¬¡ã«ç§»ã•ãªã„ */
         assert(page_width == 0);
         next = TRUE;
-                                                  /* Á´³Ñ1Ê¸»ú¤ÎÉı */
+                                                  /* å…¨è§’1æ–‡å­—ã®å¹… */
         if (s_max_width >= cand_label_width + (int)strlen(":") + 2 + (int)strlen(" ") + index_width) {
-          /* ¸õÊä + ¥¤¥ó¥Ç¥Ã¥¯¥¹ */
+          /* å€™è£œ + ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ */
 
           cand_width = s_max_width - index_width - strlen(" ");
           cand_width = strhead(cand_str, cand_width);
@@ -854,7 +854,7 @@ static void make_page_strs(void)
           cand_str[cand_byte++] = ' ';
           cand_str[cand_byte] = '\0';
         } else {
-          /* ¥¤¥ó¥Ç¥Ã¥¯¥¹¤Ï¤Ê¤· */
+          /* ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯ãªã— */
 
           index_width = UNDEFINED;
           if (cand_width > s_max_width) {
@@ -945,8 +945,8 @@ static void make_page_strs(void)
 }
 
 /*
- * n¤ÎÊ¸»úÎóÉ½¸½¤ÎÉı¤òÊÖ¤¹
- * n¤Ï0°Ê¾å¤Ç¤Ê¤±¤ì¤Ğ¤Ê¤é¤Ê¤¤¡£
+ * nã®æ–‡å­—åˆ—è¡¨ç¾ã®å¹…ã‚’è¿”ã™
+ * nã¯0ä»¥ä¸Šã§ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
  */
 static int numwidth(int n)
 {
@@ -957,7 +957,7 @@ static int numwidth(int n)
 }
 
 /*
- * index¤¬¤¢¤ë¥Ú¡¼¥¸¤òÊÖ¤¹¡£
+ * indexãŒã‚ã‚‹ãƒšãƒ¼ã‚¸ã‚’è¿”ã™ã€‚
  */
 static int index2page(int index)
 {
@@ -972,7 +972,7 @@ static int index2page(int index)
 }
 
 /*
- * s_candidate¤ò½é´ü²½¤¹¤ë¡£
+ * s_candidateã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
  */
 static void reset_candidate(void)
 {
@@ -1008,24 +1008,24 @@ static void reset_candidate(void)
 }
 
 /*
- * s_candidate_col¤Ès_candidate_str¤Ès_index_str¤òÀßÄê¤¹¤ë
+ * s_candidate_colã¨s_candidate_strã¨s_index_strã‚’è¨­å®šã™ã‚‹
  */
 static void set_candidate(void)
 {
   uim_candidate cand;
   int cand_width;
-  /* "[10/20]"¤ÎÉı */
+  /* "[10/20]"ã®å¹… */
   int index_width;
 
   if (s_candidate.index_col[s_candidate.page] == UNDEFINED) {
     s_index_str = uim_strdup("");
     index_width = 0;
   } else {
-    /* ±¦Ã¼¤Î¸õÊä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹ */
+    /* å³ç«¯ã®å€™è£œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ */
     int right_edge_cand_index = s_candidate.page + 1 == s_candidate.nr_pages ? s_candidate.nr - 1 : s_candidate.page2index[s_candidate.page + 1] - 1;
-    /* ±¦Ã¼¤Î¸õÊä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤ÎÉı */
+    /* å³ç«¯ã®å€™è£œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®å¹… */
     int right_edge_cand_index_width = numwidth(right_edge_cand_index + 1);
-    /* ¸½ºß¤Î¸õÊä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤ÎÉı */
+    /* ç¾åœ¨ã®å€™è£œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®å¹… */
     int cand_index_width = numwidth(s_candidate.index + 1);
     int padlen = right_edge_cand_index_width - cand_index_width;
     char *pad;
@@ -1081,7 +1081,7 @@ void callbacks_winch(void)
     return;
   }
 
-  /* ¸õÊä°ìÍ÷¤òÉ½¼¨Ãæ */
+  /* å€™è£œä¸€è¦§ã‚’è¡¨ç¤ºä¸­ */
   if (s_candidate.page_strs != NULL) {
     int i;
     for (i = 0; i < s_candidate.nr_pages; i++) {

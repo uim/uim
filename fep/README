@@ -42,16 +42,16 @@ How to USE
     Detecting the language and encoding in accordance with this order.
 
   o WINDOW
-    backtick��ȤäƤ���Ȥ���ɽ������ޤ���
+    backtickを使っているときに表示されます。
 
   o UIM_FEP_PID
     PID (Process ID) of uim-fep.
 
   o UIM_FEP_GETMODE
-    uim-fep�Υ⡼�ɤ��񤭹��ޤ��ե�����Ǥ���
+    uim-fepのモードが書き込まれるファイルです。
 
   o UIM_FEP_SETMODE
-    ���Υե�����˥⡼�ɤ�񤭹����uim-fep�Υ⡼�ɤ��Ѥ��ޤ���
+    このファイルにモードを書き込むとuim-fepのモードが変わります。
     $ echo 0 > $UIM_FEP_SETMODE
 
   o LIBUIM_USER_SCM_FILE
@@ -87,18 +87,18 @@ How to USE
     $ uim-fep -t 0.1
 
   o -c  This option make the character which is located at cursorposition look inverted.
-        kterm, aterm, rxvt, teraterm(�����������Ǥʤ��ξ���)�ʤɤ�ü��
-        �Ǥ�ȿž���줿ʸ���˥������뤬�����ȿž���ä��뤳�Ȥ�����ޤ���
-        ���Τ褦�ʾ��Ϥ��Υ��ץ������դ����ȿžʸ���˥������뤬
-        ����Ȥ���ȿž�����褦�ˤʤ�ޤ���
+        kterm, aterm, rxvt, teraterm(カーソル点滅なしの状態)などの端末
+        では反転された文字にカーソルがあると反転が消えることがあります。
+        このような場合はこのオプションを付けると反転文字にカーソルが
+        あるときに反転されるようになります。
 
-  o -i  ���ơ������饤������褷�Ƥ���Ȥ���ץꥨ�ǥ��å�(̤����ʸ����)
-        �������ʳ����Խ����Ƥ���Ȥ��˥����������Ū�˾ä��ޤ�������
-        ����λ��������ˤʤ�Ȥ��Ϥ��Υ��ץ������դ��Ƥ���������
+  o -i  ステータスラインを描画しているときやプリエディット(未確定文字列)
+        の末尾以外を編集しているときにカーソルを一時的に消します。カー
+        ソルの残像が気になるときはこのオプションを付けてください。
 
   o -e command arg1 arg2 ...
-    ��ư���륳�ޥ�ɤ���ꤷ�ޤ������Υ��ץ����ʹߤΰ�����
-    command���Ϥ���ޤ���
+    起動するコマンドを指定します。このオプション以降の引数は
+    commandに渡されます。
 
   o -h This option show help messages.
 
@@ -126,13 +126,13 @@ How to use backtick
 
     * -v Display the version info of uim-fep
   
-  o uim-fep��screen���ʣ���Υ�����ɥ��ǵ�ư�Ǥ��ޤ���
+  o uim-fepはscreen内の複数のウィンドウで起動できます。
 
-  o uim-fep-tick��screen���鵯ư����뤿�ᡢscreen�δĶ��ѿ��������Ѥ�
-    ��ޤ���
+  o uim-fep-tickはscreenから起動されるため、screenの環境変数が引き継が
+    れます。
 
 
-* ~/.uim��񤯤Ȥ���������
+* ~/.uimを書くときの注意点
   a .. z                ->        "a" .. "z"
   A .. Z                ->        "A" .. "Z" (or "<Shift>A" ..  "<Shift>Z")
   C-a .. C-z            ->        "<Control>a" .. <Control>z"
@@ -140,9 +140,9 @@ How to use backtick
   M-A .. M-Z            ->        "<Alt>A" ..  "<Alt>Z" (or "<Alt><Shift>A" .. "<Alt><Shift>Z")
   M-C-a .. M-C-z        ->        "<Control><Alt>a" ..  "<Control><Alt>z"
   return                ->        "<Control>m"
-  backspace(C-h�ΤȤ�)  ->        "<Control>h"
-  backspace(C-?�ΤȤ�)  ->        "<Control>?"
-  backspace(����ʳ�)   ->        "backspace"
+  backspace(C-hのとき)  ->        "<Control>h"
+  backspace(C-?のとき)  ->        "<Control>?"
+  backspace(それ以外)   ->        "backspace"
   tab                   ->        "<Control>i"
   del, C-?              ->        "delete"
   esc, C-[              ->        "escape"
@@ -157,27 +157,27 @@ How to use backtick
   M-C-^                 ->        "<Alt><Control>^"
   M-C-_                 ->        "<Alt><Control>_"
   M-C-space             ->        "<Alt><Control> "
-  �� �� �� ��           ->        "up" "down" "right" "left"
+  ↑ ↓ → ←           ->        "up" "down" "right" "left"
   F1 .. F12             ->        "F1" .. "F12"
   Home                  ->        "home"
   End                   ->        "end"
   PageUp                ->        "prior"
   PageDown              ->        "next"
-  Insert                ->        �Ȥ��ޤ���
+  Insert                ->        使えません
 
   o If you want to use Alt key, you should 
-��Ȥ��ˤ�Alt�򲡤��ʤ���¾�Υ����򲡤����Ȥ��ˡ�^[�����Ϥ�
-  ���褦�ˤ��ޤ���
-  mlterm�ξ���~/.mlterm/main�˼��Τ褦�˽񤭤ޤ���
+を使うにはAltを押しながら他のキーを押したときに、^[が出力さ
+  れるようにします。
+  mltermの場合は~/.mlterm/mainに次のように書きます。
     mod_meta_mode=esc
-  kterm�ξ���~/.Xresource��~/.Xdefaults�˼��Τ褦�˽񤭤ޤ���
+  ktermの場合は~/.Xresourceか~/.Xdefaultsに次のように書きます。
     KTerm*EightBitInput: false
 
   o Some terminals accept "<Alt>F1", "<Alt>right" correctly
 
   o You cannot input "shift-space"
 
-  o prime-wide-latin-key?��"<Control>L"�����ϤǤ��ޤ���
+  o prime-wide-latin-key?の"<Control>L"は入力できません。
 
   o You cannot input "shift-backspace"
 
@@ -191,161 +191,161 @@ How to use backtick
 
 
 * Issues
-  o �ץꥨ�ǥ��å��Խ����ü���Υ��������ѹ�������ɽ�������뤳�Ȥ�
-    ����ޤ���
+  o プリエディット編集中に端末のサイズが変更されると表示が乱れることが
+    あります．
 
-  o screen�����uim-fep��-s lastline�ǻȤäƤ���Ȥ�ü���Υ��������ѹ�
-    ����ȵ���screen��˽�����뤳�Ȥ�����ޤ���
+  o screenの中でuim-fepを-s lastlineで使っているとき端末のサイズを変更
+    すると稀にscreenが暴走することがあります．
 
-  o ̵ȿ���ˤʤä���˽�������ꤷ����
-    $ kill -INT <uim-fep��pid>
-    ���Υ��ޥ�ɤ�ľ��Ȼפ��ޤ������������ܸ����ϤϤǤ��ʤ��ʤ�ޤ���
+  o 無反応になったり暴走したりしたら
+    $ kill -INT <uim-fepのpid>
+    このコマンドで直ると思います。ただし日本語入力はできなくなります。
 
-  o �������������ʤ뤳�Ȥ����뤫�⤷��ޤ���
+  o 色がおかしくなることがあるかもしれません。
 
   o You cannot use uim-fep with Cygwin(aka DOS prompt).
 
 
 * Notes
-  ��ܥ��󥯥�å���Shift+Insert�Υڡ����Ȥʤɤǰ��٤����̤����Ϥ��줿
-  �Ȥ����Ѵ������ˤ��Τޤ޽��Ϥ���ޤ���
-  �ץꥨ�ǥ��åȤ�������˥ڡ����Ȥ����̵���ˤʤ�ޤ���
+  中ボタンクリックやShift+Insertのペーストなどで一度に大量に入力された
+  ときは変換せずにそのまま出力されます。
+  プリエディットを入力中にペーストすると無効になります。
 
-  ü���α�ü�ǥץꥨ�ǥ��åȤ򳫻Ϥ���ȼ��ιԤ˰ܤ�ޤ�. 
+  端末の右端でプリエディットを開始すると次の行に移ります. 
 
 
-* ����
+* 履歴
   o 2004/8/1  0.4.0
-    * -C���ץ������ɲä��ޤ�����
+    * -Cオプションを追加しました。
 
   o 2004/7/29 0.3.9
-    * py������ʤ��褦�ˤ��ޤ�����
+    * pyで落ちないようにしました。
 
   o 2004/7/17 0.3.8
-    * Solaris�ǥ���ѥ���Ǥ���褦�ˤ��ޤ�����
+    * Solarisでコンパイルできるようにしました。
 
   o 2004/7/3 0.3.7
-    * wcswidth���ʤ��Ƥ⥳��ѥ���Ǥ���褦�ˤ��ޤ���.
-    * �Ѵ��������ɽ�����ѹ����ޤ���. (���ܸ�ʳ��Ǥ�"�Ĥ�"��ɽ���Ǥ��ʤ�����)
+    * wcswidthがなくてもコンパイルできるようにしました.
+    * 変換候補数の表示を変更しました. (日本語以外では"残り"が表示できないため)
 
   o 2004/6/29 0.3.6
-    * -l���ץ������ѻߤ��ޤ������Ķ��ѿ�LANG��ȤäƤ���������
-    * euc-jp��Ⱦ�ѥ��ʤ�2�����Ȥ��ư��äƤ����Х��������ޤ�����
-    * euc-jp, utf-8�ʳ��Ǥ�Ȥ���褦�ˤ��ޤ�����
-    * -t���ץ������ɲä��ޤ���. 
-    * rsh��Ǥ�Ȥ���褦�ˤ��ޤ���. 
+    * -lオプションを廃止しました．環境変数LANGを使ってください．
+    * euc-jpで半角カナを2カラムとして扱っていたバグを修正しました．
+    * euc-jp, utf-8以外でも使えるようにしました．
+    * -tオプションを追加しました. 
+    * rsh先でも使えるようにしました. 
     
   o 2004/6/21 0.3.5
-    * �ǲ��Ԥǵ�ư����Ȥ��������ʤ�Х��������ޤ�����(0.3.4�ΥХ�)
+    * 最下行で起動するとおかしくなるバグを修正しました．(0.3.4のバグ)
 
   o 2004/6/20 0.3.4
-    * �ץꥨ�ǥ��å�����ι�®�����ޤ�����
-    * �Ԥ�٤����Ѵ��ǥ��ߤ��Ĥ�ʤ��褦�ˤ��ޤ�����
-    * -o���ץ������ѻߤ��ޤ�����
+    * プリエディット描画の高速化しました．
+    * 行を跨いだ変換でゴミが残らないようにしました．
+    * -oオプションを廃止しました．
 
   o 2004/6/17 0.3.3
-    * ��̿Ū�ʥХ��������ޤ�����(0.3.2�����ä��Х��Ǥ�)
-    * ������ɥ����������ѹ����줿�Ȥ��˥��ơ������饤�������褹��褦�ˤ��ޤ�����
-    * �ץꥨ�ǥ��å��Խ���˥�����ɥ����������ѹ����줿�Ȥ��˥ץꥨ�ǥ��åȤ�
-      ��񤭤��Ƥ��ޤ��Х��������ޤ�����
+    * 致命的なバグを修正しました．(0.3.2で入ったバグです)
+    * ウィンドウサイズが変更されたときにステータスラインを再描画するようにしました．
+    * プリエディット編集中にウィンドウサイズが変更されたときにプリエディットを
+      上書きしてしまうバグを修正しました．
 
   o 2004/6/13 0.3.2
-    * TERM=vt100�ʤɤǥ⡼��ɽ�����ä��Ƥ��ޤ��Х��������ޤ�����
-    * ���ϻ��˲��̤򥯥ꥢ���ʤ��褦�ˤ��ޤ�����
-    * skk�ǹ�®�����Ϥ����ɽ�������������ʤ�Х��������ޤ�����
+    * TERM=vt100などでモード表示が消えてしまうバグを修正しました。
+    * 開始時に画面をクリアしないようにしました。
+    * skkで高速に入力すると表示がおかしくなるバグを修正しました。
 
   o 2004/6/7 0.3.1
-    * skk��"tt"�����Ϥ����"��t"�Ƚ��Ϥ���褦�ˤ��ޤ�����
-    * �Ԥ�٤����Ѵ���Ǥ���褦�ˤ��ޤ�����
-    * -o���ץ������ɲä��ޤ�����
-    * prime��ɽ��������Х��������ޤ�����
+    * skkで"tt"と入力すると"つt"と出力するようにしました。
+    * 行を跨いだ変換をできるようにしました。
+    * -oオプションを追加しました。
+    * primeで表示が乱れるバグを修正しました。
 
   o 2004/05/31 0.3.0
-    --mlterm���ץ������ѻߤ��ޤ�����
-    -c, -i���ץ������ɲä��ޤ�����
+    --mltermオプションを廃止しました。
+    -c, -iオプションを追加しました。
 
   o 2004/05/29 0.2.9
-    �ڡ����Ȥ����Ϥ��줿Ĺ��ʸ������Ѵ����ʤ��褦�ˤ��ޤ�����
-    ���ơ������饤������褷�Ƥ���Ȥ���ץꥨ�ǥ��åȤ������ʳ����Խ�
-    ���Ƥ���Ȥ��˥����������Ū�˾ä��褦�ˤ��ޤ�����(���̤Ϥ��ޤ�ʤ��Ǥ���)
-    terminfo��clear��ed����ʸ����ΤȤ�˽������Х��������ޤ�����
+    ペーストで入力された長い文字列を変換しないようにしました。
+    ステータスラインを描画しているときやプリエディットの末尾以外を編集
+    しているときにカーソルを一時的に消すようにしました。(効果はあまりないです。)
+    terminfoのclearかedが空文字列のとき暴走するバグを修正しました。
     
   o 2004/05/18 0.2.8
-    --mlterm���ץ������ɲä��ޤ�����
-    vim������Ǥ���褦�ˤ��ޤ�����(KoRoN����)
+    --mltermオプションを追加しました。
+    vimで制御できるようにしました。(KoRoNさん)
 
   o 2004/05/16 0.2.7
-    -s lastline��uim-fep����screen��ư���Ƥ�ɽ�������ʤ��褦�ˤ��ޤ�����
+    -s lastlineのuim-fepからscreenを起動しても表示が乱れないようにしました。
     uim-fep -s lastline -e screen
     
   o 2004/05/15 0.2.6
-    �����Х��������ޤ�����
-    anthy��Ĺ��ʸ������Ѵ�����Ȥ���Τ���Ĥ��򾯤ʤ����ޤ�����
-    screen��(�ץ쥨�ǥ��åȤ��Խ��ʤɤ�)��ü���鼡�ιԤκ�ü�˰�ư�Ǥ���褦�ˤ��ޤ�����
-    jfbterm�Ǻǲ��ԤΥ��ơ������饤���򤯤ʤ�ʤ��褦�ˤ��ޤ�����
+    落ちるバグを修正しました。
+    anthyで長い文字列を変換するときやのちらつきを少なくしました。
+    screenで(プレエディットの編集などで)右端から次の行の左端に移動できるようにしました。
+    jfbtermで最下行のステータスラインが白くならないようにしました。
 
   o 2004/05/10
-    0.2.5 ���̥��ꥢ���˺ǲ��ԤΥ��ơ������饤�������褹��褦�ˤ�����(mattn����)
-    ��λ���˺ǲ��ԤΥ��ơ������饤���ä��褦�ˤ�����(mattn����)
+    0.2.5 画面クリア時に最下行のステータスラインを再描画するようにした。(mattnさん)
+    終了時に最下行のステータスラインを消すようにした。(mattnさん)
 
   o 2004/05/09
-    0.2.4 skk��C-j, /, C-j, /�ν�˲����Ȳ�����Ϥ���ʤ��ʤ�Х�������
+    0.2.4 skkでC-j, /, C-j, /の順に押すと何も出力されなくなるバグを修正。
 
   o 2004/05/06
-    0.2.3 uim-0.3.6���б� (const���դ�������)
-    -v���ץ������ɲ�
-    ���ơ������饤���ä��Ȥ���clr_eol��Ȥ��褦�ˤ�����
+    0.2.3 uim-0.3.6に対応 (constを付けただけ)
+    -vオプションを追加
+    ステータスラインを消すときにclr_eolを使うようにした。
 
   o 2004/05/04
-    0.2.2 ���ơ������饤�󤫤���䤬�Ϥ߽Фʤ��褦�ˤ�����
-    uim-fep-tick��-w���ץ�����uim-fep�Υ��ץ����ˤ�����
-    uim-fep-tick��-l���ץ������ѻߤ�����
+    0.2.2 ステータスラインから候補がはみ出ないようにした。
+    uim-fep-tickを-wオプションをuim-fepのオプションにした。
+    uim-fep-tickの-lオプションを廃止した。
 
   o 2004/05/03
-    0.2.1 nr-candidate-max��0�ʲ��ˤ��Ƥ���������Х�������
+    0.2.1 nr-candidate-maxを0以下にしていると落ちるバグを修正。
 
   o 2004/05/01
-    0.2 �ǲ��Ԥ򥹥ơ������饤��ˤ��ƥ�����ɥ����������ѹ�����Ⱥǲ�
-    �Ԥ˰�ư�Ǥ��Ƥ��ޤ��Х�������
-    Ʊ�������åȤ�Ȥ�uim-fep-tick�Υץ�������2�İʾ�Ǥ��ʤ��褦�ˤ�����
-    �Ϥ߽Ф�����⶯Ĵ����褦�ˤ�����
-    configure�Υ��ץ�����backtick�������Ѥ����褦�ˤ�����
+    0.2 最下行をステータスラインにしてウィンドウサイズを変更すると最下
+    行に移動できてしまうバグを修正。
+    同じソケットを使うuim-fep-tickのプロセスを2つ以上できないようにした。
+    はみ出た候補も強調するようにした。
+    configureのオプションでbacktickの幅を変えれるようにした。
 
   o 2004/04/26
-    0.1.9 Ϣ³��commit�����Ȥ��������ʤ�Τ�����
+    0.1.9 連続でcommitされるとおかしくなるのを修正。
 
   o 2004/04/26
-    0.1.8 ���ơ������饤��ط��ΥХ�����
-    uim-fep-tick��-l���ץ������ɲ�
+    0.1.8 ステータスライン関係のバグ修正
+    uim-fep-tickに-lオプションを追加
 
   o 2004/04/25
-    0.1.7 configure��Ĥ���
-    <c-\>�ʤɤ����ϤǤ���褦�ˤ�����
-    ���ơ������饤��θ��䤬�Ϥ߽ФƤ�ɽ�������ʤ��褦�ˤ�����
-    ˽�������Ȥ��˻ߤ���褦�ˤ�����
+    0.1.7 configureをつけた
+    <c-\>などを入力できるようにした。
+    ステータスラインの候補がはみ出ても表示が乱れないようにした。
+    暴走したときに止めれるようにした。
           
   o 2004/04/18
-    0.1.6 prime���б�
+    0.1.6 primeに対応
 
   o 2004/04/17
-    0.1.5 utf-8(mattn����Υѥå�) backtick
+    0.1.5 utf-8(mattnさんのパッチ) backtick
 
   o 2004/04/12
-    0.1.4 �Х�����
+    0.1.4 バグ修正
 
   o 2004/04/11
-    0.1.3 ���ơ������饤��
+    0.1.3 ステータスライン
 
   o 2004/04/11
-    0.1.2 �Х�����
+    0.1.2 バグ修正
 
   o 2004/04/10
-    0.1.1 �Х�����
+    0.1.1 バグ修正
 
   o 2004/04/09
-    0.1 °���ȥ�������
+    0.1 属性とカーソル
 
   o 2004/04/03
-    ��ȯ����
+    開発開始
 
-���䡢�Х����ʤɤ� h013177b@ice.nuie.nagoya-u.ac.jp �ˤ��ꤤ���ޤ���
+質問、バグ報告などは h013177b@ice.nuie.nagoya-u.ac.jp にお願いします。

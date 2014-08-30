@@ -32,7 +32,7 @@
 */
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ä¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤òÉÁ²è¤¹¤ë
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚„ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã‚’æç”»ã™ã‚‹
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -64,35 +64,35 @@
 #include "str.h"
 #include "udsock.h"
 
-/* ¥³¥ß¥Ã¥È¤µ¤ì¤Æ¤«¤é½ĞÎÏ¤µ¤ì¤ë¤Ş¤ÇTRUE */
+/* ã‚³ãƒŸãƒƒãƒˆã•ã‚Œã¦ã‹ã‚‰å‡ºåŠ›ã•ã‚Œã‚‹ã¾ã§TRUE */
 int g_commit = FALSE;
-/* s_preedit->width > 0¤ÈÆ±¤¸ */
+/* s_preedit->width > 0ã¨åŒã˜ */
 int g_start_preedit = FALSE;
 
-/* ¸½ºß¤Î¥×¥ê¥¨¥Ç¥£¥Ã¥È */
+/* ç¾åœ¨ã®ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆ */
 static struct preedit_tag *s_preedit;
-/* ¥³¥ß¥Ã¥È¤µ¤ì¤¿¤È¤­¤Î¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òÊİÂ¸¤¹¤ë */
+/* ã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã¨ãã®ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’ä¿å­˜ã™ã‚‹ */
 static struct preedit_tag s_save_preedit;
-/* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÀèÆ¬¤Î°ÌÃÖ */
+/* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å…ˆé ­ã®ä½ç½® */
 static struct point_tag s_head;
-/* ¹Ô¿ô -> ¹ÔËö¤Î¥«¥é¥à */
+/* è¡Œæ•° -> è¡Œæœ«ã®ã‚«ãƒ©ãƒ  */
 static int *s_line2width = NULL;
 static int *s_prev_line2width = NULL;
-/* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤Î¹Ô¿ô */
+/* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®è¡Œæ•° */
 static int s_preedit_lines = 0;
 static int s_prev_preedit_lines = 0;
 
-/* µ¿»÷Ã¼Ëö¥Ş¥¹¥¿¤Î¥Õ¥¡¥¤¥ëµ­½Ò»Ò */
+/* ç–‘ä¼¼ç«¯æœ«ãƒã‚¹ã‚¿ã®ãƒ•ã‚¡ã‚¤ãƒ«è¨˜è¿°å­ */
 static int s_master;
-/* ¥â¡¼¥É¾õÂÖÊ¸»úÎó */
+/* ãƒ¢ãƒ¼ãƒ‰çŠ¶æ…‹æ–‡å­—åˆ— */
 static char s_modebuf[MODESIZE];
-/* ¸õÊä°ìÍ÷ */
+/* å€™è£œä¸€è¦§ */
 static char s_candbuf[CANDSIZE];
-/* GNU screen¤ÎWINDOWÈÖ¹æ */
+/* GNU screenã®WINDOWç•ªå· */
 static char s_win_no[WINNOSIZE];
-/* ¥â¡¼¥É¾õÂÖ¤ò½ñ¤­¹ş¤à¥Õ¥¡¥¤¥ë */
+/* ãƒ¢ãƒ¼ãƒ‰çŠ¶æ…‹ã‚’æ›¸ãè¾¼ã‚€ãƒ•ã‚¡ã‚¤ãƒ« */
 static const char *s_path_getmode;
-/* Ã¼Ëö¥µ¥¤¥º¤¬ÊÑ´¹¤·¤¿¤È¤­TRUE */
+/* ç«¯æœ«ã‚µã‚¤ã‚ºãŒå¤‰æ›ã—ãŸã¨ãTRUE */
 static int s_winch = FALSE;
 
 static void init_backtick(void);
@@ -141,18 +141,18 @@ void update_backtick(void)
 {
   char sendbuf[CANDSIZE];
   if (s_candbuf[0] == '\0') {
-    /* ¥â¡¼¥ÉÉ½¼¨ */
+    /* ãƒ¢ãƒ¼ãƒ‰è¡¨ç¤º */
     snprintf(sendbuf, sizeof(sendbuf), "%s%s", s_win_no, s_modebuf);
   } else {
-    /* ¸õÊä°ìÍ÷É½¼¨ */
+    /* å€™è£œä¸€è¦§è¡¨ç¤º */
     strlcpy(sendbuf,  s_candbuf, sizeof(sendbuf));
   }
   sendline(sendbuf);
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¡¤¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤òÉÁ²è¤¹¤ë
- * ÉÁ¼Ì¤¹¤ëÉ¬Í×¤¬¤Ê¤¤¾ì¹ç¤ÏFALSE¤òÊÖ¤¹
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆï¼Œã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã‚’æç”»ã™ã‚‹
+ * æå†™ã™ã‚‹å¿…è¦ãŒãªã„å ´åˆã¯FALSEã‚’è¿”ã™
  */
 int draw(void)
 {
@@ -170,7 +170,7 @@ int draw(void)
   s_preedit = get_preedit();
   commit_str = get_commit_str();
 
-  /* Ã¼Ëö¥µ¥¤¥º¤¬ÊÑ¹¹¤µ¤ì¤¿¤È¤­¤Ïs_head¤òÊÑ¹¹¤·¡¢Á°¤Îpreedit¤¬¤Ê¤«¤Ã¤¿¤³¤È¤Ë¤¹¤ë */
+  /* ç«¯æœ«ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã¯s_headã‚’å¤‰æ›´ã—ã€å‰ã®preeditãŒãªã‹ã£ãŸã“ã¨ã«ã™ã‚‹ */
   if (s_winch && g_start_preedit) {
     if (g_opt.no_report_cursor) {
       s_preedit->cursor = 0;
@@ -187,19 +187,19 @@ int draw(void)
   debug2(("commit_str = \"%s\"\n", commit_str));
   debug2(("preedit->width = %d\n", s_preedit->width));
 
-  /* ÊİÂ¸¤·¤Æ¤ª¤¤¤¿¥×¥ê¥¨¥Ç¥£¥Ã¥È¤Ï¤â¤¦¤¤¤é¤Ê¤¤ */
+  /* ä¿å­˜ã—ã¦ãŠã„ãŸãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã¯ã‚‚ã†ã„ã‚‰ãªã„ */
   for (i = 0; i < s_save_preedit.nr_psegs; i++) {
     free(s_save_preedit.pseg[i].str);
   }
   s_save_preedit.width = s_save_preedit.cursor = s_save_preedit.nr_psegs = 0;
 
-  /* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤¬Ìµ¤±¤ì¤Ğ¥«¡¼¥½¥ë¤òÌá¤¹ */
+  /* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆãŒç„¡ã‘ã‚Œã°ã‚«ãƒ¼ã‚½ãƒ«ã‚’æˆ»ã™ */
   draw_statusline(FALSE, !g_start_preedit || g_opt.no_report_cursor, FALSE, FALSE);
 
-  /* ¥³¥ß¥Ã¥È¤µ¤ì¤¿¤« */
+  /* ã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã‹ */
   if (commit_str[0] != '\0') {
     g_commit = TRUE;
-    /* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ò¾Ã¤¹É¬Í×¤¬¤¢¤ë¤« */
+    /* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’æ¶ˆã™å¿…è¦ãŒã‚ã‚‹ã‹ */
     if (prev_preedit->width > 0) {
       put_cursor_invisible();
       if (g_opt.no_report_cursor) {
@@ -218,7 +218,7 @@ int draw(void)
     write(s_master, commit_str, strlen(commit_str));
   }
   if (!g_commit) {
-    /* ÉÁ²è¤Ş¤¿¤Ï¾Ãµî¤¹¤ë¥×¥ê¥¨¥Ç¥£¥Ã¥È¤¬¤¢¤ë¤« */
+    /* æç”»ã¾ãŸã¯æ¶ˆå»ã™ã‚‹ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆãŒã‚ã‚‹ã‹ */
     if (s_preedit->width != 0 || prev_preedit->width != 0) {
       if (prev_preedit->width == 0) {
         start_preedit();
@@ -230,8 +230,8 @@ int draw(void)
     }
   } else { /* if (g_commit) */
     if (s_preedit->width > 0) {
-      /* ¥³¥ß¥Ã¥È¤µ¤ì¤¿¤È¤­¤Ë¥×¥ê¥¨¥Ç¥£¥Ã¥È¤¬¤¢¤Ã¤¿¤Î¤Ç¡¤¸å¤«¤é½ĞÎÏ¤¹
-       * ¤ë¤¿¤á¤Ë¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òÊİÂ¸¤¹¤ë  */
+      /* ã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã¨ãã«ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆãŒã‚ã£ãŸã®ã§ï¼Œå¾Œã‹ã‚‰å‡ºåŠ›ã™
+       * ã‚‹ãŸã‚ã«ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’ä¿å­˜ã™ã‚‹  */
       s_save_preedit = *s_preedit;
     }
     s_preedit->width = s_preedit->cursor = s_preedit->nr_psegs = 0;
@@ -246,7 +246,7 @@ int draw(void)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ò³«»Ï¤¹¤ë¤È¤­¤Ë¸Æ¤Ö
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’é–‹å§‹ã™ã‚‹ã¨ãã«å‘¼ã¶
  */
 static void start_preedit(void)
 {
@@ -274,8 +274,8 @@ static void start_preedit(void)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ò½ªÎ»¤¹¤ë¤È¤­¤Ë¸Æ¤Ö
- * ¥«¡¼¥½¥ë¤Ï¥×¥ê¥¨¥Ç¥£¥Ã¥È³«»Ï°ÌÃÖ¤Ë°ÜÆ°
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’çµ‚äº†ã™ã‚‹ã¨ãã«å‘¼ã¶
+ * ã‚«ãƒ¼ã‚½ãƒ«ã¯ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆé–‹å§‹ä½ç½®ã«ç§»å‹•
  */
 static void end_preedit(void)
 {
@@ -299,8 +299,8 @@ static void end_preedit(void)
 }
 
 /*
- * ¥³¥ß¥Ã¥È¤È¥×¥ê¥¨¥Ç¥£¥Ã¥È¤¬Æ±»ş¤ËÈ¯À¸¤·¡¤
- * ¤½¤Î¸å¡¤¥³¥ß¥Ã¥È¤ò½ĞÎÏ¤·¤¿¤È¤­¤ËTRUE¤òÊÖ¤¹
+ * ã‚³ãƒŸãƒƒãƒˆã¨ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆãŒåŒæ™‚ã«ç™ºç”Ÿã—ï¼Œ
+ * ãã®å¾Œï¼Œã‚³ãƒŸãƒƒãƒˆã‚’å‡ºåŠ›ã—ãŸã¨ãã«TRUEã‚’è¿”ã™
  */
 int is_commit_and_preedit(void)
 {
@@ -308,8 +308,8 @@ int is_commit_and_preedit(void)
 }
 
 /*
- * is_commit_and_preedit() == TRUE¤Î¤È¤­¤Ë¸Æ¤Ğ¤ì¡¤
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ò½ĞÎÏ¤¹¤ë
+ * is_commit_and_preedit() == TRUEã®ã¨ãã«å‘¼ã°ã‚Œï¼Œ
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’å‡ºåŠ›ã™ã‚‹
  */
 void draw_commit_and_preedit(void)
 {
@@ -320,17 +320,17 @@ void draw_commit_and_preedit(void)
   s_save_preedit.cursor = 0;
   s_save_preedit.nr_psegs = 0;
   start_preedit();
-  /* prev_preedit¤Ï¶õ */
+  /* prev_preeditã¯ç©º */
   draw_preedit(s_preedit, &s_save_preedit);
   put_cursor_normal();
 }
 
 /*
- * ¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤òÉÁ²è¤¹¤ë
- * force¤¬TRUE¤Î¤È¤­¤Ï¾õÂÖ¤¬ÊÑ¤ï¤Ã¤Æ¤Ê¤¯¤Æ¤âÉÁ²è¤¹¤ë
- * restore¤¬TRUE¤Î¤È¤­¤Ï¥«¡¼¥½¥ë¤ò³«»Ï°ÌÃÖ¤ËÌá¤¹
- * visible¤¬TRUE¤Î¤È¤­¤Ï½ªÎ»¸å¤Ë¥«¡¼¥½¥ë¤òÉ½¼¨¤¹¤ë
- * draw_background¤¬TRUE¤Î¤È¤­¤ÏÇØ·Ê¿§¤ÇÅÉ¤ê¤Ä¤Ö¤¹
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã‚’æç”»ã™ã‚‹
+ * forceãŒTRUEã®ã¨ãã¯çŠ¶æ…‹ãŒå¤‰ã‚ã£ã¦ãªãã¦ã‚‚æç”»ã™ã‚‹
+ * restoreãŒTRUEã®ã¨ãã¯ã‚«ãƒ¼ã‚½ãƒ«ã‚’é–‹å§‹ä½ç½®ã«æˆ»ã™
+ * visibleãŒTRUEã®ã¨ãã¯çµ‚äº†å¾Œã«ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹
+ * draw_backgroundãŒTRUEã®ã¨ãã¯èƒŒæ™¯è‰²ã§å¡—ã‚Šã¤ã¶ã™
  */
 static void draw_statusline(int force, int restore, int visible, int draw_background)
 {
@@ -350,7 +350,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   char *prev_index_str;
   int prev_index_col;
 
-  /* staticÊÑ¿ô¤Î½é´ü²½ 1²ó¤·¤«¼Â¹Ô¤µ¤ì¤Ê¤¤ */
+  /* staticå¤‰æ•°ã®åˆæœŸåŒ– 1å›ã—ã‹å®Ÿè¡Œã•ã‚Œãªã„ */
   if (statusline_str == NULL) {
     statusline_str = uim_strdup("");
   }
@@ -388,18 +388,18 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   debug2(("index_str = \"%s\"\n", index_str));
   debug2(("index_col = %d\n", index_col));
 
-  /* ¸õÊä°ìÍ÷¤ò¾Ãµî */
+  /* å€™è£œä¸€è¦§ã‚’æ¶ˆå» */
   if (statusline_str[0] == '\0' && prev_statusline_str[0] != '\0') {
     if (g_opt.status_type == LASTLINE) {
-      /* ¸õÊä°ìÍ÷¤ò¾Ã¤·¤¿¸å¤Ï¥â¡¼¥É¤òÉÁ²è¤¹¤ëÉ¬Í×¤¬¤¢¤ë */
+      /* å€™è£œä¸€è¦§ã‚’æ¶ˆã—ãŸå¾Œã¯ãƒ¢ãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ */
       force = TRUE;
     } else if (g_opt.status_type == BACKTICK) {
       s_candbuf[0] = '\0';
     }
   } else {
-    /* ¿·¤·¤¤¸õÊä°ìÍ÷¤« */ 
+    /* æ–°ã—ã„å€™è£œä¸€è¦§ã‹ */ 
     if (strcmp(statusline_str, prev_statusline_str) != 0 || (force && statusline_str[0] != '\0')) {
-      /* ¿·¤·¤¤¸õÊä°ìÍ÷¤Ê¤Î¤ÇÁ°²ó¤Î¸õÊä¤Ï¤Ê¤¤ */
+      /* æ–°ã—ã„å€™è£œä¸€è¦§ãªã®ã§å‰å›ã®å€™è£œã¯ãªã„ */
       prev_candidate_col = UNDEFINED;
       prev_index_col = UNDEFINED;
       if (g_opt.status_type == LASTLINE) {
@@ -408,7 +408,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
         }
         put_cursor_invisible();
         put_goto_lastline(0);
-        /* ¸õÊä¤¬ÁªÂò¤µ¤ì¤Æ¤¤¤ë¤« */
+        /* å€™è£œãŒé¸æŠã•ã‚Œã¦ã„ã‚‹ã‹ */
         if (candidate_col != UNDEFINED) {
           int byte_cand = (width2byte(statusline_str, candidate_col))[0];
           int byte_index;
@@ -443,7 +443,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
       }
     }
     if (prev_candidate_col != candidate_col) {
-      /* Á°²ó¤Î¸õÊä¤ÎÈ¿Å¾¤òÌá¤¹ */
+      /* å‰å›ã®å€™è£œã®åè»¢ã‚’æˆ»ã™ */
       if (prev_candidate_col != UNDEFINED) {
         if (g_opt.status_type == LASTLINE) {
           if (restore) {
@@ -454,7 +454,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
           put_uim_str(prev_candidate_str, UPreeditAttr_None);
         }
       }
-      /* ÁªÂò¤µ¤ì¤¿¸õÊä¤òÈ¿Å¾¤¹¤ë */
+      /* é¸æŠã•ã‚ŒãŸå€™è£œã‚’åè»¢ã™ã‚‹ */
       if (candidate_col != UNDEFINED) {
         if (g_opt.status_type == LASTLINE) {
           if (restore) {
@@ -484,7 +484,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
           put_save_cursor();
         }
         put_cursor_invisible();
-        /* index_str¤Ïascii */
+        /* index_strã¯ascii */
         if (prev_index_col != UNDEFINED) {
           for (i = 0; i < (int)strlen(index_str); i++) {
             if (index_str[i] != prev_index_str[i]) {
@@ -505,7 +505,7 @@ end_candidate:
 
   if (force || strcmp(mode_str, prev_mode_str) != 0) {
 
-    /* ¸½ºß¤Î¥â¡¼¥É¤òUIM_FEP_GETMODE¤Ë½ñ¤­¹ş¤à */
+    /* ç¾åœ¨ã®ãƒ¢ãƒ¼ãƒ‰ã‚’UIM_FEP_GETMODEã«æ›¸ãè¾¼ã‚€ */
     if (s_path_getmode[0] != '\0') {
       FILE *fp = fopen(s_path_getmode, "wt");
       if (fp) {
@@ -526,8 +526,8 @@ end_candidate:
         }
         put_cursor_invisible();
 
-        /* draw_background ¤Ê¤é¤Ğ force ¤Ç¤¢¤ë */
-        /* ÏÀÍıÅª¤Ë¤Ï´Ø·¸¤Ê¤¤¤¬¤½¤Î¤è¤¦¤Ê»È¤ï¤ìÊı¤·¤«¤·¤Æ¤¤¤Ê¤¤ */
+        /* draw_background ãªã‚‰ã° force ã§ã‚ã‚‹ */
+        /* è«–ç†çš„ã«ã¯é–¢ä¿‚ãªã„ãŒãã®ã‚ˆã†ãªä½¿ã‚ã‚Œæ–¹ã—ã‹ã—ã¦ã„ãªã„ */
         assert(!draw_background || force);
 
         if (force) {
@@ -541,7 +541,7 @@ end_candidate:
           }
 
         } else {
-          /* !force ¤Ê¤Î¤Ç prev_statusline_str_width ¤Ï¥â¡¼¥ÉÉ½¼¨¤ÎÄ¹¤µ¤Ç¤¢¤ë */
+          /* !force ãªã®ã§ prev_statusline_str_width ã¯ãƒ¢ãƒ¼ãƒ‰è¡¨ç¤ºã®é•·ã•ã§ã‚ã‚‹ */
           int eq_width = compare_str(mode_str, prev_mode_str);
           int eq_byte = width2byte(mode_str, eq_width)[0];
           int prev_mode_str_width = strwidth(prev_mode_str);
@@ -588,8 +588,8 @@ end_candidate:
 }
 
 /*
- * ¥¹¥Æ¡¼¥¿¥¹¥é¥¤¥ó¤Î¥â¡¼¥ÉÉ½¼¨¤òmode¤Ë¤¹¤ë
- * ¥«¡¼¥½¥ë°ÌÃÖ¤ÏÊÑ¤ï¤é¤Ê¤¤
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ©ã‚¤ãƒ³ã®ãƒ¢ãƒ¼ãƒ‰è¡¨ç¤ºã‚’modeã«ã™ã‚‹
+ * ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã¯å¤‰ã‚ã‚‰ãªã„
  */
 void draw_statusline_restore(void)
 {
@@ -603,8 +603,8 @@ void draw_statusline_restore(void)
 }
 
 /*
- * ºÇ²¼¹Ô¤òºÆÉÁ²è¤¹¤ë
- * ¥«¡¼¥½¥ë¤ÏºÇ²¼¹Ô¤Ë°ÜÆ°¤¹¤ë
+ * æœ€ä¸‹è¡Œã‚’å†æç”»ã™ã‚‹
+ * ã‚«ãƒ¼ã‚½ãƒ«ã¯æœ€ä¸‹è¡Œã«ç§»å‹•ã™ã‚‹
  */
 void draw_statusline_force_no_restore(void)
 {
@@ -613,8 +613,8 @@ void draw_statusline_force_no_restore(void)
 }
 
 /*
- * ºÇ²¼¹Ô¤òºÆÉÁ²è¤¹¤ë
- * ¥«¡¼¥½¥ë°ÌÃÖ¤ÏÊÑ¤ï¤é¤Ê¤¤
+ * æœ€ä¸‹è¡Œã‚’å†æç”»ã™ã‚‹
+ * ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã¯å¤‰ã‚ã‚‰ãªã„
  */
 void draw_statusline_force_restore(void)
 {
@@ -623,8 +623,8 @@ void draw_statusline_force_restore(void)
 }
 
 /*
- * ºÇ²¼¹Ô¤ò¾Ã¤¹
- * ¥«¡¼¥½¥ë¤ÏºÇ²¼¹Ô¤Ë°ÜÆ°¤¹¤ë
+ * æœ€ä¸‹è¡Œã‚’æ¶ˆã™
+ * ã‚«ãƒ¼ã‚½ãƒ«ã¯æœ€ä¸‹è¡Œã«ç§»å‹•ã™ã‚‹
  */
 void clear_lastline(void)
 {
@@ -634,7 +634,7 @@ void clear_lastline(void)
 }
 
 /*
- * backtick¤ò¾Ã¤¹
+ * backtickã‚’æ¶ˆã™
  */
 void clear_backtick(void)
 {
@@ -643,15 +643,15 @@ void clear_backtick(void)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤òÉÁ²è¤¹¤ë
- * ³«»Ï»ş¤Î¥«¡¼¥½¥ë°ÌÃÖ¤ÏÇ¤°Õ
- * ½ªÎ»»ş¤Î¥«¡¼¥½¥ë°ÌÃÖ¤Ïpreedit->cursor
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã‚’æç”»ã™ã‚‹
+ * é–‹å§‹æ™‚ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã¯ä»»æ„
+ * çµ‚äº†æ™‚ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã¯preedit->cursor
  */
 static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_preedit)
 {
   int eq_width;
 
-  /* Ã¼Ëö¥µ¥¤¥º¤¬ÊÑ¹¹¤µ¤ì¤¿¤È¤­¤Ïprev_preedit¤ÏÌµ»ë¤¹¤ë */
+  /* ç«¯æœ«ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã¯prev_preeditã¯ç„¡è¦–ã™ã‚‹ */
   eq_width = compare_preedit(preedit, prev_preedit);
 
 #if DEBUG > 2
@@ -664,12 +664,12 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
   debug2(("\n"));
 #endif
 
-  /* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎËöÈø°Ê³°¤òÊÔ½¸¤·¤Æ¤¤¤ë¤È¤­¤«prev_preedit¤òÊÑ¹¹¤¹¤ë¤È¤­¤Ï¥«¡¼¥½¥ë¤ò¾Ã¤¹ */
+  /* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®æœ«å°¾ä»¥å¤–ã‚’ç·¨é›†ã—ã¦ã„ã‚‹ã¨ãã‹prev_preeditã‚’å¤‰æ›´ã™ã‚‹ã¨ãã¯ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™ */
   if (preedit->cursor != preedit->width || eq_width != prev_preedit->width) {
     put_cursor_invisible();
   }
 
-  /* preedit == prev_preedit¤Î¤È¤­¤Ï¡¢¥«¡¼¥½¥ë¤Î°ÜÆ°¤À¤± */
+  /* preedit == prev_preeditã®ã¨ãã¯ã€ã‚«ãƒ¼ã‚½ãƒ«ã®ç§»å‹•ã ã‘ */
   if (eq_width == preedit->width && eq_width == prev_preedit->width && eq_width > 0) {
     if (g_opt.no_report_cursor) {
       put_move_cur(prev_preedit->cursor, preedit->cursor);
@@ -683,14 +683,14 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
     set_line2width(preedit);
   }
 
-  /* ½ĞÎÏ¤¹¤ë°ÌÃÖ¤Ë°ÜÆ° */
+  /* å‡ºåŠ›ã™ã‚‹ä½ç½®ã«ç§»å‹• */
   if (g_opt.no_report_cursor) {
     put_move_cur(prev_preedit->cursor, eq_width);
   } else {
     goto_col(eq_width);
   }
 
-  /* ÎÎ°è¤¬ÊÑ¤ï¤Ã¤Æ¤¤¤Ê¤¤¤Î¤ÇÊÑ¹¹ÉôÊ¬¤À¤±¾å½ñ¤­ */
+  /* é ˜åŸŸãŒå¤‰ã‚ã£ã¦ã„ãªã„ã®ã§å¤‰æ›´éƒ¨åˆ†ã ã‘ä¸Šæ›¸ã */
   if ((g_opt.no_report_cursor && preedit->width == prev_preedit->width) || (!g_opt.no_report_cursor && is_eq_region())) {
     int eq_width_rev = compare_preedit_rev(preedit, prev_preedit);
     debug2(("eq_width_rev = %d\n", eq_width_rev));
@@ -722,7 +722,7 @@ static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_p
     }
   } else {
     erase_prev_preedit();
-    /* ¥«¡¼¥½¥ë¤Î°ÌÃÖ¤Ë°ÜÆ° */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®ã«ç§»å‹• */
     goto_char(preedit->cursor);
   }
 
@@ -743,7 +743,7 @@ static int is_eq_region(void)
 }
 
 /*
- * p¤ÎÉıstart¤Î¼¡¤ÎÊ¸»ú¤«¤éÉıend¤ÎÊ¸»ú¤Ş¤Ç½ĞÎÏ¤¹¤ë¡£
+ * pã®å¹…startã®æ¬¡ã®æ–‡å­—ã‹ã‚‰å¹…endã®æ–‡å­—ã¾ã§å‡ºåŠ›ã™ã‚‹ã€‚
  */
 static void draw_subpreedit(struct preedit_tag *p, int start, int end)
 {
@@ -757,7 +757,7 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
     return;
   }
 
-  /* start¤¬¤É¤³¤«¤òÄ´¤Ù¤ë */
+  /* startãŒã©ã“ã‹ã‚’èª¿ã¹ã‚‹ */
   if (start != 0) {
     for (i = 0; i < p->nr_psegs; i++) {
       char *seg_str = p->pseg[i].str;
@@ -811,8 +811,8 @@ static void draw_subpreedit(struct preedit_tag *p, int start, int end)
 }
 
 /*
- * pseg¤òÉÁ²è¤¹¤ë
- * Éıstart_width¤Î¼¡¤ÎÊ¸»ú¤¬pseg¤ÎÀèÆ¬Ê¸»ú
+ * psegã‚’æç”»ã™ã‚‹
+ * å¹…start_widthã®æ¬¡ã®æ–‡å­—ãŒpsegã®å…ˆé ­æ–‡å­—
  */
 static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
 {
@@ -850,7 +850,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
       }
     }
 
-    /* ÀŞ¤êÊÖ¤¹É¬Í×¤¬¤Ê¤¤¤« */
+    /* æŠ˜ã‚Šè¿”ã™å¿…è¦ãŒãªã„ã‹ */
     if (seg_w < margin) {
       put_uim_str(seg_str, pseg->attr);
       break;
@@ -860,10 +860,10 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     byte = byte_width[0];
     width = byte_width[1];
 
-    /* ¹ÔËö¤Ş¤Ç½ĞÎÏ */
+    /* è¡Œæœ«ã¾ã§å‡ºåŠ› */
     put_uim_str_len(seg_str, pseg->attr, byte);
 
-    /* ±¦Ã¼¤ÎÊ¸»ú¤ò¾Ã¤¹É¬Í×¤¬¤¢¤ë¤« */
+    /* å³ç«¯ã®æ–‡å­—ã‚’æ¶ˆã™å¿…è¦ãŒã‚ã‚‹ã‹ */
     if (s_line2width[lineno] < s_prev_line2width[lineno]) {
       if (g_opt.on_the_spot) {
         put_delete(s_prev_line2width[lineno] - s_line2width[lineno]);
@@ -873,7 +873,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
       s_prev_line2width[lineno] = s_line2width[lineno];
     }
 
-    /* ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤¬Ã¼Ëö¤Î±¦²¼¤«¤é½Ğ¤ë¤È¤­¤Ï¥¹¥¯¥í¡¼¥ë¤¹¤ë */
+    /* ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆãŒç«¯æœ«ã®å³ä¸‹ã‹ã‚‰å‡ºã‚‹ã¨ãã¯ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ */
     if (s_head.row + lineno == g_win->ws_row - 1 && s_head.row > 0) {
       put_crlf();
       s_head.row--;
@@ -889,7 +889,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
 }
 
 /*
- * p1¤Èp2¤ÎÀèÆ¬¤«¤é¤Î¶¦ÄÌÉôÊ¬Ê¸»úÎó(Â°À­¤âÅù¤·¤¤)¤ÎÉı¤òÊÖ¤¹
+ * p1ã¨p2ã®å…ˆé ­ã‹ã‚‰ã®å…±é€šéƒ¨åˆ†æ–‡å­—åˆ—(å±æ€§ã‚‚ç­‰ã—ã„)ã®å¹…ã‚’è¿”ã™
  */
 static int compare_preedit(struct preedit_tag *p1, struct preedit_tag *p2)
 {
@@ -914,7 +914,7 @@ static int compare_preedit(struct preedit_tag *p1, struct preedit_tag *p2)
 }
 
 /*
- * p1¤Èp2¤ÎËöÈø¤«¤é¤Î¶¦ÄÌÉôÊ¬Ê¸»úÎó(Â°À­¤âÅù¤·¤¤)¤ÎÉı¤òÊÖ¤¹
+ * p1ã¨p2ã®æœ«å°¾ã‹ã‚‰ã®å…±é€šéƒ¨åˆ†æ–‡å­—åˆ—(å±æ€§ã‚‚ç­‰ã—ã„)ã®å¹…ã‚’è¿”ã™
  */
 static int compare_preedit_rev(struct preedit_tag *p1, struct preedit_tag *p2)
 {
@@ -1026,8 +1026,8 @@ static void set_line2width(struct preedit_tag *preedit)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÉıwidth¤Î¼¡¤ÎÊ¸»ú¤Ë°ÜÆ°¤¹¤ë
- * goto_char(0) => ÀèÆ¬¤ÎÊ¸»ú¤Ë°ÜÆ°
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å¹…widthã®æ¬¡ã®æ–‡å­—ã«ç§»å‹•ã™ã‚‹
+ * goto_char(0) => å…ˆé ­ã®æ–‡å­—ã«ç§»å‹•
  */
 static void goto_char(int width)
 {
@@ -1038,8 +1038,8 @@ static void goto_char(int width)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÉıwidth¤Î¼¡¤Îcolumn¤Ë°ÜÆ°
- * goto_col(0) => ÀèÆ¬¤Ë°ÜÆ°
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å¹…widthã®æ¬¡ã®columnã«ç§»å‹•
+ * goto_col(0) => å…ˆé ­ã«ç§»å‹•
  */
 static void goto_col(int width)
 {
@@ -1050,8 +1050,8 @@ static void goto_col(int width)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÉıwidth¤Î¼¡¤ÎÊ¸»ú¤¬Â°¤¹¹ÔÈÖ¹æ¤òÊÖ¤¹
- * ¹ÔÈÖ¹æ¤Ï0¤«¤é»Ï¤Ş¤ë
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å¹…widthã®æ¬¡ã®æ–‡å­—ãŒå±ã™è¡Œç•ªå·ã‚’è¿”ã™
+ * è¡Œç•ªå·ã¯0ã‹ã‚‰å§‹ã¾ã‚‹
  */
 static int width2lineno_char(int width)
 {
@@ -1068,8 +1068,8 @@ static int width2lineno_char(int width)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÉıwidth¤Î¼¡¤Îcolumn¤¬Â°¤¹¹ÔÈÖ¹æ¤òÊÖ¤¹
- * ¹ÔÈÖ¹æ¤Ï0¤«¤é»Ï¤Ş¤ë
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å¹…widthã®æ¬¡ã®columnãŒå±ã™è¡Œç•ªå·ã‚’è¿”ã™
+ * è¡Œç•ªå·ã¯0ã‹ã‚‰å§‹ã¾ã‚‹
  */
 static int width2lineno_col(int width)
 {
@@ -1083,13 +1083,13 @@ static int width2lineno_col(int width)
     w += s_line2width[i];
   }
   return s_preedit_lines - 1;
-  /* Ã¼Ëö¥µ¥¤¥º¤¬ÊÑ¹¹¤µ¤ì¤¿¤È¤­¤Ï¤³¤³¤Ë¤¯¤ë¤³¤È¤â¤¢¤ë */
+  /* ç«¯æœ«ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã¯ã“ã“ã«ãã‚‹ã“ã¨ã‚‚ã‚ã‚‹ */
   /* assert(s_winch); */
   /* return s_preedit_lines; */
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÉıwidth¤Î¼¡¤ÎÊ¸»ú¤Î°ÌÃÖ¤òÊÖ¤¹
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å¹…widthã®æ¬¡ã®æ–‡å­—ã®ä½ç½®ã‚’è¿”ã™
  */
 static struct point_tag width2point_char(int width)
 {
@@ -1107,7 +1107,7 @@ static struct point_tag width2point_char(int width)
 }
 
 /*
- * ¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÉıwidth¤Î¼¡¤Îcolumn¤Î°ÌÃÖ¤òÊÖ¤¹
+ * ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®å¹…widthã®æ¬¡ã®columnã®ä½ç½®ã‚’è¿”ã™
  */
 static struct point_tag width2point_col(int width)
 {
@@ -1125,7 +1125,7 @@ static struct point_tag width2point_col(int width)
 }
 
 /*
- * Ã¼Ëö¥µ¥¤¥º¤¬ÊÑ¹¹¤µ¤ì¤¿¤È¤­¤Ë¸Æ¤Ö
+ * ç«¯æœ«ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã«å‘¼ã¶
  */
 void draw_winch(struct winsize *prev_win)
 {
