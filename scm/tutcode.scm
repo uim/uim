@@ -168,6 +168,12 @@
 ;;;   tutcode-delete-leading-delimiter-on-postfix-kanji2seq?を
 ;;;   #tに設定してください。
 ;;;   例:" code "と打鍵すると" 演各 "と表示され、開始キーで、"code"に変換。
+;;;   なお、文字数指定なしの場合でも、確定操作なしで英字に置換したければ、
+;;;   ~/.uimに以下を記述(開始キーを";0"にする例):
+;;;   (tutcode-rule-set-sequences!
+;;;     `((((";" "0"))
+;;;         (,(lambda (state pc)
+;;;           (tutcode-begin-postfix-kanji2seq-conversion pc 0))))))
 ;;;   注:英単語中に前置型交ぜ書き変換開始などの機能に対するシーケンスが
 ;;;      含まれていると、該当する機能が実行されてしまいます。
 ;;;      現状では、それらの機能に対するシーケンスを、
@@ -4017,7 +4023,7 @@
 ;;;   0: ひらがなやーが続く間カタカナに変換する。
 ;;;   負の値: 絶対値の文字数をひらがなとして残してカタカナ変換。
 ;;;   (カタカナに変換する文字列が長くて文字数を数えるのが面倒な場合向け)
-;;;   「例えばあぷりけーしょん」alw→「例えばアプリケーション」
+;;;   「例えばあぷりけーしょん」j2→「例えばアプリケーション」
 (define (tutcode-begin-postfix-katakana-conversion pc yomi-len)
   (let*
     ((former-all (tutcode-postfix-katakana-acquire-yomi pc
@@ -4164,12 +4170,13 @@
 
 ;;; 後置型の漢字→入力シーケンス変換を開始する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+;;;  0の場合は、#fと同様に扱うが、対象文字列選択モードに入らず、すぐに確定。
 (define (tutcode-begin-postfix-kanji2seq-conversion pc yomi-len)
   (let*
     ((former-all (tutcode-postfix-acquire-text pc
-                  (or yomi-len tutcode-mazegaki-yomi-max)))
+      (if (and yomi-len (> yomi-len 0)) yomi-len tutcode-mazegaki-yomi-max)))
      (former-seq
-      (if yomi-len
+      (if (and yomi-len (> yomi-len 0))
         former-all
         (let*
           ;; verbose-stroke-keyが" "(デフォルト)の場合、余分に入力されてると
