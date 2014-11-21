@@ -1,0 +1,30 @@
+<section>
+  <item>
+    <attribute name="label" translatable="yes">Switch input method</attribute>
+    <attribute name="action">uim.switcher</attribute>
+  </item>
+  <item>
+    <attribute name="label" translatable="yes">Preference</attribute>
+    <attribute name="action">uim.pref</attribute>
+  </item>
+  <item>
+    <attribute name="label" translatable="yes">Japanese dictionary editor</attribute>
+    <attribute name="action">uim.dic</attribute>
+  </item>
+  <item>
+    <attribute name="label" translatable="yes">Input pad</attribute>
+    <attribute name="action">uim.pad</attribute>
+  </item>
+  <item>
+    <attribute name="label" translatable="yes">Handwriting input pad</attribute>
+    <attribute name="action">uim.hand</attribute>
+  </item>
+  <item>
+    <attribute name="label" translatable="yes">Help</attribute>
+    <attribute name="action">uim.help</attribute>
+  </item>
+  <item>
+    <attribute name="label" translatable="yes">About</attribute>
+    <attribute name="action">uim.about</attribute>
+  </item>
+</section>

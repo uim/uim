@@ -16,6 +16,7 @@ gtk2/toolbar/applet-gnome.c
 gtk2/toolbar/common-gtk.c
 gtk2/toolbar/standalone-gtk.c
 gtk3/toolbar/applet-gnome3.c
+[type: gettext/glade]gtk3/toolbar/uim-applet-menu.xml
 qt3/chardict/bushuviewwidget.cpp
 qt3/chardict/qt.cpp
 qt3/chardict/unicodeviewwidget.cpp
