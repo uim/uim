@@ -7,7 +7,7 @@ helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 libexec_PROGRAMS = uim-toolbar-applet-gnome3
 
-xmluidir = $(datadir)/gnome-panel/ui
+xmluidir = $(pkgdatadir)/ui
 xmlui_DATA = uim-applet-menu.xml
 
 uim_toolbar_applet_gnome3_LDADD = @GTK3_LIBS@ @GNOME3_APPLET_LIBS@ \
