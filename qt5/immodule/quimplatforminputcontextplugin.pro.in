@@ -38,5 +38,5 @@ SOURCES += @srcdir@/quimplatforminputcontext.cpp \
 OTHER_FILES += uim.json
 
 TARGET = uimplatforminputcontextplugin
-
+DESTDIR = 
 target.path += @DESTDIR@$$[QT_INSTALL_PLUGINS]/platforminputcontexts
