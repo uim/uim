@@ -313,18 +313,18 @@ if test x"$have_x" != xdisabled && test x"$have_x" != xno; then
     CFLAGS="$CFLAGS $XFT_CFLAGS"
     LIBS="$LIBS $XFT_LIBS"
     AC_TRY_LINK([
-#include <X11/Xft/Xft.h>], [ XftFontClose(0, 0); return 1; ], 
+#include <X11/Xft/Xft.h>], [ XftFontClose(0, 0); return 1; ],
       [
         AC_DEFINE(WITH_XFT, 1, [font antialiasing support])
         AC_MSG_CHECKING([Xft UTF-8 support])
         AC_TRY_LINK([
 #include <X11/Xft/Xft.h>
-          ], [ 
-XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; 
+          ], [
+XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
           ],
             AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
             AC_MSG_RESULT(yes),
-            AC_MSG_RESULT(no)) 
+            AC_MSG_RESULT(no))
       ],
       [
         AC_MSG_RESULT([***Could not link with Xft. Install Xft if you want support for it***])
@@ -628,7 +628,7 @@ fi
 AC_MSG_CHECKING([whether snprintf can declare const char *fmt])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 	   int snprintf(char *a, size_t b, const char *c, ...) { return 0; }
-	   int main(void) { snprintf(0, 0, 0); } 
+	   int main(void) { snprintf(0, 0, 0); }
     ]])],
    [AC_MSG_RESULT(yes)
     AC_DEFINE(SNPRINTF_CONST, [const],
@@ -858,6 +858,14 @@ if test "x$enable_gnome3_applet" != xno; then
 fi
 
 AM_CONDITIONAL(GNOME3_APPLET, test "x$enable_gnome3_applet" = xyes)
+
+AC_ARG_ENABLE(debug,
+  AC_HELP_STRING([--enable-debug],
+    [enable debugging]),
+  [],
+  [enable_debug=no])
+
+AM_CONDITIONAL(DEBUG, test "x$enable_debug" = xyes)
 
 dnl ****************************
 dnl *** Check for Qt Library ***
@@ -1152,14 +1160,6 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test "x$default_toolkit" = xqt5)
-
-AC_ARG_ENABLE(debug,
-  AC_HELP_STRING([--enable-debug],
-    [enable debugging]),
-  [],
-  [enable_debug=no])
-
-AM_CONDITIONAL(DEBUG, test "x$enable_debug" = xyes)
 
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
