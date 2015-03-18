@@ -36,6 +36,8 @@
 
 #include <X11/Xlib.h>
 
+#include "uim.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
