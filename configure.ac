@@ -337,6 +337,8 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
   fi
 fi
 
+AC_XKB
+
 AM_CONDITIONAL(XIM, test x"$use_xim" = xyes)
 AM_CONDITIONAL(WITH_XFT, test x"$XFT" = xtrue)
 

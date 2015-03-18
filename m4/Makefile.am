@@ -27,5 +27,5 @@ EXTRA_DIST = \
 	uintmax_t.m4 \
 	ulonglong.m4 \
 	wnn.m4 \
-	xft.m4
-
+	xft.m4 \
+	xkb.m4
