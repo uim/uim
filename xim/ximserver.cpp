@@ -63,9 +63,7 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-scm.h"
-#if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
 #include "uim/uim-x-util.h"
-#endif
 
 #ifndef XK_dead_horn
 #define XK_dead_horn	0xfe62
@@ -1318,63 +1316,8 @@ void keyState::check_key(keyEventX *x)
     if (x->state & Mod5Mask)
 	mModifier |= (gMod5Mask & mPreModState);
 
-    if (x->key_sym < 128 && x->key_sym >= 32)
-	mKey = static_cast<int>(x->key_sym);
-    else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
-	mKey = static_cast<int>(x->key_sym - XK_F1 + UKey_F1);
-    // GTK+ and Qt don't support dead_stroke yet
-    else if (x->key_sym >= XK_dead_grave && x->key_sym <= XK_dead_horn)
-	mKey = static_cast<int>(x->key_sym - XK_dead_grave + UKey_Dead_Grave);
-    else if (x->key_sym >= XK_Kanji && x->key_sym <= XK_Eisu_toggle)
-	mKey = static_cast<int>(x->key_sym - XK_Kanji + UKey_Kanji);
-    else if (x->key_sym >= XK_Hangul && x->key_sym <= XK_Hangul_Special)
-	mKey = static_cast<int>(x->key_sym - XK_Hangul + UKey_Hangul);
-    else if (x->key_sym >= XK_kana_fullstop && x->key_sym <= XK_semivoicedsound)
-	mKey = static_cast<int>(
-			x->key_sym - XK_kana_fullstop + UKey_Kana_Fullstop);
-    else {
-	switch (x->key_sym) {
-	case XK_yen: mKey = UKey_Yen; break;
-	case XK_BackSpace: mKey = UKey_Backspace; break;
-	case XK_Delete: mKey = UKey_Delete; break;
-	case XK_Insert: mKey = UKey_Insert; break;
-	case XK_Escape: mKey = UKey_Escape; break;
-	case XK_Tab:
-	case XK_ISO_Left_Tab: mKey = UKey_Tab; break;
-	case XK_Return: mKey = UKey_Return; break;
-	case XK_Left: mKey = UKey_Left; break;
-	case XK_Up: mKey = UKey_Up; break;
-	case XK_Right: mKey = UKey_Right; break;
-	case XK_Down: mKey = UKey_Down; break;
-	case XK_Prior: mKey = UKey_Prior; break;
-	case XK_Next: mKey = UKey_Next; break;
-	case XK_Home: mKey = UKey_Home; break;
-	case XK_End: mKey = UKey_End; break;
-	case XK_Multi_key: mKey = UKey_Multi_key; break;
-	case XK_Codeinput: mKey = UKey_Codeinput; break;
-	case XK_SingleCandidate: mKey = UKey_SingleCandidate; break;
-	case XK_MultipleCandidate: mKey = UKey_MultipleCandidate; break;
-	case XK_PreviousCandidate: mKey = UKey_PreviousCandidate; break;
-	case XK_Mode_switch: mKey = UKey_Mode_switch; break;
-	case XK_Shift_L: mKey = UKey_Shift_key; break;
-	case XK_Shift_R: mKey = UKey_Shift_key; break;
-	case XK_Control_L: mKey = UKey_Control_key; break;
-	case XK_Control_R: mKey = UKey_Control_key; break;
-	case XK_Alt_L: mKey = UKey_Alt_key; break;
-	case XK_Alt_R: mKey = UKey_Alt_key; break;
-	case XK_Meta_L: mKey = UKey_Meta_key; break;
-	case XK_Meta_R: mKey = UKey_Meta_key; break;
-	case XK_Super_L: mKey = UKey_Super_key; break;
-	case XK_Super_R: mKey = UKey_Super_key; break;
-	case XK_Hyper_L: mKey = UKey_Hyper_key; break;
-	case XK_Hyper_R: mKey = UKey_Hyper_key; break;
-	case XK_Caps_Lock: mKey = UKey_Caps_Lock; break;
-	case XK_Num_Lock: mKey = UKey_Num_Lock; break;
-	case XK_Scroll_Lock: mKey = UKey_Scroll_Lock; break;
-	default:
-	    mKey = UKey_Other;
-	}
-    }
+    mKey = uim_x_keysym2ukey(x->key_sym);
+
 #if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
     mKey = uim_x_kana_input_hack_translate_key(mKey,
 					       (KeyCode)x->ev.xkey.keycode);

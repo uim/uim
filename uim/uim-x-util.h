@@ -42,6 +42,8 @@
 extern "C" {
 #endif
 
+int uim_x_keysym2ukey(KeySym xkeysym);
+
 int uim_x_kana_input_hack_translate_key(int ukey, KeyCode hardware_keycode);
 int uim_x_kana_input_hack_filter_event(uim_context uc, XEvent *event);
 void uim_x_kana_input_hack_init(Display *display);
