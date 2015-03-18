@@ -71,28 +71,28 @@
     (choseong-hieuh        . 19)))
 
 (define byeoru-jungseong-alist
-  '((jungseong-void	   .  0)
-    (jungseong-a   	   .  1)
-    (jungseong-ae  	   .  2)
-    (jungseong-ya  	   .  3)
-    (jungseong-yae 	   .  4)
-    (jungseong-eo  	   .  5)
-    (jungseong-e   	   .  6)
-    (jungseong-yeo 	   .  7)
-    (jungseong-ye  	   .  8)
-    (jungseong-o   	   .  9)
-    (jungseong-wa  	   . 10)
-    (jungseong-wae 	   . 11)
-    (jungseong-oe  	   . 12)
-    (jungseong-yo  	   . 13)
-    (jungseong-u   	   . 14)
-    (jungseong-wo  	   . 15)
-    (jungseong-we  	   . 16)
-    (jungseong-wi  	   . 17)
-    (jungseong-yu  	   . 18)
-    (jungseong-eu  	   . 19)
-    (jungseong-ui  	   . 20)
-    (jungseong-i   	   . 21)))
+  '((jungseong-void        .  0)
+    (jungseong-a           .  1)
+    (jungseong-ae          .  2)
+    (jungseong-ya          .  3)
+    (jungseong-yae         .  4)
+    (jungseong-eo          .  5)
+    (jungseong-e           .  6)
+    (jungseong-yeo         .  7)
+    (jungseong-ye          .  8)
+    (jungseong-o           .  9)
+    (jungseong-wa          . 10)
+    (jungseong-wae         . 11)
+    (jungseong-oe          . 12)
+    (jungseong-yo          . 13)
+    (jungseong-u           . 14)
+    (jungseong-wo          . 15)
+    (jungseong-we          . 16)
+    (jungseong-wi          . 17)
+    (jungseong-yu          . 18)
+    (jungseong-eu          . 19)
+    (jungseong-ui          . 20)
+    (jungseong-i           . 21)))
 
 (define byeoru-jongseong-alist
   '((jongseong-void        .  0)
@@ -125,13 +125,13 @@
     (jongseong-hieuh       . 27)))
 
 (define byeoru-compound-jamo-alist
-  '(((jungseong-o      . jungseong-a     ) . jungseong-wa 	  )
-    ((jungseong-o      . jungseong-ae    ) . jungseong-wae	  )
-    ((jungseong-o      . jungseong-i     ) . jungseong-oe 	  )
-    ((jungseong-u      . jungseong-eo    ) . jungseong-wo 	  )
-    ((jungseong-u      . jungseong-e     ) . jungseong-we 	  )
-    ((jungseong-u      . jungseong-i     ) . jungseong-wi 	  )
-    ((jungseong-eu     . jungseong-i     ) . jungseong-ui 	  )
+  '(((jungseong-o      . jungseong-a     ) . jungseong-wa         )
+    ((jungseong-o      . jungseong-ae    ) . jungseong-wae        )
+    ((jungseong-o      . jungseong-i     ) . jungseong-oe         )
+    ((jungseong-u      . jungseong-eo    ) . jungseong-wo         )
+    ((jungseong-u      . jungseong-e     ) . jungseong-we         )
+    ((jungseong-u      . jungseong-i     ) . jungseong-wi         )
+    ((jungseong-eu     . jungseong-i     ) . jungseong-ui         )
     ((jongseong-giyeog . jongseong-sios  ) . jongseong-giyeogsios )
     ((jongseong-nieun  . jongseong-jieuj ) . jongseong-nieunjieuj )
     ((jongseong-nieun  . jongseong-hieuh ) . jongseong-nieunhieuh )
@@ -714,7 +714,7 @@
  ("<" . "2")
  (">" . "3"))
 
-(define-record 'byeoru-automata
+(define-record 'byeoru-automaton
   '((state		      (start . 0))
     (choices-history	      ())
     (unsorted-choices-history ())
@@ -734,7 +734,7 @@
 (define (byeoru-compound? jamo)
   (find (lambda (item) (eq? jamo (cdr item)))
 	byeoru-compound-jamo-alist))
-	 
+
 (define (byeoru-double? jamo)
   (find (lambda (item) (eq? jamo (cdr item)))
 	byeoru-double-jamo-alist))
@@ -795,14 +795,14 @@
     (and (eq? state-class dest-class)
 	 (or (= state-no 2) (= state-no 3)))))
 
-(define (byeoru-automata-reset! ba)
-  (byeoru-automata-set-state! ba '(start . 0))
-  (byeoru-automata-set-chosen-jamos! ba '())
-  (byeoru-automata-set-choices-history! ba '())
-  (byeoru-automata-set-composing-char! ba '(0 0 0))
-  (byeoru-automata-set-unsorted-choices-history! ba '()))
+(define (byeoru-automaton-reset! ba)
+  (byeoru-automaton-set-state! ba '(start . 0))
+  (byeoru-automaton-set-chosen-jamos! ba '())
+  (byeoru-automaton-set-choices-history! ba '())
+  (byeoru-automaton-set-composing-char! ba '(0 0 0))
+  (byeoru-automaton-set-unsorted-choices-history! ba '()))
 
-(define (byeoru-automata-eat-ordered-key ba choices)
+(define (byeoru-automaton-eat-ordered-key ba choices)
   ;; A few jamo and state choices are assigned to each key.  For
   ;; example, '((choseong-giyeog . 1) (jongseong-giyeog . 3)
   ;; (jongseong-giyeog . 4))) are assigned to "r" in the hangul2
@@ -813,11 +813,11 @@
   ;; composition, the syllable is completed, and composition of a new
   ;; syllable begins.
   (let loop ((chs choices))
-    (let* ((state (byeoru-automata-state ba))
+    (let* ((state (byeoru-automaton-state ba))
 	   (state-class (car state))
 	   (state-no (cdr state))
-	   (chosen-jamos (byeoru-automata-chosen-jamos ba))
-	   (chs-hist (byeoru-automata-choices-history ba)))
+	   (chosen-jamos (byeoru-automaton-chosen-jamos ba))
+	   (chs-hist (byeoru-automaton-choices-history ba)))
 
       (cond
 
@@ -831,19 +831,19 @@
 	    ;; (consonant vowel consonant) + vowel
 	    ;; => (consonant vowel) (consonant + vowel)
 	    (let ((last-choices (car chs-hist)))
-	      (byeoru-automata-backspace ba)
-	      (byeoru-automata-set-composed-char!
-	       ba (byeoru-jamos-to-johab (byeoru-automata-chosen-jamos ba)))
-	      (byeoru-automata-reset! ba)
-	      (byeoru-automata-eat-ordered-key ba last-choices)
-	      (byeoru-automata-eat-ordered-key ba choices))
+	      (byeoru-automaton-backspace ba)
+	      (byeoru-automaton-set-composed-char!
+	       ba (byeoru-jamos-to-johab (byeoru-automaton-chosen-jamos ba)))
+	      (byeoru-automaton-reset! ba)
+	      (byeoru-automaton-eat-ordered-key ba last-choices)
+	      (byeoru-automaton-eat-ordered-key ba choices))
 	    ;; For a 3-beol layout, just begin a new syllable with
 	    ;; the new key.
 	    (begin
-	      (byeoru-automata-set-composed-char!
-	       ba (byeoru-automata-composing-char ba))
-	      (byeoru-automata-reset! ba)
-	      (byeoru-automata-eat-ordered-key ba choices)))
+	      (byeoru-automaton-set-composed-char!
+	       ba (byeoru-automaton-composing-char ba))
+	      (byeoru-automaton-reset! ba)
+	      (byeoru-automaton-eat-ordered-key ba choices)))
 
 	'char-break)
 
@@ -934,12 +934,12 @@
 
 	   ;; A valid jamo choice found.  Keep composing.
 	   (begin
-	     (byeoru-automata-set-chosen-jamos! ba (cons jamo chosen-jamos))
-	     (byeoru-automata-set-choices-history! ba (cons choices chs-hist))
-	     (byeoru-automata-set-state! ba p-dest)
-	     (byeoru-automata-set-composing-char!
+	     (byeoru-automaton-set-chosen-jamos! ba (cons jamo chosen-jamos))
+	     (byeoru-automaton-set-choices-history! ba (cons choices chs-hist))
+	     (byeoru-automaton-set-state! ba p-dest)
+	     (byeoru-automaton-set-composing-char!
 	      ba (byeoru-jamos-to-johab
-		  (byeoru-automata-chosen-jamos ba)))
+		  (byeoru-automaton-chosen-jamos ba)))
 
 	     'composing))))
 
@@ -982,7 +982,7 @@
     (cond
      ((null? rev-chs-list)
       'composing)
-     ((eq? (byeoru-automata-eat-ordered-key ba (car rev-chs-list))
+     ((eq? (byeoru-automaton-eat-ordered-key ba (car rev-chs-list))
 	   'char-break)
       'char-break)
      (else
@@ -991,8 +991,8 @@
 (define (byeoru-eat-list f ba lst)
   (fold-right (lambda (elt s) (f ba elt)) #t lst))
 
-(define (byeoru-automata-eat-orderless-key ba choices)
-  (let ((uch (byeoru-automata-unsorted-choices-history ba))
+(define (byeoru-automaton-eat-orderless-key ba choices)
+  (let ((uch (byeoru-automaton-unsorted-choices-history ba))
 	(class (byeoru-jamo-class (caar choices))))
     ;; Even though we allow keystroke orders to be interchanged, two
     ;; keystrokes of the same class should be consecutive.  Otherwise,
@@ -1006,42 +1006,42 @@
 	     ;; disorders are allowed.
 	     (or (not (eq? (byeoru-orderedness) 'more-orderless))
 		 (eq? class 'choseong)))
-	(byeoru-automata-eat-ordered-key ba choices)
-	(let* ((chs-hist (byeoru-automata-choices-history ba))
+	(byeoru-automaton-eat-ordered-key ba choices)
+	(let* ((chs-hist (byeoru-automaton-choices-history ba))
 	       (new-chs-hist (cons choices chs-hist))
 	       (new-sorted-chs-hist (byeoru-insert-choices
 				     choices chs-hist))
 	       (res (begin
-		      (byeoru-automata-reset! ba)
+		      (byeoru-automaton-reset! ba)
 		      (byeoru-test-list ba new-sorted-chs-hist))))
 	  (if (eq? res 'char-break)
 	      (begin
-		(byeoru-automata-reset! ba)
+		(byeoru-automaton-reset! ba)
 		(byeoru-eat-list
-		 byeoru-automata-eat-ordered-key ba new-chs-hist)))
+		 byeoru-automaton-eat-ordered-key ba new-chs-hist)))
 	  res))))
 
-(define (byeoru-automata-eat-key ba choices)
-  (let ((uch (byeoru-automata-unsorted-choices-history ba))
+(define (byeoru-automaton-eat-key ba choices)
+  (let ((uch (byeoru-automaton-unsorted-choices-history ba))
 	(res
 	 (case (byeoru-orderedness)
 	   ((ordered)
-	    (byeoru-automata-eat-ordered-key ba choices))
+	    (byeoru-automaton-eat-ordered-key ba choices))
 	   ((orderless more-orderless)
-	    (byeoru-automata-eat-orderless-key ba choices)))))
-    (byeoru-automata-set-unsorted-choices-history!
+	    (byeoru-automaton-eat-orderless-key ba choices)))))
+    (byeoru-automaton-set-unsorted-choices-history!
      ba (if (eq? res 'char-break)
-	    (byeoru-automata-choices-history ba)
+	    (byeoru-automaton-choices-history ba)
 	    (cons choices uch)))
     res))
 
-(define (byeoru-automata-backspace ba)
-  (let ((chs-hist (byeoru-automata-choices-history ba)))
+(define (byeoru-automaton-backspace ba)
+  (let ((chs-hist (byeoru-automaton-choices-history ba)))
     (and (not (null? chs-hist))
 	 (let ((new-chs-hist (cdr chs-hist)))
-	   (byeoru-automata-reset! ba)
-	   (byeoru-eat-list byeoru-automata-eat-ordered-key ba new-chs-hist)
-	   (byeoru-automata-set-unsorted-choices-history! ba new-chs-hist)
+	   (byeoru-automaton-reset! ba)
+	   (byeoru-eat-list byeoru-automaton-eat-ordered-key ba new-chs-hist)
+	   (byeoru-automaton-set-unsorted-choices-history! ba new-chs-hist)
 	   #t))))
 
 
@@ -1156,7 +1156,7 @@
 
 (byeoru-define-rk-layout byeoru-romaja-rule
  ("g"	(choseong-giyeog  . (3 5)) (jongseong-giyeog . (3 4 5)))
- ;; gg, dd, bb, vv, ss, jj, zz are composed by automata.
+ ;; gg, dd, bb, vv, ss, jj, zz are composed by automaton.
  ("kk"	(choseong-ssanggiyeog . 1) (jongseong-ssanggiyeog . 5))
  ("qq"	(choseong-ssanggiyeog . 1) (jongseong-ssanggiyeog . 5))
  ("c"	(choseong-ssanggiyeog . 1) (jongseong-ssanggiyeog . 5))
@@ -1230,7 +1230,7 @@
    context-rec-spec
    (list
     (list 'on?		   #f)
-    (list 'automata	   #f)
+    (list 'automaton	   #f)
     (list 'rkc		   #f)		; for romaja input.
     (list 'key-hist	   '())
     (list 'commit-by-word? byeoru-commit-by-word?)
@@ -1251,21 +1251,21 @@
 (define (byeoru-context-new id im)
   (let ((bc (byeoru-context-new-internal id im)))
     (byeoru-context-set-widgets! bc byeoru-widgets)
-    (byeoru-context-set-automata! bc (byeoru-automata-new))
+    (byeoru-context-set-automaton! bc (byeoru-automaton-new))
     (byeoru-context-set-rkc! bc (rk-context-new byeoru-romaja-rule #f #f))
     (byeoru-context-set-word-ustr! bc (ustr-new '()))
     (byeoru-context-set-convl-ustr! bc (ustr-new '()))
     (byeoru-context-set-convr-ustr! bc (ustr-new '()))
     bc))
 
-(define (byeoru-flush-automata bc)
-  (let* ((ba (byeoru-context-automata bc))
+(define (byeoru-flush-automaton bc)
+  (let* ((ba (byeoru-context-automaton bc))
 	 (composing (byeoru-johab-to-utf8-string
-		     (byeoru-automata-composing-char ba))))
+		     (byeoru-automaton-composing-char ba))))
     (if (not (string=? composing ""))
 	(begin
 	  (ustr-insert-elem! (byeoru-context-word-ustr bc) composing)
-	  (byeoru-automata-reset! ba)))
+	  (byeoru-automaton-reset! ba)))
     (rk-flush (byeoru-context-rkc bc))
     (byeoru-context-set-key-hist! bc '())))
 
@@ -1281,7 +1281,7 @@
   (if (not (string=? str "")) (im-commit bc str)))
 
 (define (byeoru-flush bc)
-  (byeoru-flush-automata bc)
+  (byeoru-flush-automaton bc)
   (byeoru-commit bc (byeoru-make-whole-string bc))
   (byeoru-clear! bc))
 
@@ -1461,7 +1461,7 @@
     (if (null? cands) #f cands)))
 
 (define (byeoru-begin-conv bc)
-  (byeoru-flush-automata bc)
+  (byeoru-flush-automaton bc)
   (let* ((word  (byeoru-context-word-ustr  bc))
 	 (convl (byeoru-context-convl-ustr bc))
 	 (convr (byeoru-context-convr-ustr bc))
@@ -1500,10 +1500,10 @@
 	   #t))))
 
 (define (byeoru-break-char bc)
-  (let ((ba (byeoru-context-automata bc)))
+  (let ((ba (byeoru-context-automaton bc)))
     (ustr-insert-elem! (byeoru-context-word-ustr bc)
 		       (byeoru-johab-to-utf8-string
-			(byeoru-automata-composed-char ba)))
+			(byeoru-automaton-composed-char ba)))
     (if (not (byeoru-context-commit-by-word? bc))
 	(begin
 	  (byeoru-commit bc (byeoru-make-whole-string bc))
@@ -1512,16 +1512,16 @@
 ;; Yes, I know this routine is ugly, but it works!
 ;; This procedure uses an rk to translate, according to
 ;; byeoru-romaja-rule, a sequence of romaja keys to a list of possible
-;; jamos, which is fed into a Hangul automata.  When a new romaja key
-;; is pressed, the last-pressed key in the automata is backspaced and
-;; the updated key from the rk is pushed into the automata, until the
+;; jamos, which is fed into a Hangul automaton.  When a new romaja key
+;; is pressed, the last-pressed key in the automaton is backspaced and
+;; the updated key from the rk is pushed into the automaton, until the
 ;; rk sequence can grow no longer.  It keeps track of the history of
 ;; romaja key presses since the backspace key is supposed to delete a
 ;; romaja, not a jamo.
 (define (byeoru-feed-romaja-key bc key key-state)
 
-  (define (flush-automata)
-    (byeoru-flush-automata bc)
+  (define (flush-automaton)
+    (byeoru-flush-automaton bc)
     (if (not (byeoru-context-commit-by-word? bc))
 	(begin
 	  (byeoru-commit bc (byeoru-make-whole-string bc))
@@ -1534,8 +1534,8 @@
      ;; E.g., gagga becomes 각가,
      ;; while gaGga becomes 가까.
      (if (shift-key-mask key-state)
-	 (flush-automata))
-     (let* ((ba (byeoru-context-automata bc))
+	 (flush-automaton))
+     (let* ((ba (byeoru-context-automaton bc))
 	    (first-key? (null? (byeoru-context-key-hist bc)))
 	    (rkc (byeoru-context-rkc bc))
 	    (last-pend (rk-pending rkc))
@@ -1547,32 +1547,32 @@
 	    (choices (and cur-seq (cadr cur-seq))))
 
        (define (byeoru-prepend-ieung)
-	 (byeoru-automata-backspace ba)
-	 (byeoru-automata-eat-key ba '((choseong-ieung . 1)))
-	 (byeoru-automata-eat-key ba choices))
+	 (byeoru-automaton-backspace ba)
+	 (byeoru-automaton-eat-key ba '((choseong-ieung . 1)))
+	 (byeoru-automaton-eat-key ba choices))
 
        (and
 	(not (string=? pend ""))
 	(list? choices)
 	(let ((jungseong? (byeoru-jungseong? (caar choices))))
-	  (if (not res) (byeoru-automata-backspace ba))
+	  (if (not res) (byeoru-automaton-backspace ba))
 	  (if (and jungseong? (string=? last-pend "ng"))
 	      ;; Note that HWP does not treat "ch" in this way.
 	      ;; E.g., gochi becomes 고치
 	      ;; while songi becomes 손기.
 	      (begin
-		(byeoru-automata-backspace ba)
-		(byeoru-automata-eat-key ba '((jongseong-nieun . 1)))
-		(flush-automata)
-		(byeoru-automata-eat-key ba '((choseong-giyeog . 1)))
+		(byeoru-automaton-backspace ba)
+		(byeoru-automaton-eat-key ba '((jongseong-nieun . 1)))
+		(flush-automaton)
+		(byeoru-automaton-eat-key ba '((choseong-giyeog . 1)))
 		(byeoru-context-set-key-hist! bc '(103))
 		(rk-push-key! rkc key-str)))
-	  (if (eq? (byeoru-automata-eat-key ba choices) 'char-break)
+	  (if (eq? (byeoru-automaton-eat-key ba choices) 'char-break)
 	      (begin
 		(byeoru-break-char bc)
 		(byeoru-context-set-key-hist! bc '())
 		(if jungseong?
-		    (if (= (length (byeoru-automata-chosen-jamos ba)) 1)
+		    (if (= (length (byeoru-automaton-chosen-jamos ba)) 1)
 			(byeoru-prepend-ieung)
 			(byeoru-context-set-key-hist!
 			 bc (if (string=? last-pend "ch")
@@ -1590,7 +1590,7 @@
   (let ((key-hist (byeoru-context-key-hist bc)))
     (and (not (null? key-hist))
 	 (begin
-	   (byeoru-automata-reset! (byeoru-context-automata bc))
+	   (byeoru-automaton-reset! (byeoru-context-automaton bc))
 	   (rk-flush (byeoru-context-rkc bc))
 	   (byeoru-context-set-key-hist! bc '())
 	   (fold-right (lambda (elt s) (byeoru-feed-romaja-key bc elt 0))
@@ -1601,7 +1601,7 @@
   (let ((choices (byeoru-key-to-choices key key-state)))
     (and (list? choices)
 	 (begin
-	   (if (eq? (byeoru-automata-eat-key (byeoru-context-automata bc)
+	   (if (eq? (byeoru-automaton-eat-key (byeoru-context-automaton bc)
 					     choices)
 		    'char-break)
 	       (byeoru-break-char bc))
@@ -1628,11 +1628,11 @@
      ((byeoru-backspace-key? key key-state)
       (if (not (if (eq? byeoru-layout 'byeoru-layout-romaja)
 		   (byeoru-backspace-romaja bc)
-		   (byeoru-automata-backspace (byeoru-context-automata bc))))
+		   (byeoru-automaton-backspace (byeoru-context-automaton bc))))
 	  (ustr-cursor-delete-backside! word)))
 
      ((and (byeoru-delete-key? key key-state) by-word?)
-      (byeoru-flush-automata bc)
+      (byeoru-flush-automaton bc)
       (if (ustr-cursor-at-end? word)
 	  (begin
 	    (byeoru-commit bc (byeoru-make-whole-string bc))
@@ -1641,11 +1641,11 @@
 	  (ustr-cursor-delete-frontside! word)))
 
      ((and (byeoru-go-left-key? key key-state) by-word?)
-      (byeoru-flush-automata bc)
+      (byeoru-flush-automaton bc)
       (ustr-cursor-move-backward! word))
 
      ((and (byeoru-go-right-key? key key-state) by-word?)
-      (byeoru-flush-automata bc)
+      (byeoru-flush-automaton bc)
       (if (ustr-cursor-at-end? word)
 	  (begin
 	    (byeoru-commit bc (byeoru-make-whole-string bc))
@@ -1654,11 +1654,11 @@
 	  (ustr-cursor-move-forward! word)))
 
      ((and (byeoru-beginning-of-preedit-key? key key-state) by-word?)
-      (byeoru-flush-automata bc)
+      (byeoru-flush-automaton bc)
       (ustr-cursor-move-beginning! word))
 
      ((and (byeoru-end-of-preedit-key? key key-state) by-word?)
-      (byeoru-flush-automata bc)
+      (byeoru-flush-automaton bc)
       (if (ustr-cursor-at-end? word)
 	  (begin
 	    (byeoru-commit bc (byeoru-make-whole-string bc))
@@ -1677,7 +1677,7 @@
 
      ;; Commit the word.
      (else
-      (byeoru-flush-automata bc)
+      (byeoru-flush-automaton bc)
       (let ((choices (or (eq? byeoru-layout 'byeoru-layout-romaja)
 			 (byeoru-key-to-choices key key-state))))
 	(if (string? choices)
@@ -1707,12 +1707,12 @@
 
    ((byeoru-conversion-key? key key-state)
     (byeoru-show-menu bc))
-   
+
    ;; Hangul jamo.
    ((if (eq? byeoru-layout 'byeoru-layout-romaja)
 	(byeoru-feed-romaja-key bc key key-state)
 	(byeoru-feed-hangul-key bc key key-state)))
-   
+
    ;; Commit a single key.
    (else
     (let ((choices (or (eq? byeoru-layout 'byeoru-layout-romaja)
@@ -1724,9 +1724,9 @@
 	  (byeoru-context-set-on?! bc #f))))))
 
 (define (byeoru-has-preedit? bc)
-  (let ((ba (byeoru-context-automata bc)))
+  (let ((ba (byeoru-context-automaton bc)))
     (not (and (ustr-empty? (byeoru-context-word-ustr bc))
-	      (equal? (byeoru-automata-composing-char ba) '(0 0 0))))))
+	      (equal? (byeoru-automaton-composing-char ba) '(0 0 0))))))
 
 (define (byeoru-proc-input-state bc key key-state)
   (if (byeoru-has-preedit? bc)
@@ -1910,8 +1910,8 @@
 (define (byeoru-input-state-preedit bc)
   (let ((word (byeoru-context-word-ustr bc))
 	(composing (byeoru-johab-to-utf8-string
-		    (byeoru-automata-composing-char
-		     (byeoru-context-automata bc))))
+		    (byeoru-automaton-composing-char
+		     (byeoru-context-automaton bc))))
 ;; Underlining a composing character leads to a confusing appearance.
 ;; This should be made customizable.
 ;;	(underline
@@ -1966,7 +1966,7 @@
   (if (byeoru-context-on? bc)
       (begin
 	(byeoru-deactivate-candidate-selector bc)
-	(byeoru-flush-automata bc)
+	(byeoru-flush-automaton bc)
 	;; reset-handler does not commit a string
 	(byeoru-clear! bc)
         ;; preedit clearing should be handled in the bridges level
