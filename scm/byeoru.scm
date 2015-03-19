@@ -36,6 +36,7 @@
 (require "ustr.scm")
 (require-custom "generic-key-custom.scm")
 (require "rk.scm")
+(require "xkb.scm")
 
 (require-custom "byeoru-custom.scm")
 (require-custom "byeoru-key-custom.scm")
@@ -182,6 +183,13 @@
      (list jo3 jo4)
      (list jo4))))
 
+(define byeoru-xkb-map-alist #f)
+
+(define (byeoru-get-xkb-map-alist)
+  (or byeoru-xkb-map-alist
+      (begin (set! byeoru-xkb-map-alist (xkb-index-map-by-ukey (xkb-get-map)))
+	     byeoru-xkb-map-alist)))
+
 ;; Expands a key choices list like
 ;; ((jongseong-bieub . (1 4)))
 ;; => ((jongseong-bieub . 1) (jongseong-bieub . 4)))
@@ -197,11 +205,23 @@
        choices)
       choices))
 
+;; for backwards compatibility with old layout definitions that may be
+;; kept in ~/.uim
+(define (byeoru-string->keypair str)
+  (let ((entry (assv (string->charcode str) (byeoru-get-xkb-map-alist))))
+    (if entry
+	(let ((shift-level (caddr entry))
+	      (xkbname (list-ref entry 4)))
+	  (cons shift-level xkbname))
+	str)))
+
 (define-macro (byeoru-define-layout name . layout)
   `(define ,name
      (map (lambda (elt)
-	    (let ((choices (cdr elt)))
-	      (cons (car elt)
+	    (let ((keypair (car elt))
+		  (choices (cdr elt)))
+	      (cons (if (string? keypair)
+			(byeoru-string->keypair keypair) keypair)
 		    (if (number? choices)
 			(ucs->utf8-string choices)
 			(byeoru-expand-choices choices)))))
@@ -1363,15 +1383,17 @@
     (lambda (key key-state)
       (shift-or-no-modifier? -1 key-state))))
 
+(define (byeoru-key->xkbname key)
+  (let ((entry (assv key (byeoru-get-xkb-map-alist))))
+    (and entry (list-ref entry 4))))
+
 (define (byeoru-key-to-choices key key-state)
   (and (byeoru-non-control-key? key key-state)
        (let* ((layout (symbol-value byeoru-layout))
-	      (pressed-key
-	       (charcode->string
-		;; avoid case change due to caps lock.
-		(if (shift-key-mask key-state)
-		    (ichar-upcase key) (ichar-downcase key))))
-	      (entry (assoc pressed-key layout)))
+	      (shift-level (if (shift-key-mask key-state) 1 0))
+	      (xkbname (byeoru-key->xkbname key))
+	      (keypair (cons shift-level xkbname))
+	      (entry (assoc keypair layout)))
 	 (and entry (cdr entry)))))
 
 (define byeoru-dict-field-separator ":")
