@@ -1400,6 +1400,8 @@
 			     byeoru-conversion-history-size))
 	  (guard (err
 		  (else #f))
+		 (create/check-directory!
+		  (string-append (or (get-config-path! #t) "") "/byeoru"))
 		 (call-with-output-file byeoru-conversion-history-path
 		   (lambda (p) (write byeoru-saved-conv-hist p))))))))
 

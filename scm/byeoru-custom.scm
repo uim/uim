@@ -172,14 +172,14 @@
   (N_ "long description will be here."))
 
 (define-custom 'byeoru-conversion-history-path
-  (string-append (or (home-directory (user-name)) "") "/.byeoru-uim-history")
+  (string-append (or (get-config-path #t) "") "/byeoru/byeoru-history")
   '(byeoru byeoru-dict)
   '(pathname regular-file)
   (N_ "Conversion history file")
   (N_ "long description will be here."))
 
 (define-custom 'byeoru-personal-dict-path
-  (string-append (or (home-directory (user-name)) "") "/.byeoru-uim-dict")
+  (string-append (or (get-config-path #t) "") "/byeoru/byeoru-dict")
   '(byeoru byeoru-dict)
   '(pathname regular-file)
   (N_ "Personal dictionary file")
