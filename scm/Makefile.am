@@ -63,6 +63,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  sxml-tools.scm sxpathlib.scm \
  annotation.scm annotation-custom.scm annotation-dict.scm annotation-eb.scm \
  annotation-filter.scm annotation-osx-dcs.scm \
+ xkb.scm \
  dynlib.scm \
  ct.scm \
  dict-socket.scm
