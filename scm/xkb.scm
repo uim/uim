@@ -141,6 +141,10 @@
   (or xkb-map
       (begin (set! xkb-map
 		   (or (and xkb-plugin-ready? (xkb-lib-get-map))
+		       (and xkb-save-map?
+			    (guard (err
+				    (else #f))
+				   (call-with-input-file xkb-map-path read)))
 		       xkb-fallback-map))
 	     xkb-map)))
 
