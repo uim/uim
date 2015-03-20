@@ -1447,6 +1447,9 @@ void init_modifier_keys() {
     gMod4Mask = check_modifier(Mod4MaskSyms);
     gMod5Mask = check_modifier(Mod5MaskSyms);
 
+    if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
+	uim_scm_callf("%xkb-set-display", "p", XimServer::gDpy);
+
 #if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
     // Init at here to sync with proper update timing although not a modifier.
     uim_x_kana_input_hack_init(XimServer::gDpy);

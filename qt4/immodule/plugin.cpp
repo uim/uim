@@ -47,6 +47,7 @@
 #endif
 
 #include "uim/uim.h"
+#include "uim/uim-scm.h"
 #include "uim/uim-x-util.h"
 #include "uim/counted-init.h"
 
@@ -142,6 +143,10 @@ void UimInputContextPlugin::uimInit()
     if ( !uim_counted_init() ) {
         if (!infoManager)
             infoManager = new QUimInfoManager();
+
+	if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
+	    uim_scm_callf("%xkb-set-display", "p", QX11Info::display());
+
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
         uim_x_kana_input_hack_init( QX11Info::display() );
 #endif
