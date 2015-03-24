@@ -148,24 +148,50 @@
 		       xkb-fallback-map))
 	     xkb-map)))
 
-(define (xkb-index-map-by-ukey m)
+(define (xkb-get-groups-wrap-control)
+  (or (and xkb-plugin-ready? (xkb-lib-get-groups-wrap-control))
+      '(wrap-into-range 1)))
+
+(define (xkb-get-group)
+  (or (and xkb-plugin-ready? (xkb-lib-get-group))
+      0))
+
+(define (xkb-expand-map m groups-wrap ngroups)
+  (map (lambda (k)
+	 (let ((code-name (take k 2))
+	       (groups (cddr k)))
+	   (map (lambda (group) (append code-name group))
+		(if (eq? groups-wrap 'wrap-into-range)
+		    (take (apply circular-list groups) ngroups)
+		    (let ((fallback
+			   (if (eq? groups-wrap 'clamp-into-range)
+			       (last groups)
+			       (guard (err
+				       (else (car groups)))
+				      (list-ref groups groups-wrap)))))
+		      (append
+		       groups
+		       (make-list (- ngroups (length groups)) fallback)))))))
+       m))
+
+(define (xkb-index-single-group-map-by-ukey . group-map)
   (fold-right
    (lambda (k alst)
      (let ((keycode (car k))
 	   (xkbname (cadr k))
-	   (groups (cddr k)))
+	   (ukeys (cddr k)))
        (append
 	(reverse
 	 (fold
-	  (lambda (ukeys alst)
-	    (let ((group (if (null? alst) 0 (+ 1 (cadar alst)))))
-	      (append
-	       (fold
-		(lambda (ukey alst)
-		  (let ((shift-level (if (null? alst) 0 (+ 1 (caddar alst)))))
-		    (cons (list ukey group shift-level keycode xkbname) alst)))
-		'() ukeys)
-	       alst)))
-	  '() groups))
+	  (lambda (ukey alst)
+	    (let ((shift-level (if (null? alst) 0 (+ 1 (cadar alst)))))
+	      (cons (list ukey shift-level keycode xkbname) alst)))
+	  '() ukeys))
 	alst)))
-   '() m))
+   '() group-map))
+
+(define (xkb-index-map-by-ukey m groups-wrap-control)
+  (let ((groups-wrap (car groups-wrap-control))
+	(ngroups (cadr groups-wrap-control)))
+    (apply map (cons xkb-index-single-group-map-by-ukey
+		     (xkb-expand-map m groups-wrap ngroups)))))

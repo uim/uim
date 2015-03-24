@@ -183,12 +183,24 @@
      (list jo3 jo4)
      (list jo4))))
 
-(define byeoru-xkb-map-alist #f)
+(define byeoru-xkb-map-alists #f)
 
-(define (byeoru-get-xkb-map-alist)
-  (or byeoru-xkb-map-alist
-      (begin (set! byeoru-xkb-map-alist (xkb-index-map-by-ukey (xkb-get-map)))
-	     byeoru-xkb-map-alist)))
+(define byeoru-xkb-group #f)
+
+(define (byeoru-lookup-xkb-map key)
+  (let ((alists
+	 (or byeoru-xkb-map-alists
+	     (begin
+	       (set! byeoru-xkb-map-alists
+		     (xkb-index-map-by-ukey (xkb-get-map)
+					    (xkb-get-groups-wrap-control)))
+	       byeoru-xkb-map-alists)))
+	(group
+	 (or byeoru-xkb-group
+	     (begin
+	       (set! byeoru-xkb-group (xkb-get-group))
+	       byeoru-xkb-group))))
+    (assv key (list-ref alists group))))
 
 ;; Expands a key choices list like
 ;; ((jongseong-bieub . (1 4)))
@@ -208,10 +220,10 @@
 ;; for backwards compatibility with old layout definitions that may be
 ;; kept in ~/.uim
 (define (byeoru-string->keypair str)
-  (let ((entry (assv (string->charcode str) (byeoru-get-xkb-map-alist))))
+  (let ((entry (byeoru-lookup-xkb-map (string->charcode str))))
     (if entry
-	(let ((shift-level (caddr entry))
-	      (xkbname (list-ref entry 4)))
+	(let ((shift-level (second entry))
+	      (xkbname (fourth entry)))
 	  (cons shift-level xkbname))
 	str)))
 
@@ -1498,8 +1510,8 @@
       (shift-or-no-modifier? -1 key-state))))
 
 (define (byeoru-key->xkbname key)
-  (let ((entry (assv key (byeoru-get-xkb-map-alist))))
-    (and entry (list-ref entry 4))))
+  (let ((entry (byeoru-lookup-xkb-map key)))
+    (and entry (fourth entry))))
 
 (define (byeoru-key-to-choices key key-state)
   (and (byeoru-non-control-key? key key-state)
