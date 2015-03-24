@@ -40,18 +40,20 @@
 #include "dynlib.h"
 #include "uim-x-util.h"
 
-static Display *display = NULL;
+static XkbDescPtr xkb = NULL;
 
 static uim_lisp
 xkb_set_display(uim_lisp lisp_display)
 {
     Display *c_display = (Display *)C_PTR(lisp_display);
-    if (XkbQueryExtension(c_display, NULL, NULL, NULL, NULL, NULL)) {
-	display = c_display;
-	return uim_scm_t();
-    }
-    else
+
+    if (! XkbQueryExtension(c_display, NULL, NULL, NULL, NULL, NULL))
 	return uim_scm_f();
+    if (xkb != NULL) XkbFreeKeyboard(xkb, XkbAllComponentsMask, True);
+    if ((xkb = XkbAllocKeyboard()) == NULL) return uim_scm_f();
+    xkb->dpy = c_display;
+
+    return uim_scm_t();
 }
 
 static uim_lisp
@@ -91,7 +93,7 @@ xkb_groups(XkbDescPtr xkb, KeyCode kc)
 static uim_lisp
 xkb_lib_display_readyp(void)
 {
-    return MAKE_BOOL(display != NULL);
+    return MAKE_BOOL(xkb != NULL && xkb->dpy != NULL);
 }
 
 /*
@@ -107,14 +109,14 @@ xkb_lib_display_readyp(void)
 static uim_lisp
 xkb_lib_get_map(void)
 {
-    XkbDescPtr xkb;
     int kc;
     uim_lisp map;
 
-    if (display == NULL) return uim_scm_f();
+    if (xkb == NULL || xkb->dpy == NULL) return uim_scm_f();
 
-    if ((xkb = XkbGetKeyboard(display, XkbAllComponentsMask,
-			      XkbUseCoreKbd)) == NULL)
+    if (XkbGetUpdatedMap(xkb->dpy, XkbAllClientInfoMask, xkb) != Success)
+	return uim_scm_f();
+    if (XkbGetNames(xkb->dpy, XkbKeyNamesMask, xkb) != Success)
 	return uim_scm_f();
 
     map = uim_scm_null();
@@ -123,7 +125,6 @@ xkb_lib_get_map(void)
 	if (TRUEP(groups)) map = CONS(groups, map);
     }
 
-    XkbFreeKeyboard(xkb, XkbAllComponentsMask, True);
     return map;
 }
 
@@ -148,4 +149,6 @@ uim_dynlib_instance_init(void)
 void
 uim_dynlib_instance_quit(void)
 {
+    if (xkb != NULL) XkbFreeKeyboard(xkb, XkbAllComponentsMask, True);
+    xkb = NULL;
 }
