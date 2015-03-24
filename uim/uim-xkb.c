@@ -129,6 +129,42 @@ xkb_lib_get_map(void)
 }
 
 static uim_lisp
+xkb_lib_get_groups_wrap_control(void)
+{
+    unsigned char ngroups;
+
+    if (xkb == NULL || xkb->dpy == NULL) return uim_scm_f();
+
+    if (XkbGetControls(xkb->dpy, XkbGroupsWrapMask, xkb) != Success)
+	return uim_scm_f();
+    ngroups = xkb->ctrls->num_groups;
+
+    switch (xkb->ctrls->groups_wrap & (3L << 6)) {
+    case XkbWrapIntoRange:
+	return LIST2(MAKE_SYM("wrap-into-range"), MAKE_INT(ngroups));
+    case XkbClampIntoRange:
+	return LIST2(MAKE_SYM("clamp-into-range"), MAKE_INT(ngroups));
+    case XkbRedirectIntoRange:
+	return LIST2(MAKE_INT(xkb->ctrls->groups_wrap & 0xf),
+		     MAKE_INT(ngroups));
+    default:
+	return uim_scm_f();
+    }
+}
+
+static uim_lisp
+xkb_lib_get_group(void)
+{
+    XkbStateRec state;
+
+    if (xkb == NULL || xkb->dpy == NULL) return uim_scm_f();
+    if (XkbGetState(xkb->dpy, XkbUseCoreKbd, &state) != Success)
+	return uim_scm_f();
+
+    return MAKE_INT(state.group);
+}
+
+static uim_lisp
 xkb_open_display(void)
 {
     Display *display = XkbOpenDisplay(NULL, NULL, NULL, NULL, NULL, NULL);
@@ -141,6 +177,9 @@ uim_dynlib_instance_init(void)
 {
     uim_scm_init_proc0("xkb-lib-display-ready?", xkb_lib_display_readyp);
     uim_scm_init_proc0("xkb-lib-get-map", xkb_lib_get_map);
+    uim_scm_init_proc0("xkb-lib-get-groups-wrap-control",
+		       xkb_lib_get_groups_wrap_control);
+    uim_scm_init_proc0("xkb-lib-get-group", xkb_lib_get_group);
 
     uim_scm_init_proc1("%xkb-set-display", xkb_set_display);
     uim_scm_init_proc0("%xkb-open-display", xkb_open_display);
