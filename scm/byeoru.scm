@@ -1515,16 +1515,19 @@
     (lambda (key key-state)
       (shift-or-no-modifier? -1 key-state))))
 
-(define (byeoru-key->xkbname key)
+(define (byeoru-key->keypair key key-state)
   (let ((entry (byeoru-lookup-xkb-map key)))
-    (and entry (fourth entry))))
+    (and entry
+	 (let ((shift-level (if (ichar-alphabetic? key)
+				(if (shift-key-mask key-state) 1 0)
+				(second entry)))
+	       (xkbname (fourth entry)))
+	   (cons shift-level xkbname)))))
 
 (define (byeoru-key-to-choices key key-state)
   (and (byeoru-non-control-key? key key-state)
        (let* ((layout (symbol-value byeoru-layout))
-	      (shift-level (if (shift-key-mask key-state) 1 0))
-	      (xkbname (byeoru-key->xkbname key))
-	      (keypair (cons shift-level xkbname))
+	      (keypair (byeoru-key->keypair key key-state))
 	      (entry (assoc keypair layout)))
 	 (and entry (cdr entry)))))
 
