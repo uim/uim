@@ -192,8 +192,14 @@
 	 (or byeoru-xkb-map-alists
 	     (begin
 	       (set! byeoru-xkb-map-alists
-		     (xkb-index-map-by-ukey (xkb-get-map)
-					    (xkb-get-groups-wrap-control)))
+		     (map
+		      (lambda (alst)
+			(remove (lambda (elt)
+				  (let ((shift-level (second elt)))
+				    (> shift-level 1)))
+				alst))
+		      (xkb-index-map-by-ukey (xkb-get-map)
+					     (xkb-get-groups-wrap-control))))
 	       byeoru-xkb-map-alists)))
 	(group
 	 (or byeoru-xkb-group
