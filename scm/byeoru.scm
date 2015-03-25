@@ -200,8 +200,11 @@
 (define-macro (byeoru-define-layout name . layout)
   `(define ,name
      (map (lambda (elt)
-	    (cons (car elt)
-		  (byeoru-expand-choices (cdr elt))))
+	    (let ((choices (cdr elt)))
+	      (cons (car elt)
+		    (if (number? choices)
+			(ucs->utf8-string choices)
+			(byeoru-expand-choices choices)))))
 	  ',layout)))
 
 (byeoru-define-layout byeoru-layout-hangul2hanterm
@@ -1150,8 +1153,11 @@
 (define-macro (byeoru-define-rk-layout name . layout)
   `(define ,name
      (map (lambda (elt)
-	    (list (list (map string (string->list (car elt))))
-		  (byeoru-expand-choices (cdr elt))))
+	    (let ((choices (cdr elt)))
+	      (list (list (map string (string->list (car elt))))
+		    (if (number? choices)
+			(ucs->utf8-string choices)
+			(byeoru-expand-choices choices)))))
 	  ',layout)))
 
 (byeoru-define-rk-layout byeoru-romaja-rule
@@ -1366,11 +1372,7 @@
 		(if (shift-key-mask key-state)
 		    (ichar-upcase key) (ichar-downcase key))))
 	      (entry (assoc pressed-key layout)))
-	 (and entry
-	      (let ((choices (cdr entry)))
-		(if (number? choices)
-		    (ucs->utf8-string choices)
-		    choices))))))
+	 (and entry (cdr entry)))))
 
 (define byeoru-dict-field-separator ":")
 
