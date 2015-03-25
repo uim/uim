@@ -41,7 +41,7 @@ uim_x_keysym2ukey(KeySym xkeysym)
 {
     int ukey = UKey_Other;
 
-    if (xkeysym < 128 && xkeysym >= 32)
+    if (xkeysym < 256 && xkeysym >= 32)
 	ukey = (int)(xkeysym);
     else if (xkeysym >= XK_F1 && xkeysym <= XK_F35)
 	ukey = (int)(xkeysym - XK_F1 + UKey_F1);
