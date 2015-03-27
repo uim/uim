@@ -137,8 +137,8 @@
 
 (define xkb-map #f)
 
-(define (xkb-get-map)
-  (or xkb-map
+(define (xkb-get-map refresh?)
+  (or (and (not refresh?) xkb-map)
       (begin (set! xkb-map
 		   (or (and xkb-plugin-ready? (xkb-lib-get-map))
 		       (and xkb-save-map?

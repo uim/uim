@@ -198,7 +198,7 @@
 				  (let ((shift-level (second elt)))
 				    (> shift-level 1)))
 				alst))
-		      (xkb-index-map-by-ukey (xkb-get-map)
+		      (xkb-index-map-by-ukey (xkb-get-map #t)
 					     (xkb-get-groups-wrap-control))))
 	       byeoru-xkb-map-alists)))
 	(group
@@ -1471,7 +1471,7 @@
 			(not (byeoru-context-commit-by-word? bc))))
 		 (lambda (bc)
 		   (byeoru-prepare-activation bc)
-		   (byeoru-context-set-on?! bc #t)
+		   (byeoru-begin-input bc)
 		   (byeoru-context-set-commit-by-word?! bc #f)))
 
 (register-action 'action_byeoru_hangulword
@@ -1485,7 +1485,7 @@
 			(byeoru-context-commit-by-word? bc)))
 		 (lambda (bc)
 		   (byeoru-prepare-activation bc)
-		   (byeoru-context-set-on?! bc #t)
+		   (byeoru-begin-input bc)
 		   (byeoru-context-set-commit-by-word?! bc #t)))
 
 (define byeoru-input-mode-actions
@@ -2041,6 +2041,9 @@
 		   (im-select-candidate bc (- max 1)))))))))
 
 (define (byeoru-begin-input bc)
+  (if byeoru-refresh-xkb-map-at-switch-on?
+      (begin (set! byeoru-xkb-map-alists #f)
+	     (set! byeoru-xkb-group #f)))
   (byeoru-context-set-on?! bc #t))
 
 (define (byeoru-proc-raw-state bc key key-state)

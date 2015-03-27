@@ -30,6 +30,7 @@
 ;;;;
 
 (require "i18n.scm")
+(require "xkb.scm")
 
 
 (define byeoru-im-name-label (N_ "Byeoru"))
@@ -88,6 +89,10 @@
 
 (define-custom-group 'byeoru-dict
   (N_ "Byeoru dictionaries")
+  (N_ "long description will be here."))
+
+(define-custom-group 'byeoru-xkb
+  (N_ "X Keyboard Extension")
   (N_ "long description will be here."))
 
 (define-custom-group 'byeoru-workarounds
@@ -191,6 +196,17 @@
   '(pathname regular-file)
   (N_ "System dictionary file")
   (N_ "long description will be here."))
+
+(define-custom 'byeoru-refresh-xkb-map-at-switch-on? #f
+  '(byeoru byeoru-xkb)
+  '(boolean)
+  (N_ "Refresh keyboard map at each switch into Hangul mode")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'byeoru-refresh-xkb-map-at-switch-on?
+		 'custom-activity-hooks
+		 (lambda ()
+		   (and xkb-plugin-ready? (xkb-lib-display-ready?))))
 
 ;; Encoding of the composing character should be changed accordingly.
 (define-custom 'byeoru-compatibility-jamos-for-incomplete-syllables? #t
