@@ -158,11 +158,20 @@
 	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
-	((and uim-emacs (>= emacs-major-version 22)) ;;; GNU Emacs-22 or later
+	((and uim-emacs (>= emacs-major-version 22)) ;;; GNU Emacs-22 and 23
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
 	 (define-key uim-mode-map [27] 'uim-process-input)
+	 )
+
+	((and uim-emacs (>= emacs-major-version 24)) ;;; GNU Emacs-24 or later
+	 (define-key uim-mode-map [t] 'uim-process-input)
+	 (define-key uim-preedit-map [t] 'uim-process-input)
+
+	 (define-key uim-mode-map (kbd "ESC") 'uim-process-input)
+
+         (define-key uim-mode-map (kbd "C-c") nil)
 	 )
 
 	)
