@@ -293,8 +293,8 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
 	  mmap_done = 1;
 	}
       }
+      close(fd);
     }
-    close(fd);
   }
 
   di->addr = mmap_done ? addr : NULL;
