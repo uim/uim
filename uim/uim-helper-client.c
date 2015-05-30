@@ -89,6 +89,12 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
+#ifdef SOCK_CLOEXEC
+  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
+  fd = socket(PF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  if (fd == -1 && errno == EINVAL)
+    /* fallback to plain SOCK_TYPE on older kernel */
+#endif
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
     perror("fail to create socket");

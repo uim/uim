@@ -278,7 +278,15 @@ c_freeaddrinfo(uim_lisp addrinfo_)
 static uim_lisp
 c_socket(uim_lisp domain_, uim_lisp type_, uim_lisp protocol_)
 {
-  int fd = socket(C_INT(domain_), C_INT(type_), C_INT(protocol_));
+  int type_i = C_INT(type_);
+  int fd;
+#ifdef SOCK_CLOEXEC
+  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
+  fd = socket(C_INT(domain_), type_i | SOCK_CLOEXEC, C_INT(protocol_));
+  if (fd == -1 && errno == EINVAL)
+    /* fallback to plain SOCK_TYPE on older kernel */
+#endif
+    fd = socket(C_INT(domain_), type_i, C_INT(protocol_));
   if (fd != -1)
     fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
   return MAKE_INT(fd);
