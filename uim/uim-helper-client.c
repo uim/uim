@@ -44,6 +44,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
@@ -93,6 +94,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
     perror("fail to create socket");
     goto error;
   }
+  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
   
 #ifdef LOCAL_CREDS /* for NetBSD */
   /* Set the socket to receive credentials on the next message */

@@ -278,7 +278,10 @@ c_freeaddrinfo(uim_lisp addrinfo_)
 static uim_lisp
 c_socket(uim_lisp domain_, uim_lisp type_, uim_lisp protocol_)
 {
-  return MAKE_INT(socket(C_INT(domain_), C_INT(type_), C_INT(protocol_)));
+  int fd = socket(C_INT(domain_), C_INT(type_), C_INT(protocol_));
+  if (fd != -1)
+    fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
+  return MAKE_INT(fd);
 }
 
 static uim_lisp
