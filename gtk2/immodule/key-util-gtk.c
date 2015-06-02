@@ -55,6 +55,7 @@
 #endif
 
 #include "uim/uim.h"
+#include "uim/uim-scm.h"
 #if UIM_GTK_USE_JAPANESE_KANA_KEYBOARD_HACK
 #include "uim/uim-x-util.h"
 #endif
@@ -388,6 +389,9 @@ im_uim_init_modifier_keys()
   g_slist_free(mod5_list);
   XFreeModifiermap(map);
   XFree(sym);
+
+  if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
+    uim_scm_callf("%xkb-set-display", "p", display);
 
 #if UIM_GTK_USE_JAPANESE_KANA_KEYBOARD_HACK
   uim_x_kana_input_hack_init(display);

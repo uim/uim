@@ -51,7 +51,7 @@ enum key_filtering_result {
 };
 
 #define ISASCII(c) (0 <= (c) && (c) <= 127)
-
+#define ISLATIN1(c) (0 <= (c) && (c) <= 255)
 
 struct key_entry {
   int key;
@@ -354,12 +354,15 @@ filter_key(uim_context uc, int key, int state, uim_bool is_press)
 
   if (ISASCII(key)) {
     protected = key_ = MAKE_INT(key);
-  } else {
-    sym = get_sym(key);
-    if (!sym)
-      return UIM_FALSE;
+  }
+  else if (sym = get_sym(key)) {
     protected = key_ = MAKE_SYM(get_sym(key));
   }
+  else if (ISLATIN1(key)) {
+    protected = key_ = MAKE_INT(key);
+  }
+  else
+    return UIM_FALSE;
 
   handler = (is_press) ? "key-press-handler" : "key-release-handler";
   filtered = uim_scm_callf(handler, "poi", uc, key_, state);

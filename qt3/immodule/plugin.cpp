@@ -40,6 +40,7 @@ SUCH DAMAGE.
 #include <locale.h>
 
 #include "uim/uim.h"
+#include "uim/uim-scm.h"
 #include "uim/counted-init.h"
 
 #include "plugin.h"
@@ -125,6 +126,10 @@ UimInputContextPlugin::uimInit()
     if ( !uim_counted_init() ) {
         if (!infoManager)
             infoManager = new QUimInfoManager();
+
+	if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
+	    uim_scm_callf("%xkb-set-display", "p", qt_xdisplay());
+
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
 	uim_x_kana_input_hack_init(qt_xdisplay());
 #endif

@@ -179,6 +179,15 @@ libuim_eb_la_CPPFLAGS = -I$(top_srcdir) \
 libuim_eb_la_CFLAGS = @EBCONF_PTHREAD_CFLAGS@ -Wall
 endif
 
+if XKB
+uim_plugin_LTLIBRARIES += libuim-xkb.la
+libuim_xkb_la_SOURCES = uim-xkb.c
+libuim_xkb_la_LIBADD = libuim-scm.la libuim.la libuim-x-util.la @X11_LIBS@
+libuim_xkb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_xkb_la_CFLAGS = @X11_CFLAGS@
+libuim_xkb_la_CPPFLAGS = -I$(top_srcdir)
+endif
+
 if OSX_DCS
 uim_plugin_LTLIBRARIES += libuim-osx-dcs.la
 libuim_osx_dcs_la_SOURCES = osx-dcs.m
@@ -271,7 +280,7 @@ libuim_counted_init_la_SOURCES = counted-init.c counted-init.h
 libuim_counted_init_la_CPPFLAGS = -I$(top_srcdir)
 
 if LIBUIM_X_UTIL
-libuim_x_util_la_SOURCES = uim-x-util.h uim-x-kana-input-hack.c
+libuim_x_util_la_SOURCES = uim-x-util.h uim-x-util.c uim-x-kana-input-hack.c
 libuim_x_util_la_CPPFLAGS = -I$(top_srcdir)
 libuim_x_util_la_CFLAGS = @X11_CFLAGS@
 libuim_x_util_la_LIBADD = @X11_LIBS@

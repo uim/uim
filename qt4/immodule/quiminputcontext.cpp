@@ -253,6 +253,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
                 key = qkey;
         }
     }
+    else if ( qkey >= Qt::Key_nobreakspace && qkey <= Qt::Key_ydiaeresis )
+	key = qkey;
     else if ( qkey == Qt::Key_unknown )
     {
         QString text = keyevent->text();

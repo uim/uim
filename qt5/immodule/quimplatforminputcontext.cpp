@@ -244,7 +244,9 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
             else
                 key = qkey;
         }
-    } else if (qkey == Qt::Key_unknown) {
+    } else if (qkey >= Qt::Key_nobreakspace && qkey <= Qt::Key_ydiaeresis)
+	key = qkey;
+    else if (qkey == Qt::Key_unknown) {
         QString text = keyevent->text();
         if (!text.isNull()) {
             QChar s = text.at(0);
