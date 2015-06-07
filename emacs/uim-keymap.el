@@ -158,7 +158,10 @@
 	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
-	((and uim-emacs (>= emacs-major-version 22)) ;;; GNU Emacs-22 and 23
+        ;; GNU Emacs-22 and 23
+	((and uim-emacs
+              (= emacs-major-version 22)
+              (= emacs-major-version 23))
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
