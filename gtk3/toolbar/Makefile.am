@@ -1,4 +1,5 @@
 EXTRA_DIST = UimApplet.panel-applet.in.in \
+	     uim-applet-menu.xml \
 	     org.gnome.panel.applet.UimAppletFactory.service.in
 
 if GNOME3_APPLET
@@ -6,11 +7,15 @@ helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 libexec_PROGRAMS = uim-toolbar-applet-gnome3
 
+xmluidir = $(pkgdatadir)/ui
+xmlui_DATA = uim-applet-menu.xml
+
 uim_toolbar_applet_gnome3_LDADD = @GTK3_LIBS@ @GNOME3_APPLET_LIBS@ \
 			   $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
 uim_toolbar_applet_gnome3_CPPFLAGS = \
+			   -DUIM_UIDATADIR="\"${xmluidir}\"" \
 			   $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 									 
 uim_toolbar_applet_gnome3_CFLAGS = @GTK3_CFLAGS@ @GNOME3_APPLET_CFLAGS@
@@ -18,7 +23,7 @@ uim_toolbar_applet_gnome3_CFLAGS = @GTK3_CFLAGS@ @GNOME3_APPLET_CFLAGS@
 uim_toolbar_applet_gnome3_SOURCES = applet-gnome3.c \
 			       ../../gtk2/toolbar/common-gtk.c
 
-appletdir = $(datadir)/gnome-panel/4.0/applets
+appletdir = $(datadir)/gnome-panel/5.0/applets
 applet_DATA = UimApplet.panel-applet
 applet_in_files = $(applet_DATA:=.in)
 applet_in_in_files = $(applet_in_files:=.in)
