@@ -1,5 +1,6 @@
 project(plasma-uim)
 
+find_package(Qt4)
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 
