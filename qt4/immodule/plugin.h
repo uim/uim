@@ -69,7 +69,7 @@ class UimInputContextPlugin : public QPlatformInputContextPlugin
     Q_OBJECT
 #if QT_VERSION >= 0x050100
     Q_PLUGIN_METADATA(IID
-        "org.qt-project.Qt.QPlatformInputContextFactoryInterface5.1"
+        "org.qt-project.Qt.QPlatformInputContextFactoryInterface.5.1"
         FILE "../../qt5/immodule/uim.json")
 #elif QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID
