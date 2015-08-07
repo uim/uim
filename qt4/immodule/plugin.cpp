@@ -40,10 +40,8 @@
 #ifdef Q_WS_X11
 # include <QtGui/QX11Info>
 #endif
-#if QT_VERSION < 0x050000
-# include <QtGui/QInputContext>
-#else
-# include <qpa/qplatforminputcontext.h>
+#if QT_VERSION >= 0x050000
+# include <QtX11Extras/QX11Info>
 #endif
 
 #include "uim/uim.h"

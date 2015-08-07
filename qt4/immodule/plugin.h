@@ -35,6 +35,21 @@
 #define UIM_QT4_IMMODULE_PLUGIN_H
 
 #include <QtCore/QtGlobal>
+#include <QtCore/QDataStream>
+#ifdef Q_WS_X11
+#if QT_VERSION < 0x050000
+# include <QtGui/QX11Info>
+#else
+# include <QtX11Extras/QX11Info>
+#endif
+#endif
+#if QT_VERSION < 0x050000
+# include <QtGui/QInputContext>
+#else
+# include <qpa/qplatforminputcontext.h>
+#endif
+
+
 #if QT_VERSION < 0x050000
 # include <QtGui/QInputContextPlugin>
 #else
@@ -52,7 +67,11 @@ class UimInputContextPlugin : public QPlatformInputContextPlugin
 #endif
 {
     Q_OBJECT
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050100
+    Q_PLUGIN_METADATA(IID
+        "org.qt-project.Qt.QPlatformInputContextFactoryInterface5.1"
+        FILE "../../qt5/immodule/uim.json")
+#elif QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID
         "org.qt-project.Qt.QPlatformInputContextFactoryInterface"
         FILE "../../qt5/immodule/uim.json")

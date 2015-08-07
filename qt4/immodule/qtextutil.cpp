@@ -31,6 +31,13 @@ SUCH DAMAGE.
 
 */
 
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include "quiminputcontext.h"
+#else
+# include "quimplatforminputcontext.h"
+#endif
+
 #include "qtextutil.h"
 
 #include <cstdlib>
@@ -47,12 +54,6 @@ SUCH DAMAGE.
 # include <QtWidgets/QApplication>
 # include <QtWidgets/QLineEdit>
 # include <QtWidgets/QTextEdit>
-#endif
-
-#if QT_VERSION < 0x050000
-# include "quiminputcontext.h"
-#else
-# include "quimplatforminputcontext.h"
 #endif
 
 QUimTextUtil::QUimTextUtil( QObject *parent )

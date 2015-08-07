@@ -30,7 +30,14 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
+#include "plugin.h"
 #include "qhelpermanager.h"
+#if QT_VERSION < 0x050000
+# include "quiminputcontext.h"
+#else
+# include "quimplatforminputcontext.h"
+#endif
+
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
@@ -41,14 +48,7 @@ SUCH DAMAGE.
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-util.h"
 
-#include "plugin.h"
 #include "quiminfomanager.h"
-#if QT_VERSION < 0x050000
-# include "quiminputcontext.h"
-#else
-# include "quimplatforminputcontext.h"
-#endif
-
 static int im_uim_fd = 0;
 static QSocketNotifier *notifier = 0;
 

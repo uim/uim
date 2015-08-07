@@ -47,14 +47,14 @@
 # include <QtWidgets/QDesktopWidget>
 # include <QtWidgets/QLabel>
 #endif
-
-#include <uim-scm.h>
-
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else
 # include "quimplatforminputcontext.h"
 #endif
+
+
+#include <uim-scm.h>
 
 CandidateWindowProxy::CandidateWindowProxy()
 : ic(0), nrCandidates(0), displayLimit(0), candidateIndex(-1), pageIndex(-1),

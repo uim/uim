@@ -34,6 +34,7 @@
 #ifndef UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 #define UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 
+#include <QtCore/QDataStream>
 #include <QtGui/QInputMethodEvent>
 
 #include <qpa/qplatforminputcontext.h>

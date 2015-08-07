@@ -31,6 +31,13 @@
 */
 #include <config.h>
 
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+#include "quiminputcontext.h"
+#else
+#include "quimplatforminputcontext.h"
+#endif
+
 #include "quiminputcontext_compose.h"
 
 #include <cctype>
@@ -56,12 +63,6 @@
 #include <X11/keysym.h>
 
 #include "uim/uim.h"
-
-#if QT_VERSION < 0x050000
-#include "quiminputcontext.h"
-#else
-#include "quimplatforminputcontext.h"
-#endif
 
 static const char COMPOSE_FILE[] = "Compose";
 static const char COMPOSE_DIR_FILE[] = "X11/locale/compose.dir";
