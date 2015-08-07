@@ -7,7 +7,7 @@ load(qt_plugin)
 INCLUDEPATH += @srcdir@/../../qt4/candwin \
                @srcdir@/../../qt4/immodule
 
-LIBS += @X11_LIBS@ -luim-counted-init
+LIBS += @X11_LIBS@ -luim-counted-init -lQt5X11Extras
 
 QT += gui-private
 
