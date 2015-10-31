@@ -9,7 +9,7 @@ INCLUDEPATH += @srcdir@/../../qt4/candwin \
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
-QT += gui-private
+QT += gui-private x11extras
 
 # Input
 HEADERS += @srcdir@/quimplatforminputcontext.h \
