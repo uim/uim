@@ -37,12 +37,15 @@
 #include <clocale>
 
 #include <QtCore/QStringList>
-#ifdef Q_WS_X11
-# include <QtGui/QX11Info>
-#endif
 #if QT_VERSION < 0x050000
+# ifdef Q_WS_X11
+#  include <QtGui/QX11Info>
+# endif
 # include <QtGui/QInputContext>
 #else
+# if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+#  include <QtX11Extras/QX11Info>
+# endif
 # include <qpa/qplatforminputcontext.h>
 #endif
 
