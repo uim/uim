@@ -974,7 +974,7 @@ if test "x$with_qt" = xyes; then
 
   # Process for compiler & linker flags
   QT_CXXFLAGS="-I${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
-  if test "x$enable_debug" = "xno"; then
+  if test "x$enable_debug" = xno; then
     QT_CXXFLAGS="$QT_CXXFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
   fi
   _SAVE_LDFLAGS=$LDFLAGS
