@@ -9,7 +9,7 @@ INCLUDEPATH += @srcdir@/../../qt4/candwin \
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
-QT += gui-private x11extras
+QT += gui-private
 
 # Input
 HEADERS += @srcdir@/quimplatforminputcontext.h \
@@ -33,6 +33,7 @@ SOURCES += @srcdir@/quimplatforminputcontext.cpp \
 !win32:!embedded:!mac {
     HEADERS += @srcdir@/../../qt4/immodule/quiminputcontext_compose.h
     SOURCES += @srcdir@/../../qt4/immodule/quiminputcontext_compose.cpp
+    QT += x11extras
 }
 
 OTHER_FILES += uim.json
