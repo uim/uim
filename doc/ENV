@@ -31,7 +31,7 @@ libuim accepts some enviroment variables mainly for debugging purpose.
 
   This variable takes a number as a value. 0-10 can be specified. If
   LIBUIM_VERBOSE is greater than or equal to 5, uim shows backtrace
-  when error occured if --enable-backtrace is set by configure.
+  when error occurred if --enable-backtrace is set by configure.
 
 - LIBUIM_VANILLA
 
