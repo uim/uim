@@ -1,6 +1,6 @@
 ;;; elatin.scm -- Emacs-style Latin characters translation
 ;;;
-;;; Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

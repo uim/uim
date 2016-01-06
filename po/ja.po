@@ -289,7 +289,7 @@ msgstr ""
 #: ../gtk2/dict/word-list-win-gtk.c:615
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-"Copyright 2004-2013 uim Project http://code.google.com/p/uim/\n"
+"Copyright 2004-2013 uim Project https://github.com/uim/uim\n"
 "All rights reserved."
 msgstr ""
 
@@ -6089,7 +6089,7 @@ msgid "unknown byte operator"
 msgstr "不明なバイト演算子"
 
 #.
-#. Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+#. Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 #.
 #. All rights reserved.
 #.
