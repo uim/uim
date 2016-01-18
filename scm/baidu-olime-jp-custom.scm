@@ -1,6 +1,6 @@
 ;;; baidu-olime-jp-custom.scm: Customization variables for baidu-olime-jp.scm
 ;;;
-;;; Copyright (c) 2012- uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2012- uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

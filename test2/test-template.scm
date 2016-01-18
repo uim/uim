@@ -1,6 +1,6 @@
 ;;  test-template.scm: Template file for unit tests
 ;;
-;;; Copyright (c) 2008-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2008-2013 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;

@@ -1,6 +1,6 @@
 ;;; predict-google-suggest.scm: google suggest prediction module
 ;;;
-;;; Copyright (c) 2011- uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2011- uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

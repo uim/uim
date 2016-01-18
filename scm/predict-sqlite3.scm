@@ -1,6 +1,6 @@
 ;;; predict-sqlite3.scm: sqlite3 prediction module
 ;;;
-;;; Copyright (c) 2009-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

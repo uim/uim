@@ -1,7 +1,7 @@
 /*
  *  $Id:$
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
- *                2005-2013 uim Project http://code.google.com/p/uim/
+ *                2005-2013 uim Project https://github.com/uim/uim
  *
  *  All rights reserved.
  *

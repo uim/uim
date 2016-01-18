@@ -1,6 +1,6 @@
 ;; pinyin-big5.scm
 ;;
-;; Copyright (C) 2004-2013 uim Project http://code.google.com/p/uim/
+;; Copyright (C) 2004-2013 uim Project https://github.com/uim/uim
 ;;
 ;; Original table is come from XCIN Project http://xcin.linux.org.tw/
 ;; cin/big5/pinyin.cin

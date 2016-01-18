@@ -1,6 +1,6 @@
 ;;; uim-db.scm: uim interactive debugger
 ;;;
-;;; Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

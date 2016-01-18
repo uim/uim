@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2004-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -608,7 +608,7 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
 			 "name", name,
 			 "version", VERSION,
 			 "copyright", copyright,
-			 "website", "http://code.google.com/p/uim/",
+			 "website", "https://github.com/uim/uim",
 			 "authors", authors,
 			 "logo", transparent,
 			 NULL);
@@ -617,7 +617,7 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
   GtkWidget *about_dialog, *label1;
   const gchar *copyright = N_(
     "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-    "Copyright 2004-2013 uim Project http://code.google.com/p/uim/\n"
+    "Copyright 2004-2013 uim Project https://github.com/uim/uim\n"
     "All rights reserved.");
   gchar *about_name =
     g_strdup_printf("<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
