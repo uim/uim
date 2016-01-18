@@ -3803,7 +3803,7 @@
 2004-09-28 kzk <mover@hct.zaq.ne.jp>
 	
 	* scm/prime.scm
-	  - fix unbound symbol problem occured at r1304
+	  - fix unbound symbol problem occurred at r1304
 	
 2004-09-28 Masahito Omote <omote@utyuuzin.net>
 	

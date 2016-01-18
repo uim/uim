@@ -243,7 +243,7 @@ X_ErrorHandler(Display *d, XErrorEvent *e)
 	if (e->error_code) {
 	    char buf[64];
 	    XGetErrorText(d, e->error_code, buf, 63);
-	    printf("X error occured. %s\n", buf);
+	    printf("X error occurred. %s\n", buf);
 	}
     }
 
