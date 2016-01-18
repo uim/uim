@@ -37,7 +37,7 @@
 (define toolbar-help-url "https://github.com/uim/uim/wiki")
 
 (define toolbar-help-url-locale-alist
-  '(("ja" . "http://code.google.com/p/uim-doc-ja/wiki/")))
+  '(("ja" . "https://github.com/uim/uim-doc-ja/wiki")))
 
 (define (uim-help-set-branch! fd)
   (let ((port (open-file-port fd)))
