@@ -381,15 +381,15 @@ msgid "Word registration succeded."
 msgstr "単語の登録に成功しました。"
 
 #: ../gtk2/dict/word-win-gtk.c:546
-msgid "Phonetic is emtpy!"
+msgid "Phonetic is empty!"
 msgstr "読み方が入力されていません！"
 
 #: ../gtk2/dict/word-win-gtk.c:561
-msgid "Literal is emtpy!"
+msgid "Literal is empty!"
 msgstr "書き方が入力されていません！"
 
 #: ../gtk2/dict/word-win-gtk.c:579
-msgid "Part of speech is emtpy!"
+msgid "Part of speech is empty!"
 msgstr "品詞が入力されていません！"
 
 #: ../gtk2/pad/ja.c:491

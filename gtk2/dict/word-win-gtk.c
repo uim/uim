@@ -631,7 +631,7 @@ word_window_validate_values(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Phonetic is emtpy!"));
+				    "%s", _("Phonetic is empty!"));
     g_signal_connect(G_OBJECT(dialog), "response",
 		     G_CALLBACK(message_dialog_response_cb), window);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
@@ -646,7 +646,7 @@ word_window_validate_values(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Literal is emtpy!"));
+				    "%s", _("Literal is empty!"));
     g_signal_connect(G_OBJECT(dialog), "response",
 		     G_CALLBACK(message_dialog_response_cb), window);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
@@ -664,7 +664,7 @@ word_window_validate_values(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Part of speech is emtpy!"));
+				    "%s", _("Part of speech is empty!"));
     g_signal_connect(G_OBJECT(dialog), "response",
 		     G_CALLBACK(message_dialog_response_cb), window);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
