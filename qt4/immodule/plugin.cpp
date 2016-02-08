@@ -46,6 +46,7 @@
 # if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
 #  include <QtX11Extras/QX11Info>
 # endif
+# include <QtCore/qdatastream.h>
 # include <qpa/qplatforminputcontext.h>
 #endif
 
