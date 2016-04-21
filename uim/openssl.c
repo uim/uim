@@ -208,34 +208,64 @@ c_SSL_write(uim_lisp s_, uim_lisp buf_)
 static uim_lisp
 c_SSLv2_method(void)
 {
+#ifndef OPENSSL_NO_SSL2
   return MAKE_PTR(SSLv2_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: SSLv2_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 static uim_lisp
 c_SSLv2_server_method(void)
 {
+#ifndef OPENSSL_NO_SSL2
   return MAKE_PTR(SSLv2_server_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: SSLv2_server_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 static uim_lisp
 c_SSLv2_client_method(void)
 {
+#ifndef OPENSSL_NO_SSL2
   return MAKE_PTR(SSLv2_client_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: SSLv2_client_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 
 /* SSLv3 */
 static uim_lisp
 c_SSLv3_method(void)
 {
+#ifndef OPENSSL_NO_SSL3
   return MAKE_PTR(SSLv3_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: SSLv3_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 static uim_lisp
 c_SSLv3_server_method(void)
 {
+#ifndef OPENSSL_NO_SSL3
   return MAKE_PTR(SSLv3_server_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: SSLv3_server_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 static uim_lisp
 c_SSLv3_client_method(void)
 {
+#ifndef OPENSSL_NO_SSL3
   return MAKE_PTR(SSLv3_client_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: SSLv3_client_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 
 /* SSLv3 but can rollback to v2 */
