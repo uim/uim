@@ -143,7 +143,7 @@ QUimTextUtil::acquirePrimaryText( enum UTextOrigin origin,
                                   char **former, char **latter )
 {
     int err;
-#if defined(Q_WS_X11)
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
     mWidget = QApplication::focusWidget();
 #else
     return -1;
@@ -551,7 +551,7 @@ QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
                                     char **former, char **latter )
 {
     int err;
-#if defined(Q_WS_X11)
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
     mWidget = QApplication::focusWidget();
 #else
     return -1;
@@ -821,7 +821,7 @@ QUimTextUtil::deletePrimaryText( enum UTextOrigin origin, int former_req_len,
                                  int latter_req_len )
 {
     int err;
-#if defined(Q_WS_X11)
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
     mWidget = QApplication::focusWidget();
 #else
     return -1;
@@ -1130,7 +1130,7 @@ QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
                                    int former_req_len, int latter_req_len )
 {
     int err;
-#if defined(Q_WS_X11)
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
     mWidget = QApplication::focusWidget();
 #else
     return -1;

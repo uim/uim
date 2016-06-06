@@ -76,6 +76,7 @@ public:
     virtual void reset();
     virtual void showInputPanel();
     virtual void update(Qt::InputMethodQueries);
+    virtual void setFocusObject(QObject *object);
 
     uim_context uimContext() { return m_uc; }
 
@@ -99,7 +100,6 @@ public:
 private:
     uim_context createUimContext(const char *imname);
     void createCandidateWindow();
-    void setFocusObject(QObject *object);
     void setFocus();
     void unsetFocus();
 

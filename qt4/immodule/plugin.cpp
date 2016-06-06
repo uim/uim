@@ -96,6 +96,9 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
 QPlatformInputContext *UimInputContextPlugin::create( const QString & key, const QStringList & paramList )
 #endif
 {
+    if (qgetenv("__UIM_CANDWIN_CALLED") == QByteArray("STARTED"))
+	return NULL;
+
 #if QT_VERSION >= 0x050000
     Q_UNUSED(paramList);
 #endif
