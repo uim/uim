@@ -506,7 +506,7 @@ edit_remove_word_action_cb(GtkAction *action, WordListWindow *window)
 				      GTK_DIALOG_MODAL,
 				      GTK_MESSAGE_INFO,
 				      GTK_BUTTONS_CLOSE,
-				      "%s", _("Word deletion succeded."));
+				      "%s", _("Word deletion succeeded."));
     } else {
       dialog = gtk_message_dialog_new(NULL,
 				      GTK_DIALOG_MODAL,

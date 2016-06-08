@@ -144,7 +144,7 @@ word_window_init(WordWindow *window)
 #endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 10);
 
-  /* Necessary infomation area */
+  /* Necessary information area */
 #if GTK_CHECK_VERSION(3, 2, 0)
   vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 #else
@@ -152,7 +152,7 @@ word_window_init(WordWindow *window)
 #endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
-  label = gtk_label_new(_("Necessary infomation"));
+  label = gtk_label_new(_("Necessary information"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
@@ -172,7 +172,7 @@ word_window_init(WordWindow *window)
   gtk_container_add(GTK_CONTAINER(alignment),
 		    word_window_necessary_create(window));
 
-  /* Additional infomation area */
+  /* Additional information area */
 #if GTK_CHECK_VERSION(3, 2, 0)
   vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 #else
@@ -180,7 +180,7 @@ word_window_init(WordWindow *window)
 #endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
-  label = gtk_label_new (_("Additional infomation"));
+  label = gtk_label_new (_("Additional information"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 1.0);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
@@ -601,7 +601,7 @@ word_window_add(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_INFO,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Word registration succeded."));
+				    "%s", _("Word registration succeeded."));
   }
 
   g_signal_connect(G_OBJECT(dialog), "response",
