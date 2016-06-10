@@ -304,6 +304,7 @@ void CandidateWindowProxy::initializeProcess()
 #else
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
 #endif
+    qputenv("__UIM_CANDWIN_CALLED", QByteArray("DONE"));
     process->waitForStarted();
 }
 
