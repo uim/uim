@@ -297,8 +297,8 @@ void CandidateWindowProxy::initializeProcess()
     if (process->state() != QProcess::NotRunning) {
         return;
     }
-    process->close();
     QString style = candidateWindowStyle();
+    qputenv("__UIM_CANDWIN_CALLED", QByteArray("STARTED"));
 #if QT_VERSION < 0x050000
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
 #else
@@ -556,6 +556,8 @@ void CandidateWindowProxy::preparePageCandidates(int page)
 
 void CandidateWindowProxy::setFocusWidget()
 {
+    if (QApplication::focusWidget() == NULL)
+	return;
     window = QApplication::focusWidget()->window();
     window->installEventFilter(this);
 }

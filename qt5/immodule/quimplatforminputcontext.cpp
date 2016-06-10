@@ -224,7 +224,7 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
         modifier |= UMod_Control;
     if (keyevent->modifiers() & Qt::AltModifier)
         modifier |= UMod_Alt;
-#if defined(Q_WS_X11)
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
     if (keyevent->modifiers() & Qt::MetaModifier)
         modifier |= UMod_Meta;
 #endif
@@ -338,7 +338,7 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
                         modifier &= ~UMod_Alt;
                     break;
                 case Qt::Key_Meta: key = UKey_Meta_key;
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
                     if (type == QEvent::KeyPress)
                         modifier &= ~UMod_Meta;
 #endif
