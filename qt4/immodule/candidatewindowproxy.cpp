@@ -297,7 +297,6 @@ void CandidateWindowProxy::initializeProcess()
     if (process->state() != QProcess::NotRunning) {
         return;
     }
-/*    process->close(); */
     QString style = candidateWindowStyle();
     qputenv("__UIM_CANDWIN_CALLED", QByteArray("STARTED"));
 #if QT_VERSION < 0x050000
