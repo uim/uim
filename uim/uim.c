@@ -220,6 +220,9 @@ uim_create_context(void *ptr,
   uc = uim_malloc(sizeof(*uc));
   memset(uc, 0, sizeof(*uc));
 
+  /* helper system */
+  uc->uim_fd = -1;
+
   /* encoding handlings */
   if (!enc)
     enc = "UTF-8";

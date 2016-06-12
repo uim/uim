@@ -1283,12 +1283,13 @@ helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 }
 
 static void
-check_helper_connection()
+check_helper_connection(uim_context uc)
 {
   if (im_uim_fd < 0) {
     im_uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
     if (im_uim_fd >= 0) {
       GIOChannel *channel;
+      uim_set_uim_fd(uc, im_uim_fd);
       channel = g_io_channel_unix_new(im_uim_fd);
       read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
 				helper_read_cb, NULL);
@@ -1416,7 +1417,7 @@ im_uim_focus_in(GtkIMContext *ic)
   update_cur_toplevel(uic);
 #endif
 
-  check_helper_connection();
+  check_helper_connection(uic->uc);
   uim_helper_client_focus_in(uic->uc);
   uim_prop_list_update(uic->uc);
 
@@ -1447,7 +1448,7 @@ im_uim_focus_out(GtkIMContext *ic)
 
   uim_focus_out_context(uic->uc);
 
-  check_helper_connection();
+  check_helper_connection(uic->uc);
   uim_helper_client_focus_out(uic->uc);
 
   if (uic->cwin)
@@ -1681,7 +1682,7 @@ im_module_create(const gchar *context_id)
     return NULL;
   }
 
-  check_helper_connection();
+  check_helper_connection(uic->uc);
 
   uim_set_preedit_cb(uic->uc, clear_cb, pushback_cb, update_cb);
   uim_set_prop_list_update_cb(uic->uc, update_prop_list_cb);

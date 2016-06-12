@@ -169,14 +169,14 @@ void
 uim_helper_client_focus_in(uim_context uc)
 {
   if (uc)
-    uim_helper_send_message(uim_fd, "focus_in\n");
+    uim_helper_send_message(uc->uim_fd != -1 ? uc->uim_fd : uim_fd, "focus_in\n");
 }
 
 void
 uim_helper_client_focus_out(uim_context uc)
 {
   if (uc)
-    uim_helper_send_message(uim_fd, "focus_out\n");
+    uim_helper_send_message(uc->uim_fd != -1 ? uc->uim_fd : uim_fd, "focus_out\n");
 }
 
 void
