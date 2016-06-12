@@ -117,7 +117,7 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
     uim_context uc = uim_create_context(this, "UTF-8", 0, imname, 0,
             QUimPlatformInputContext::commit_cb);
 
-    m_helperManager->checkHelperConnection();
+    m_helperManager->checkHelperConnection(uc);
 
     /**/
 
@@ -171,7 +171,7 @@ void QUimPlatformInputContext::setFocus()
     if (candwinIsActive)
         proxy->popup();
 
-    m_helperManager->checkHelperConnection();
+    m_helperManager->checkHelperConnection(m_uc);
 
     uim_helper_client_focus_in(m_uc);
     uim_prop_list_update(m_uc);
@@ -190,7 +190,7 @@ void QUimPlatformInputContext::unsetFocus()
 
     proxy->hide();
 
-    m_helperManager->checkHelperConnection();
+    m_helperManager->checkHelperConnection(m_uc);
 
     uim_helper_client_focus_out(m_uc);
 }

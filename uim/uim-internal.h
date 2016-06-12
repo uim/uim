@@ -94,6 +94,9 @@ struct uim_context_ {
   /* legacy 'property' API */
   char *propstr;
 
+  /* helper system */
+  int uim_fd;
+
   /* commit */
   void (*commit_cb)(void *ptr, const char *str);
   /* preedit */

@@ -34,6 +34,7 @@ SUCH DAMAGE.
 #define UIM_QT4_IMMODULE_QHELPERMANAGER_H
 
 #include <QtCore/QObject>
+#include "uim/uim.h"
 
 class QString;
 
@@ -45,7 +46,7 @@ public:
     explicit QUimHelperManager( QObject * parent = 0 );
     ~QUimHelperManager();
 
-    void checkHelperConnection();
+    void checkHelperConnection(uim_context);
     void parseHelperStr( const QString &str );
     void parseHelperStrImChange( const QString &str );
 
