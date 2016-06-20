@@ -1389,6 +1389,7 @@
     (let* ((sc (skk-find-descendant-context c))
 	   (rkc (skk-context-rk-context sc))
 	   (stat (skk-context-state sc))
+	   (key-str (charcode->string (skk-ichar-downcase key)))
 	   (res #f))
       (and
        ;; First, check begin-conv, completion, cancel, backspace,
@@ -1554,7 +1555,7 @@
 	   #t)
        (if (and (skk-ichar-upper-case? key)
 		(not (null? (skk-context-head sc))))
-	   (let ((key-str (charcode->string (skk-ichar-downcase key))))
+	   (begin
 	     (set! res (skk-rk-push-key-match-without-new-seq rkc key-str))
 	     (if (and
 		  (skk-rk-pending? sc)
@@ -1585,7 +1586,8 @@
 		   (skk-append-residual-kana sc)
 		   #t)))
 	   #t)
-       (if (skk-kana-toggle-key? key key-state)
+       (if (and (skk-kana-toggle-key? key key-state)
+		(not (rk-expect-key? rkc key-str)))
 	   (begin
 	     (skk-append-residual-kana sc)
 	     (if (not (null? (skk-context-head sc)))
@@ -1597,7 +1599,8 @@
 	     	   (skk-flush sc)))
 	     #f)
 	   #t)
-       (if (skk-hankaku-kana-key? key key-state)
+       (if (and (skk-hankaku-kana-key? key key-state)
+		(not (rk-expect-key? rkc key-str)))
 	   (begin
 	     (skk-append-residual-kana sc)
 	     (if (not (null? (skk-context-head sc)))
