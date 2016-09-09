@@ -29,7 +29,15 @@
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 */
+#define Q_WS_X11
 #include <config.h>
+
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+#include "quiminputcontext.h"
+#else
+#include "quimplatforminputcontext.h"
+#endif
 
 #include "quiminputcontext_compose.h"
 
@@ -56,12 +64,6 @@
 #include <X11/keysym.h>
 
 #include "uim/uim.h"
-
-#if QT_VERSION < 0x050000
-#include "quiminputcontext.h"
-#else
-#include "quimplatforminputcontext.h"
-#endif
 
 static const char COMPOSE_FILE[] = "Compose";
 static const char COMPOSE_DIR_FILE[] = "X11/locale/compose.dir";
@@ -526,7 +528,10 @@ modmask(char *name)
     return(mask);
 }
 
-#if defined(Q_WS_X11)
+#ifdef Q_WS_X11
+#if QT_VERSION >= 0x050000
+#define QUimInputContext QUimPlatformInputContext
+#endif
 int
 QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 {
@@ -970,6 +975,9 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
 
     return 1;
 }
+#if QT_VERSION >= 0x050000
+#undef QUimInputContext
+#endif
 #endif
 
 static int

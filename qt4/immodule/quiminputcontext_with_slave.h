@@ -35,6 +35,7 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 
+#define Q_WS_X11
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else

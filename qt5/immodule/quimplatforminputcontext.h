@@ -34,8 +34,8 @@
 #ifndef UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 #define UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H
 
+#include <QtCore/QDataStream>
 #include <QtGui/QInputMethodEvent>
-
 #include <qpa/qplatforminputcontext.h>
 
 #include <uim.h>
@@ -44,6 +44,8 @@ class CandidateWindowProxy;
 class QUimTextUtil;
 class QUimHelperManager;
 
+typedef struct _DefTree DefTree;
+class Compose;
 struct PreeditSegment
 {
     PreeditSegment(int attr, const QString &str) {
@@ -76,7 +78,6 @@ public:
     virtual void reset();
     virtual void showInputPanel();
     virtual void update(Qt::InputMethodQueries);
-    virtual void setFocusObject(QObject *object);
 
     uim_context uimContext() { return m_uc; }
 
@@ -100,6 +101,7 @@ public:
 private:
     uim_context createUimContext(const char *imname);
     void createCandidateWindow();
+    void setFocusObject(QObject *object);
     void setFocus();
     void unsetFocus();
 
@@ -141,6 +143,19 @@ private:
     CandidateWindowProxy *proxy;
 
     static QUimHelperManager *m_helperManager;
+    // for X11 Compose
+    static DefTree *mTreeTop;
+    static void create_compose_tree( void );
+    static int get_compose_filename( char *filename, size_t len );
+    static int TransFileName( char *transname, const char *name, size_t len );
+    static void ParseComposeStringFile( FILE *fp );
+    static void FreeComposeTree( DefTree *top );
+    static int parse_compose_line( FILE *fp, char **tokenbuf, size_t *buflen );
+    static int get_mb_string( char *buf, unsigned int ks );
+    static const char *get_encoding( void );
+    static int get_lang_region( char *lang_region, size_t len );
+
+    Compose *mCompose;
 };
 
 #endif /* Not def: UIM_QT5_IMMODULE_QUIMPLATFORMINPUTCONTEXT_H */

@@ -31,6 +31,7 @@
 
 */
 #include <config.h>
+#include <qdatastream.h>
 
 #include "candidatewindowproxy.h"
 
@@ -47,14 +48,14 @@
 # include <QtWidgets/QDesktopWidget>
 # include <QtWidgets/QLabel>
 #endif
-
-#include <uim-scm.h>
-
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else
 # include "quimplatforminputcontext.h"
 #endif
+
+
+#include <uim-scm.h>
 
 CandidateWindowProxy::CandidateWindowProxy()
 : ic(0), nrCandidates(0), displayLimit(0), candidateIndex(-1), pageIndex(-1),
@@ -295,17 +296,16 @@ void CandidateWindowProxy::timerDone()
 void CandidateWindowProxy::initializeProcess()
 {
     if (process->state() != QProcess::NotRunning) {
-        return;
+				process->close();
     }
+    process->close();
     QString style = candidateWindowStyle();
-    qputenv("__UIM_CANDWIN_CALLED", QByteArray("STARTED"));
 #if QT_VERSION < 0x050000
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
 #else
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
 #endif
-    qputenv("__UIM_CANDWIN_CALLED", QByteArray("DONE"));
-    process->waitForStarted();
+		process->close();
 }
 
 void CandidateWindowProxy::execute(const QString &command)
@@ -557,8 +557,6 @@ void CandidateWindowProxy::preparePageCandidates(int page)
 
 void CandidateWindowProxy::setFocusWidget()
 {
-    if (QApplication::focusWidget() == NULL)
-	return;
     window = QApplication::focusWidget()->window();
     window->installEventFilter(this);
 }

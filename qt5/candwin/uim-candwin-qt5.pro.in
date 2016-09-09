@@ -5,7 +5,7 @@ TEMPLATE = app
 # to include qtgettext.h
 INCLUDEPATH += @srcdir@/../../qt4
 
-LIBS += @LIBINTL@
+LIBS += @LIBINTL@ -lQt5X11Extras
 
 # Input
 HEADERS += @srcdir@/../../qt4/candwin/abstractcandidatewindow.h \

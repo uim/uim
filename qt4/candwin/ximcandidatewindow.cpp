@@ -73,7 +73,7 @@ const Qt::WindowFlags candidateFlag = (Qt::Window
                                         | Qt::WindowStaysOnTopHint
                                         | Qt::FramelessWindowHint
                                         | Qt::Tool
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#if defined(Q_WS_X11)
                                         | Qt::X11BypassWindowManagerHint
 #endif
                                 );
