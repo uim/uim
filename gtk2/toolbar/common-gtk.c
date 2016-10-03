@@ -187,8 +187,12 @@ set_button_style(GtkWidget *button, gint type)
     case TYPE_ICON:
         gtk_css_provider_load_from_data(provider,
                                         "#uim-systray-button {\n"
+#if GTK_CHECK_VERSION(3, 14, 0)
+                                        " outline-width: 0;\n"
+#else
                                         " -GtkWidget-focus-line-width: 0;\n"
                                         " -GtkWidget-focus-padding: 0;\n"
+#endif
                                         " padding-top: 0;\n"
                                         " padding-bottom: 0;\n"
                                         " padding-left: 2px;\n"
