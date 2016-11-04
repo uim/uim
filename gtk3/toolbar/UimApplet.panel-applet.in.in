@@ -1,6 +1,7 @@
 [Applet Factory]
 Id=UimAppletFactory
-Location=@LIBEXECDIR@/uim-toolbar-applet-gnome3
+InProcess=true
+Location=@APPLET_LOCATION@
 _Name=uim Applet Factory
 _Description=uim applet factory
 

@@ -861,6 +861,14 @@ fi
 
 AM_CONDITIONAL(GNOME3_APPLET, test "x$enable_gnome3_applet" = xyes)
 
+if test "x$enable_gnome3_applet" = xyes; then
+  AC_ARG_WITH([libpanel-applet-dir], [], [LIBPANEL_APPLET_DIR=$withval], [LIBPANEL_APPLET_DIR=""])
+  if test "$LIBPANEL_APPLET_DIR" == ""; then
+    LIBPANEL_APPLET_DIR=`$PKG_CONFIG --variable=libpanel_applet_dir libpanel-applet`
+  fi
+  AC_SUBST(LIBPANEL_APPLET_DIR)
+fi
+
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
     [enable debugging]),
