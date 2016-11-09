@@ -17,6 +17,8 @@ libuim_toolbar_applet_gnome3_la_LIBADD = @GTK3_LIBS@ @GNOME3_APPLET_LIBS@ \
 libuim_toolbar_applet_gnome3_la_CPPFLAGS = \
 			   -DUIM_UIDATADIR="\"${xmluidir}\"" \
 			   $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
+libuim_toolbar_applet_gnome3_la_LDFLAGS = \
+			   -module -avoid-version
 
 libuim_toolbar_applet_gnome3_la_CFLAGS = @GTK3_CFLAGS@ @GNOME3_APPLET_CFLAGS@
 
