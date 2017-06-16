@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2004-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -144,7 +144,7 @@ word_window_init(WordWindow *window)
 #endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 10);
 
-  /* Necessary infomation area */
+  /* Necessary information area */
 #if GTK_CHECK_VERSION(3, 2, 0)
   vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 #else
@@ -152,7 +152,7 @@ word_window_init(WordWindow *window)
 #endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
-  label = gtk_label_new(_("Necessary infomation"));
+  label = gtk_label_new(_("Necessary information"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
@@ -172,7 +172,7 @@ word_window_init(WordWindow *window)
   gtk_container_add(GTK_CONTAINER(alignment),
 		    word_window_necessary_create(window));
 
-  /* Additional infomation area */
+  /* Additional information area */
 #if GTK_CHECK_VERSION(3, 2, 0)
   vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
 #else
@@ -180,7 +180,7 @@ word_window_init(WordWindow *window)
 #endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
-  label = gtk_label_new (_("Additional infomation"));
+  label = gtk_label_new (_("Additional information"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 1.0);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
@@ -601,7 +601,7 @@ word_window_add(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_INFO,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Word registration succeded."));
+				    "%s", _("Word registration succeeded."));
   }
 
   g_signal_connect(G_OBJECT(dialog), "response",
@@ -631,7 +631,7 @@ word_window_validate_values(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Phonetic is emtpy!"));
+				    "%s", _("Phonetic is empty!"));
     g_signal_connect(G_OBJECT(dialog), "response",
 		     G_CALLBACK(message_dialog_response_cb), window);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
@@ -646,7 +646,7 @@ word_window_validate_values(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Literal is emtpy!"));
+				    "%s", _("Literal is empty!"));
     g_signal_connect(G_OBJECT(dialog), "response",
 		     G_CALLBACK(message_dialog_response_cb), window);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
@@ -664,7 +664,7 @@ word_window_validate_values(WordWindow *window)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
 				    GTK_BUTTONS_CLOSE,
-				    "%s", _("Part of speech is emtpy!"));
+				    "%s", _("Part of speech is empty!"));
     g_signal_connect(G_OBJECT(dialog), "response",
 		     G_CALLBACK(message_dialog_response_cb), window);
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));

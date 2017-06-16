@@ -1,6 +1,6 @@
 ;;  test-fail.scm: Unit test for unconditional failure
 ;;
-;;; Copyright (c) 2008-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2008-2013 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -58,6 +58,9 @@ char *uim_helper_buffer_append(char *buf,
 			       const char *fragment, size_t fragment_size);
 void uim_helper_buffer_shift(char *buf, int count);
 char *uim_helper_buffer_get_message(char *buf);
+
+void uim_set_uim_fd(uim_context, int);
+void uim_unset_uim_fd(uim_context);
 
 uim_bool
 uim_helper_is_setugid(void);

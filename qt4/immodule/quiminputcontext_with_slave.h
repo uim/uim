@@ -1,7 +1,7 @@
 /*
 
   Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -35,6 +35,7 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 
+#define Q_WS_X11
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else

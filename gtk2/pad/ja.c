@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2004-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2004-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -264,6 +264,7 @@ gchar *line[] = {
 };
 
 static int uim_fd = -1;
+static unsigned int read_tag;
 
 static GtkWidget *buttontable_create(char **table, int tablelen);
 static GtkWidget *create_hiragana_tab(void);
@@ -280,13 +281,34 @@ static GtkWidget *input_table_create(gchar *localename);
 static void       padbutton_clicked(GtkButton *button, gpointer user_data);
 
 
+static gboolean
+fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
+{
+  gchar *msg;
+  int fd = g_io_channel_unix_get_fd(channel);
+
+  uim_helper_read_proc(fd);
+
+  while ((msg = uim_helper_get_message())) {
+    /* do nothing */
+    free(msg);
+  }
+
+  return TRUE;
+}
+
 static void
 check_helper_connection(void)
 {
   if (uim_fd < 0) {
     uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-    if (uim_fd < 0)
-      return;
+    if (uim_fd >= 0) {
+      GIOChannel *channel;
+      channel = g_io_channel_unix_new(uim_fd);
+      read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
+				fd_read_cb, NULL);
+      g_io_channel_unref(channel);
+    }
   }
 }
 
@@ -294,6 +316,7 @@ static void
 helper_disconnect_cb(void)
 {
   uim_fd = -1;
+  g_source_remove(read_tag);
 }
 
 static void

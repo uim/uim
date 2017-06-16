@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -329,6 +329,18 @@ uim_helper_buffer_get_message(char *buf)
   UIM_CATCH_ERROR_END();
 
   return msg;
+}
+
+void
+uim_set_uim_fd(uim_context uc, int fd)
+{
+  uc->uim_fd = fd;
+}
+
+void
+uim_unset_uim_fd(uim_context uc)
+{
+  uc->uim_fd = -1;
 }
 
 /* Public API for uim_issetugid(). */

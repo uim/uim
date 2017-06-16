@@ -32,7 +32,7 @@ zm.scm: $(top_srcdir)/scm/zm.scm
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/replace && \
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim sigscheme-combined && \
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-sh && \
-	echo "(begin (load \"$<\") (for-each (lambda (key) (display (format \"~a ~W\n\" (apply string-append (caar key)) (cadr key)))) `basename $< .scm`-rule))" | $(UIM_SH_ENV) $(UIM_SH) -b | grep -v "^#<undef>" | LANG=C sort > $@
+	echo "(begin (load \"$<\") (for-each (lambda (key) (display (format \"~a ~W\n\" (apply string-append (caar key)) (cadr key)))) `basename $< .scm`-rule))" | $(UIM_SH_ENV) $(UIM_SH) -b | grep -v "^#<undef>" | LANG=C LC_ALL=C sort > $@
 #endif
 
 clean-genscm:

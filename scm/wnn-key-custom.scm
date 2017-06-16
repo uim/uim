@@ -1,6 +1,6 @@
 ;;; wnn-custom.scm: Customization variables for wnn.scm
 ;;;
-;;; Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

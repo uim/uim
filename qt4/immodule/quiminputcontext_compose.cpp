@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -29,6 +29,7 @@
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 */
+#define Q_WS_X11
 #include <config.h>
 
 #include <QtCore/QtGlobal>
@@ -528,6 +529,9 @@ modmask(char *name)
 }
 
 #ifdef Q_WS_X11
+#if QT_VERSION >= 0x050000
+#define QUimInputContext QUimPlatformInputContext
+#endif
 int
 QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 {
@@ -971,6 +975,9 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
 
     return 1;
 }
+#if QT_VERSION >= 0x050000
+#undef QUimInputContext
+#endif
 #endif
 
 static int

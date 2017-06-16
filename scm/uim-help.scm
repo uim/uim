@@ -1,6 +1,6 @@
 ;;; socket.scm: socket library for uim.
 ;;;
-;;; Copyright (c) 2009-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -34,10 +34,10 @@
 
 (define uim-help-branch #f)
 
-(define toolbar-help-url "http://code.google.com/p/uim/wiki/")
+(define toolbar-help-url "https://github.com/uim/uim/wiki")
 
 (define toolbar-help-url-locale-alist
-  '(("ja" . "http://code.google.com/p/uim-doc-ja/wiki/")))
+  '(("ja" . "https://github.com/uim/uim-doc-ja/wiki")))
 
 (define (uim-help-set-branch! fd)
   (let ((port (open-file-port fd)))
