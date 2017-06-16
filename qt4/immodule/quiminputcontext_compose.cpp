@@ -261,6 +261,8 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
         } else { // Terminate (reached to leaf)
             m_composed = p;
             // commit string here
+						qDebug("reached leaf: ");
+						qDebug(m_composed->utf8);
             m_ic->commitString(QString::fromUtf8(m_composed->utf8));
             // initialize internal state for next key sequence
             m_context = m_top;
