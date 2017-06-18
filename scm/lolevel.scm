@@ -1,6 +1,6 @@
 ;;; lolevel.scm: low level access utility
 ;;;
-;;; Copyright (c) 2009-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2006-2013 uim Project http://code.google.com/p/uim/
+Copyright (c) 2006-2013 uim Project https://github.com/uim/uim
 
 All rights reserved.
 
@@ -33,6 +33,7 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_QTEXTUTIL_H
 #define UIM_QT4_IMMODULE_QTEXTUTIL_H
 
+#define Q_WS_X11
 #include <QObject>
 
 #include "uim/uim.h"

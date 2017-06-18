@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -44,6 +44,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
@@ -88,11 +89,18 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
+#ifdef SOCK_CLOEXEC
+  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
+  fd = socket(PF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  if (fd == -1 && errno == EINVAL)
+    /* fallback to plain SOCK_TYPE on older kernel */
+#endif
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
     perror("fail to create socket");
     goto error;
   }
+  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
   
 #ifdef LOCAL_CREDS /* for NetBSD */
   /* Set the socket to receive credentials on the next message */
@@ -161,14 +169,14 @@ void
 uim_helper_client_focus_in(uim_context uc)
 {
   if (uc)
-    uim_helper_send_message(uim_fd, "focus_in\n");
+    uim_helper_send_message(uc->uim_fd != -1 ? uc->uim_fd : uim_fd, "focus_in\n");
 }
 
 void
 uim_helper_client_focus_out(uim_context uc)
 {
   if (uc)
-    uim_helper_send_message(uim_fd, "focus_out\n");
+    uim_helper_send_message(uc->uim_fd != -1 ? uc->uim_fd : uim_fd, "focus_out\n");
 }
 
 void

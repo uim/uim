@@ -1,51 +1,47 @@
 EXTRA_DIST = UimApplet.panel-applet.in.in \
-	     uim-applet-menu.xml \
-	     org.gnome.panel.applet.UimAppletFactory.service.in
+	     uim-applet-menu.xml
 
 if GNOME3_APPLET
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
-libexec_PROGRAMS = uim-toolbar-applet-gnome3
+uim_toolbar_applet_gnome3_libdir = $(pkglibdir)
+uim_toolbar_applet_gnome3_lib_LTLIBRARIES = libuim-toolbar-applet-gnome3.la
 
 xmluidir = $(pkgdatadir)/ui
 xmlui_DATA = uim-applet-menu.xml
 
-uim_toolbar_applet_gnome3_LDADD = @GTK3_LIBS@ @GNOME3_APPLET_LIBS@ \
+libuim_toolbar_applet_gnome3_la_LIBADD = @GTK3_LIBS@ @GNOME3_APPLET_LIBS@ \
 			   $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_applet_gnome3_CPPFLAGS = \
+libuim_toolbar_applet_gnome3_la_CPPFLAGS = \
 			   -DUIM_UIDATADIR="\"${xmluidir}\"" \
 			   $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
-									 
-uim_toolbar_applet_gnome3_CFLAGS = @GTK3_CFLAGS@ @GNOME3_APPLET_CFLAGS@
+libuim_toolbar_applet_gnome3_la_LDFLAGS = \
+			   -module -avoid-version
 
-uim_toolbar_applet_gnome3_SOURCES = applet-gnome3.c \
+libuim_toolbar_applet_gnome3_la_CFLAGS = @GTK3_CFLAGS@ @GNOME3_APPLET_CFLAGS@
+
+libuim_toolbar_applet_gnome3_la_SOURCES = applet-gnome3.c \
 			       ../../gtk2/toolbar/common-gtk.c
 
-appletdir = $(datadir)/gnome-panel/5.0/applets
+APPLET_LOCATION = $(pkglibdir)/libuim-toolbar-applet-gnome3.so
+
+appletdir = $(LIBPANEL_APPLET_DIR)
 applet_DATA = UimApplet.panel-applet
 applet_in_files = $(applet_DATA:=.in)
 applet_in_in_files = $(applet_in_files:=.in)
 
 $(applet_in_files): $(applet_in_in_files) Makefile
-	$(SED) s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
+	$(SED) s,@APPLET_LOCATION@,$(APPLET_LOCATION),g <$< >$@.tmp
 	$(SED) s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
 po_files = $(wildcard $(top_srcdir)/po/*.po)
 $(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files)
 	LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@ 
 
-servicedir = $(datadir)/dbus-1/services
-service_DATA = org.gnome.panel.applet.UimAppletFactory.service
-service_in_files = $(service_DATA:=.in)
-
-$(service_DATA): $(service_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@
-
 DISTCLEANFILES = UimApplet.panel-applet.in UimApplet.panel-applet \
-		 UimApplet.panel-applet.in.tmp \
-		 org.gnome.panel.applet.UimAppletFactory.service
+		 UimApplet.panel-applet.in.tmp
 endif
 
 if GTK3

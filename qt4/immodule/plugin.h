@@ -1,7 +1,7 @@
 /*
 
   Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -33,6 +33,7 @@
 */
 #ifndef UIM_QT4_IMMODULE_PLUGIN_H
 #define UIM_QT4_IMMODULE_PLUGIN_H
+#define Q_WS_X11
 
 #include <QtCore/QtGlobal>
 #include <QtCore/QDataStream>
@@ -73,7 +74,7 @@ class UimInputContextPlugin : public QPlatformInputContextPlugin
         FILE "../../qt5/immodule/uim.json")
 #elif QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID
-        "org.qt-project.Qt.QPlatformInputContextFactoryInterface"
+        "org.qt-project.Qt.QPlatformInputContextFactoryInterface.5.1"
         FILE "../../qt5/immodule/uim.json")
 #endif
 public:

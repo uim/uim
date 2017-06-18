@@ -1,6 +1,6 @@
 ;;; event.scm: Event definitions
 ;;;
-;;; Copyright (c) 2004-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2004-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

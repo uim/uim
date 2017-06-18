@@ -441,7 +441,7 @@
         <listitem>
           <para>
 	    This variable takes a number as a value. Range of number is 0-10. If LIBUIM_VERBOSE is
-	    greater than or equal 5, uim shows backtrace when error occured.
+	    greater than or equal 5, uim shows backtrace when error occurred.
 	  </para>
 	</listitem>
       </varlistentry>

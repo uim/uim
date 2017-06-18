@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -225,7 +225,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 
   gtk_widget_set_size_request(cwin->num_label, DEFAULT_MIN_WINDOW_WIDTH, -1);
   gtk_window_set_default_size(GTK_WINDOW(cwin), DEFAULT_MIN_WINDOW_WIDTH, -1);
-  gtk_window_set_resizable(GTK_WINDOW(cwin), FALSE);
+  gtk_window_set_resizable(GTK_WINDOW(cwin), TRUE);
 }
 
 static void

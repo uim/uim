@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -219,6 +219,9 @@ uim_create_context(void *ptr,
 
   uc = uim_malloc(sizeof(*uc));
   memset(uc, 0, sizeof(*uc));
+
+  /* helper system */
+  uc->uim_fd = -1;
 
   /* encoding handlings */
   if (!enc)

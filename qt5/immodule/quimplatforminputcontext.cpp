@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2012-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2012-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -30,6 +30,7 @@
   SUCH DAMAGE.
 
 */
+#define Q_WS_X11
 #include "quimplatforminputcontext.h"
 
 #include <QtCore/QCoreApplication>
@@ -49,6 +50,9 @@
 #include "qhelpermanager.h"
 #include "qtextutil.h"
 #include "quiminfomanager.h"
+#include "quiminputcontext_compose.h"
+
+DefTree *QUimPlatformInputContext::mTreeTop = 0;
 
 static const char DEFAULT_SEPARATOR_STR[] = "|";
 
@@ -61,7 +65,7 @@ QUimHelperManager *QUimPlatformInputContext::m_helperManager = 0;
 
 static int unicodeToUKey(ushort c);
 
-#define ENABLE_DEBUG
+// #define ENABLE_DEBUG
 
 QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 : candwinIsActive(false), m_isAnimating(false), m_uc(0)
@@ -81,6 +85,9 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 
     createCandidateWindow();
 
+    if ( !mTreeTop )
+        create_compose_tree();
+    mCompose = new Compose( mTreeTop, this );
     m_textUtil = new QUimTextUtil(this);
 
     // read configuration
@@ -102,6 +109,7 @@ QUimPlatformInputContext::~QUimPlatformInputContext()
         focusedInputContext = 0;
         disableFocusedContext = true;
     }
+		delete mCompose;
 }
 
 void QUimPlatformInputContext::setFocusObject(QObject *object)
@@ -448,6 +456,7 @@ void QUimPlatformInputContext::reset()
 
     proxy->hide();
     uim_reset_context(m_uc);
+		mCompose->reset();
     clearPreedit();
     updatePreedit();
 }

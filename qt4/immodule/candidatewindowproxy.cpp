@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2012-2013 uim Project http://code.google.com/p/uim/
+  copyright (c) 2012-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -31,6 +31,7 @@
 
 */
 #include <config.h>
+#include <qdatastream.h>
 
 #include "candidatewindowproxy.h"
 
@@ -295,7 +296,7 @@ void CandidateWindowProxy::timerDone()
 void CandidateWindowProxy::initializeProcess()
 {
     if (process->state() != QProcess::NotRunning) {
-        return;
+				process->close();
     }
     process->close();
     QString style = candidateWindowStyle();
@@ -304,7 +305,7 @@ void CandidateWindowProxy::initializeProcess()
 #else
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
 #endif
-    process->waitForStarted();
+		process->close();
 }
 
 void CandidateWindowProxy::execute(const QString &command)

@@ -1,7 +1,7 @@
 ;;; uim-sh.scm: uim interactive shell for debugging, batch processing
 ;;;             and serving as generic inferior process
 ;;;
-;;; Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

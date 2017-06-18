@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -93,6 +93,9 @@ struct uim_context_ {
   char **modes;
   /* legacy 'property' API */
   char *propstr;
+
+  /* helper system */
+  int uim_fd;
 
   /* commit */
   void (*commit_cb)(void *ptr, const char *str);

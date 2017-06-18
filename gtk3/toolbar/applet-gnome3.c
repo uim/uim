@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -168,7 +168,7 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
 
 
 
-PANEL_APPLET_OUT_PROCESS_FACTORY("UimAppletFactory",
+PANEL_APPLET_IN_PROCESS_FACTORY("UimAppletFactory",
                             PANEL_TYPE_APPLET,
                             (PanelAppletFactoryCallback)uim_applet_new,
                             NULL)
