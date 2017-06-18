@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.gnome.panel.applet.UimAppletFactory
-Exec=@LIBEXECDIR@/uim-toolbar-applet-gnome3

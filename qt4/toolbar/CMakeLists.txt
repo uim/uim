@@ -1,5 +1,7 @@
 project(plasma-uim)
+set(CMAKE_VERBOSE_MAKEFILE on)
 
+find_package(Qt4)
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 
@@ -18,6 +20,8 @@ set(uim_SRCS
 # from Qt4 header files
 string(REGEX REPLACE "-Wconversion" ""
         CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CPPFLAGS}")
  
 kde4_add_plugin(plasma_applet_uim ${uim_SRCS})
 target_link_libraries(plasma_applet_uim ${KDE4_PLASMA_LIBS} ${KDE4_KDEUI_LIBS}

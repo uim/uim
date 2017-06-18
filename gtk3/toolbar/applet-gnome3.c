@@ -168,7 +168,7 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
 
 
 
-PANEL_APPLET_OUT_PROCESS_FACTORY("UimAppletFactory",
+PANEL_APPLET_IN_PROCESS_FACTORY("UimAppletFactory",
                             PANEL_TYPE_APPLET,
                             (PanelAppletFactoryCallback)uim_applet_new,
                             NULL)
