@@ -76,7 +76,7 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
         this, SIGNAL( menuRequested( QMenu* ) ) );
 
     const QString ICONDIR = UIM_PIXMAPSDIR;
-    const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/16x16/actions";
+    const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/base/16x16/actions";
     const QSize size( ICON_SIZE, ICON_SIZE );
     m_swicon = QPixmap( ICONDIR + "/im_switcher.png" ).scaled(
         size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
