@@ -79,7 +79,9 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
     if (imname)
         m_uc = createUimContext(imname);
 
-    createCandidateWindow();
+      proxy = NULL;
+//    if (candwinIsActive)
+//	    createCandidateWindow();
 
     m_textUtil = new QUimTextUtil(this);
 
@@ -96,8 +98,11 @@ QUimPlatformInputContext::~QUimPlatformInputContext()
 
     if (m_uc)
         uim_release_context(m_uc);
-    delete proxy;
-
+    if (proxy != NULL)
+    {
+	    delete proxy;
+	    proxy = NULL;
+    }
     if (focusedInputContext == this) {
         focusedInputContext = 0;
         disableFocusedContext = true;
@@ -151,10 +156,19 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
     return uc;
 }
 
+static CandidateWindowProxy *__createCandidateWindow(QUimPlatformInputContext *ic)
+{
+    CandidateWindowProxy *proxy;
+
+    proxy = new CandidateWindowProxy;
+    proxy->setQUimPlatformInputContext(ic);
+    return proxy;
+}
+
 void QUimPlatformInputContext::createCandidateWindow()
 {
-    proxy = new CandidateWindowProxy;
-    proxy->setQUimPlatformInputContext(this);
+
+    proxy = __createCandidateWindow(this);
     proxy->hide();
 }
 
@@ -168,7 +182,7 @@ void QUimPlatformInputContext::setFocus()
     focusedInputContext = this;
     disableFocusedContext = false;
 
-    if (candwinIsActive)
+    if (proxy != NULL && candwinIsActive)
         proxy->popup();
 
     m_helperManager->checkHelperConnection(m_uc);
@@ -188,7 +202,8 @@ void QUimPlatformInputContext::unsetFocus()
 
     uim_focus_out_context(m_uc);
 
-    proxy->hide();
+    if (proxy != NULL)
+    	proxy->hide();
 
     m_helperManager->checkHelperConnection(m_uc);
 
@@ -446,7 +461,8 @@ void QUimPlatformInputContext::reset()
 #endif
     candwinIsActive = false;
 
-    proxy->hide();
+    if (proxy != NULL)
+	    proxy->hide();
     uim_reset_context(m_uc);
     clearPreedit();
     updatePreedit();
@@ -474,7 +490,7 @@ void QUimPlatformInputContext::update()
     qDebug("QUimPlatformInputContext::update() w = %p", w);
 #endif
 
-    if (w) {
+    if (w && proxy != NULL) {
         QRect mf = w->inputMethodQuery(Qt::ImMicroFocus).toRect();
         QPoint p = w->mapToGlobal(mf.topLeft());
         proxy->layoutWindow(p.x(), p.y(), mf.height());
@@ -540,7 +556,11 @@ void QUimPlatformInputContext::cand_activate_cb(void *ptr, int nr, int displayLi
 #endif
 
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->proxy->candidateActivate(nr, displayLimit);
+
+    if (ic->proxy == NULL)
+	ic->proxy = __createCandidateWindow(ic);
+    if (ic->proxy != NULL)
+	ic->proxy->candidateActivate(nr, displayLimit);
 }
 
 void QUimPlatformInputContext::cand_select_cb(void *ptr, int index)
@@ -550,7 +570,8 @@ void QUimPlatformInputContext::cand_select_cb(void *ptr, int index)
 #endif
 
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->proxy->candidateSelect(index);
+    if (ic->proxy != NULL)
+	    ic->proxy->candidateSelect(index);
 }
 
 void QUimPlatformInputContext::cand_shift_page_cb(void *ptr, int forward)
@@ -560,7 +581,8 @@ void QUimPlatformInputContext::cand_shift_page_cb(void *ptr, int forward)
 #endif
 
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->proxy->candidateShiftPage(forward);
+    if (ic->proxy != NULL)
+	    ic->proxy->candidateShiftPage(forward);
 }
 
 void QUimPlatformInputContext::cand_deactivate_cb(void *ptr)
@@ -570,29 +592,35 @@ void QUimPlatformInputContext::cand_deactivate_cb(void *ptr)
 #endif
 
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->proxy->deactivateCandwin();
-    ic->candwinIsActive = false;
+    if (ic->proxy != NULL)
+    {
+	    ic->proxy->deactivateCandwin();
+	    ic->candwinIsActive = false;
+    }
 }
 
 void QUimPlatformInputContext::switch_app_global_im_cb(void *ptr,
     const char *name)
 {
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->switch_app_global_im(name);
+    if (ic->proxy != NULL)
+	    ic->switch_app_global_im(name);
 }
 
 void QUimPlatformInputContext::switch_system_global_im_cb(void *ptr,
     const char *name)
 {
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->switch_system_global_im(name);
+    if (ic->proxy != NULL)
+	    ic->switch_system_global_im(name);
 }
 
 #if UIM_QT_USE_DELAY
 void QUimPlatformInputContext::cand_activate_with_delay_cb(void *ptr, int delay)
 {
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
-    ic->proxy->candidateActivateWithDelay(delay);
+    if (ic->proxy != NULL)
+	    ic->proxy->candidateActivateWithDelay(delay);
 }
 #endif /* !UIM_QT_USE_DELAY */
 
@@ -668,6 +696,8 @@ QString QUimPlatformInputContext::getPreeditString()
 
 int QUimPlatformInputContext::getPreeditCursorPosition()
 {
+    if (proxy == NULL)
+    	return 0;
     if (proxy->isAlwaysLeftPosition())
         return 0;
 
@@ -785,7 +815,8 @@ void QUimPlatformInputContext::switch_system_global_im(const char *name)
 void QUimPlatformInputContext::updatePosition()
 {
     char * leftp = uim_scm_symbol_value_str("candidate-window-position");
-    proxy->setAlwaysLeftPosition(leftp && !strcmp(leftp, "left"));
+    if (proxy != NULL)
+	    proxy->setAlwaysLeftPosition(leftp && !strcmp(leftp, "left"));
     free(leftp);
 }
 
@@ -797,8 +828,12 @@ void QUimPlatformInputContext::updateStyle()
         free(candwinprog);
         return;
     }
-    delete proxy;
-    createCandidateWindow();
+    if (proxy != NULL)
+    {
+	    delete proxy;
+          proxy = NULL;
+	    createCandidateWindow();
+    }
 }
 
 void QUimPlatformInputContext::updateIndicator(const QString &str)
