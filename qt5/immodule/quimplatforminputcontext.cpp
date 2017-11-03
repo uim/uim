@@ -182,7 +182,7 @@ void QUimPlatformInputContext::setFocus()
     focusedInputContext = this;
     disableFocusedContext = false;
 
-    if (proxy != NULL && candwinIsActive)
+    if (proxy != NULL && candwinIsActive && m_candwin_assert)
         proxy->popup();
 
     m_helperManager->checkHelperConnection(m_uc);
@@ -460,6 +460,7 @@ void QUimPlatformInputContext::reset()
     qDebug("reset()");
 #endif
     candwinIsActive = false;
+    m_candwin_assert = false;
 
     if (proxy != NULL)
 	    proxy->hide();
@@ -559,8 +560,10 @@ void QUimPlatformInputContext::cand_activate_cb(void *ptr, int nr, int displayLi
 
     if (ic->proxy == NULL)
 	ic->proxy = __createCandidateWindow(ic);
-    if (ic->proxy != NULL)
+    if (ic->proxy != NULL) {
+        ic->m_candwin_assert = true;
 	ic->proxy->candidateActivate(nr, displayLimit);
+    }
 }
 
 void QUimPlatformInputContext::cand_select_cb(void *ptr, int index)
@@ -592,6 +595,7 @@ void QUimPlatformInputContext::cand_deactivate_cb(void *ptr)
 #endif
 
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
+    ic->m_candwin_assert = false;
     if (ic->proxy != NULL)
     {
 	    ic->proxy->deactivateCandwin();
