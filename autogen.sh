@@ -1,9 +1,9 @@
 #!/bin/sh
 
-aclocal-1.11 -I m4 \
+aclocal -I m4 \
   && libtoolize --force --copy \
   && autoheader \
-  && automake-1.11 --add-missing --foreign --copy \
+  && automake --add-missing --foreign --copy \
   && autoconf \
   && intltoolize --copy --force --automake \
   && perl -i -pe "s/^DISTFILES\b/# Makevars gets inserted here. (Don't remove this line!)\n\nDISTFILES/" po/Makefile.in.in \
