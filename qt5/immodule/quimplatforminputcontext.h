@@ -136,6 +136,7 @@ private:
 
     QUimTextUtil *m_textUtil;
     bool candwinIsActive;
+    bool m_candwin_assert;
     bool m_isAnimating;
 
     uim_context m_uc;

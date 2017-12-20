@@ -60,7 +60,6 @@
     (romaja           . "R")
     (sj3              . "Sj")
     (skk              . "Sk")
-    (social-ime       . "Si")
     (tcode            . "Tc")
     (tutcode          . "Tu")
     (trycode          . "Tr")
