@@ -319,6 +319,7 @@ im_uim_init_modifier_keys()
 #ifdef GDK_WINDOWING_X11
   int i, k = 0;
   int min_keycode, max_keycode, keysyms_per_keycode = 0;
+  GdkDisplay *gdk_display;
   Display *display;
   GSList *mod1_list, *mod2_list, *mod3_list, *mod4_list, *mod5_list; 
   XModifierKeymap *map;
@@ -329,7 +330,12 @@ im_uim_init_modifier_keys()
 
   mod1_list = mod2_list = mod3_list = mod4_list = mod5_list = NULL;
 
-  display = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
+  gdk_display = gdk_display_get_default();
+  if (!GDK_IS_X11_DISPLAY(gdk_display)) {
+    /* TODO: We may need to something for Wayland. */
+    return;
+  }
+  display = GDK_DISPLAY_XDISPLAY(gdk_display);
   map = XGetModifierMapping(display);
   XDisplayKeycodes(display, &min_keycode, &max_keycode);
   sym = XGetKeyboardMapping(display, min_keycode,
