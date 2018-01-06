@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2018 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -335,10 +335,12 @@ im_uim_init_modifier_keys()
   mod1_list = mod2_list = mod3_list = mod4_list = mod5_list = NULL;
 
   gdk_display = gdk_display_get_default();
+#  ifdef GDK_TYPE_X11_DISPLAY
   if (!GDK_IS_X11_DISPLAY(gdk_display)) {
     /* TODO: We may need to something for Wayland. */
     return;
   }
+#  endif
   display = GDK_DISPLAY_XDISPLAY(gdk_display);
   map = XGetModifierMapping(display);
   XDisplayKeycodes(display, &min_keycode, &max_keycode);
