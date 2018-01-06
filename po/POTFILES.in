@@ -94,9 +94,6 @@ scm/sj3.scm
 scm/sj3v2-socket.scm
 scm/skk-custom.scm
 scm/skk-key-custom.scm
-scm/social-ime-custom.scm
-scm/social-ime-key-custom.scm
-scm/social-ime.scm
 scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-custom.scm
