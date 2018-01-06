@@ -135,7 +135,7 @@ endif
 if EXPAT
 uim_plugin_LTLIBRARIES += libuim-expat.la
 libuim_expat_la_SOURCES = expat.c
-libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la
+libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la libuim-scm.la
 libuim_expat_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_expat_la_CPPFLAGS = -I$(top_srcdir) @EXPAT_CFLAGS@
 endif
@@ -213,7 +213,7 @@ libuim_bsdlook_la_CPPFLAGS = -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-lolevel.la
 libuim_lolevel_la_SOURCES = lolevel.c
-libuim_lolevel_la_LIBADD = libuim.la
+libuim_lolevel_la_LIBADD = libuim.la libuim-scm.la
 libuim_lolevel_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_lolevel_la_CPPFLAGS = -I$(top_srcdir)
 

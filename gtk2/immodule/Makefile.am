@@ -11,13 +11,14 @@ module_LTLIBRARIES = $(im_uim_la)
 
 
 im_uim_la_SOURCES = $(IM_UIM_SOURCES)
-im_uim_la_LDFLAGS = -module -avoid-version @GTK2_LIBS@
+im_uim_la_LDFLAGS = -module -avoid-version
 im_uim_la_LIBADD = $(top_builddir)/uim/libuim-scm.la \
 		   $(top_builddir)/uim/libuim.la \
 		   $(top_builddir)/uim/libuim-counted-init.la
 if LIBUIM_X_UTIL
 im_uim_la_LIBADD += $(top_builddir)/uim/libuim-x-util.la
 endif
+im_uim_la_LIBADD += -lm @GTK2_LIBS@
 
 
 IM_UIM_SOURCES = \
