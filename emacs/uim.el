@@ -1295,8 +1295,7 @@
 	    ;;  C-o is also processed here ... orz
 	    (let ((inhibit-read-only t))
 	      (unwind-protect
-		  (progn
-
+		  (let ((have-shift nil))
 		    ;; remove shift if possible
 		    (if (and (uim-check-shift key)
 			     (not (uim-key-binding key)))
@@ -1306,11 +1305,13 @@
 			  ;; lookup function-key-map
 			  (if translated
 			      (setq key translated)
-			    (if (uim-key-binding keytmp)
-				(setq key keytmp)))))
+			    (when (uim-key-binding keytmp)
+                              (setq key keytmp)
+                              (setq have-shift t)))))
 
-		    (if (uim-process-key-vector key uim-prefix-arg)
-			(setq uim-wait-next-key t))
+                    (if (let ((this-command-keys-shift-translated have-shift))
+                          (uim-process-key-vector key uim-prefix-arg))
+                        (setq uim-wait-next-key t))
 		    (setq keyproc-done t))
 		(when (not keyproc-done)
 		  (uim-leave-preedit-mode))
