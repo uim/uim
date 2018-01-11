@@ -1483,6 +1483,7 @@
 ;; Toggle uim
 ;;
 
+;;;###autoload
 (defun uim-mode (&optional arg)
   "Toggle uim mode.
 With argument ARG, turn uim mode on if ARG > 0.
@@ -1497,6 +1498,7 @@ uim mode facilitates internationalized input through the uim library."
       (uim-mode-on))))
 
 ;; compat
+;;;###autoload
 (defun uim-mode-switch ()
   (interactive)
   (if uim-mode
