@@ -535,6 +535,22 @@ layout_candwin(IMUIMContext *uic)
     gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
 #endif
     gdk_window_get_origin(uic->win, &x, &y);
+    {
+      GtkWindow *window = NULL;
+      GdkWindow *gdk_window = uic->win;
+      while (gdk_window) {
+        gpointer user_data;
+        gdk_window_get_user_data(gdk_window, &user_data);
+        if (user_data && GTK_IS_WINDOW(user_data)) {
+          window = user_data;
+          break;
+        }
+        gdk_window = gdk_window_get_parent(gdk_window);
+      }
+      if (window) {
+        gtk_window_set_transient_for(GTK_WINDOW(uic->cwin), window);
+      }
+    }
     uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   }
 }

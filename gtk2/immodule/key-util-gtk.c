@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2018 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -61,6 +61,8 @@
 #endif
 
 #include "key-util-gtk.h"
+
+static gboolean g_use_custom_modifier_masks = FALSE;
 
 #ifdef GDK_WINDOWING_X11
 static guint g_mod1_mask, g_mod2_mask, g_mod3_mask, g_mod4_mask, g_mod5_mask;
@@ -250,25 +252,27 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
     *umod |= UMod_Shift;
   if (mod & GDK_CONTROL_MASK)
     *umod |= UMod_Control;
+  if (g_use_custom_modifier_masks) {
 #ifdef GDK_WINDOWING_X11
-  if (mod & GDK_MOD1_MASK)
-    *umod |= (g_mod1_mask & g_pre_modifier_state);
-  if (mod & GDK_MOD2_MASK)
-    *umod |= (g_mod2_mask & g_pre_modifier_state);
-  if (mod & GDK_MOD3_MASK)
-    *umod |= (g_mod3_mask & g_pre_modifier_state);
-  if (mod & GDK_MOD4_MASK)
-    *umod |= (g_mod4_mask & g_pre_modifier_state);
-  if (mod & GDK_MOD5_MASK)
-    *umod |= (g_mod5_mask & g_pre_modifier_state);
-#else
-  if (mod & GDK_MOD1_MASK)
-    *umod |= UMod_Alt;
-  if (mod & GDK_MOD3_MASK)  /* assuming mod3 */
-    *umod |= UMod_Super;
-  if (mod & GDK_MOD4_MASK)  /* assuming mod4 */
-    *umod |= UMod_Hyper;
+    if (mod & GDK_MOD1_MASK)
+      *umod |= (g_mod1_mask & g_pre_modifier_state);
+    if (mod & GDK_MOD2_MASK)
+      *umod |= (g_mod2_mask & g_pre_modifier_state);
+    if (mod & GDK_MOD3_MASK)
+      *umod |= (g_mod3_mask & g_pre_modifier_state);
+    if (mod & GDK_MOD4_MASK)
+      *umod |= (g_mod4_mask & g_pre_modifier_state);
+    if (mod & GDK_MOD5_MASK)
+      *umod |= (g_mod5_mask & g_pre_modifier_state);
 #endif
+  } else {
+    if (mod & GDK_MOD1_MASK)
+      *umod |= UMod_Alt;
+    if (mod & GDK_MOD3_MASK)  /* assuming mod3 */
+      *umod |= UMod_Super;
+    if (mod & GDK_MOD4_MASK)  /* assuming mod4 */
+      *umod |= UMod_Hyper;
+  }
 }
 
 #ifdef GDK_WINDOWING_X11
@@ -319,6 +323,7 @@ im_uim_init_modifier_keys()
 #ifdef GDK_WINDOWING_X11
   int i, k = 0;
   int min_keycode, max_keycode, keysyms_per_keycode = 0;
+  GdkDisplay *gdk_display;
   Display *display;
   GSList *mod1_list, *mod2_list, *mod3_list, *mod4_list, *mod5_list; 
   XModifierKeymap *map;
@@ -329,7 +334,14 @@ im_uim_init_modifier_keys()
 
   mod1_list = mod2_list = mod3_list = mod4_list = mod5_list = NULL;
 
-  display = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
+  gdk_display = gdk_display_get_default();
+#  ifdef GDK_TYPE_X11_DISPLAY
+  if (!GDK_IS_X11_DISPLAY(gdk_display)) {
+    /* TODO: We may need to something for Wayland. */
+    return;
+  }
+#  endif
+  display = GDK_DISPLAY_XDISPLAY(gdk_display);
   map = XGetModifierMapping(display);
   XDisplayKeycodes(display, &min_keycode, &max_keycode);
   sym = XGetKeyboardMapping(display, min_keycode,
@@ -389,6 +401,8 @@ im_uim_init_modifier_keys()
   g_slist_free(mod5_list);
   XFreeModifiermap(map);
   XFree(sym);
+
+  g_use_custom_modifier_masks = TRUE;
 
   if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
     uim_scm_callf("%xkb-set-display", "p", display);
