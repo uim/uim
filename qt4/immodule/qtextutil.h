@@ -33,6 +33,7 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_QTEXTUTIL_H
 #define UIM_QT4_IMMODULE_QTEXTUTIL_H
 
+#define Q_WS_X11
 #include <QObject>
 
 #include "uim/uim.h"

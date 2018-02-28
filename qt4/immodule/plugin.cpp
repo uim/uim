@@ -32,22 +32,17 @@
 
 */
 
+#include <qdatastream.h>
 #include "plugin.h"
 
 #include <clocale>
 
 #include <QtCore/QStringList>
 #if QT_VERSION < 0x050000
-# ifdef Q_WS_X11
-#  include <QtGui/QX11Info>
-# endif
-# include <QtGui/QInputContext>
-#else
-# if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
-#  include <QtX11Extras/QX11Info>
-# endif
-# include <QtCore/qdatastream.h>
-# include <qpa/qplatforminputcontext.h>
+# include <QtGui/QX11Info>
+#endif
+#if QT_VERSION >= 0x050000
+# include <QtX11Extras/QX11Info>
 #endif
 
 #include "uim/uim.h"
@@ -96,9 +91,6 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
 QPlatformInputContext *UimInputContextPlugin::create( const QString & key, const QStringList & paramList )
 #endif
 {
-    if (qgetenv("__UIM_CANDWIN_CALLED") == QByteArray("STARTED"))
-	return NULL;
-
 #if QT_VERSION >= 0x050000
     Q_UNUSED(paramList);
 #endif

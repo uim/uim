@@ -35,6 +35,7 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 
+#define Q_WS_X11
 #include <QtCore/QtGlobal>
 #include <QtGui/QInputContext>
 

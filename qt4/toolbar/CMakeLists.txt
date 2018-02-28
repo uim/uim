@@ -1,6 +1,7 @@
 project(plasma-uim)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+find_package(Qt4)
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 

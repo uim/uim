@@ -32,6 +32,7 @@
 
 */
 #include "quiminputcontext.h"
+#define Q_WS_X11
 
 #include <cctype>
 #include <cstring>
@@ -149,7 +150,8 @@ uim_context QUimInputContext::createUimContext( const char *imname )
                                          0,
                                          QUimInputContext::commit_cb );
 
-    m_HelperManager->checkHelperConnection(uc);
+    m_HelperManager->checkHelperConnection();
+
     /**/
 
     uim_set_preedit_cb( uc, QUimInputContext::clear_cb,
@@ -399,7 +401,7 @@ void QUimInputContext::setFocus()
     if ( candwinIsActive )
         proxy->popup();
 
-    m_HelperManager->checkHelperConnection(m_uc);
+    m_HelperManager->checkHelperConnection();
 
     uim_helper_client_focus_in( m_uc );
     uim_prop_list_update( m_uc );
@@ -420,7 +422,7 @@ void QUimInputContext::unsetFocus()
     proxy->hide();
     m_indicator->hide();
 
-    m_HelperManager->checkHelperConnection(m_uc);
+    m_HelperManager->checkHelperConnection();
 
     uim_helper_client_focus_out( m_uc );
 }

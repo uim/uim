@@ -31,6 +31,13 @@ SUCH DAMAGE.
 
 */
 
+#include <QtCore/QtGlobal>
+#if QT_VERSION < 0x050000
+# include "quiminputcontext.h"
+#else
+# include "quimplatforminputcontext.h"
+#endif
+
 #include "qtextutil.h"
 
 #include <cstdlib>
@@ -47,12 +54,6 @@ SUCH DAMAGE.
 # include <QtWidgets/QApplication>
 # include <QtWidgets/QLineEdit>
 # include <QtWidgets/QTextEdit>
-#endif
-
-#if QT_VERSION < 0x050000
-# include "quiminputcontext.h"
-#else
-# include "quimplatforminputcontext.h"
 #endif
 
 QUimTextUtil::QUimTextUtil( QObject *parent )
@@ -143,7 +144,7 @@ QUimTextUtil::acquirePrimaryText( enum UTextOrigin origin,
                                   char **former, char **latter )
 {
     int err;
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#if defined(Q_WS_X11)
     mWidget = QApplication::focusWidget();
 #else
     return -1;
@@ -551,7 +552,7 @@ QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
                                     char **former, char **latter )
 {
     int err;
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#if defined(Q_WS_X11)
     mWidget = QApplication::focusWidget();
 #else
     return -1;
@@ -821,7 +822,7 @@ QUimTextUtil::deletePrimaryText( enum UTextOrigin origin, int former_req_len,
                                  int latter_req_len )
 {
     int err;
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#if defined(Q_WS_X11)
     mWidget = QApplication::focusWidget();
 #else
     return -1;
@@ -1130,7 +1131,7 @@ QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
                                    int former_req_len, int latter_req_len )
 {
     int err;
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#if defined(Q_WS_X11)
     mWidget = QApplication::focusWidget();
 #else
     return -1;

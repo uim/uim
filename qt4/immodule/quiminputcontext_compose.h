@@ -33,6 +33,7 @@
 // -*- C++ -*-
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_COMPOSE_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_COMPOSE_H
+#define Q_WS_X11
 
 #include <X11/X.h>
 #undef Above

@@ -30,6 +30,7 @@
   SUCH DAMAGE.
 
 */
+#define Q_WS_X11
 #include "quimplatforminputcontext.h"
 
 #include <QtCore/QCoreApplication>
@@ -49,6 +50,9 @@
 #include "qhelpermanager.h"
 #include "qtextutil.h"
 #include "quiminfomanager.h"
+#include "quiminputcontext_compose.h"
+
+DefTree *QUimPlatformInputContext::mTreeTop = 0;
 
 static const char DEFAULT_SEPARATOR_STR[] = "|";
 
@@ -61,7 +65,7 @@ QUimHelperManager *QUimPlatformInputContext::m_helperManager = 0;
 
 static int unicodeToUKey(ushort c);
 
-#define ENABLE_DEBUG
+// #define ENABLE_DEBUG
 
 QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 : candwinIsActive(false), m_isAnimating(false), m_uc(0)
@@ -83,6 +87,9 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 //    if (candwinIsActive)
 //	    createCandidateWindow();
 
+    if ( !mTreeTop )
+        create_compose_tree();
+    mCompose = new Compose( mTreeTop, this );
     m_textUtil = new QUimTextUtil(this);
 
     // read configuration
@@ -107,6 +114,7 @@ QUimPlatformInputContext::~QUimPlatformInputContext()
         focusedInputContext = 0;
         disableFocusedContext = true;
     }
+		delete mCompose;
 }
 
 void QUimPlatformInputContext::setFocusObject(QObject *object)
@@ -122,7 +130,7 @@ uim_context QUimPlatformInputContext::createUimContext(const char *imname)
     uim_context uc = uim_create_context(this, "UTF-8", 0, imname, 0,
             QUimPlatformInputContext::commit_cb);
 
-    m_helperManager->checkHelperConnection(uc);
+    m_helperManager->checkHelperConnection();
 
     /**/
 
@@ -185,7 +193,7 @@ void QUimPlatformInputContext::setFocus()
     if (proxy != NULL && candwinIsActive && m_candwin_assert)
         proxy->popup();
 
-    m_helperManager->checkHelperConnection(m_uc);
+    m_helperManager->checkHelperConnection();
 
     uim_helper_client_focus_in(m_uc);
     uim_prop_list_update(m_uc);
@@ -205,7 +213,7 @@ void QUimPlatformInputContext::unsetFocus()
     if (proxy != NULL)
     	proxy->hide();
 
-    m_helperManager->checkHelperConnection(m_uc);
+    m_helperManager->checkHelperConnection();
 
     uim_helper_client_focus_out(m_uc);
 }
@@ -239,7 +247,7 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
         modifier |= UMod_Control;
     if (keyevent->modifiers() & Qt::AltModifier)
         modifier |= UMod_Alt;
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#if defined(Q_WS_X11)
     if (keyevent->modifiers() & Qt::MetaModifier)
         modifier |= UMod_Meta;
 #endif
@@ -353,7 +361,7 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
                         modifier &= ~UMod_Alt;
                     break;
                 case Qt::Key_Meta: key = UKey_Meta_key;
-#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
+#ifdef Q_WS_X11
                     if (type == QEvent::KeyPress)
                         modifier &= ~UMod_Meta;
 #endif
@@ -465,6 +473,7 @@ void QUimPlatformInputContext::reset()
     if (proxy != NULL)
 	    proxy->hide();
     uim_reset_context(m_uc);
+		mCompose->reset();
     clearPreedit();
     updatePreedit();
 }
