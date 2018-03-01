@@ -61,8 +61,6 @@ QUimHelperManager *QUimPlatformInputContext::m_helperManager = 0;
 
 static int unicodeToUKey(ushort c);
 
-#define ENABLE_DEBUG
-
 QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 : candwinIsActive(false), m_isAnimating(false), m_uc(0)
 {
