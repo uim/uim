@@ -36,7 +36,7 @@ all cleaninstall install uninstall:
 
 distclean-local:
 	-rm -rf build/*
-endif 
+endif
 
 FORCE:
 
