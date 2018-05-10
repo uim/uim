@@ -496,15 +496,22 @@
 /qt4/switcher/*.o
 
 # /qt4/toolbar/
+/qt4/toolbar/CMakeCache.txt
+/qt4/toolbar/CMakeFiles/
+/qt4/toolbar/CMakeTmp/
+/qt4/toolbar/CTestTestfile.cmake
 /qt4/toolbar/Makefile
 /qt4/toolbar/Makefile.in
 /qt4/toolbar/Makefile.qmake
 /qt4/toolbar/build
+/qt4/toolbar/cmake_install.cmake
+/qt4/toolbar/cmake_uninstall.cmake
 /qt4/toolbar/moc_*.cpp
 /qt4/toolbar/plasma-applet-uim.desktop
 /qt4/toolbar/uim-toolbar-qt4
 /qt4/toolbar/uim-toolbar-qt4.pro
 /qt4/toolbar/*.o
+/qt4/toolbar/*.files
 
 # /qt5/
 /qt5/Makefile
