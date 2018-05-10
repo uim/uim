@@ -1,6 +1,11 @@
 include libtool-version.mk
-include $(top_builddir)/sigscheme/libgcroots.mk
-include $(top_builddir)/sigscheme/sigscheme.mk
+
+GCROOTS_LIBS = $(top_builddir)/sigscheme/libgcroots/libgcroots.la
+GCROOTS_CFLAGS = -I$(top_srcdir)/sigscheme/libgcroots/include
+
+sscmlibdir = ${pkgdatadir}/lib
+SSCM_DEFS = -DSCMLIBDIR="\"$(sscmlibdir)\""
+DEFS += $(SSCM_DEFS)
 
 AUTOMAKE_OPTIONS = foreign
 
