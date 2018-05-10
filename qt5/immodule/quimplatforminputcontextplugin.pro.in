@@ -5,7 +5,8 @@ CONFIG += plugin
 
 # to include util.h and for quimplatforminputcontext.cpp
 INCLUDEPATH += @srcdir@/../../qt4/candwin \
-               @srcdir@/../../qt4/immodule
+               @srcdir@/../../qt4/immodule \
+               @srcdir@
 
 LIBS += @X11_LIBS@ -luim-counted-init
 

@@ -60,7 +60,7 @@
 #if QT_VERSION < 0x050000
 #include "quiminputcontext.h"
 #else
-#include "quimplatforminputcontext.h"
+#include <quimplatforminputcontext.h>
 #endif
 
 static const char COMPOSE_FILE[] = "Compose";
