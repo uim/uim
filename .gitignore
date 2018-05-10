@@ -1,7 +1,7 @@
 *.swp
 
 # /
-/ChangeLog
+/ABOUT-NLS
 /Makefile.in
 /Makefile
 /aclocal.m4
@@ -349,14 +349,22 @@
 /pixmaps/zm_dark_background.png
 
 # /po/
+/po/*.gmo
 /po/.intltool-merge-cache
-/po/Makefile.in.in
-/po/Makefile.in
 /po/Makefile
+/po/Makefile.in
+/po/Makefile.in.in
+/po/Makefile.in.in~
+/po/Makevars.template
 /po/POTFILES
+/po/Rules-quot
+/po/boldquot.sed
+/po/en@boldquot.header
+/po/en@quot.header
+/po/insert-header.sin
+/po/quot.sed
 /po/stamp-it
 /po/uim.pot
-/po/*.gmo
 
 # /qt3/
 /qt3/Makefile
