@@ -19,6 +19,4 @@ FORCE:
 EXTRA_DIST =					\
 	quimplatforminputcontext.cpp		\
 	quimplatforminputcontext.h		\
-	quimplatforminputcontextplugin.pro.in	\
-	quimplatforminputcontextplugin.h	\
-	quimplatforminputcontextplugin.cpp
+	quimplatforminputcontextplugin.pro.in
