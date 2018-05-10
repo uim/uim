@@ -19,6 +19,8 @@ What's New in 1.8.7
   - Remove uim-social-ime
   - Improve uim-qt5
 
+See NEWS for the fully detailed changes.
+
 
 What's New in 1.8.6
 -------------------
@@ -28,8 +30,6 @@ What's New in 1.8.6
   - Avoid a crash when a Canna server name is specified
   - Add an option to uim-m17nlib
   - Update trycode composition table
-
-See NEWS for the fully detailed changes.
 
 
 What's New in 1.8.5
