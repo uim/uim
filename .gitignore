@@ -511,6 +511,7 @@
 /qt5/Makefile.in
 
 # /qt5/candwin/
+/qt5/candwin/.qmake.stash
 /qt5/candwin/Makefile
 /qt5/candwin/Makefile.in
 /qt5/candwin/Makefile.qmake
@@ -520,6 +521,7 @@
 /qt5/candwin/*.o
 
 # /qt5/chardict/
+/qt5/chardict/.qmake.stash
 /qt5/chardict/Makefile
 /qt5/chardict/Makefile.in
 /qt5/chardict/Makefile.qmake
@@ -529,6 +531,7 @@
 /qt5/chardict/*.o
 
 # /qt5/edittest/
+/qt5/edittest/.qmake.stash
 /qt5/edittest/Makefile
 /qt5/edittest/Makefile.in
 /qt5/edittest/Makefile.qmake
@@ -536,6 +539,7 @@
 /qt5/edittest/*.o
 
 # /qt5/immodule/
+/qt5/immodule/.qmake.stash
 /qt5/immodule/Makefile
 /qt5/immodule/Makefile.in
 /qt5/immodule/Makefile.qmake
@@ -545,6 +549,7 @@
 /qt5/immodule/*.o
 
 # /qt5/pref/
+/qt5/pref/.qmake.stash
 /qt5/pref/Makefile
 /qt5/pref/Makefile.in
 /qt5/pref/Makefile.qmake
@@ -554,6 +559,7 @@
 /qt5/pref/*.o
 
 # /qt5/switcher/
+/qt5/switcher/.qmake.stash
 /qt5/switcher/Makefile
 /qt5/switcher/Makefile.in
 /qt5/switcher/Makefile.qmake
@@ -563,6 +569,7 @@
 /qt5/switcher/*.o
 
 # /qt5/toolbar/
+/qt5/toolbar/.qmake.stash
 /qt5/toolbar/Makefile
 /qt5/toolbar/Makefile.in
 /qt5/toolbar/Makefile.qmake

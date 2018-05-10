@@ -1,14 +1,14 @@
 # Type 'make check' to run all tests.
 
 uim_tests = \
-        $(abs_top_srcdir)/test2/test-composer.scm \
-        $(abs_top_srcdir)/test2/test-fail.scm \
-        $(abs_top_srcdir)/test2/test-light-record.scm \
-        $(abs_top_srcdir)/test2/test-template.scm \
-        $(abs_top_srcdir)/test2/test-trec.scm \
-        $(abs_top_srcdir)/test2/test-wlos.scm
+        test-composer.scm \
+        test-fail.scm \
+        test-light-record.scm \
+        test-template.scm \
+        test-trec.scm \
+        test-wlos.scm
 uim_optional_tests =
-uim_xfail_tests = $(abs_top_srcdir)/test2/test-fail.scm
+uim_xfail_tests = test-fail.scm
 
 TESTS_ENVIRONMENT = \
 	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/sigscheme/lib" \
