@@ -2,9 +2,6 @@
 
 MAKE=make
 
-SSCM_TAG="sigscheme-0.8.6"
-LIBGCROOTS_TAG="libgcroots-0.2.3"
-
 CONF_MAINT="--enable-maintainer-mode"
 CONF_NOWERROR="--disable-warnings-into-error"
 CONF_COMMON="$CONF_MAINT $CONF_NOWERROR"
@@ -31,14 +28,8 @@ CONF_FULL="$CONF_MAINT $CONF_FULL_WO_MAINT"
 git submodule update --init --recursive
 # Create a branch if a branch correspoinding to the tag doesn't exist.
 # Then check out the branch.
-(cd sigscheme/libgcroots \
-    && (git branch | grep -q "\<$LIBGCROOTS_TAG\>"  \
-        || git branch $LIBGCROOTS_TAG $LIBGCROOTS_TAG) \
-    && git checkout $LIBGCROOTS_TAG && ./autogen.sh) \
- && (cd sigscheme \
-    && (git branch | grep -q "\<$SSCM_TAG\>" \
-        || git branch $SSCM_TAG $SSCM_TAG) \
-    && git checkout $SSCM_TAG && ./autogen.sh) \
+(cd sigscheme/libgcroots && ./autogen.sh) \
+ && (cd sigscheme && ./autogen.sh) \
  && ./autogen.sh \
 || { echo 'autogen failed.' && exit 1; }
 
