@@ -605,6 +605,7 @@
 /uim/.libs/
 /uim/Makefile.in
 /uim/Makefile
+/uim/config.h.in~
 /uim/config.h.in
 /uim/config.h
 /uim/stamp-h1
