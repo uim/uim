@@ -1,4 +1,3 @@
-AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
