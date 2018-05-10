@@ -7,7 +7,7 @@ EXTRA_DIST = \
 	ax_lib_glibc.m4 \
 	ax_path_qmake4.m4 \
 	ax_path_qmake5.m4 \
-	eb.m4 \
+	eb4.m4 \
 	expat.m4 \
 	isc-posix.m4 \
 	openssl.m4 \
