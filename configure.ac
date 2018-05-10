@@ -1838,6 +1838,7 @@ if test "x$with_qt4" = xyes; then
   if test "x$with_qt4_immodule" = xyes; then
     qt4_immodule_option="DEFINES+=QT4_IMMODULE"
   fi
+  set -e
   # Generate Makefiles for Qt4 by qmake
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
     ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
@@ -1860,20 +1861,24 @@ if test "x$with_qt4" = xyes; then
       ${cmake_option} ${ac_abs_top_srcdir}/qt4/toolbar
     cd -
   fi
+  set +e
 fi
 
 if test "x$with_qt4_immodule" = xyes; then
   if test "x$enable_qt4_qt3support" = xyes; then
     qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
   fi
+  set -e
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
     ${qt4_qt3support_option} \
     ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
     ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+  set +e
 fi
 
 if test "x$use_knotify4" = xyes; then
+  set -e
   # Generate a Makefile for KNotify plugin by cmake
   mkdir -p ${ac_abs_top_builddir}/notify/build
   cd ${ac_abs_top_builddir}/notify/build
@@ -1882,6 +1887,7 @@ if test "x$use_knotify4" = xyes; then
     -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
     ${cmake_option} ${ac_abs_top_srcdir}/notify
   cd -
+  set +e
 fi
 
 # Generate Makefiles for Qt5 by qmake
@@ -1889,6 +1895,7 @@ if test "x$with_qt5" = xyes; then
   if test "x$with_qt5_immodule" = xyes; then
     qt5_immodule_option="DEFINES+=QT5_IMMODULE"
   fi
+  set -e
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
@@ -1900,13 +1907,16 @@ if test "x$with_qt5" = xyes; then
     ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
+  set +e
 fi
 
 if test "x$with_qt5_immodule" = xyes; then
+  set -e
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
     ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+  set +e
 fi
 
 AC_MSG_RESULT([
