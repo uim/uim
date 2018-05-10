@@ -6,7 +6,7 @@ m4_define([UIM_VERSION],
 
 AC_PREREQ(2.60b)
 AC_INIT([uim], [UIM_VERSION], [uim-en@googlegroups.com])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIR([m4.generated])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
 AM_INIT_AUTOMAKE([1.10 foreign dist-bzip2])
