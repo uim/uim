@@ -1,3 +1,7 @@
 gtk2/toolbar/GNOME_UimApplet.server.in
 test/test-custom.scm
 uim.desktop.in
+# XXX: Workaround for intltool-update
+# intltool-update doesn't support desktop.in.in and out-of-source directory
+# build. "sub" is for "make distcheck".
+sub/uim.desktop.in
