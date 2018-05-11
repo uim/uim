@@ -1,8 +1,5 @@
 include libtool-version.mk
 
-GCROOTS_LIBS = $(top_builddir)/sigscheme/libgcroots/libgcroots.la
-GCROOTS_CFLAGS = -I$(top_srcdir)/sigscheme/libgcroots/include
-
 sscmlibdir = ${pkgdatadir}/lib
 SSCM_DEFS = -DSCMLIBDIR="\"$(sscmlibdir)\""
 DEFS += $(SSCM_DEFS)

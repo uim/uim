@@ -1734,6 +1734,37 @@ AC_SUBST(abs_top_builddir)
 ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([sigscheme])
 
+AC_ARG_WITH(libgcroots,
+            AS_HELP_STRING([--with-libgcroots@<:@=WHICH@:>@],
+                           [use alternative libgcroots instead of
+                            package-bundled one.
+                            WHICH=(installed|tiny-subst)
+                            @<:@default=installed@:>@]))
+
+case "${with_libgcroots:=no}" in
+  no)
+    # bundled libgcroots package
+    GCROOTS_LIBS='$(abs_top_builddir)/sigscheme/libgcroots/libgcroots.la'
+    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/libgcroots/include'
+  ;;
+  yes|installed)
+    PKG_CHECK_MODULES(GCROOTS, [gcroots],
+                      [],
+                      [AC_MSG_ERROR([installed libgcroots is not found.])])
+  ;;
+  tiny-subst)
+    # use src/gcroots/gcroots.[hc]
+    GCROOTS_LIBS=
+    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/src/gcroots'
+  ;;
+  *)
+    AC_MSG_ERROR([invalid argument for --with-libgcroots.])
+  ;;
+esac
+
+AC_SUBST(GCROOTS_LIBS)
+AC_SUBST(GCROOTS_CFLAGS)
+
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
                  m4/Makefile
