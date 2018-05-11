@@ -1,10 +1,10 @@
-uim 1.8.7 Release Note
+uim 1.8.8 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.8.6 is the latest stable release of uim.
+This distribution of uim 1.8.8 is the latest stable release of uim.
 
 Please report any problem with uim.
 
@@ -12,14 +12,21 @@ Homepage:            https://github.com/uim/uim
 Mailinglist:         uim-en@googlegroups.com
 Bug tracking system: https://github.com/uim/uim/issues?state=open
 
+What's New in 1.8.8
+-------------------
+
+  - Fix build error with --with-libgcroots=installed
+  - Fix build error of uim-qt5
+
+See NEWS for the fully detailed changes.
+
+
 What's New in 1.8.7
 -------------------
 
   - Support uim-gtk3 on Wayland
   - Remove uim-social-ime
   - Improve uim-qt5
-
-See NEWS for the fully detailed changes.
 
 
 What's New in 1.8.6
