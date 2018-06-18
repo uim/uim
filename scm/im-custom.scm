@@ -93,6 +93,11 @@
 		     (N_ "long description will be here."))
 
 ;; subgroup
+(define-custom-group 'miscellaneous
+		     (N_ "Miscellaneous settings")
+		     (N_ "long description will be here."))
+
+;; subgroup
 (define-custom-group 'dictionary
                      (N_ "Dictionary")
                      (N_ "long description will be here."))
