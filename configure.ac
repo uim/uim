@@ -1311,8 +1311,8 @@ if test "x$with_libedit" != xno; then
   if test "x$with_libedit" = xyes; then
     libedit_path=/usr
   else
-    with_libedit=yes
     libedit_path="$with_libedit"
+    with_libedit=yes
   fi
 
   saved_CPPFLAGS=$CPPFLAGS
