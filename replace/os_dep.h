@@ -135,6 +135,9 @@ long long strtoll(const char *, char **, int);
 #ifndef HAVE_STRTONUM
 #define strtonum	uim_internal_strtonum
 long long strtonum(const char *numstr, long long minval, long long maxval, const char **errstrp);
+#elif defined(__NetBSD__)
+#define _OPENBSD_SOURCE
+#include <stdlib.h>
 #endif
 
 #ifdef HAVE_POLL_H
