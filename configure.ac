@@ -25,6 +25,23 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_OBJC
+
+if test "${GCC}" = "yes"; then
+  AC_MSG_CHECKING([for gcc is 4 or earlier])
+  AC_TRY_COMPILE([
+#if __GNUC__ >= 5
+#  error GCC 5 or later
+#endif
+                 ],
+                 [],
+                 [gcc_4_or_earlier=yes],
+                 [gcc_4_or_earlier=no])
+  AC_MSG_RESULT($gcc_4_or_earlier)
+else
+  gcc_4_or_earlier=no
+fi
+AM_CONDITIONAL(GCC_4_OR_EARLIER, test "$gcc_4_or_earlier" = "yes")
+
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET

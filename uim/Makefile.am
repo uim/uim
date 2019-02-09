@@ -229,9 +229,12 @@ libuim_scm_la_CPPFLAGS = -I$(top_srcdir) \
 			 -I$(top_srcdir)/sigscheme/src \
 			 -I$(top_builddir)/sigscheme/src \
 			 $(GCROOTS_CFLAGS)
-# GCC 4.4's optimization may causes problem with combination of
-# alloc.c and read.c imported from sigscheme
-libuim_scm_la_CFLAGS = -fno-strict-aliasing
+libuim_scm_la_CFLAGS =
+if GCC_4_OR_EARLIER
+  # GCC 4.4's optimization may causes problem with combination of
+  # alloc.c and read.c imported from sigscheme
+  libuim_scm_la_CFLAGS += -fno-strict-aliasing
+endif
 if DEBUG
   libuim_scm_la_CPPFLAGS += -DDEBUG=1 -DDEBUG_SCM=1
 endif
