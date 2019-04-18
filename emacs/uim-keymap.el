@@ -175,6 +175,7 @@
 	 (define-key uim-mode-map (kbd "ESC") 'uim-process-input)
 
          (define-key uim-mode-map (kbd "C-c") nil)
+         (define-key uim-mode-map (kbd "C-x") nil)
 	 )
 
 	)
