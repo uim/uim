@@ -630,7 +630,10 @@ void QUimPlatformInputContext::commitString(const QString& str)
 {
     QInputMethodEvent e;
     e.setCommitString(str);
-    QCoreApplication::sendEvent(qApp->focusObject(), &e);
+    QObject *focusedObject = qApp->focusObject();
+    if (focusedObject) {
+        QCoreApplication::sendEvent(focusedObject, &e);
+    }
 
     m_isAnimating = false;
 }
