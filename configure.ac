@@ -1188,6 +1188,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test "x$default_toolkit" = xqt5)
+AC_SUBST(default_toolkit)
 
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
