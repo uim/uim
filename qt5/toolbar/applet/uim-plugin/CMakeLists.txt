@@ -4,9 +4,6 @@
 # If you're goind to create reusable plugin make sure to build it as
 # separate project with proper install commands and CMake.config file.
 
-# 'myplugin' resource file. All files have 'plugin/' prefix
-qt5_add_resources(PLUGIN_RESOURCES ${CMAKE_CURRENT_LIST_DIR}/plugin.qrc)
-
 add_library(
     myplugin
     SHARED
@@ -20,7 +17,6 @@ add_library(
     # It's not important to include 'qmldir' or 'plugin.qmltypes' here,
     # but it will make IDEs (such as Qt Creator) to include them in project tree
     ${CMAKE_CURRENT_LIST_DIR}/qmldir
-    ${CMAKE_CURRENT_LIST_DIR}/plugin.qmltypes
 
     ${PLUGIN_RESOURCES}     # Plugin resources file
 )
