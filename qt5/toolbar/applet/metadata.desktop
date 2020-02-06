@@ -1,0 +1,23 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=UIM Status
+Comment=Input Method Indicator (uim)
+Comment[ja]=入力メソッドインジケータ (uim)
+Icon=/usr/local/share/uim/pixmaps/uim-icon.png
+Type=Service
+
+X-KDE-ParentApp=
+X-KDE-PluginInfo-Author=The uim developers
+X-KDE-PluginInfo-Email=uim-en@googlegroups.com
+X-KDE-PluginInfo-Name=org.uim.status
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Website=https://github.com/uim/uim
+X-KDE-PluginInfo-Category=Utilities
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=BSD
+X-KDE-PluginInfo-EnabledByDefault=true
+
+
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+X-Plasma-RemoteLocation=
