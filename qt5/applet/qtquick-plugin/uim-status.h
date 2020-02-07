@@ -3,6 +3,7 @@
 
 #include <QtQuick/QQuickPaintedItem>
 #include <QColor>
+#include <QString>
 
 /**
  * @brief The MyQuickItem class. Simple QQuickItem plugin example;
@@ -10,6 +11,7 @@
 class MyQuickItem: public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(QString text READ text NOTIFY textChanged)
 public:
     MyQuickItem(QQuickItem* parent = nullptr);
 
@@ -31,11 +33,15 @@ public:
      */
     void paint(QPainter *painter) override;
 
+    QString text() const;
+
 signals:
     /**
      * @brief colorChanged  signal that should be emitted when @property color changes
      */
     void colorChanged();
+
+    void textChanged();
 
 private:
     QColor color;

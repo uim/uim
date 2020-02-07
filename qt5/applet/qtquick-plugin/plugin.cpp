@@ -1,8 +1,8 @@
-#include "myplugin.h"
+#include "plugin.h"
 
 #include <QtQml/QtQml>
 
-#include "myquickitem.h"
+#include "uim-status.h"
 
 void MyPlugin::registerTypes(const char* uri) {
     // Register our 'MyQuickItem' in qml engine

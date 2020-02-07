@@ -1,4 +1,4 @@
-#include "myquickitem.h"
+#include "uim-status.h"
 
 #include <QPen>
 #include <QPainter>
@@ -26,4 +26,8 @@ void MyQuickItem::paint(QPainter* painter) {
     QPen pen(color, 2);
     painter->setPen(pen);
     painter->fillRect(QRectF(0, 0, width(), height()), color);
+}
+
+QString MyQuickItem::text() const {
+    return "my super secret text";
 }
