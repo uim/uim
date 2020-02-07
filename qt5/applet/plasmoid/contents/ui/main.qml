@@ -9,7 +9,7 @@ Row {
 
     Repeater {
         id: repeater
-        Layout.minimumWidth: children.width
+//        Layout.minimumWidth: children.width
 
         PlasmaComponents.Label {
             text: modelData
