@@ -30,23 +30,23 @@ void UimSocket::onSocketActivated(int fd) {
     char *s;
     while ((s = uim_helper_get_message())) {
         auto msg = QString(s);
-        free(s);
 
         auto match = charsetRegex.match(msg);
         // Check if this message has a special charset
         if (match.hasMatch()) {
             auto charset = match.captured(1);
-            qDebug() << "CHARSET" << charset;
+            qDebug() << "Recived message from UIM, CHARSET:" << charset;
 
             // Convert before sending it up
-//            auto codec = QTextCodec::codecForName(charset.toLatin1());
-//            emit messageReceived(codec->toUnicode(s));
-            emit messageReceived(msg);
+            auto codec = QTextCodec::codecForName(charset.toLatin1());
+            emit messageReceived(codec->toUnicode(s));
 
         } else {
             // Regular message, set it up as-is.
             emit messageReceived(msg);
         }
+
+        free(s);
     }
 }
 
