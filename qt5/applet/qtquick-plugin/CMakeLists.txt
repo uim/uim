@@ -1,3 +1,6 @@
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5 REQUIRED COMPONENTS Quick Core Qml)
+
 add_library(
     uim-qtquick-plugin
     SHARED
@@ -13,8 +16,11 @@ add_library(
     ${CMAKE_CURRENT_LIST_DIR}/qmldir
 )
 
-set(CMAKE_AUTOMOC ON)
-find_package(Qt5 REQUIRED COMPONENTS Quick Core Qml)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../uim
+    ${CMAKE_SOURCE_DIR}/../../replace ${CMAKE_SOURCE_DIR}/..
+    ${CMAKE_BINARY_DIR}/../../../uim
+)
 
 target_compile_features(
     uim-qtquick-plugin
@@ -34,6 +40,9 @@ target_compile_options(
 target_link_libraries(
     uim-qtquick-plugin
     PRIVATE
+        ${CMAKE_BINARY_DIR}/../../../uim/.libs/libuim.so
+        ${CMAKE_BINARY_DIR}/../../../uim/.libs/libuim-scm.so
+        -luim -luim-scm
         Qt5::Core
         Qt5::Quick
         Qt5::Qml
@@ -43,5 +52,5 @@ install(
     TARGETS 
         uim-qtquick-plugin
     DESTINATION 
-        ${QML_INSTALL_DIR}/org/kde/private/uim-qtquick-plugin
+        ${QML_INSTALL_DIR}/org/kde/private/uim
 )
