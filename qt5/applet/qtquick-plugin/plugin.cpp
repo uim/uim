@@ -4,7 +4,7 @@
 
 #include "uim-status.h"
 
-void MyPlugin::registerTypes(const char* uri) {
+void UimPlugin::registerTypes(const char* uri) {
     // Register our 'MyQuickItem' in qml engine
-    qmlRegisterType<MyQuickItem>(uri, 1, 0, "MyQuickItem");
+    qmlRegisterType<UimStatus>(uri, 1, 0, "MyQuickItem");
 }

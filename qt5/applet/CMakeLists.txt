@@ -1,6 +1,8 @@
 # set minimum CMake version (req'd for CMake 3.0 or later)
 cmake_minimum_required(VERSION 2.8.12)
 
+project(plasma5-applet)
+
 # use Extra CMake Modules (ECM) for common functionality
 find_package(ECM REQUIRED NO_MODULE)
 # needed by find_package(KF5Plasma) below.

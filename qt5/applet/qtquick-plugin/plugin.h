@@ -7,7 +7,7 @@
  * @brief The MyPlugin class. Simple qml plugin example.
  */
 
-class MyPlugin: public QQmlExtensionPlugin {
+class UimPlugin: public QQmlExtensionPlugin {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
 public:
