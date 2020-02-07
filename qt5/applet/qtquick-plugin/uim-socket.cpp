@@ -1,4 +1,4 @@
-#include "uim-status.h"
+#include "uim-socket.h"
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
@@ -20,9 +20,13 @@ UimSocket::UimSocket(QQuickItem* parent) :
 }
 
 void UimSocket::onSocketDisconnected() {
+    // the socket shouldn't activate if it's disconnected
 }
 
-const auto charsetRegex = QRegularExpression("^charset=(.+)$", QRegularExpression::MultilineOption);
+const auto charsetRegex = QRegularExpression(
+            "^charset=(.+)$",
+            QRegularExpression::MultilineOption
+    );
 
 void UimSocket::onSocketActivated(int fd) {
     uim_helper_read_proc(fd);
@@ -50,6 +54,6 @@ void UimSocket::onSocketActivated(int fd) {
     }
 }
 
-QString UimSocket::text() const {
-    return "my super secret text 2";
+UimSocket::~UimSocket() {
+    uim_helper_close_client_fd(static_cast<int>(m_notifier.socket()));
 }

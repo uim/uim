@@ -2,7 +2,7 @@
 
 #include <QtQml/QtQml>
 
-#include "uim-status.h"
+#include "uim-socket.h"
 
 void UimPlugin::registerTypes(const char* uri) {
     // Register our 'UimSocket' in qml engine

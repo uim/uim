@@ -6,10 +6,10 @@ add_library(
     SHARED
 
     ${CMAKE_CURRENT_LIST_DIR}/plugin.h
-    ${CMAKE_CURRENT_LIST_DIR}/uim-status.h
+    ${CMAKE_CURRENT_LIST_DIR}/uim-socket.h
 
     ${CMAKE_CURRENT_LIST_DIR}/plugin.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/uim-status.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/uim-socket.cpp
 
     # It's not important to include 'qmldir' or 'plugin.qmltypes' here,
     # but it will make IDEs (such as Qt Creator) to include them in project tree

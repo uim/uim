@@ -14,6 +14,7 @@ class UimSocket: public QQuickItem {
     Q_PROPERTY(QString text READ text NOTIFY textChanged)
 public:
     UimSocket(QQuickItem* parent = nullptr);
+    ~UimSocket();
 
     QString text() const;
 
