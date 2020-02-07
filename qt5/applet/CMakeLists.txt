@@ -10,6 +10,6 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PA
 find_package(KF5Plasma REQUIRED)
 
 # Add installation target ("make install")
-plasma_install_package(. org.uim.status)
+plasma_install_package(plasmoid org.uim.status)
 
-add_subdirectory(uim-plugin)
+add_subdirectory(qtquick-plugin)
