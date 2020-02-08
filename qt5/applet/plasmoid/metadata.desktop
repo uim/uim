@@ -3,7 +3,7 @@ Encoding=UTF-8
 Name=UIM Status
 Comment=Input Method Indicator (uim)
 Comment[ja]=入力メソッドインジケータ (uim)
-Icon=/usr/local/share/uim/pixmaps/uim-icon.png
+Icon=/usr/share/uim/pixmaps/uim-icon64.png
 Type=Service
 
 X-KDE-ParentApp=

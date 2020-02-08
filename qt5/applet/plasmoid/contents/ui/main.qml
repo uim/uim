@@ -8,8 +8,7 @@ import org.kde.private.uim 1.0
 Item {
     property var dataModel: [{
         value: '?',
-        title: '???',
-        comment: 'Unable to connect to UIM'
+        title: 'Unable to connect to UIM',
     }]
 
     id: root
@@ -54,8 +53,7 @@ Item {
                               comment
                           ]) => ({
                                      value,
-                                     title,
-                                     comment
+                                     title
                                  })
                          );
 
@@ -65,12 +63,19 @@ Item {
         }
     }
 
-    Plasmoid.toolTipItem: ColumnLayout {
+    Plasmoid.toolTipItem: GridLayout {
+        columns: 2
+
         Repeater {
             model: root.dataModel
-            PlasmaComponents.Label {
-                text: `<b>${modelData.title}</b><br/>${modelData.comment}`
-                wrapMode: "WordWrap"
+            Repeater {
+                model: Object.values(modelData).reverse()
+
+                PlasmaComponents.Label {
+                    text: modelData
+                    font.bold: index === 0
+                    Layout.alignment: index === 0 ? Qt.AlignHCenter : Qt.AlignLeft
+                }
             }
         }
     }
