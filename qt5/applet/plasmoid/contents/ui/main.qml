@@ -13,6 +13,7 @@ Item {
 
     id: root
 
+    Plasmoid.associatedApplication: "uim-pref-qt5"
     Plasmoid.fullRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: Row {
 
