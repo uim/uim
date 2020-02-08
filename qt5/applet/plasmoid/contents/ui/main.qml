@@ -6,6 +6,14 @@ import org.kde.plasma.plasmoid 2.0
 import org.kde.private.uim 1.0
 
 Item {
+    property var dataModel: [{
+        value: '?',
+        title: '???',
+        comment: 'Unable to connect to UIM'
+    }]
+
+    id: root
+
     Plasmoid.fullRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: Row {
 
@@ -13,9 +21,10 @@ Item {
 
         Repeater {
             id: repeater
+            model: root.dataModel
 
             PlasmaComponents.Label {
-                text: modelData
+                text: modelData.value
                 fontSizeMode: "VerticalFit"
                 font.pixelSize: parent.height
 
@@ -36,17 +45,32 @@ Item {
 
                     const props = contents.map(propInfo => propInfo.split(/\s+/));
                     const status = props
-                    .filter(([propType]) => propType === 'branch')
-                    .map(([
+                        .filter(([propType]) => propType === 'branch')
+                        .map(([
                               type,
                               name,
                               value,
-                              longValue,
+                              title,
                               comment
-                          ]) => value);
+                          ]) => ({
+                                     value,
+                                     title,
+                                     comment
+                                 })
+                         );
 
-                    repeater.model = status;
+                    root.dataModel = status;
                 }
+            }
+        }
+    }
+
+    Plasmoid.toolTipItem: ColumnLayout {
+        Repeater {
+            model: root.dataModel
+            PlasmaComponents.Label {
+                text: `<b>${modelData.title}</b><br/>${modelData.comment}`
+                wrapMode: "WordWrap"
             }
         }
     }

@@ -42,6 +42,7 @@ void UimSocket::onSocketActivated(int fd) {
         if (match.hasMatch()) {
             auto charset = match.captured(1);
             qDebug() << "Recived message from UIM, CHARSET:" << charset;
+            qDebug() << s;
 
             // Convert before sending it up
             auto codec = QTextCodec::codecForName(charset.toLatin1());
