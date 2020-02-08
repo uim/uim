@@ -7,29 +7,26 @@
 #include <QString>
 
 /**
- * @brief The MyQuickItem class. Simple QQuickItem plugin example;
+ * @brief UIM Socket.
+ * Creates a socket to UIM and emits a signal on message.
  */
 class UimSocket: public QQuickItem {
     Q_OBJECT
-    Q_PROPERTY(QString text READ text NOTIFY textChanged)
 public:
     UimSocket(QQuickItem* parent = nullptr);
     ~UimSocket();
 
-    QString text() const;
-
 signals:
-
-    void textChanged();
     void messageReceived(const QString &msg);
 
 private:
     QSocketNotifier m_notifier;
 
-    static void onSocketDisconnected();
-
 private slots:
     void onSocketActivated(int socket);
+
+    // Not really a slot, but oh well.
+    static void onSocketDisconnected();
 };
 
 #endif // MYQUICKITEM_H

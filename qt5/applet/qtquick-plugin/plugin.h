@@ -4,7 +4,7 @@
 #include <QtQml/QQmlExtensionPlugin>
 
 /**
- * @brief The MyPlugin class. Simple qml plugin example.
+ * @brief QML plugin to interact with UIM
  */
 
 class UimPlugin: public QQmlExtensionPlugin {
@@ -13,7 +13,7 @@ class UimPlugin: public QQmlExtensionPlugin {
 public:
 
     /**
-     * @brief registerTypes Overrided function that should register all
+     * @brief registerTypes Overrided function that registers all
      * C++ classes exported by this plugin.
      * @param uri           Plugin uri.
      */

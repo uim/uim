@@ -20,7 +20,9 @@ UimSocket::UimSocket(QQuickItem* parent) :
 }
 
 void UimSocket::onSocketDisconnected() {
-    // the socket shouldn't activate if it's disconnected
+    // Since each instance uses a separate socket,
+    // we shouldn't need to explicitly delete the
+    // socket. It just won't activate anymore.
 }
 
 const auto charsetRegex = QRegularExpression(
@@ -55,5 +57,6 @@ void UimSocket::onSocketActivated(int fd) {
 }
 
 UimSocket::~UimSocket() {
+    // When the QML component gets deleted, we definitely should close
     uim_helper_close_client_fd(static_cast<int>(m_notifier.socket()));
 }
