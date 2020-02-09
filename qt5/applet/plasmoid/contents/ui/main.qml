@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.12
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid 2.0
@@ -21,16 +22,30 @@ Item {
         Repeater {
             model: root.dataModel
 
-            Text {
-                text: "a"
-            }
-            Text {
-                text: "b"
-            }
+            Column {
+            property string currentValue: modelData.value
 
-            //            ListView {
-            //                model: modelData.options
-            //            }
+                PlasmaExtras.Heading {
+                    level: 2
+                    text: modelData.title
+                }
+
+                ScrollView {
+
+                    height: Math.min(contentHeight, units.gridUnit * 10)
+                    width: Math.min(contentWidth, units.gridUnit * 30)
+
+                    Column {
+                        Repeater {
+                            model: modelData.options
+                            delegate: PlasmaComponents.RadioButton {
+                                text: `<b>${modelData.title}</b> - ${modelData.comment}`
+                                checked: modelData.value === currentValue
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
