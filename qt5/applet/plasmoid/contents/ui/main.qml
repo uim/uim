@@ -27,7 +27,7 @@ Item {
 
                 PlasmaExtras.Heading {
                     level: 2
-                    text: modelData.title
+                    text: `Choose thing ${index}`
                 }
 
                 ScrollView {

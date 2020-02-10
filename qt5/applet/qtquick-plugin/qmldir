@@ -4,7 +4,7 @@
 # Make sure module name coincides with module import path.
 # For example: path to module is my/plugin/example and module name
 # is my.plugin.example
-module org.kde.private.uim
+module com.github.uim
 
 # Plugin name.
 # Make sure that is the same name as library target in

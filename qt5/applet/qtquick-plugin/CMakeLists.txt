@@ -5,15 +5,15 @@ add_library(
     uim-qtquick-plugin
     SHARED
 
-    ${CMAKE_CURRENT_LIST_DIR}/plugin.h
-    ${CMAKE_CURRENT_LIST_DIR}/uim-socket.h
+    plugin.h
+    uim-socket.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/plugin.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/uim-socket.cpp
+    plugin.cpp
+    uim-socket.cpp
 
     # It's not important to include 'qmldir' or 'plugin.qmltypes' here,
     # but it will make IDEs (such as Qt Creator) to include them in project tree
-    ${CMAKE_CURRENT_LIST_DIR}/qmldir
+    qmldir
 )
 
 include_directories(
@@ -40,9 +40,7 @@ target_compile_options(
 target_link_libraries(
     uim-qtquick-plugin
     PRIVATE
-        ${CMAKE_BINARY_DIR}/../../../uim/.libs/libuim.so
-        ${CMAKE_BINARY_DIR}/../../../uim/.libs/libuim-scm.so
-        -luim -luim-scm
+        -L${CMAKE_BINARY_DIR}/../../../uim/.libs -luim -luim-scm
         Qt5::Core
         Qt5::Quick
         Qt5::Qml
@@ -52,5 +50,5 @@ install(
     TARGETS 
         uim-qtquick-plugin
     DESTINATION 
-        ${QML_INSTALL_DIR}/org/kde/private/uim
+        ${QML_INSTALL_DIR}/com/github/uim
 )
