@@ -1,6 +1,6 @@
 .pragma library
 
-function parseMessage(msg) {
+function getUpdatedModel(msg, oldData) {
     const [msgType, charset, ...contents] = msg.split('\n');
 
     // We only care about these, since this is just a status widget
@@ -8,16 +8,29 @@ function parseMessage(msg) {
         return;
     }
 
-    const newData = [];
-    for (const content of contents) {
-        const [ type, name, value, title, comment ] = content.split('\t');
+    const data =  contents
+    .map(content => content.split('\t'))
+    .map(([
+              type,
+              name,
+              value,
+              title,
+              comment,
+              action,
+              status
+          ]) => ({
+                     value,
+                     title,
+                     comment,
+                     active: status === '*'
+                 })
+         )
+    .filter(d => d.active);
 
-        if (type === 'branch') {
-            newData.push({ name, value, title, options: [] });
-        } else if (type === 'leaf') {
-            newData[newData.length - 1].options.push({ value, title, comment })
-        }
+    // Easy way of doing a deep object comparison
+    if (JSON.stringify(data) === JSON.stringify(oldData)) {
+        return;
     }
 
-    return newData;
+    return data;
 }

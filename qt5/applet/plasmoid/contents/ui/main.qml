@@ -5,7 +5,7 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.extras 2.0 as PlasmaExtras
-import org.kde.private.uim 1.0
+import com.github.uim 1.0
 import "messageProcessor.js" as MessageProcessor
 
 Item {
@@ -17,37 +17,8 @@ Item {
     id: root
 
     Plasmoid.associatedApplication: "uim-pref-qt5"
-    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
-    Plasmoid.fullRepresentation: ColumnLayout {
-        Repeater {
-            model: root.dataModel
-
-            Column {
-            property string currentValue: modelData.value
-
-                PlasmaExtras.Heading {
-                    level: 2
-                    text: `Choose thing ${index}`
-                }
-
-                ScrollView {
-
-                    height: Math.min(contentHeight, units.gridUnit * 10)
-                    width: Math.min(contentWidth, units.gridUnit * 30)
-
-                    Column {
-                        Repeater {
-                            model: modelData.options
-                            delegate: PlasmaComponents.RadioButton {
-                                text: `<b>${modelData.title}</b> - ${modelData.comment}`
-                                checked: modelData.value === currentValue
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    Plasmoid.fullRepresentation:  Plasmoid.compactRepresentation
 
     Plasmoid.compactRepresentation: Item {
         id: compactRoot
@@ -76,32 +47,22 @@ Item {
                 }
             }
         }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: plasmoid.expanded = !plasmoid.expanded
-        }
     }
 
-    Plasmoid.toolTipItem: GridLayout {
-        columns: 2
-
-        Repeater {
-            model: root.dataModel
-            Repeater {
-                model: [modelData.value, modelData.title]
-
-                PlasmaComponents.Label {
-                    text: modelData
-                    font.bold: index === 0
-                    Layout.alignment: index === 0 ? Qt.AlignHCenter : Qt.AlignLeft
-                }
-            }
-        }
-    }
+    Plasmoid.toolTipSubText:
+        root.dataModel.map(e => `<b>${e.title}</b> (${e.value})<br/>${e.comment}<br/>`).join('<br/>')
+    Plasmoid.toolTipTextFormat: Text.RichText
+    Plasmoid.icon: '/usr/share/uim/pixmaps/uim-icon64.png' //TODO: resolve this using uim resources
 
     resources: UimSocket {
-        onMessageReceived: root.dataModel = MessageProcessor.parseMessage(msg)
-                           || root.dataModel
+        id: socket
+        onMessageReceived: {
+            // If the method returns null, it means the new model is the same as old
+            const newModel = MessageProcessor.getUpdatedModel(msg, root.dataModel);
+            if (newModel) {
+                // only set this if model is new, to avoid unnecessary re-paints
+                root.dataModel = newModel;
+            }
+        }
     }
 }

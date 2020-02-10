@@ -52,3 +52,10 @@ install(
     DESTINATION 
         ${QML_INSTALL_DIR}/com/github/uim
 )
+
+install(
+    FILES
+        qmldir
+    DESTINATION
+        ${QML_INSTALL_DIR}/com/github/uim
+)

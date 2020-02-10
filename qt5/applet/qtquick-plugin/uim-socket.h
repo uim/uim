@@ -18,12 +18,15 @@ public:
 signals:
     void messageReceived(const QString &msg);
 
-private:
-    QSocketNotifier m_notifier;
+public slots:
+    void sendMessage(const QString &msg);
 
 private slots:
     void onSocketActivated(int socket);
 
     // Not really a slot, but oh well.
     static void onSocketDisconnected();
+
+private:
+    QSocketNotifier m_notifier;
 };

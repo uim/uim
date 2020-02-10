@@ -42,7 +42,7 @@ void UimSocket::onSocketActivated(int fd) {
         if (match.hasMatch()) {
             auto charset = match.captured(1);
             qDebug() << "Recived message from UIM, CHARSET:" << charset;
-            qDebug() << s;
+//            qDebug() << s;
 
             // Convert before sending it up
             auto codec = QTextCodec::codecForName(charset.toLatin1());
@@ -55,6 +55,13 @@ void UimSocket::onSocketActivated(int fd) {
 
         free(s);
     }
+}
+
+void UimSocket::sendMessage(const QString &msg) {
+    uim_helper_send_message(
+                static_cast<int>(m_notifier.socket()),
+                msg.toLatin1().constData()
+    );
 }
 
 UimSocket::~UimSocket() {
