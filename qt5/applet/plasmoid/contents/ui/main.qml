@@ -11,7 +11,7 @@ import "messageProcessor.js" as MessageProcessor
 Item {
     property var dataModel: [{
             "value": '?',
-            "title": 'Unable to connect to UIM'
+            "title": 'Unable to connect to uim'
         }]
 
     id: root
