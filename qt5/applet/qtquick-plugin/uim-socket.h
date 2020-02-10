@@ -1,5 +1,4 @@
-#ifndef MYQUICKITEM_H
-#define MYQUICKITEM_H
+#pragma once
 
 #include <QtQuick/QQuickPaintedItem>
 #include <QColor>
@@ -28,5 +27,3 @@ private slots:
     // Not really a slot, but oh well.
     static void onSocketDisconnected();
 };
-
-#endif // MYQUICKITEM_H

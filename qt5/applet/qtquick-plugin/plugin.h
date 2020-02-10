@@ -1,5 +1,4 @@
-#ifndef MYPLUGIN_H
-#define MYPLUGIN_H
+#pragma once
 
 #include <QtQml/QQmlExtensionPlugin>
 
@@ -19,5 +18,3 @@ public:
      */
     void registerTypes(const char* uri) override;
 };
-
-#endif // MYPLUGIN_H
