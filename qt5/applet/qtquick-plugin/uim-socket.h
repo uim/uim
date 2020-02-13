@@ -16,9 +16,17 @@ public:
     ~UimSocket();
 
 signals:
+    /**
+     * @brief Some data arrived on the socket from uim.
+     * @param msg Contents of the message.
+     */
     void messageReceived(const QString &msg);
 
 public slots:
+    /**
+     * @brief Write data to uim socket.
+     * @param msg Text to write.
+     */
     void sendMessage(const QString &msg);
 
 private slots:

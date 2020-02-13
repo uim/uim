@@ -19,7 +19,9 @@ function getUpdatedModel(msg, oldData) {
               action,
               status
           ]) => ({
-                     value,
+                     // Spice up the '-' for default input. The regular
+                     // one kind of looks terrible on the ui.
+                     value: value && value.replace(/\-/g, '—'),
                      title,
                      comment,
                      active: status === '*'

@@ -17,34 +17,28 @@ Item {
     id: root
 
     Plasmoid.associatedApplication: "uim-pref-qt5"
-//    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.fullRepresentation:  Plasmoid.compactRepresentation
 
-    Plasmoid.compactRepresentation: Item {
+    Plasmoid.compactRepresentation: Row {
         id: compactRoot
 
-        Layout.minimumWidth: contentRow.width
+        Layout.minimumWidth: childrenRect.width
         Layout.maximumWidth: Layout.minimumWidth
-        Layout.fillHeight: true
-        Layout.fillWidth: false
 
-        Row {
-            id: contentRow
+        Repeater {
+            id: repeater
+            model: root.dataModel
 
-            Repeater {
-                id: repeater
-                model: root.dataModel
+            PlasmaComponents.Label {
+                text: modelData.value
+                font.pixelSize: parent.height
+                fontSizeMode: "Fit"
 
-                PlasmaComponents.Label {
-                    text: modelData.value
-                    font.pixelSize: parent.height
-                    fontSizeMode: "Fit"
+                height: parent.height
+                width: Math.max(paintedWidth, parent.height)
 
-                    height: compactRoot.height
-                    width: Math.max(paintedWidth, parent.height)
-
-                    horizontalAlignment: "AlignHCenter"
-                }
+                horizontalAlignment: "AlignHCenter"
             }
         }
     }

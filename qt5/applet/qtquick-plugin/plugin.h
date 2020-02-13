@@ -5,7 +5,6 @@
 /**
  * @brief QML plugin to interact with UIM
  */
-
 class UimPlugin: public QQmlExtensionPlugin {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
