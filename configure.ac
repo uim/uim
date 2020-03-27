@@ -1836,6 +1836,8 @@ AC_CONFIG_FILES([Makefile
                  qt4/toolbar/uim-toolbar-qt4.pro
                  qt4/toolbar/Makefile
                  qt5/Makefile
+                 qt5/applet/Makefile
+                 qt5/applet/qtquick-plugin/Makefile
                  qt5/candwin/Makefile
                  qt5/candwin/uim-candwin-qt5.pro
                  qt5/chardict/Makefile
@@ -1939,12 +1941,18 @@ if test "x$use_knotify4" = xyes; then
   set +e
 fi
 
-# Generate Makefiles for Qt5 by qmake
+# Generate Makefiles for Qt5 by CMake and qmake
 if test "x$with_qt5" = xyes; then
   if test "x$with_qt5_immodule" = xyes; then
     qt5_immodule_option="DEFINES+=QT5_IMMODULE"
   fi
   set -e
+  # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+  ${CMAKE} \
+    -B ${ac_abs_top_builddir}/qt5/applet \
+    -S ${ac_abs_top_srcdir}/qt5/applet \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+    ${cmake_option}
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \

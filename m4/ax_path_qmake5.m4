@@ -20,7 +20,16 @@
 #   the copyright notice and this notice are preserved.
 
 AC_DEFUN([AX_PATH_QMAKE5], [
-  ax_guessed_qt5_dirs="/usr/lib/qt5/bin:/usr/local/lib/qt5/bin:/usr/qt5/bin:/usr/local/qt5/bin:${QT5DIR}/bin:${QTDIR}/bin"
+  ax_guessed_qt5_dirs="${QTDIR}/bin"
+  ax_guessed_qt5_dirs="${QT5DIR}/bin:${ax_guessed_qt5_dirs}"
+  ax_guessed_qt5_dirs="/usr/local/qt5/bin:${ax_guessed_qt5_dirs}"
+  ax_guessed_qt5_dirs="/usr/qt5/bin:${ax_guessed_qt5_dirs}"
+  ax_guessed_qt5_dirs="/usr/local/lib/qt5/bin:${ax_guessed_qt5_dirs}"
+  ax_guessed_qt5_dirs="/usr/lib/qt5/bin:${ax_guessed_qt5_dirs}"
+  if type dpkg-architecture > /dev/null 2>&1; then
+    multiarch=$(dpkg-archtecture --query DEB_BUILD_MULTIARCH)
+    ax_guessed_qt5_dirs="/usr/lib/${multiarch}/qt5/bin:${ax_guessed_qt5_dirs}"
+  fi
   AC_PROG_EGREP
   AC_PATH_PROGS(_QMAKE5, [qmake-qt5 qmake5], [], ["$PATH:$ax_guessed_qt5_dirs"])
   AC_PATH_PROGS(_QMAKE, [qmake], [], ["$PATH:$ax_guessed_qt5_dirs"])

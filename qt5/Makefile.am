@@ -1,1 +1,9 @@
-SUBDIRS = candwin chardict edittest immodule pref switcher toolbar
+SUBDIRS =					\
+	applet					\
+	candwin					\
+	chardict				\
+	edittest				\
+	immodule				\
+	pref					\
+	switcher				\
+	toolbar
