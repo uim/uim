@@ -1,5 +1,4 @@
 SUBDIRS =					\
-	plasmoid				\
 	qtquick-plugin
 
 EXTRA_DIST =					\
