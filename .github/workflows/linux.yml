@@ -15,14 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Install packages
+      - name: Install dependencies to generate configure
         run: |
           sudo apt update
           sudo apt install -y -V \
-            autoconf-archive \
-            automake1.11 \
-            autotools-dev \
-            intltool
+            autoconf \
+            autopoint \
+            intltool \
+            libtool \
+            pkg-config
       - name: Generate configure
         run: |
           ./autogen.sh
