@@ -27,6 +27,8 @@ jobs:
       - name: Generate configure
         run: |
           ./autogen.sh
+          cd sigscheme
+          ./autogen.sh
       - name: Build Docker image
         run: |
           docker-compose build ${{ matrix.image }}
