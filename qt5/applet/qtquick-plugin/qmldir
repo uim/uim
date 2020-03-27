@@ -10,4 +10,3 @@ module com.github.uim
 # Make sure that is the same name as library target in
 # CMakeLists.txt
 plugin uim-qtquick-plugin
-

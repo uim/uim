@@ -23,7 +23,16 @@
 #   the copyright notice and this notice are preserved.
 
 AC_DEFUN([AX_PATH_QMAKE4], [
-  ax_guessed_qt4_dirs="/usr/lib/qt4/bin:/usr/local/lib/qt4/bin:/usr/qt4/bin:/usr/local/qt4/bin:${QT4DIR}/bin:${QTDIR}/bin"
+  ax_guessed_qt4_dirs="${QTDIR}/bin"
+  ax_guessed_qt4_dirs="${QT4DIR}/bin:${ax_guessed_qt4_dirs}"
+  ax_guessed_qt4_dirs="/usr/local/qt4/bin:${ax_guessed_qt4_dirs}"
+  ax_guessed_qt4_dirs="/usr/qt4/bin:${ax_guessed_qt4_dirs}"
+  ax_guessed_qt4_dirs="/usr/local/lib/qt4/bin:${ax_guessed_qt4_dirs}"
+  ax_guessed_qt4_dirs="/usr/lib/qt4/bin:${ax_guessed_qt4_dirs}"
+  if type dpkg-architecture > /dev/null 2>&1; then
+    multiarch=$(dpkg-archtecture --query DEB_BUILD_MULTIARCH)
+    ax_guessed_qt4_dirs="/usr/lib/${multiarch}/qt4/bin:${ax_guessed_qt4_dirs}"
+  fi
   AC_PROG_EGREP
   AC_PATH_PROGS(_QMAKE4, [qmake-qt4 qmake4], [], ["$PATH:$ax_guessed_qt4_dirs"])
   AC_PATH_PROGS(_QMAKE, [qmake], [], ["$PATH:$ax_guessed_qt4_dirs"])

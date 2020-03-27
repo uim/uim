@@ -518,6 +518,12 @@
 /qt5/Makefile
 /qt5/Makefile.in
 
+# /qt5/applet/
+/qt5/applet/Makefile
+/qt5/applet/Makefile.in
+/qt5/applet/qtquick-plugin/Makefile
+/qt5/applet/qtquick-plugin/Makefile.in
+
 # /qt5/candwin/
 /qt5/candwin/.qmake.stash
 /qt5/candwin/Makefile
