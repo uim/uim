@@ -14,7 +14,9 @@ jobs:
           - build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Install dependencies to generate configure
         run: |
           sudo apt update
