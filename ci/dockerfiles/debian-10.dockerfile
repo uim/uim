@@ -18,6 +18,7 @@ RUN \
     libncurses-dev \
     make \
     pkg-config \
+    ruby \
     sudo \
     tzdata && \
   apt clean && \
