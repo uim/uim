@@ -16,6 +16,7 @@ RUN \
     intltool \
     libedit-dev \
     libncurses-dev \
+    librsvg2-bin \
     make \
     pkg-config \
     ruby \
