@@ -3,7 +3,8 @@
 set -eux
 
 /source/configure \
-  --prefix=/tmp/local \
+  --enable-maintainer-mode \
+  --prefix=/tmp/local
 
 make -j$(nproc) > /dev/null
 
