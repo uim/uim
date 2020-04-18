@@ -133,7 +133,9 @@ keeps the size of it when showing the candidates.")
 (defvar uim-lang-code-alist
   (list 
    '("Japanese"              "Japanese"     euc-jp      "EUC-JP")
-   '("Korean"                "Korean"       euc-kr      "EUC-KR")
+   (if (and uim-emacs (>= emacs-major-version 21))
+     '("Korean"              "Korean"       utf-8       "UTF-8")
+     '("Korean"              "Korean"       euc-kr      "EUC-KR"))
    '("Chinese (Simplified)"  "Chinese-GB"   gb2312      "GB2312")
    '("Chinese (Traditional)" "Chinese-BIG5" big5        "BIG5")
    '("Chinese"               "Chinese-GB"   gb2312      "GB2312")
