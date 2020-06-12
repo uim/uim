@@ -52,6 +52,12 @@
 #include "uim/uim-scm.h"
 #include "qtgettext.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#define UIM_ADD_QT_VERSION(command) command "-qt5"
+#else
+#define UIM_ADD_QT_VERSION(command) command "-qt4"
+#endif
+
 static void launchHelperApplication( const QString &command )
 {
     if ( !command.isEmpty() && !QProcess::startDetached( command ) ) {
@@ -111,7 +117,7 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
             this, SIGNAL(quitToolbar()) );
     m_nr_exec_buttons = 0;
 
-    // toolbar buttons    
+    // toolbar buttons
     addExecImSwitcherButton();
     addExecPrefButton();
     addExecDictButton();
@@ -179,7 +185,7 @@ void QUimHelperToolbar::addExecImSwitcherButton()
 void QUimHelperToolbar::slotExecImSwitcher()
 {
     /* exec uim-im-switcher */
-    launchHelperApplication( "uim-im-switcher-qt4" );
+    launchHelperApplication( UIM_ADD_QT_VERSION("uim-im-switcher") );
 }
 
 void QUimHelperToolbar::addExecPrefButton()
@@ -187,7 +193,7 @@ void QUimHelperToolbar::addExecPrefButton()
     uim_bool isShowPref = uim_scm_symbol_value_bool("toolbar-show-pref-button?");
     if( isShowPref == UIM_FALSE )
         return;
-    
+
     QToolButton * prefButton = new QHelperToolbarButton( this );
     m_layout->addWidget( prefButton );
     if( !m_preficon.isNull() )
@@ -204,7 +210,7 @@ void QUimHelperToolbar::addExecPrefButton()
 void QUimHelperToolbar::slotExecPref()
 {
     /* exec uim-pref-qt4 */
-    launchHelperApplication( "uim-pref-qt4" );
+    launchHelperApplication( UIM_ADD_QT_VERSION("uim-pref") );
 }
 
 void QUimHelperToolbar::addExecDictButton()
@@ -254,7 +260,7 @@ void QUimHelperToolbar::addExecInputPadButton()
 void QUimHelperToolbar::slotExecInputPad()
 {
     /* exec input pad */
-    launchHelperApplication( "uim-chardict-qt4" );
+    launchHelperApplication( UIM_ADD_QT_VERSION("uim-chardict") );
 }
 
 void QUimHelperToolbar::addExecHandwritingInputPadButton()
