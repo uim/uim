@@ -1596,14 +1596,13 @@ im_uim_init(IMUIMContext *uic)
 }
 
 static void
-im_uim_finalize(GObject *obj)
+im_uim_dispose(GObject *obj)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(obj);
 
-  im_uim_set_client_window(GTK_IM_CONTEXT(uic), NULL);
-
-  uic->next->prev = uic->prev;
-  uic->prev->next = uic->next;
+  if (uic->win) {
+    im_uim_set_client_window(GTK_IM_CONTEXT(uic), NULL);
+  }
 
   if (uic->cwin) {
 #if IM_UIM_USE_DELAY
@@ -1633,10 +1632,25 @@ im_uim_finalize(GObject *obj)
     uic->preedit_window = NULL;
   }
 
+  if (uic->slave) {
+    g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)(uintptr_t)commit_cb, uic);
+    g_object_unref(uic->slave);
+    uic->slave = NULL;
+  }
+
+  parent_class->dispose(obj);
+}
+
+static void
+im_uim_finalize(GObject *obj)
+{
+  IMUIMContext *uic = IM_UIM_CONTEXT(obj);
+
+  uic->next->prev = uic->prev;
+  uic->prev->next = uic->next;
+
   uim_release_context(uic->uc);
 
-  g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)(uintptr_t)commit_cb, uic);
-  g_object_unref(uic->slave);
   parent_class->finalize(obj);
 
   if (uic == focused_context) {
@@ -1663,6 +1677,7 @@ im_uim_class_init(GtkIMContextClass *class)
   class->reset = im_uim_reset;
   class->set_use_preedit = im_uim_set_use_preedit;
 
+  object_class->dispose = im_uim_dispose;
   object_class->finalize = im_uim_finalize;
 }
 
