@@ -874,6 +874,8 @@ static void main_loop(void)
       } else {
 
         int i;
+        char master_buf[10];
+        int master_buf_len = 0;
         for (i = 0; i < len; i++) {
           int key_len;
           int *key_and_key_len = escape_sequence2key(buf + i, len - i);
@@ -935,9 +937,11 @@ static void main_loop(void)
             }
             if (raw && !g_start_preedit) {
               if (key_state & UMod_Alt) {
-                write(s_master, buf + i - 1, key_len + 1);
+                memcpy(&master_buf[master_buf_len], buf + i - 1, key_len + 1);
+                master_buf_len += key_len + 1;
               } else {
-                write(s_master, buf + i, key_len);
+                memcpy(&master_buf[master_buf_len], buf + i, key_len);
+                master_buf_len += key_len;
               }
             }
           }
@@ -945,6 +949,7 @@ static void main_loop(void)
           key_state = 0;
           i += (key_len - 1);
         }
+        write(s_master, master_buf, master_buf_len);
       }
     }
 
