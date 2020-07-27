@@ -938,10 +938,10 @@ static void main_loop(void)
             }
             if (raw && !g_start_preedit) {
               if (key_state & UMod_Alt) {
-                memcpy(&master_buf[master_buf_len], buf + i - 1, key_len + 1);
+                memcpy(master_buf + master_buf_len, buf + i - 1, key_len + 1);
                 master_buf_len += key_len + 1;
               } else {
-                memcpy(&master_buf[master_buf_len], buf + i, key_len);
+                memcpy(master_buf + master_buf_len, buf + i, key_len);
                 master_buf_len += key_len;
               }
             }
