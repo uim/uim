@@ -866,7 +866,8 @@ static void main_loop(void)
       buf[len] = '\0';
       debug(("read \"%s\"\n", buf));
 
-      if (len >= 10 && !g_opt.print_key) {
+#define LARGE_INPUT_THRESHOLD 10
+      if (len >= LARGE_INPUT_THRESHOLD && !g_opt.print_key) {
         /* ペーストなどで大量に入力されたときは変換しない */
         if (!g_start_preedit) {
           write(s_master, buf, len);
@@ -874,6 +875,8 @@ static void main_loop(void)
       } else {
 
         int i;
+        char master_buf[LARGE_INPUT_THRESHOLD];
+        int master_buf_len = 0;
         for (i = 0; i < len; i++) {
           int key_len;
           int *key_and_key_len = escape_sequence2key(buf + i, len - i);
@@ -935,9 +938,11 @@ static void main_loop(void)
             }
             if (raw && !g_start_preedit) {
               if (key_state & UMod_Alt) {
-                write(s_master, buf + i - 1, key_len + 1);
+                memcpy(master_buf + master_buf_len, buf + i - 1, key_len + 1);
+                master_buf_len += key_len + 1;
               } else {
-                write(s_master, buf + i, key_len);
+                memcpy(master_buf + master_buf_len, buf + i, key_len);
+                master_buf_len += key_len;
               }
             }
           }
@@ -945,8 +950,10 @@ static void main_loop(void)
           key_state = 0;
           i += (key_len - 1);
         }
+        write(s_master, master_buf, master_buf_len);
       }
     }
+#undef LARGE_INPUT_THRESHOLD
 
 
     /* input from pty (child process) */
