@@ -866,7 +866,8 @@ static void main_loop(void)
       buf[len] = '\0';
       debug(("read \"%s\"\n", buf));
 
-      if (len >= 10 && !g_opt.print_key) {
+#define LARGE_INPUT_THRESHOLD 10
+      if (len >= LARGE_INPUT_THRESHOLD && !g_opt.print_key) {
         /* ペーストなどで大量に入力されたときは変換しない */
         if (!g_start_preedit) {
           write(s_master, buf, len);
@@ -874,7 +875,7 @@ static void main_loop(void)
       } else {
 
         int i;
-        char master_buf[10];
+        char master_buf[LARGE_INPUT_THRESHOLD];
         int master_buf_len = 0;
         for (i = 0; i < len; i++) {
           int key_len;
@@ -952,6 +953,7 @@ static void main_loop(void)
         write(s_master, master_buf, master_buf_len);
       }
     }
+#undef LARGE_INPUT_THRESHOLD
 
 
     /* input from pty (child process) */
