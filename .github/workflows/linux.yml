@@ -10,6 +10,7 @@ jobs:
       matrix:
         image:
           - debian-10-core
+          - debian-10-gtk3
           - debian-10-qt4
           - debian-10-qt5
     runs-on: ubuntu-latest

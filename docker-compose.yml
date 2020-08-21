@@ -8,6 +8,13 @@ services:
       dockerfile: debian-10-core.dockerfile
     volumes:
       - .:/source:delegated
+  debian-10-gtk3:
+    image: uim/uim-debian-10-gtk3
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-10-gtk3.dockerfile
+    volumes:
+      - .:/source:delegated
   debian-10-qt4:
     image: uim/uim-debian-10-qt4
     build:
