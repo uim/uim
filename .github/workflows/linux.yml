@@ -3,15 +3,15 @@ on:
   - push
   - pull_request
 jobs:
-  core:
-    name: Core
+  test:
+    name: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
         image:
-          - debian-10
-        type:
-          - build
+          - debian-10-core
+          - debian-10-qt4
+          - debian-10-qt5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,5 +36,4 @@ jobs:
           docker-compose build ${{ matrix.image }}
       - name: Run Docker image
         run: |
-          docker-compose run ${{ matrix.image }} \
-            /source/ci/${{ matrix.type }}.sh
+          docker-compose run ${{ matrix.image }}

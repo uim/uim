@@ -36,3 +36,5 @@ USER uim
 
 RUN mkdir -p /home/uim/build
 WORKDIR /home/uim/build
+
+CMD /source/ci/build-core.sh

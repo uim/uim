@@ -1,10 +1,24 @@
 version: "3.5"
 
 services:
-  debian-10:
-    image: uim/uim-debian-10
+  debian-10-core:
+    image: uim/uim-debian-10-core
     build:
       context: ci/dockerfiles
-      dockerfile: debian-10.dockerfile
+      dockerfile: debian-10-core.dockerfile
+    volumes:
+      - .:/source:delegated
+  debian-10-qt4:
+    image: uim/uim-debian-10-qt4
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-10-qt4.dockerfile
+    volumes:
+      - .:/source:delegated
+  debian-10-qt5:
+    image: uim/uim-debian-10-qt5
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-10-qt5.dockerfile
     volumes:
       - .:/source:delegated
