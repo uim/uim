@@ -3,10 +3,12 @@
 set -eux
 
 /source/configure \
-  --enable-gnome3-applet \
+  --disable-gnome3-applet \
+  --enable-gnome-applet \
   --enable-maintainer-mode \
   --prefix=/tmp/local \
-  --with-gtk3
+  --with-gtk2 \
+  --without-gtk2
 
 make -j$(nproc) > /dev/null
 
