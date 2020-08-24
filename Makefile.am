@@ -38,5 +38,5 @@ sum:
 	$(SHA1) $(DIST_ARCHIVES) | $(SED) 's/^/SHA1: /' >>$(DIST_SUM_LIST)
 
 tag:
-	git tag -a -m "$(VERSION) has been released!!!" $(VERSION)
-	git push --tags
+	cd "$(srcdir)" && git tag -a -m "$(VERSION) has been released!!!" $(VERSION)
+	cd "$(srcdir)" && git push --tags
