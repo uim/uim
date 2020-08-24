@@ -32,7 +32,7 @@ jobs:
           ./autogen.sh
           cd sigscheme
           ./autogen.sh
-          cd ligcroots
+          cd libgcroots
           ./autogen.sh
       - name: Build Docker image
         run: |
