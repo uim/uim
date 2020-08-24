@@ -32,9 +32,68 @@ jobs:
           ./autogen.sh
           cd sigscheme
           ./autogen.sh
+          cd ligcroots
+          ./autogen.sh
       - name: Build Docker image
         run: |
           docker-compose build ${{ matrix.image }}
       - name: Run Docker image
         run: |
           docker-compose run ${{ matrix.image }}
+
+      # Release
+      - name: Extract tag
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+        id: tag
+        run: |
+          tag=$(echo ${{ github.ref }} | sed -e 's,^refs/tags/,,')
+          echo ::set-output name=name::${tag}
+      - uses: actions/setup-ruby@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+      - name: Extract the news for the current release
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+        run: |
+          ruby extract-news.rb ${{ steps.tag.outputs.name }} | tee news-current.txt
+      - uses: actions/create-release@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+        id: create-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.tag.outputs.name }}
+          body_path: news-current.txt
+      - uses: actions/upload-release-asset@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: uim-${{ steps.tag.outputs.name }}.tar.gz
+          asset_name: uim-${{ steps.tag.outputs.name }}.tar.gz
+          asset_content_type: application/gzip
+      - uses: actions/upload-release-asset@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: uim-${{ steps.tag.outputs.name }}.tar.bz2
+          asset_name: uim-${{ steps.tag.outputs.name }}.tar.bz2
+          asset_content_type: application/x-bzip2
+      - uses: actions/upload-release-asset@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: uim-${{ steps.tag.outputs.name }}.sum
+          asset_name: uim-${{ steps.tag.outputs.name }}.sum
+          asset_content_type: text/plain

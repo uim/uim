@@ -36,3 +36,10 @@ services:
       dockerfile: debian-10-qt5.dockerfile
     volumes:
       - .:/source:delegated
+  debian-10-release:
+    image: uim/uim-debian-10-release
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-10-release.dockerfile
+    volumes:
+      - .:/source:delegated

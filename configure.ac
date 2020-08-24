@@ -1949,7 +1949,7 @@ if test "x$with_qt5" = xyes; then
   set -e
   # FIXME: move CMAKE_CXX_FLAGS into cmake_option
   ${CMAKE} \
-    -B ${ac_abs_top_builddir}/qt5/applet \
+    -B ${ac_abs_top_builddir}/qt5/applet.cmake \
     -S ${ac_abs_top_srcdir}/qt5/applet \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
     ${cmake_option}

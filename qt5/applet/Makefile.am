@@ -7,5 +7,5 @@ EXTRA_DIST =					\
 
 if QT5
 all clean install uninstall:
-	$(MAKE) $(AM_MAKEFLAGS) $@
+	$(MAKE) $(AM_MAKEFLAGS) -C ../applet.cmake $@
 endif
