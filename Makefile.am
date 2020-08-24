@@ -34,8 +34,9 @@ MAINTAINERCLEANFILES = \
 FORCE:
 
 sum:
-	$(MD5) $(DIST_ARCHIVES)  | $(SED) 's/^/MD5:  /' >$(DIST_SUM_LIST)
+	$(MD5) $(DIST_ARCHIVES) | $(SED) 's/^/MD5:  /' >$(DIST_SUM_LIST)
 	$(SHA1) $(DIST_ARCHIVES) | $(SED) 's/^/SHA1: /' >>$(DIST_SUM_LIST)
+	$(SHA256) $(DIST_ARCHIVES) | $(SED) 's/^/SHA256: /' >>$(DIST_SUM_LIST)
 
 tag:
 	cd "$(srcdir)" && git tag -a -m "$(VERSION) has been released!!!" $(VERSION)
