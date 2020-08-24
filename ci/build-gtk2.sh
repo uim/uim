@@ -8,7 +8,7 @@ set -eux
   --enable-maintainer-mode \
   --prefix=/tmp/local \
   --with-gtk2 \
-  --without-gtk2
+  --without-gtk3
 
 make -j$(nproc) > /dev/null
 
