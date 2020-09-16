@@ -242,6 +242,7 @@ save_default_im()
 {
   if (custom_enabled) {
     gchar *im_name = get_selected_im_name();
+    if(!im_name) return;
 
     uim_scm_callf("custom-set-value!",
 		  "yy",
