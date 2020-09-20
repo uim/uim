@@ -76,7 +76,7 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   GdkDevice *device = gtk_get_current_event_device();
 #endif
 
-  // do nothing unless left mouse button is pressed
+  /* do nothing unless left mouse button is pressed */
   if (event->button != 1)
     return FALSE;
 
@@ -383,4 +383,3 @@ main(int argc, char *argv[])
 
   return 0;
 }
-
