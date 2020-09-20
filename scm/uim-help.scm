@@ -59,7 +59,7 @@
 (define (select-url-from-im im)
   (or (and-let* ((i (retrieve-im im))
                  (ret (assoc (im-lang i) toolbar-help-url-locale-alist)))
-         (format "~aUim~a" (cdr ret) (make-wikiname im)))
+         (format "~a/Uim~a" (cdr ret) (make-wikiname im)))
       toolbar-help-url))
 
 (define (uim-help args)
