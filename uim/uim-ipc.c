@@ -202,7 +202,7 @@ uim_ipc_open_command_with_option(pid_t old_pid,
       char *fullpath_command = uim_malloc(cmd_len);
       char *cmd_name = strrchr(command, '/');
 
-      if (cmd_name && cmd_name + 1 != '\0')
+      if (cmd_name && cmd_name[1] != '\0')
 	cmd_name++;
       else
 	cmd_name = (char *)command;
