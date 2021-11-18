@@ -128,8 +128,3 @@ installed-modules.scm: $(SCM_FILES)
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \
 	$(UIM_MODULE_MANAGER_ENV) $(UIM_MODULE_MANAGER) \
 	    --path $(top_builddir)/scm --register $(module_names)
-
-json-parser-expanded.scm: macro-expander.scm json-parser-expander.scm packrat.scm.in
-	if test -n "$(CSI)"; then \
-	    $(CSI) -R syntax-case -q json-parser-expander.scm > json-parser-expanded.scm; \
-	fi

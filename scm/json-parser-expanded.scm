@@ -1,6 +1,12 @@
 ;; automatically generated from "json.scm.in"
 ;; see copyright notice in COPYING file
 
+;; Note that we can't regenerate this file because Chicken 4 or later
+;; doesn't support syntax-case. If we find a bug of this
+;; implementation, we need to modify this file directly or use other
+;; implementation.
+;; See also: https://github.com/uim/uim/issues/26
+
 (define expanded:json-parser
   ((lambda ()
      (let ((any.1539 'undefined)
