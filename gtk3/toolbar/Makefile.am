@@ -36,9 +36,13 @@ $(applet_in_files): $(applet_in_in_files) Makefile
 	$(SED) s,@APPLET_LOCATION@,$(APPLET_LOCATION),g <$< >$@.tmp
 	$(SED) s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
-po_files = $(wildcard $(top_srcdir)/po/*.po)
-$(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files)
-	LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@ 
+if USE_NLS
+  po_files = $(wildcard $(top_srcdir)/po/*.po)
+  $(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files) ;\
+    LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@
+else
+  $(applet_DATA): $(applet_in_files) ; cp $< $@
+endif
 
 DISTCLEANFILES = UimApplet.panel-applet.in UimApplet.panel-applet \
 		 UimApplet.panel-applet.in.tmp
