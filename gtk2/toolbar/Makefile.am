@@ -26,7 +26,11 @@ server_DATA = GNOME_UimApplet.server
 server_in_files = $(server_DATA:=.in)
 server_in_in_files = $(server_in_files:=.in)
 
-@INTLTOOL_SERVER_RULE@
+if USE_NLS
+  @INTLTOOL_SERVER_RULE@
+else
+  %.server: %.server.in ; cp $< $@
+endif
 
 $(server_in_files): $(server_in_in_files) Makefile
 	$(SED) s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp

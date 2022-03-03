@@ -1,4 +1,8 @@
 #!/bin/sh
 
-${AUTORECONF:-autoreconf} --force --install "$@" \
-  && intltoolize --copy --force --automake
+set -e
+
+${AUTORECONF:-autoreconf} --force --install "$@"
+if command -v intltoolize >/dev/null; then
+    intltoolize --copy --force --automake
+fi
