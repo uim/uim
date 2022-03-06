@@ -68,12 +68,6 @@
 static Window getTopWindow(Display *, Window);
 #endif
 
-const char *fontset_zhCN = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, -isas-fangsong ti-medium-r-normal--16-160-72-72-c-160-gb2312.1980-0";
-const char *fontset_zhTW = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, -taipei-fixed-medium-r-normal--16-150-75-75-c-160-big5-0";
-const char *fontset_ja = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, -jis-fixed-medium-r-normal--16-*-75-75-c-160-jisx0208.1983-0, -sony-fixed-medium-r-normal--16-*-*-*-c-80-jisx0201.1976-0";
-const char *fontset_ko = "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1, -daewoo-gothic-medium-r-normal--16-120-100-100-c-160-ksc5601.1987-0";
-
-
 #if HAVE_XFT_UTF8_STRING
 XftFont *gXftFont;
 char *gXftFontName;
@@ -131,7 +125,7 @@ update_default_xftfont() {
 static XFontSet
 create_default_fontset(const char *im_lang, const char *locale) {
     char *orig_locale;
-    const char *name;
+    char *name;
     XFontSet ret;
 
     orig_locale = strdup(setlocale(LC_CTYPE, NULL));
@@ -140,17 +134,21 @@ create_default_fontset(const char *im_lang, const char *locale) {
 	setlocale(LC_CTYPE, locale);
 
     if (!strcmp(im_lang, "ja"))
-	name = fontset_ja;
+	name = uim_scm_symbol_value_str("uim-xim-fontset-ja");
     else if (!strcmp(im_lang, "ko"))
-	name = fontset_ko;
+	name = uim_scm_symbol_value_str("uim-xim-fontset-ko");
     else if (!strcmp(im_lang, "zh_CN"))
-	name = fontset_zhCN;
+	name = uim_scm_symbol_value_str("uim-xim-fontset-zh-cn");
     else if (!strcmp(im_lang, "zh_TW:zh_HK"))
-	name = fontset_zhTW;
+	name = uim_scm_symbol_value_str("uim-xim-fontset-zh-tw");
     else
-	name = fontset_ja; // XXX fallback fontset
+	name = uim_scm_symbol_value_str("uim-xim-fontset-ja"); // XXX fallback fontset
+
+    if (!name)
+	name = strdup("fixed");
 
     ret = get_font_set(name, locale);
+    free(name);
 
     if (strcmp(locale, orig_locale))
 	setlocale(LC_CTYPE, orig_locale);

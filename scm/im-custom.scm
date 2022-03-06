@@ -645,6 +645,47 @@
 		 (lambda ()
 		   uim-xim-use-xft-font?))
 
+(define-custom 'uim-xim-fontset-ja
+  (string-join '(
+    "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1"
+    "-jis-fixed-medium-r-normal--16-*-75-75-c-160-jisx0208.1983-0"
+    "-sony-fixed-medium-r-normal--16-*-*-*-c-80-jisx0201.1976-0"
+    ) ",")
+  '(xim xim-preedit)
+  '(string ".*")
+  (N_ "Fontset for preedit area (ja)")
+  (N_ "long description will be here."))
+
+(define-custom 'uim-xim-fontset-ko
+  (string-join '(
+    "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1"
+    "-daewoo-gothic-medium-r-normal--16-120-100-100-c-160-ksc5601.1987-0"
+    ) ",")
+  '(xim xim-preedit)
+  '(string ".*")
+  (N_ "Fontset for preedit area (ko)")
+  (N_ "long description will be here."))
+
+(define-custom 'uim-xim-fontset-zh-cn
+  (string-join '(
+    "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1"
+    "-isas-fangsong ti-medium-r-normal--16-160-72-72-c-160-gb2312.1980-0"
+    ) ",")
+  '(xim xim-preedit)
+  '(string ".*")
+  (N_ "Fontset for preedit area (zh_CN)")
+  (N_ "long description will be here."))
+
+(define-custom 'uim-xim-fontset-zh-tw
+  (string-join '(
+    "-sony-fixed-medium-r-normal--16-*-*-*-c-80-iso8859-1"
+    "-taipei-fixed-medium-r-normal--16-150-75-75-c-160-big5-0"
+    ) ",")
+  '(xim xim-preedit)
+  '(string ".*")
+  (N_ "Fontset for preedit area (zh_TW)")
+  (N_ "long description will be here."))
+
 ;;
 ;; X Keyboard Extension specific custom
 ;;
