@@ -1365,7 +1365,10 @@ AM_CONDITIONAL(GXX, test "x$ac_cv_cxx_compiler_gnu" = xyes)
 
 if test "x$USE_NLS" = xyes; then
   m4_ifdef([IT_PROG_INTLTOOL],
-           [IT_PROG_INTLTOOL([0.36.3],[no-xml])],
+           [
+dnl Workaround for intltoolize. It requires ^IT_PROG_INTLTOOL.
+IT_PROG_INTLTOOL([0.36.3],[no-xml])
+],
            [AC_MSG_ERROR([nls support requires intltool to be installed.])])
 fi
 
