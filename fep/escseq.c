@@ -73,6 +73,8 @@
 
 #define my_putp(str) tputs(str, 1, my_putchar);
 
+#define EXT_COLOR_256   (1 << 24)
+#define EXT_COLOR_24BIT (1 << 25)
 
 /* 初期化したらTRUE */
 static int s_init = FALSE;
@@ -823,14 +825,26 @@ static const char *attr2escseq(const struct attribute_tag *attr)
     } else {
       add_semicolon = TRUE;
     }
-    snprintf(numstr, sizeof(numstr), "%d", attr->foreground);
+    if (attr->foreground & EXT_COLOR_256) {
+      snprintf(numstr, sizeof(numstr), "38;5;%d", attr->foreground & 255);
+    } else if (attr->foreground & EXT_COLOR_24BIT) {
+      snprintf(numstr, sizeof(numstr), "38;2;%d;%d;%d", attr->foreground & 255, (attr->foreground >> 8) & 255, (attr->foreground >> 16) & 255);
+    } else {
+      snprintf(numstr, sizeof(numstr), "%d", attr->foreground);
+    }
     strlcat(escseq, numstr, sizeof(escseq));
   }
   if (attr->background != FALSE) {
     if (add_semicolon) {
       strlcat(escseq, ";", sizeof(escseq));
     }
-    snprintf(numstr, sizeof(numstr), "%d", attr->background);
+    if (attr->background & EXT_COLOR_256) {
+      snprintf(numstr, sizeof(numstr), "48;5;%d", attr->background & 255);
+    } else if (attr->background & EXT_COLOR_24BIT) {
+      snprintf(numstr, sizeof(numstr), "48;2;%d;%d;%d", attr->background & 255, (attr->background >> 8) & 255, (attr->background >> 16) & 255);
+    } else {
+      snprintf(numstr, sizeof(numstr), "%d", attr->background);
+    }
     strlcat(escseq, numstr, sizeof(escseq));
   }
   strlcat(escseq, "m", sizeof(escseq));
@@ -941,6 +955,36 @@ static void set_attr(const char *str, int len)
             s_attr.foreground = params[i];
           } else if ((40 <= params[i] && params[i] <= 47) || (100 <= params[i] && params[i] <= 107)) {
             s_attr.background = params[i];
+          } else if (params[i] == 38 || params[i] == 48) {
+            int j;
+            int *ext_color_dst = params[i] == 38 ? &s_attr.foreground : &s_attr.background;
+            i++;
+            if (i < nr_params) {
+              if (params[i] == 2 || params[i] == 5) {
+                int ext_param_num;
+                if (params[i] == 5) {
+                  *ext_color_dst = EXT_COLOR_256;
+                  ext_param_num = 1;
+                }
+                else
+                {
+                  *ext_color_dst = EXT_COLOR_24BIT;
+                  ext_param_num = 3;
+                }
+
+                for(j = 0; j < ext_param_num; j++) {
+                  i++;
+                  if (i < nr_params) {
+                    if (0 <= params[i] && params[i] <= 255) {
+                      *ext_color_dst |= params[i] << (j * 8);
+                    }
+                  }
+                  else {
+                    break;
+                  }
+                }
+              }
+            }
           }
         }
       }

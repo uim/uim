@@ -403,10 +403,10 @@ opt_end:
   }
 
   if (attr_uim.foreground == UNDEFINED) {
-    attr_uim.foreground = FALSE;
+    attr_uim.foreground = 39;
   }
   if (attr_uim.background == UNDEFINED) {
-    attr_uim.background = FALSE;
+    attr_uim.background = 49;
   }
 
   if (!isatty(g_win_in)) {
@@ -577,13 +577,13 @@ static int make_color_escseq(const char *instr, struct attribute_tag *attr)
     attr->bold = (attr->foreground & 8) == 8;
     attr->foreground = (attr->foreground & 7) + 30;
   } else {
-    attr->foreground = FALSE;
+    attr->foreground = 39;
   }
   if (attr->background != UNDEFINED) {
     attr->blink = (attr->background & 8) == 8;
     attr->background = (attr->background & 7) + 40;
   } else {
-    attr->background = FALSE;
+    attr->background = 49;
   }
   return EXIT_SUCCESS;
 }
