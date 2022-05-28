@@ -970,15 +970,10 @@ static void set_attr(const char *str, int len)
                   nr_ext_params = 3;
                 }
 
-                for (j = 0; j < nr_ext_params; j++) {
+                for (j = 0; j < nr_ext_params && i < nr_params; j++) {
                   i++;
-                  if (i < nr_params) {
-                    if (0 <= params[i] && params[i] <= 255) {
-                      *ext_color_dst |= params[i] << (j * 8);
-                    }
-                  }
-                  else {
-                    break;
+                  if (0 <= params[i] && params[i] <= 255) {
+                    *ext_color_dst |= params[i] << (j * 8);
                   }
                 }
               }
