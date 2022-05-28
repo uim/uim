@@ -783,7 +783,7 @@ static void change_background_attr(struct attribute_tag *from, struct attribute_
  */
 static const char *attr2escseq(const struct attribute_tag *attr)
 {
-  static char escseq[20];
+  static char escseq[40];
   char numstr[20];
   int add_semicolon = FALSE;
   if (!attr->underline && !attr->standout && !attr->bold && !attr->blink
