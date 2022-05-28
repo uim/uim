@@ -964,13 +964,13 @@ static void set_attr(const char *str, int len)
                 int nr_ext_params;
                 if (params[i] == 5) {
                   *ext_color_dst = EXT_COLOR_256;
-                  ext_param_num = 1;
+                  nr_ext_params = 1;
                 } else {
                   *ext_color_dst = EXT_COLOR_24BIT;
-                  ext_param_num = 3;
+                  nr_ext_params = 3;
                 }
 
-                for (j = 0; j < ext_param_num; j++) {
+                for (j = 0; j < nr_ext_params; j++) {
                   i++;
                   if (i < nr_params) {
                     if (0 <= params[i] && params[i] <= 255) {
