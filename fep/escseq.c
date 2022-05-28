@@ -970,7 +970,7 @@ static void set_attr(const char *str, int len)
                   ext_param_num = 3;
                 }
 
-                for(j = 0; j < ext_param_num; j++) {
+                for (j = 0; j < ext_param_num; j++) {
                   i++;
                   if (i < nr_params) {
                     if (0 <= params[i] && params[i] <= 255) {
