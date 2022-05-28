@@ -965,9 +965,7 @@ static void set_attr(const char *str, int len)
                 if (params[i] == 5) {
                   *ext_color_dst = EXT_COLOR_256;
                   ext_param_num = 1;
-                }
-                else
-                {
+                } else {
                   *ext_color_dst = EXT_COLOR_24BIT;
                   ext_param_num = 3;
                 }
