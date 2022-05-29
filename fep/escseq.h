@@ -34,6 +34,9 @@
 #ifndef UIM_FEP_ESCSEQ_H
 #define UIM_FEP_ESCSEQ_H
 
+#define EXT_COLOR_256   (1 << 24)
+#define EXT_COLOR_24BIT (1 << 25)
+
 struct point_tag {
   int row;
   int col;

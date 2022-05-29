@@ -574,14 +574,18 @@ static int make_color_escseq(const char *instr, struct attribute_tag *attr)
     }
   }
   if (attr->foreground != UNDEFINED) {
-    attr->bold = (attr->foreground & 8) == 8;
-    attr->foreground = (attr->foreground & 7) + 30;
+    if ((attr->foreground & (EXT_COLOR_256 | EXT_COLOR_24BIT)) == 0) {
+      attr->bold = (attr->foreground & 8) == 8;
+      attr->foreground = (attr->foreground & 7) + 30;
+    }
   } else {
     attr->foreground = 39;
   }
   if (attr->background != UNDEFINED) {
-    attr->blink = (attr->background & 8) == 8;
-    attr->background = (attr->background & 7) + 40;
+    if ((attr->background & (EXT_COLOR_256 | EXT_COLOR_24BIT)) == 0) {
+      attr->blink = (attr->background & 8) == 8;
+      attr->background = (attr->background & 7) + 40;
+    }
   } else {
     attr->background = 49;
   }
@@ -590,6 +594,7 @@ static int make_color_escseq(const char *instr, struct attribute_tag *attr)
 
 static int colorname2n(const char *name)
 {
+  int r, g, b, n, nr_bytes;
   if (strcasecmp(name, "black") == 0 || strcasecmp(name, "k") == 0) {
     return 0;
   }
@@ -637,6 +642,12 @@ static int colorname2n(const char *name)
   }
   if (strcasecmp(name, "lightwhite") == 0 || strcasecmp(name, "lw") == 0) {
     return 15;
+  }
+  if ((sscanf(name, "%3d,%3d,%3d%n", &r, &g, &b, &nr_bytes) == 3 || (sscanf(name, "%2x%2x%2x%n", &r, &g, &b, &nr_bytes) == 3 && nr_bytes == 6)) && strlen(name) == nr_bytes) {
+    return EXT_COLOR_24BIT | r | (g << 8) | (b << 16);
+  }
+  if ((sscanf(name, "0x%2x%n", &n, &nr_bytes) == 1 || sscanf(name, "0X%2x%n", &n, &nr_bytes) == 1 || sscanf(name, "%3d%n", &n, &nr_bytes) == 1) && strlen(name) == nr_bytes) {
+    return EXT_COLOR_256 | n;
   }
   return UNDEFINED;
 }
@@ -1258,6 +1269,31 @@ static void usage(void)
       usersockname(NULL),
       "-t <sec>                                  key timeout\n"
       "-C [<foreground color>]:[<background color>]\n"
+      "  foreground color and background color format:\n"
+      "    black(k)\n"
+      "    red(r)\n"
+      "    green(g)\n"
+      "    yellow(y)\n"
+      "    blue(b)\n"
+      "    magenta(m)\n"
+      "    cyan(c)\n"
+      "    white(w)\n"
+      "    lightblack(lk)\n"
+      "    lightred(lr)\n"
+      "    lightgreen(lg)\n"
+      "    lightyellow(ly)\n"
+      "    lightblue(lb)\n"
+      "    lightmagenta(lm)\n"
+      "    lightcyan(lc)\n"
+      "    lightwhite(lw)\n"
+      "\n"
+      "    256 colors:\n"
+      "      0 to 255\n"
+      "      0x00 to 0xff\n"
+      "\n"
+      "    24 bit colors:\n"
+      "      0,0,0 to 255,255,255 (R,G,B)\n"
+      "      000000 to ffffff (RGB)\n"
       "-c                                        reverse cursor\n"
       "-i                                        use cursor_invisible(civis)\n"
       "-o                                        on the spot\n"

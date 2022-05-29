@@ -73,9 +73,6 @@
 
 #define my_putp(str) tputs(str, 1, my_putchar);
 
-#define EXT_COLOR_256   (1 << 24)
-#define EXT_COLOR_24BIT (1 << 25)
-
 /* 初期化したらTRUE */
 static int s_init = FALSE;
 /* 現在のカーソル位置 */
@@ -848,9 +845,9 @@ static const char *attr2escseq(const struct attribute_tag *attr)
     strlcat(escseq, numstr, sizeof(escseq));
   }
   strlcat(escseq, "m", sizeof(escseq));
-  debug2(("attr2escseq underline = %d standout = %d bold = %d blink = %d fore = %d back = %d\n",
+  debug2(("attr2escseq underline = %d standout = %d bold = %d blink = %d fore = %d(0x%x) back = %d(0x%x)\n",
       attr->underline, attr->standout, attr->bold, attr->blink,
-      attr->foreground, attr->background));
+      attr->foreground, attr->foreground, attr->background, attr->background));
   debug2(("attr2escseq = %s\n", escseq));
   return escseq;
 }
