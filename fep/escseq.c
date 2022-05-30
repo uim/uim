@@ -73,7 +73,6 @@
 
 #define my_putp(str) tputs(str, 1, my_putchar);
 
-
 /* 初期化したらTRUE */
 static int s_init = FALSE;
 /* 現在のカーソル位置 */
@@ -781,7 +780,7 @@ static void change_background_attr(struct attribute_tag *from, struct attribute_
  */
 static const char *attr2escseq(const struct attribute_tag *attr)
 {
-  static char escseq[20];
+  static char escseq[40];
   char numstr[20];
   int add_semicolon = FALSE;
   if (!attr->underline && !attr->standout && !attr->bold && !attr->blink
@@ -823,20 +822,32 @@ static const char *attr2escseq(const struct attribute_tag *attr)
     } else {
       add_semicolon = TRUE;
     }
-    snprintf(numstr, sizeof(numstr), "%d", attr->foreground);
+    if (attr->foreground & EXT_COLOR_256) {
+      snprintf(numstr, sizeof(numstr), "38;5;%d", attr->foreground & 255);
+    } else if (attr->foreground & EXT_COLOR_24BIT) {
+      snprintf(numstr, sizeof(numstr), "38;2;%d;%d;%d", attr->foreground & 255, (attr->foreground >> 8) & 255, (attr->foreground >> 16) & 255);
+    } else {
+      snprintf(numstr, sizeof(numstr), "%d", attr->foreground);
+    }
     strlcat(escseq, numstr, sizeof(escseq));
   }
   if (attr->background != FALSE) {
     if (add_semicolon) {
       strlcat(escseq, ";", sizeof(escseq));
     }
-    snprintf(numstr, sizeof(numstr), "%d", attr->background);
+    if (attr->background & EXT_COLOR_256) {
+      snprintf(numstr, sizeof(numstr), "48;5;%d", attr->background & 255);
+    } else if (attr->background & EXT_COLOR_24BIT) {
+      snprintf(numstr, sizeof(numstr), "48;2;%d;%d;%d", attr->background & 255, (attr->background >> 8) & 255, (attr->background >> 16) & 255);
+    } else {
+      snprintf(numstr, sizeof(numstr), "%d", attr->background);
+    }
     strlcat(escseq, numstr, sizeof(escseq));
   }
   strlcat(escseq, "m", sizeof(escseq));
-  debug2(("attr2escseq underline = %d standout = %d bold = %d blink = %d fore = %d back = %d\n",
+  debug2(("attr2escseq underline = %d standout = %d bold = %d blink = %d fore = %d(0x%x) back = %d(0x%x)\n",
       attr->underline, attr->standout, attr->bold, attr->blink,
-      attr->foreground, attr->background));
+      attr->foreground, attr->foreground, attr->background, attr->background));
   debug2(("attr2escseq = %s\n", escseq));
   return escseq;
 }
@@ -941,6 +952,29 @@ static void set_attr(const char *str, int len)
             s_attr.foreground = params[i];
           } else if ((40 <= params[i] && params[i] <= 47) || (100 <= params[i] && params[i] <= 107)) {
             s_attr.background = params[i];
+          } else if (params[i] == 38 || params[i] == 48) {
+            int j;
+            int *ext_color_dst = params[i] == 38 ? &s_attr.foreground : &s_attr.background;
+            i++;
+            if (i < nr_params) {
+              if (params[i] == 2 || params[i] == 5) {
+                int nr_ext_params;
+                if (params[i] == 5) {
+                  *ext_color_dst = EXT_COLOR_256;
+                  nr_ext_params = 1;
+                } else {
+                  *ext_color_dst = EXT_COLOR_24BIT;
+                  nr_ext_params = 3;
+                }
+
+                for (j = 0; j < nr_ext_params && i < nr_params; j++) {
+                  i++;
+                  if (0 <= params[i] && params[i] <= 255) {
+                    *ext_color_dst |= params[i] << (j * 8);
+                  }
+                }
+              }
+            }
           }
         }
       }
