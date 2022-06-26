@@ -64,6 +64,12 @@
 #define _KEY_DOWN  "\033[B"
 #define _KEY_RIGHT "\033[C"
 #define _KEY_LEFT  "\033[D"
+#define _KEY_FOCUS_IN   "\033[I"
+#define _KEY_FOCUS_OUT  "\033[O"
+
+#define MOD_SHIFT 1
+#define MOD_ALT   2
+#define MOD_CTRL  4
 
 static int strcmp_prefix(const char *str, int str_len, const char *prefix);
 
@@ -116,19 +122,22 @@ int tty2key_state(char key)
 }
 
 /*
- * strに対応するキーコードとエスケープシーケンスの長さを返す
+ * strに対応するキーコードとエスケープシーケンスの長さと修飾キーを返す
  * 見つからなかったらUKey_Escapeと、途中まで一致しているエスケープシー
  * ケンスがある場合はTRUEない場合はFALSEを返す
  */
 int *escape_sequence2key(const char *str, int str_len)
 {
-  static int rval[2];
+  static int rval[3];
   int len;
   int not_enough = 0;
-  if        (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_UP      )), len > 0) { rval[0] = UKey_Up;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_DOWN    )), len > 0) { rval[0] = UKey_Down;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_RIGHT   )), len > 0) { rval[0] = UKey_Right;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_LEFT    )), len > 0) { rval[0] = UKey_Left;
+  rval[2] = 0;
+  if        (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_UP       )), len > 0) { rval[0] = UKey_Up;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_DOWN     )), len > 0) { rval[0] = UKey_Down;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_RIGHT    )), len > 0) { rval[0] = UKey_Right;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_LEFT     )), len > 0) { rval[0] = UKey_Left;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_FOCUS_IN )), len > 0) { rval[0] = UKey_Focus;
+  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_FOCUS_OUT)), len > 0) { rval[0] = UKey_Focus;
   } else if (key_backspace != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_backspace)), len > 0)) { rval[0] = UKey_Backspace;
   } else if (key_dc        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_dc       )), len > 0)) { rval[0] = UKey_Delete;    
   } else if (key_left      != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_left     )), len > 0)) { rval[0] = UKey_Left;
@@ -153,8 +162,27 @@ int *escape_sequence2key(const char *str, int str_len)
   } else if (key_f11       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f11      )), len > 0)) { rval[0] = UKey_F11;
   } else if (key_f12       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f12      )), len > 0)) { rval[0] = UKey_F12;
   } else {
-    rval[0] = UKey_Other;
-    len = not_enough < 0 ? TRUE : FALSE;
+    unsigned char key, mod;
+    len = 0;
+    if ((sscanf(str, "\033[%hhu;%hhuu%n",    &key, &mod, &len) == 2 && len > 0) ||
+        (sscanf(str, "\033[27;%hhu;%hhu~%n", &mod, &key, &len) == 2 && len > 0)) {
+      rval[0] = tty2key(key);
+      if (mod > 1) {
+        mod--;
+        if (mod & MOD_SHIFT) {
+          rval[2] |= UMod_Shift;
+        }
+        if (mod & MOD_CTRL) {
+          rval[2] |= UMod_Control;
+        }
+        if (mod & MOD_ALT) {
+          rval[2] |= UMod_Alt;
+        }
+      }
+    } else {
+      rval[0] = UKey_Other;
+      len = not_enough < 0 ? TRUE : FALSE;
+    }
   }
   rval[1] = len;
   return rval;
