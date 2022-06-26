@@ -82,6 +82,10 @@ struct opt_tag {
   int print_key;
 };
 
+enum {
+  UKey_Focus = UKey_Other + 1,
+};
+
 extern struct opt_tag g_opt;
 extern int g_win_in;
 extern int g_win_out;

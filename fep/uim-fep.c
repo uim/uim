@@ -877,7 +877,7 @@ static void main_loop(void)
       buf[len] = '\0';
       debug(("read \"%s\"\n", buf));
 
-#define LARGE_INPUT_THRESHOLD 10
+#define LARGE_INPUT_THRESHOLD 13
       if (len >= LARGE_INPUT_THRESHOLD && !g_opt.print_key) {
         /* ペーストなどで大量に入力されたときは変換しない */
         if (!g_start_preedit) {
@@ -888,10 +888,16 @@ static void main_loop(void)
         int i;
         char master_buf[LARGE_INPUT_THRESHOLD];
         int master_buf_len = 0;
+        int key_continue = FALSE;
+        int start_i;
         for (i = 0; i < len; i++) {
           int key_len;
           int *key_and_key_len = escape_sequence2key(buf + i, len - i);
           int key = key_and_key_len[0];
+          if (!key_continue) {
+            start_i = i;
+          }
+          key_continue = TRUE;
 
           if (key == UKey_Other) {
 
@@ -936,30 +942,31 @@ static void main_loop(void)
 
           } else { /* key != UKey_Other */
             key_len = key_and_key_len[1];
+            key_state |= key_and_key_len[2];
           }
 
           if (g_opt.print_key) {
             print_key(key, key_state);
           } else {
-            int raw = press_key(key, key_state);
-            if (!draw()) {
-              if (g_opt.status_type == BACKTICK) {
-                update_backtick();
+            int raw;
+            if (key != UKey_Focus) {
+              raw = press_key(key, key_state);
+              if (!draw()) {
+                if (g_opt.status_type == BACKTICK) {
+                  update_backtick();
+                }
               }
             }
-            if (raw && !g_start_preedit) {
-              if (key_state & UMod_Alt) {
-                memcpy(master_buf + master_buf_len, buf + i - 1, key_len + 1);
-                master_buf_len += key_len + 1;
-              } else {
-                memcpy(master_buf + master_buf_len, buf + i, key_len);
-                master_buf_len += key_len;
-              }
+            if ((key == UKey_Focus) || (raw && !g_start_preedit)) {
+              int cpy_len = key_len + (i - start_i);
+              memcpy(master_buf + master_buf_len, buf + start_i, cpy_len);
+              master_buf_len += cpy_len;
             }
           }
 
           key_state = 0;
           i += (key_len - 1);
+          key_continue = FALSE;
         }
         write(s_master, master_buf, master_buf_len);
       }
