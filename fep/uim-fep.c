@@ -949,7 +949,7 @@ static void main_loop(void)
             print_key(key, key_state);
           } else {
             int raw;
-            if(key != UKey_Focus) {
+            if (key != UKey_Focus) {
               raw = press_key(key, key_state);
               if (!draw()) {
                 if (g_opt.status_type == BACKTICK) {
