@@ -70,7 +70,7 @@ Overview of changes from 1.8.8 to 1.8.9
   - uim-fep
     * Add support for 24bit color.
       [GitHub #180][Patch by yamam]
-    * Add support for neovim.
+    * Add support for Neovim.
       [GitHub #180][Patch by yamam]
 
 

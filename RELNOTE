@@ -15,8 +15,10 @@ Bug tracking system: https://github.com/uim/uim/issues?state=open
 What's New in 1.8.9
 -------------------
 
-  - Fix build error with --with-libgcroots=installed
-  - Fix build error of uim-qt5
+  - Improve build processs
+  - Add support for newer Emacs
+  - Improve Qt support
+  - Improve uim-fep to support WSL and Neovim
 
 See NEWS for the fully detailed changes.
 
