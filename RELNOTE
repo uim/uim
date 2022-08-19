@@ -12,6 +12,15 @@ Homepage:            https://github.com/uim/uim
 Mailinglist:         uim-en@googlegroups.com
 Bug tracking system: https://github.com/uim/uim/issues?state=open
 
+What's New in 1.8.9
+-------------------
+
+  - Fix build error with --with-libgcroots=installed
+  - Fix build error of uim-qt5
+
+See NEWS for the fully detailed changes.
+
+
 What's New in 1.8.8
 -------------------
 

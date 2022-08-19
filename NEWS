@@ -1,3 +1,79 @@
+Overview of changes from 1.8.8 to 1.8.9
+=======================================
+* Fixes
+  - build
+    * Fix a portability bug in configure.ac.
+      [GitHub #133][Patch by OBATA Akio]
+    * Fix a bug that wrong libedit is detected.
+      [GitHub #134][Patch by OBATA Akio]
+    * Add support for building with clang.
+      [GitHub #135][Patch by Haelwenn Monnier]
+    * Remove a C++ style comment.
+      [GitHub #137][Patch by OBATA Akio]
+    * Improve term related potability.
+      [GitHub #138][Patch by OBATA Akio]
+    * Fix a build issue on NetBSD 8.
+      [GitHub #139][Patch by OBATA Akio]
+    * Don't use needless -fno-strict-aliasing for GCC 5 or later.
+      [GitHub #139][Patch by OBATA Akio]
+    * Add workaround intltoolize.
+      [GitHub #179][Reported by calimeroteknik]
+  - uim.el
+    * Fix a bug that C-x keys aren't usable with Emacs 26.
+  - uim-pref
+    * Fix a bug that GTK based uim-pref is always used.
+      [GitHub #151][Patch by OBATA Akio]
+  - uim-qt5
+    * Fix a crash bug by losing focus.
+      [GitHub #148][Reported by ThisIsPIRI]
+  - uim-fep
+    * Fix a build error by missing "#include <termious.h>".
+      [GitHub #152][Patch by OBATA Akio]
+    * Fix a bug that "wsl" command is hang on uim-fep.
+      [GitHub #159][Patch by yamam]
+  - uim-gtk3
+    * Suppress a "instance has no handler with id" warning.
+      [GitHub #158][Reported by isaki68k]
+  - uim-toolbar-gtk3
+    * Fix a crash bug when input method list is empty.
+      [GitHub #162][Reported by 0x005c]
+    * Fix a bug that toolbar is grabbed by right click.
+      [GitHub #163][Reported by 0x005c]
+  - uim-help
+    * Fix a bug that wrong URL is opened.
+      [GitHub #164][Reported by 0x005c]
+  - uim-ipc
+    * Fix a bug that wrong character is compared.
+      [GitHub #169][Reported by Izumi Tsutsui]
+
+* Enhancements
+  - build
+    * Drop support for regenerating scm/json-parser-expanded.scm.
+      [GitHub #26][Reported by Reuben Thomas]
+    * Add support for buliding with --disable-nls without intltool.
+      [GitHub #176][Patch by atheik]
+  - uim-qt5
+    * Add Plasma 5 applet.
+      [GitHub #154][Patch by Lasath Fernando]
+    * Add support for uim-pref.
+      [GitHub #157][Patch by ahigerd]
+  - uim.el
+    * Add support for Emacs 27.1.
+      [GitHub #141][Patch by WJ Liu]
+    * Change Korean encoding to utf-8 from euc-kr.
+  - uim-tcode
+    * Add support for Katakana-mode.
+      [GitHub #165][Patch by 0x005c]
+  - uim-xim
+    * Add support for customizing fontsets.
+      [GitHub #177][Patch by atheik]
+  - uim-fep
+    * Add support for 24bit color.
+      [GitHub #180][Patch by yamam]
+    * Add support for neovim.
+      [GitHub #180][Patch by yamam]
+
+
 Overview of changes from 1.8.7 to 1.8.8
 =======================================
 * Fixes
