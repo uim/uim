@@ -1582,6 +1582,7 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
       numlst_ = CDR(numlst_);
     }
   }
+  str[newlen] = '\0';
 
   return MAKE_STR_DIRECTLY(str);
 }
