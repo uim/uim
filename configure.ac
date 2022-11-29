@@ -595,7 +595,7 @@ if test "x$ac_cv_func_snprintf" = xyes; then
 	AC_RUN_IFELSE(
 		[AC_LANG_SOURCE([[
 #include <stdio.h>
-int main(void){char b[5];snprintf(b,5,"123456789");exit(b[4]!='\0');}
+int main(void){char b[5];snprintf(b,5,"123456789");return b[4]!='\0';}
 		]])],
 		[AC_MSG_RESULT(yes)],
 		[
