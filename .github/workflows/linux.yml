@@ -30,10 +30,13 @@ jobs:
       - name: Generate configure
         run: |
           ./autogen.sh
-          cd sigscheme
+          pushd sigscheme
           ./autogen.sh
-          cd libgcroots
+          pushd libgcroots
           ./autogen.sh
+          popd
+          popd
+          chmod -R go+rw .
       - name: Build Docker image
         run: |
           docker-compose build ${{ matrix.image }}
