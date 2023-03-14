@@ -10,6 +10,6 @@ set -eux
   --with-gtk2 \
   --without-gtk3
 
-make -j$(nproc) > /dev/null
+make > /dev/null
 
 sudo make install

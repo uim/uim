@@ -8,6 +8,6 @@ set -eux
   --with-qt5 \
   --with-qt5-immodule
 
-make -j$(nproc) > /dev/null
+make > /dev/null
 
 sudo make install

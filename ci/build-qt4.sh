@@ -9,6 +9,6 @@ set -eux
   --with-qt4-immodule \
   --with-qt4-qt3-support
 
-make -j$(nproc) > /dev/null
+make > /dev/null
 
 sudo make install

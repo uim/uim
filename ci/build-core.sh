@@ -6,6 +6,6 @@ set -eux
   --enable-maintainer-mode \
   --prefix=/tmp/local
 
-make -j$(nproc) # > /dev/null
+make # > /dev/null
 
 sudo make install
