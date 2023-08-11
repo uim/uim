@@ -1,4 +1,4 @@
-FROM debian:11
+FROM debian:12
 
 RUN \
   echo "debconf debconf/frontend select Noninteractive" | \
@@ -11,35 +11,16 @@ RUN \
 RUN \
   apt update -qq && \
   apt install -y \
-    asciidoc \
     cmake \
     extra-cmake-modules \
     g++ \
-    gauche-dev \
     gcc \
     intltool \
-    libanthy-dev \
-    libcanna1g-dev \
-    libcurl4-gnutls-dev \
-    libeb16-dev \
     libedit-dev \
-    libexpat1-dev \
-    libffi-dev \
-    libgtk-3-bin \
-    libgtk-3-dev \
-    libgtk2.0-bin \
-    libgtk2.0-dev \
     libkf5plasma-dev \
-    libm17n-dev \
     libncurses-dev \
-    libnotify-dev \
-    libpanel-applet-dev \
-    libqt4-dev \
     libqt5x11extras5-dev \
     librsvg2-bin \
-    libsqlite3-dev \
-    libssl-dev \
-    libwnn-dev \
     libx11-dev \
     make \
     pkg-config \
@@ -67,4 +48,4 @@ WORKDIR /home/uim/build
 
 ENV QT_SELECT=qt5
 
-CMD /source/ci/build-release.sh
+CMD /source/ci/build-qt5.sh

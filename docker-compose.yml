@@ -1,45 +1,31 @@
 version: "3.5"
 
 services:
-  debian-11-core:
-    image: uim/uim-debian-11-core
+  debian-12-core:
+    image: uim/uim-debian-12-core
     build:
       context: ci/dockerfiles
-      dockerfile: debian-11-core.dockerfile
+      dockerfile: debian-12-core.dockerfile
     volumes:
       - .:/source:delegated
-  debian-11-gtk2:
-    image: uim/uim-debian-11-gtk2
+  debian-12-gtk3:
+    image: uim/uim-debian-12-gtk3
     build:
       context: ci/dockerfiles
-      dockerfile: debian-11-gtk2.dockerfile
+      dockerfile: debian-12-gtk3.dockerfile
     volumes:
       - .:/source:delegated
-  debian-11-gtk3:
-    image: uim/uim-debian-11-gtk3
+  debian-12-qt5:
+    image: uim/uim-debian-12-qt5
     build:
       context: ci/dockerfiles
-      dockerfile: debian-11-gtk3.dockerfile
+      dockerfile: debian-12-qt5.dockerfile
     volumes:
       - .:/source:delegated
-  debian-11-qt4:
-    image: uim/uim-debian-11-qt4
+  debian-12-release:
+    image: uim/uim-debian-12-release
     build:
       context: ci/dockerfiles
-      dockerfile: debian-11-qt4.dockerfile
-    volumes:
-      - .:/source:delegated
-  debian-11-qt5:
-    image: uim/uim-debian-11-qt5
-    build:
-      context: ci/dockerfiles
-      dockerfile: debian-11-qt5.dockerfile
-    volumes:
-      - .:/source:delegated
-  debian-11-release:
-    image: uim/uim-debian-11-release
-    build:
-      context: ci/dockerfiles
-      dockerfile: debian-11-release.dockerfile
+      dockerfile: debian-12-release.dockerfile
     volumes:
       - .:/source:delegated

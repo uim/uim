@@ -9,10 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - debian-11-core
-          - debian-11-gtk3
-          - debian-11-qt4
-          - debian-11-qt5
+          - debian-12-core
+          - debian-12-gtk3
+          - debian-12-qt5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
