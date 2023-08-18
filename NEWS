@@ -15,7 +15,7 @@ Overview of changes from 1.8.8 to 1.8.9
     * Fix a build issue on NetBSD 8.
       [GitHub #139][Patch by OBATA Akio]
     * Don't use needless -fno-strict-aliasing for GCC 5 or later.
-      [GitHub #139][Patch by OBATA Akio]
+      [GitHub #140][Patch by OBATA Akio]
     * Add workaround intltoolize.
       [GitHub #179][Reported by calimeroteknik]
   - uim.el
