@@ -426,6 +426,10 @@ AX_CFLAGS_GCC_OPTION([-Wno-overlength-strings])
 # Disable the problematic preprocessing on Mac OS X
 AX_CFLAGS_GCC_OPTION([-no-cpp-precomp])
 
+# Workaround for NetBSD-i386-9.1 with gcc-7.5.0 and -O2.
+# See also: https://github.com/uim/uim/issues/140#issuecomment-752380919
+AX_CFLAGS_GCC_OPTION([-fno-inline-small-functions])
+
 # Deprecated autoconf macro used in AX_CXXFLAGS_GCC_OPTION.
 AC_DEFUN([AC_LANG_CXX], [AC_LANG([C++])])
 
