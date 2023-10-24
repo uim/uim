@@ -76,6 +76,7 @@ AC_MSG_CHECKING([OpenSSL header version])
 AC_RUN_IFELSE(
 	[AC_LANG_SOURCE([[
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <openssl/opensslv.h>
 #define DATA "conftest.sslincver"
@@ -112,6 +113,7 @@ AC_MSG_CHECKING([OpenSSL library version])
 AC_RUN_IFELSE(
 	[AC_LANG_SOURCE([[
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
@@ -156,7 +158,9 @@ AC_ARG_WITH(openssl-header-check,
 AC_MSG_CHECKING([whether OpenSSL's headers match the library])
 AC_RUN_IFELSE(
 	[AC_LANG_SOURCE([[
+#include <stdlib.h>
 #include <string.h>
+#include <openssl/crypto.h>
 #include <openssl/opensslv.h>
 int main(void) { exit(SSLeay() == OPENSSL_VERSION_NUMBER ? 0 : 1); }
 	]])],
@@ -217,11 +221,13 @@ int main(void) { DTLSv1_method(); }
 	]
 )
 
+# Use the return value from OpenSSL_version_num to avoid it being
+# optimized out with LTO.
 AC_MSG_CHECKING([if programs using OpenSSL functions will link])
 AC_LINK_IFELSE(
 	[AC_LANG_SOURCE([[
-#include <openssl/evp.h>
-int main(void) { SSLeay_add_all_algorithms(); }
+#include <openssl/crypto.h>
+int main(void) { return (int) OpenSSL_version_num(); }
 	]])],
 	[
 		AC_MSG_RESULT(yes)
