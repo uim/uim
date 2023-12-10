@@ -141,13 +141,14 @@ AC_ARG_WITH(anthy-utf8,
   [with_anthy_utf8=no])
 
 if test "x$with_anthy_utf8" != xno; then
-  PKG_CHECK_MODULES(ANTHY_UTF8, anthy >= 8622,
-                    [with_anthy_utf8=yes
-                     AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
-                     [libanthy can handle UTF-8])],
-                     with_anthy_utf8=no)
+  ANTHY_UTF8_LIBS="-lanthy -lanthydic"
+  ANTHY_UTF8_CFLAGS=""
+  PKG_CHECK_EXISTS(anthy >= 8622,
+                   [AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
+                    "libanthy can handle UTF-8")])
 fi
-
+AC_SUBST(ANTHY_UTF8_LIBS)
+AC_SUBST(ANTHY_UTF8_CFLAGS)
 AM_CONDITIONAL(ANTHY_UTF8, test "x$with_anthy_utf8" = xyes)
 
 dnl for uim-dict.xml.in
