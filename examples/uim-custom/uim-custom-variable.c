@@ -43,7 +43,7 @@ choice_items_to_str(const struct uim_custom_choice **items, const char *sep)
   char *buf, *bufp;
   const struct uim_custom_choice **item;
 
-  buf_size = sizeof('\0');
+  buf_size = 1 /* NUL */;
   for (item = items; *item; item++) {
     if (item != items)
       buf_size += strlen(sep);
