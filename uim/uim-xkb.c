@@ -46,6 +46,7 @@ static uim_lisp
 xkb_set_display(uim_lisp lisp_display)
 {
     Display *c_display = (Display *)C_PTR(lisp_display);
+    if (c_display == NULL) return uim_scm_f();
 
     if (! XkbQueryExtension(c_display, NULL, NULL, NULL, NULL, NULL))
 	return uim_scm_f();
