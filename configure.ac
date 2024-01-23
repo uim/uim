@@ -1094,6 +1094,71 @@ fi
 
 AM_CONDITIONAL(QT_IMMODULE, test "x$with_qt_immodule" = xyes)
 
+dnl ****************************
+dnl *** Check for TQt Library ***
+dnl ****************************
+AC_ARG_WITH(tqt,
+  AC_HELP_STRING([--with-tqt],
+    [build TQt helper applications]),
+  [],
+  [with_tqt=no])
+
+if test "x$with_tqt" = xyes; then
+
+  PKG_CHECK_MODULES([TQT], [tqt]);
+
+  PKG_CHECK_VAR([TQMOC], [tqt], [moc_executable]);
+  PKG_CHECK_VAR([TQUIC], [tqt], [uic_executable]);
+  # GUESS plugins dir for immodule installation
+  PKG_CHECK_VAR([TQT_PLUGINSDIR], [tqt-mt], [pluginsdir])
+  AC_MSG_CHECKING(for tqt-immodule plugins dir)
+  if test ! -d "$TQT_PLUGINSDIR"; then
+    AC_MSG_RESULT(no)
+  else
+    AC_MSG_RESULT($TQT_PLUGINSDIR)
+    AC_SUBST(TQT_PLUGINSDIR)
+  fi
+
+  # Process for compiler & linker flags
+
+  UIM_TQT_LDFLAGS=$TQT_LIBS
+  UIM_TQT_CXXFLAGS=$TQT_CFLAGS
+
+  AC_SUBST(TQMOC)
+  AC_SUBST(TQUIC)
+  AC_SUBST(UIM_TQT_CXXFLAGS)
+  AC_SUBST(UIM_TQT_LDFLAGS)
+fi
+
+if test -z "$TDEDIR"; then
+  if test -d /opt/trinity; then
+    TDEDIR=/opt/trinity;
+  else
+    TDEDIR=$prefix
+  fi
+fi
+
+AC_PATH_PROG(TDE_CONFIG, [tde-config], [no], [$TDEDIR/bin$PATH_SEPARATOR$PATH])
+if test "x$with_tqt" = xyes; then
+  if test "x$TDE_CONFIG" != xno; then
+    TDE_ICONDIR=`$TDE_CONFIG --expandvars --install icon`
+  fi
+  if test -z "$TDE_ICONDIR"; then
+    TDE_ICONDIR="$TDEDIR/share/icons"
+  fi
+  AC_DEFINE_UNQUOTED(TDE_ICONDIR, "$TDE_ICONDIR", [tde icon directory])
+fi
+
+AM_CONDITIONAL(TQT, test "x$with_tqt" = xyes)
+
+AC_ARG_WITH(tqt-immodule,
+  AC_HELP_STRING([--with-tqt-immodule],
+    [build TQt-immodule extension]),
+  [],
+  [with_tqt_immodule=no])
+
+AM_CONDITIONAL(TQT_IMMODULE, test "x$with_tqt_immodule" = xyes)
+
 dnl *****************************
 dnl *** Check for Qt4 Library ***
 dnl *****************************
@@ -1193,7 +1258,7 @@ AM_CONDITIONAL(QT6_IMMODULE, test "x$with_qt6_immodule" = xyes)
 
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-    [determine default toolkit (gtk, gtk3, qt, qt4, qt5 or qt6) @<:@default=auto@:>@]),
+    [determine default toolkit (gtk, gtk3, qt, tqt, qt4, qt5 or qt6) @<:@default=auto@:>@]),
   [],
   [enable_default_toolkit=auto])
 
@@ -1209,6 +1274,8 @@ if test "x$enable_default_toolkit" = xauto; then
     default_toolkit=gtk
   elif test "x$with_qt4" = xyes; then
     default_toolkit=qt4
+  elif test "x$with_tqt" = xyes; then
+    default_toolkit=tqt
   elif test "x$with_qt" = xyes; then
     default_toolkit=qt
   fi
@@ -1221,6 +1288,9 @@ elif test "x$enable_default_toolkit" = xgtk3 && \
 elif test "x$enable_default_toolkit" = xqt && \
      test "x$with_qt" = xyes; then
   default_toolkit=qt
+elif test "x$enable_default_toolkit" = xtqt && \
+     test "x$with_tqt" = xyes; then
+  default_toolkit=tqt
 elif test "x$enable_default_toolkit" = xqt4 && \
      test "x$with_qt4" = xyes; then
   default_toolkit=qt4
@@ -1235,6 +1305,7 @@ fi
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test "x$default_toolkit" = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_TQT, test "x$default_toolkit" = xtqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test "x$default_toolkit" = xqt5)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT6, test "x$default_toolkit" = xqt6)
@@ -1466,6 +1537,46 @@ AC_SUBST(KDE_INCLUDE_DIR)
 
 AM_CONDITIONAL(KDE_APPLET, test "x$enable_kde_applet" = xyes)
 
+dnl **********************************
+dnl *** test for TDE applet.. XXX ***
+dnl **********************************
+AC_ARG_ENABLE(tde-applet,
+  AC_HELP_STRING([--disable-tde-applet],
+    [do not build uim applet for TDE panel]),
+  [],
+  [enable_tde_applet=yes])
+
+if test "x$enable_tde_applet" != xno; then
+  if test "x$with_tqt" = xyes; then
+    if test "x$TDE_CONFIG" != xno; then
+      TDE_PREFIX=`${TDE_CONFIG} --prefix`
+      TDE_INCLUDE_DIR=`${TDE_CONFIG} --expandvars --install include`
+      TDE_LIB_DIR=`${TDE_CONFIG} --expandvars --install lib`
+      TDE_DATA_DIR=`${TDE_CONFIG} --expandvars --install data`
+
+      saved_cppflags="${CPPFLAGS}"
+      CPPFLAGS="-I${TDE_INCLUDE_DIR} ${CPPFLAGS} ${TQT_CFLAGS}"
+      AC_LANG_PUSH(C++)
+      AC_CHECK_HEADER([${TDE_INCLUDE_DIR}/kpanelapplet.h],
+        [enable_tde_applet=yes],
+        [enable_tde_applet=no])
+      CPPFLAGS="${saved_cppflags}"
+      AC_LANG_POP(C++)
+    else
+      enable_tde_applet=no
+    fi
+  else
+    enable_tde_applet=no
+  fi
+fi
+
+AC_SUBST(TDE_PREFIX)
+AC_SUBST(TDE_LIB_DIR)
+AC_SUBST(TDE_DATA_DIR)
+AC_SUBST(TDE_INCLUDE_DIR)
+
+AM_CONDITIONAL(TDE_APPLET, test "x$enable_tde_applet" = xyes)
+
 dnl ****************************
 dnl *** test for KDE4 applet ***
 dnl ****************************
@@ -1521,6 +1632,9 @@ if test "x$enable_pref" != xno; then
   elif test x"$default_toolkit" = xqt && \
        test x"$with_qt" = xyes; then
     enable_pref=yes
+  elif test x"$default_toolkit" = xtqt && \
+       test x"$with_tqt" = xyes; then
+    enable_pref=yes
   elif test x"$default_toolkit" = xqt4 && \
        test x"$with_qt4" = xyes; then
     enable_pref=yes
@@ -1538,7 +1652,7 @@ fi
 
 AM_CONDITIONAL(PREF, test x"$enable_pref" = xyes)
 
-AM_CONDITIONAL([CHARDICT], [test "x$with_qt" = xyes || test "x$with_qt4" = xyes || test "x$with_qt5" = xyes || test "x$with_qt6" = xyes])
+AM_CONDITIONAL([CHARDICT], [test "x$with_qt" = xyes || test "x$with_tqt" = xyes || test "x$with_qt4" = xyes || test "x$with_qt5" = xyes || test "x$with_qt6" = xyes])
 
 AC_ARG_ENABLE(anthy-static,
   AC_HELP_STRING([--enable-anthy-static],
@@ -1865,6 +1979,15 @@ AC_CONFIG_FILES([Makefile
                  qt3/test/Makefile
                  qt3/toolbar/Makefile
                  qt3/toolbar/uimapplet.desktop
+                 tqt/Makefile
+                 tqt/candwin/Makefile
+                 tqt/chardict/Makefile
+                 tqt/immodule/Makefile
+                 tqt/pref/Makefile
+                 tqt/switcher/Makefile
+                 tqt/test/Makefile
+                 tqt/toolbar/Makefile
+                 tqt/toolbar/uimapplet.desktop
                  qt4/Makefile
                  qt4/common.pro
                  qt4/candwin/Makefile
@@ -2089,6 +2212,8 @@ Configure Result :
    GNOME3 Applet   : ${enable_gnome3_applet}
    Qt3             : ${with_qt}
    Qt3 immodule    : ${with_qt_immodule}
+   TQt             : ${with_tqt}
+   TQt immodule    : ${with_tqt_immodule}
    Qt4             : ${with_qt4}
    Qt4 immodule    : ${with_qt4_immodule}
    Qt4 Qt3Support  : ${enable_qt4_qt3support}
@@ -2098,6 +2223,7 @@ Configure Result :
    Qt6 immodule    : ${with_qt6_immodule}
    KDE3 Applet     : ${enable_kde_applet}
    KDE4 Applet     : ${enable_kde4_applet}
+   TDE Applet      : ${enable_tde_applet}
    FEP             : ${enable_fep}
    Emacs           : ${enable_emacs}
    XIM             : ${use_xim}

@@ -1,0 +1,135 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>OListEditFormBase</class>
+<widget class="TQDialog">
+    <property name="name">
+        <cstring>OListEditFormBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>380</width>
+            <height>200</height>
+        </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>5</hsizetype>
+            <vsizetype>5</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="caption">
+        <string>OListEditBase</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="TQLayoutWidget" row="0" column="0">
+            <property name="name">
+                <cstring>layout3</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="TQListView">
+                    <column>
+                        <property name="text">
+                            <string>Available Items</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
+                    <property name="name">
+                        <cstring>m_listView</cstring>
+                    </property>
+                    <property name="selectionMode">
+                        <enum>Single</enum>
+                    </property>
+                </widget>
+                <widget class="TQLayoutWidget">
+                    <property name="name">
+                        <cstring>layout2</cstring>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_upButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Up</string>
+                            </property>
+                        </widget>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_downButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Down</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>140</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_okButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>OK</string>
+                            </property>
+                        </widget>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_cancelButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Cancel</string>
+                            </property>
+                        </widget>
+                    </vbox>
+                </widget>
+            </hbox>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_okButton</sender>
+        <signal>clicked()</signal>
+        <receiver>OListEditFormBase</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>OListEditFormBase</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

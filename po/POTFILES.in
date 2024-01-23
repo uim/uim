@@ -123,6 +123,13 @@ scm/xmload.scm
 scm/yahoo-jp-custom.scm
 scm/yahoo-jp-key-custom.scm
 scm/yahoo-jp.scm
+tqt/chardict/bushuviewwidget.cpp
+tqt/chardict/qt.cpp
+tqt/chardict/unicodeviewwidget.cpp
+tqt/pref/customwidgets.cpp
+tqt/pref/qt.cpp
+tqt/switcher/qt.cpp
+tqt/toolbar/common-quimhelpertoolbar.cpp
 uim.desktop.in.in
 uim/m17nlib.c
 uim/mana.c

@@ -55,6 +55,8 @@
 #define CANDWIN_PROG_PREFIX	(UIM_LIBEXECDIR "/uim-candwin")
 #if defined(USE_QT_CANDWIN)
   #define CANDWIN_PROG_SUFFIX	"-qt"
+#elif defined(USE_TQT_CANDWIN)
+  #define CANDWIN_PROG_SUFFIX	"-tqt"
 #elif defined(USE_QT4_CANDWIN)
   #define CANDWIN_PROG_SUFFIX	"-qt4"
 #elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
