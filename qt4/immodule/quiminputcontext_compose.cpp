@@ -945,7 +945,7 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
         int n;
         char *args[2], *from, *to;
         // isspace for tab doesn't seem to work with Qt4...
-        while (static_cast<unsigned char>(isspace(*p)) || *p == '\t') {
+        while (isspace(static_cast<unsigned char>(*p)) || *p == '\t') {
             ++p;
         }
         if (iscomment(*p)) {
@@ -980,7 +980,7 @@ parse_line(char *line, char **argv, int argsize)
 
     while (argc < argsize) {
         // isspace for tab doesn't seem to work with Qt4...
-        while (static_cast<unsigned char>(isspace(*p)) || *p == '\t') {
+        while (isspace(static_cast<unsigned char>(*p)) || *p == '\t') {
             ++p;
         }
         if (*p == '\0') {
