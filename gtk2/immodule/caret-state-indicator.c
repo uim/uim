@@ -47,9 +47,6 @@
 #define DEFAULT_WINDOW_WIDTH  20
 #define DEFAULT_WINDOW_HEIGHT 20
 
-static gint get_current_time(void);
-static gint caret_state_indicator_timeout(gpointer data);
-
 /* This function is not correct, size of tv_sec is glong, not gint */
 static gint
 get_current_time(void)
