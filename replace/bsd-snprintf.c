@@ -89,7 +89,7 @@
 
 #include <config.h>
 
-#if defined(BROKEN_SNPRINTF)		/* For those with broken snprintf() */
+#if defined(BROKEN_SNPRINTF1)		/* For those with broken snprintf() */
 # undef HAVE_SNPRINTF
 # undef HAVE_VSNPRINTF
 #endif

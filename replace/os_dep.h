@@ -117,12 +117,12 @@ int vasprintf(char **ret, const char *format, va_list ap);
 int asprintf(char **ret, const char *format, ...);
 #endif
 
-#if !defined(HAVE_VSNPRINTF) || defined(BROKEN_SNPRINTF)
+#if !defined(HAVE_VSNPRINTF) || defined(BROKEN_SNPRINTF1)
 #define vsnprintf	uim_internal_vsnprintf
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 #endif
 
-#if !defined(HAVE_SNPRINTF) || defined(BROKEN_SNPRINTF)
+#if !defined(HAVE_SNPRINTF) || defined(BROKEN_SNPRINTF1)
 #define snprintf	uim_internal_snprintf
 int snprintf(char *str, size_t size, const char *format, ...);
 #endif
