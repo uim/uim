@@ -30,7 +30,7 @@ AC_DEFUN([AX_PATH_QMAKE4], [
   ax_guessed_qt4_dirs="/usr/local/lib/qt4/bin:${ax_guessed_qt4_dirs}"
   ax_guessed_qt4_dirs="/usr/lib/qt4/bin:${ax_guessed_qt4_dirs}"
   if type dpkg-architecture > /dev/null 2>&1; then
-    multiarch=$(dpkg-archtecture --query DEB_BUILD_MULTIARCH)
+    multiarch=$(dpkg-architecture --query DEB_BUILD_MULTIARCH)
     ax_guessed_qt4_dirs="/usr/lib/${multiarch}/qt4/bin:${ax_guessed_qt4_dirs}"
   fi
   AC_PROG_EGREP
