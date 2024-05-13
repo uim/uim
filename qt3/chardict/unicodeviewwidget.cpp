@@ -319,7 +319,7 @@ void UnicodeViewWidget::setupWidgets()
     QObject::connect( m_unicodeBlockListView, SIGNAL( selectionChanged( QListViewItem * ) ),
                       this, SLOT( slotUnicodeBlockSelected( QListViewItem * ) ) );
     // add Item
-    for ( int i = sizeof( uBlocks ) / sizeof ( uBlocks[0] ); i >= 0; i-- )
+    for ( int i = sizeof( uBlocks ) / sizeof ( uBlocks[0] ) - 1; i >= 0; i-- )
     {
         const QString uBlockName = uBlocks[ i ].getName();
         QString originalStr;
