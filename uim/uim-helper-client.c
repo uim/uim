@@ -102,7 +102,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   }
   fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
   
-#ifdef LOCAL_CREDS /* for NetBSD */
+#if !defined(HAVE_GETPEEREID) && defined(LOCAL_CREDS)
   /* Set the socket to receive credentials on the next message */
   {
     int on = 1;

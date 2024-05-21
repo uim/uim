@@ -254,7 +254,7 @@ accept_new_connection(int server_fd)
     return UIM_FALSE;
   }
   cl->fd = new_fd;
-#ifdef LOCAL_CREDS	/* for NetBSD */
+#if !defined(HAVE_GETPEEREID) && defined(LOCAL_CREDS)
   {
     char buf[1] = { '\0' };
     write(cl->fd, buf, 1);
