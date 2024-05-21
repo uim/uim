@@ -43,9 +43,6 @@ int
 getpeereid(int s, uid_t *euid, gid_t *gid)
 {
 /* Credentials structure */
-#ifdef __NetBSD__	/* XXX: should use autoconf */
-#define HAVE_STRUCT_SOCKCRED
-#endif
 #if defined(HAVE_STRUCT_CMSGCRED)
         typedef struct cmsgcred Cred;
 

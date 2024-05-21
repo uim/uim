@@ -694,6 +694,7 @@ if test "x$ac_cv_have_struct_sockaddr_storage" = xyes; then
 fi
 
 dnl cred related
+AC_CHECK_TYPES([struct sockcred], [], [],[[#include <sys/socket.h>]])
 AC_CACHE_CHECK([for struct cmsgcred], ac_cv_have_struct_cmsgcred, [
 	AC_TRY_COMPILE(
 		[
