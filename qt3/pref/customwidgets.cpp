@@ -444,6 +444,7 @@ void CustomOrderedListEdit::initPtrList()
 void CustomOrderedListEdit::slotEditButtonClicked()
 {
     OListEditForm *d = new OListEditForm( this );
+    d->setCaption( _FU8( m_custom->label ) );
     initPtrList();
 
     /*
@@ -719,6 +720,7 @@ void CustomKeyEdit::setDefault()
 void CustomKeyEdit::slotKeyButtonClicked()
 {
     KeyEditForm *d = new KeyEditForm( this );
+    d->setCaption( _( "%1 - key configuration" ).arg( _FU8( m_custom->label ) ) );
 
     /* add items */
     QString str = QString::null;
