@@ -50,15 +50,17 @@ qt.cpp: qt.moc olisteditformbase.h keyeditformbase.h
 customwidgets.cpp: customwidgets.moc
 kseparator.cpp: kseparator.moc
 
+UIC_IMPL_FLAGS = -pch "qtgettext.h" -tr mygettext
+
 olisteditformbase.cpp: olisteditformbase.h olisteditformbase.moc
-	$(UIC) $(top_srcdir)/qt3/pref/olisteditformbase.ui -i olisteditformbase.h > olisteditformbase.cpp.tmp
+	$(UIC) $(UIC_IMPL_FLAGS) $(top_srcdir)/qt3/pref/olisteditformbase.ui -i olisteditformbase.h > olisteditformbase.cpp.tmp
 	echo '#include "olisteditformbase.moc"' >> olisteditformbase.cpp.tmp
 	mv olisteditformbase.cpp.tmp olisteditformbase.cpp
 olisteditformbase.h:
 	$(UIC) $(top_srcdir)/qt3/pref/olisteditformbase.ui -o olisteditformbase.h
 
 keyeditformbase.cpp: keyeditformbase.h keyeditformbase.moc
-	$(UIC) $(top_srcdir)/qt3/pref/keyeditformbase.ui -i keyeditformbase.h > keyeditformbase.cpp.tmp
+	$(UIC) $(UIC_IMPL_FLAGS) $(top_srcdir)/qt3/pref/keyeditformbase.ui -i keyeditformbase.h > keyeditformbase.cpp.tmp
 	echo '#include "keyeditformbase.moc"' >> keyeditformbase.cpp.tmp
 	mv keyeditformbase.cpp.tmp keyeditformbase.cpp
 keyeditformbase.h:
