@@ -369,7 +369,14 @@ void UnicodeViewWidget::slotUnicodeBlockSelected()
     QStringList charList;
     for ( uint d = block->getStartHex(); d < block->getEndHex(); d++ )
     {
-        charList.append( QString( QChar( d ) ) );
+        QString charStr;
+        if ( QChar::requiresSurrogates( d ) ) {
+            charStr += QChar( QChar::highSurrogate( d ) );
+            charStr += QChar( QChar::lowSurrogate( d ) );
+        } else {
+            charStr = QChar( d );
+        }
+        charList.append( charStr );
     }
 
     m_charGridView->setCharacters( charList );
