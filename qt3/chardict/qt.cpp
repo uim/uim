@@ -47,9 +47,18 @@ SUCH DAMAGE.
 #include <qvbox.h>
 #include <qsettings.h>
 
+#ifdef Q_WS_X11
+#include <X11/Xutil.h>
+#endif
+
 #include <locale.h>
 
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+
 #include "qtgettext.h"
+
+static int uim_fd = -1;
 
 int main( int argc, char *argv[] )
 {
@@ -81,6 +90,7 @@ int main( int argc, char *argv[] )
     KUimCharDict cdict;
     cdict.changeMode( m );
     cdict.resize( 600, 400 );
+    cdict.setIcon( QPixmap::fromMimeSource( UIM_PIXMAPSDIR "/uim-icon.png" ) );
     cdict.show();
 
     a.setMainWidget( &cdict );
@@ -91,14 +101,29 @@ int main( int argc, char *argv[] )
 KUimCharDict::KUimCharDict( QWidget *parent, const char *name )
         : QWidget( parent, name )
 {
+#ifdef Q_WS_X11
+    // Don't give input focus to this window.
+    XWMHints *wmhints = XGetWMHints( x11Display(), winId() );
+    if ( !wmhints )
+        wmhints = XAllocWMHints();
+    wmhints->flags = InputHint;
+    wmhints->input = False;
+    XSetWMHints( x11Display(), winId(), wmhints );
+    XFree( wmhints );
+#endif
+
     setupWidgets();
 
     readConfig();
+
+    uim_fd = uim_helper_init_client_fd( 0 );
 }
 
 KUimCharDict::~KUimCharDict()
 {
     writeConfig();
+
+    uim_helper_close_client_fd( uim_fd );
 }
 
 void KUimCharDict::setupWidgets()
@@ -127,6 +152,10 @@ void KUimCharDict::setupWidgets()
     m_charLineEdit = new QLineEdit( upperHWidget );
     charLabel->setBuddy( m_charLineEdit );
 
+    QPushButton *clearButton = new QPushButton( _( "Clear" ), upperHWidget );
+    QObject::connect( clearButton, SIGNAL( clicked() ),
+        m_charLineEdit, SLOT( clear() ) );
+
     QHBoxLayout *upperHLayout = new QHBoxLayout( upperHWidget );
     upperHLayout->setSpacing( 4 );
     upperHLayout->addWidget( modeLabel );
@@ -135,6 +164,7 @@ void KUimCharDict::setupWidgets()
     upperHLayout->addSpacing( 11 );
     upperHLayout->addWidget( charLabel );
     upperHLayout->addWidget( m_charLineEdit );
+    upperHLayout->addWidget( clearButton );
 
     m_widgetStack = new QWidgetStack( this );
     m_widgetStack->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
@@ -223,6 +253,8 @@ void KUimCharDict::slotSelectFont()
 void KUimCharDict::slotCharSelected( const QString &c )
 {
     m_charLineEdit->setText( m_charLineEdit->text() + c );
+    uim_helper_send_message( uim_fd,
+        ( const char* )( "commit_string\n" + c + '\n' ).utf8() );
 }
 
 #include "qt.moc"
