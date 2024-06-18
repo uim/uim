@@ -29,7 +29,7 @@ uim_chardict_qt_SOURCES = \
 uim_chardict_qt_CXXFLAGS = @UIM_QT_CXXFLAGS@ -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 
 uim_chardict_qt_LDFLAGS  = @UIM_QT_LDFLAGS@
-uim_chardict_qt_LDADD    = @LTLIBINTL@
+uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la @LTLIBINTL@ 
 qt.cpp: qt.moc
 
 bushuviewwidget.cpp: bushuviewwidget.moc
