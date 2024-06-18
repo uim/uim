@@ -62,9 +62,13 @@ SUCH DAMAGE.
 #endif
 
 #ifdef Q_WS_X11
+
+#if QT_VERSION < 0x040700
 #include <QtGui/QX11Info>
 
 #include <X11/Xutil.h>
+#endif
+
 #endif
 
 #include <clocale>
@@ -120,6 +124,7 @@ KUimCharDict::KUimCharDict( QWidget *parent )
         : QWidget( parent )
 {
 #ifdef Q_WS_X11
+#if QT_VERSION < 0x040700
     // Don't give input focus to this window.
     XWMHints *wmhints = XGetWMHints( QX11Info::display(), winId() );
     if ( !wmhints )
@@ -128,6 +133,9 @@ KUimCharDict::KUimCharDict( QWidget *parent )
     wmhints->input = False;
     XSetWMHints( QX11Info::display(), winId(), wmhints );
     XFree( wmhints );
+#else
+    setAttribute( Qt::WA_X11DoNotAcceptFocus );
+#endif
 #endif
 
     setupWidgets();
