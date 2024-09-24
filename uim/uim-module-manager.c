@@ -47,8 +47,8 @@
 #include "uim-internal.h"
 
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
-#define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
-#define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/installed-modules.scm"
+#define LOADER_SCM_FILENAME  UIM_CONFDIR"/loader.scm"
+#define INSTALLED_MODULES_SCM_FILENAME  UIM_CONFDIR"/installed-modules.scm"
 
 static char *path;
 
