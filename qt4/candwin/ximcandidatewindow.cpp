@@ -161,7 +161,11 @@ void XimCandidateWindow::activateCand(const QStringList &list)
     if (!list[1].isEmpty()
         && list[1].startsWith(QLatin1String("charset")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[1].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[1].split('=', Qt::SkipEmptyParts);
+#endif
         codec = QTextCodec::codecForName(l[1].toLatin1());
     }
 
@@ -169,7 +173,11 @@ void XimCandidateWindow::activateCand(const QStringList &list)
     if (!list[2].isEmpty()
         && list[2].startsWith(QLatin1String("display_limit")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[2].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[2].split('=', Qt::SkipEmptyParts);
+#endif
         displayLimit = l[1].toInt();
     }
 
@@ -336,7 +344,11 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
     if (!list[1].isEmpty()
         && list[1].startsWith(QLatin1String("charset")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[1].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[1].split('=', Qt::SkipEmptyParts);
+#endif
         codec = QTextCodec::codecForName(l[1].toLatin1());
     }
 
@@ -344,7 +356,11 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
     if (!list[2].isEmpty()
         && list[2].startsWith(QLatin1String("page")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[2].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[2].split('=', Qt::SkipEmptyParts);
+#endif
         page = l[1].toInt();
     }
 

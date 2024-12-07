@@ -119,8 +119,13 @@ void BushuViewWidget::readDict()
         QString line;
         while ( !stream.atEnd() )
         {
+#if QT_VERSION < 0x060000
             QString bushuName
                 = stream.readLine().split( ' ', QString::SkipEmptyParts ) [ 0 ];
+#else
+            QString bushuName
+                = stream.readLine().split( ' ', Qt::SkipEmptyParts ) [ 0 ];
+#endif
 
             // insert last
             m_bushuListView->addItem( bushuName );
@@ -149,8 +154,13 @@ void BushuViewWidget::slotBushuSelected()
         // search selected bushu line by line
         while ( !stream.atEnd() )
         {
+#if QT_VERSION < 0x060000
             QStringList chars
                 = stream.readLine().split( ' ', QString::SkipEmptyParts );
+#else
+            QStringList chars
+                = stream.readLine().split( ' ', Qt::SkipEmptyParts );
+#endif
             QString bushuName = chars[ 0 ];
             if ( selectedBushuName == bushuName )
             {

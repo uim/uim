@@ -136,7 +136,11 @@ void UimStateIndicator::checkHelperConnection()
 }
 void UimStateIndicator::parseHelperStr( const QString& str )
 {
+#if QT_VERSION < 0x060000
     const QStringList lines = str.split( '\n', QString::SkipEmptyParts );
+#else
+    const QStringList lines = str.split( '\n', Qt::SkipEmptyParts );
+#endif
     if ( !lines.isEmpty() && !lines[ 0 ].isEmpty() )
     {
         if ( lines[ 0 ] == "prop_list_update" )
@@ -175,7 +179,11 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
 #endif
     foreach ( const QString &line, lines )
     {
+#if QT_VERSION < 0x060000
         const QStringList fields = line.split( '\t', QString::SkipEmptyParts );
+#else
+        const QStringList fields = line.split( '\t', Qt::SkipEmptyParts );
+#endif
 
         if ( !fields.isEmpty() && !fields[ 0 ].isEmpty() )
         {
@@ -280,14 +288,24 @@ void UimStateIndicator::slotStdinActivated()
     char *s;
     while ( ( s = uim_helper_get_message() ) )
     {
+#if QT_VERSION < 0x060000
         const QStringList lines = QString( s ).split( '\n',
             QString::SkipEmptyParts );
+#else
+        const QStringList lines = QString( s ).split( '\n',
+            Qt::SkipEmptyParts );
+#endif
         if ( lines.count() > 1
             && lines[ 1 ].startsWith( QLatin1String( "charset" ) ) )
         {
             /* get charset */
+#if QT_VERSION < 0x060000
             QString charset = lines[ 1 ].split( '=',
                 QString::SkipEmptyParts ) [ 1 ];
+#else
+            QString charset = lines[ 1 ].split( '=',
+                Qt::SkipEmptyParts ) [ 1 ];
+#endif
 
             /* convert to unicode */
             QTextCodec *codec

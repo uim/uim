@@ -100,7 +100,11 @@ void CaretStateIndicator::update(const QString &str)
 void CaretStateIndicator::updateLabels(const QString &str)
 {
     if (!str.isEmpty()) {
+#if QT_VERSION < 0x060000
         QStringList lines = str.split('\n', QString::SkipEmptyParts);
+#else
+        QStringList lines = str.split('\n', Qt::SkipEmptyParts);
+#endif
         QStringList cols;
         for (int i = 0; i < lines.count(); i++) {
             if (lines.at(i).startsWith(QLatin1String("branch\t"))) {

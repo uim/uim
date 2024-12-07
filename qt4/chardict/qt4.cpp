@@ -99,7 +99,11 @@ int main( int argc, char *argv[] )
         QString arg( argv[ i ] );
         if ( !arg.isEmpty() && arg.startsWith( QLatin1String( "-mode=" ) ) )
         {
+#if QT_VERSION < 0x060000
             QStringList list = arg.split( '=', QString::SkipEmptyParts );
+#else
+            QStringList list = arg.split( '=', Qt::SkipEmptyParts );
+#endif
             if ( list.count() < 2 || list[ 1 ].isEmpty() )
                 continue;
             QString mode = list[ 1 ];
