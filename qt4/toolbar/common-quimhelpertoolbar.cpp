@@ -52,7 +52,9 @@
 #include "uim/uim-scm.h"
 #include "qtgettext.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define UIM_ADD_QT_VERSION(command) command "-qt6"
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #define UIM_ADD_QT_VERSION(command) command "-qt5"
 #else
 #define UIM_ADD_QT_VERSION(command) command "-qt4"

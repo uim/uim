@@ -34,7 +34,11 @@ SUCH DAMAGE.
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#else
+# include <QTextCodec>
+#endif
 
 #include "uim/uim.h"
 #include "uim/uim-helper.h"

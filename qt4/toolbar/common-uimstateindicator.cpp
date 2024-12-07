@@ -39,7 +39,11 @@
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#else
+# include <QTextCodec>
+#endif
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPixmap>
 #if QT_VERSION < 0x050000

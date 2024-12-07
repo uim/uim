@@ -36,7 +36,11 @@
 
 #include <QtCore/QEvent>
 #include <QtCore/QSocketNotifier>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#else
+# include <QTextCodec>
+#endif
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
 # include <QtGui/QGroupBox>

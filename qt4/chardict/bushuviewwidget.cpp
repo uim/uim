@@ -38,7 +38,11 @@ SUCH DAMAGE.
 
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#else
+# include <QTextCodec>
+#endif
 #include <QtCore/QTextStream>
 #if QT_VERSION < 0x050000
 # include <QtGui/QFrame>
@@ -115,7 +119,12 @@ void BushuViewWidget::readDict()
     if ( file.open( QIODevice::ReadOnly ) )
     {
         QTextStream stream( &file );
+#if QT_VERSION < 0x060000
         stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
+#else
+        stream.setEncoding(QStringConverter::Latin1);
+        QTextCodec *codec = QTextCodec::codecForName(BUSHUDICT_ENCODING);
+#endif
         QString line;
         while ( !stream.atEnd() )
         {
@@ -124,7 +133,7 @@ void BushuViewWidget::readDict()
                 = stream.readLine().split( ' ', QString::SkipEmptyParts ) [ 0 ];
 #else
             QString bushuName
-                = stream.readLine().split( ' ', Qt::SkipEmptyParts ) [ 0 ];
+                = codec->toUnicode(stream.readLine().toLatin1()).split( ' ', Qt::SkipEmptyParts ) [ 0 ];
 #endif
 
             // insert last
@@ -148,7 +157,12 @@ void BushuViewWidget::slotBushuSelected()
     if ( file.open( QIODevice::ReadOnly ) )
     {
         QTextStream stream( &file );
+#if QT_VERSION < 0x060000
         stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
+#else
+        stream.setEncoding(QStringConverter::Latin1);
+        QTextCodec *codec = QTextCodec::codecForName(BUSHUDICT_ENCODING);
+#endif
         QString line;
 
         // search selected bushu line by line
@@ -159,7 +173,7 @@ void BushuViewWidget::slotBushuSelected()
                 = stream.readLine().split( ' ', QString::SkipEmptyParts );
 #else
             QStringList chars
-                = stream.readLine().split( ' ', Qt::SkipEmptyParts );
+                = codec->toUnicode(stream.readLine().toLatin1()).split( ' ', Qt::SkipEmptyParts );
 #endif
             QString bushuName = chars[ 0 ];
             if ( selectedBushuName == bushuName )

@@ -45,7 +45,11 @@
 #include <langinfo.h>
 #endif
 
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#else
+# include <QTextCodec>
+#endif
 #if QT_VERSION >= 0x050000
 # undef Expose
 #endif
