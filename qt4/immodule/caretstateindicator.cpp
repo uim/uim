@@ -129,7 +129,11 @@ void CaretStateIndicator::updateLabels(const QString &str)
     }
     QWidget *widget = QApplication::focusWidget();
     if (widget) {
+#if QT_VERSION < 0x060000
         QRect rect = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
+#else
+        QRect rect = widget->inputMethodQuery(Qt::ImCursorRectangle).toRect();
+#endif
         move(widget->mapToGlobal(rect.bottomLeft())
             + QPoint(0, CaretStateIndicator::SPACING));
         m_window = widget->window();
