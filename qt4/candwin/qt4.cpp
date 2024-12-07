@@ -40,7 +40,6 @@
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
 # include <QtGui/QDesktopWidget>
