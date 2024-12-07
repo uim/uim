@@ -51,7 +51,12 @@
 # include <QtGui/QVBoxLayout>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# else
+#  include <QScreen>
+#  include <QGuiApplication>
+# endif
 # include <QtWidgets/QHeaderView>
 # include <QtWidgets/QLabel>
 # include <QtWidgets/QTableWidget>
@@ -238,8 +243,13 @@ void XimCandidateWindow::moveCand(const QStringList &list)
     const int topwin_y = list[2].toInt();
     const int cw_wi = width();
     const int cw_he = height();
+#if QT_VERSION < 0x060000
     const int sc_wi = QApplication::desktop()->screenGeometry().width();
     const int sc_he = QApplication::desktop()->screenGeometry().height();
+#else
+    const int sc_wi = QGuiApplication::primaryScreen()->geometry().width();
+    const int sc_he = QGuiApplication::primaryScreen()->geometry().height();
+#endif
 
     int x, y;
     if (sc_wi < topwin_x + cw_wi)
