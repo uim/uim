@@ -41,8 +41,10 @@
 #include <QtCore/QStringList>
 #if QT_VERSION < 0x060000
 # include <QtCore/QTextCodec>
-#else
+#elif QT_VERSION < 0x060400
 # include <QTextCodec>
+#else
+# include <QStringDecoder>
 #endif
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPixmap>
@@ -312,9 +314,15 @@ void UimStateIndicator::slotStdinActivated()
 #endif
 
             /* convert to unicode */
+#if QT_VERSION < 0x060400
             QTextCodec *codec
                 = QTextCodec::codecForName( QByteArray( charset.toLatin1() ) );
             tmp = codec->toUnicode( s );
+#else
+            auto toUnicode
+                = QStringDecoder( charset.toLatin1() );
+            tmp = toUnicode( s );
+#endif
         }
         else
         {

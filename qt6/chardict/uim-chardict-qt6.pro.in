@@ -4,7 +4,9 @@ include(../../qt4/common.pro)
 INCLUDEPATH += @srcdir@/../../qt4
 LIBS += @LIBINTL@ @X11_LIBS@
 
-QT += core5compat
+!versionAtLeast(QT_VERSION, 6.4.0) {
+    QT += core5compat
+}
 
 # Input
 HEADERS += @srcdir@/../../qt4/chardict/bushuviewwidget.h \

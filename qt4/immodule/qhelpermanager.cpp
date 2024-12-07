@@ -36,8 +36,10 @@ SUCH DAMAGE.
 #include <QtCore/QStringList>
 #if QT_VERSION < 0x060000
 # include <QtCore/QTextCodec>
-#else
+#elif QT_VERSION < 0x060400
 # include <QTextCodec>
+#else
+# include <QStringDecoder>
 #endif
 
 #include "uim/uim.h"
@@ -138,10 +140,17 @@ void QUimHelperManager::parseHelperStr( const QString &str )
                     QString charset = lines[ 1 ].split( '=' ) [ 1 ];
 
                     /* convert to unicode */
+#if QT_VERSION < 0x060400
                     QTextCodec *codec
                         = QTextCodec::codecForName( charset.toLatin1() );
                     if ( codec && !lines[ 2 ].isEmpty() )
                         commit_str = codec->toUnicode( lines[ 2 ].toLatin1() );
+#else
+                    auto toUnicode
+                        = QStringDecoder( charset.toLatin1() );
+                    if ( toUnicode.isValid() && !lines[ 2 ].isEmpty() )
+                        commit_str = toUnicode( lines[ 2 ].toLatin1() );
+#endif
                 } else {
                     commit_str = lines[ 1 ];
                 }

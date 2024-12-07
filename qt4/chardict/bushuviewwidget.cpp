@@ -40,8 +40,10 @@ SUCH DAMAGE.
 #include <QtCore/QSettings>
 #if QT_VERSION < 0x060000
 # include <QtCore/QTextCodec>
-#else
+#elif QT_VERSION < 0x060400
 # include <QTextCodec>
+#else
+# include <QStringDecoder>
 #endif
 #include <QtCore/QTextStream>
 #if QT_VERSION < 0x050000
@@ -123,7 +125,11 @@ void BushuViewWidget::readDict()
         stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
 #else
         stream.setEncoding(QStringConverter::Latin1);
+#if QT_VERSION < 0x060400
         QTextCodec *codec = QTextCodec::codecForName(BUSHUDICT_ENCODING);
+#else
+        auto toUnicode = QStringDecoder(BUSHUDICT_ENCODING);
+#endif
 #endif
         QString line;
         while ( !stream.atEnd() )
@@ -131,9 +137,12 @@ void BushuViewWidget::readDict()
 #if QT_VERSION < 0x060000
             QString bushuName
                 = stream.readLine().split( ' ', QString::SkipEmptyParts ) [ 0 ];
-#else
+#elif QT_VERSION < 0x060400
             QString bushuName
                 = codec->toUnicode(stream.readLine().toLatin1()).split( ' ', Qt::SkipEmptyParts ) [ 0 ];
+#else
+            QString bushuName
+                = QString(toUnicode(stream.readLine().toLatin1())).split( ' ', Qt::SkipEmptyParts ) [ 0 ];
 #endif
 
             // insert last
@@ -161,7 +170,11 @@ void BushuViewWidget::slotBushuSelected()
         stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
 #else
         stream.setEncoding(QStringConverter::Latin1);
+#if QT_VERSION < 0x060400
         QTextCodec *codec = QTextCodec::codecForName(BUSHUDICT_ENCODING);
+#else
+        auto toUnicode = QStringDecoder(BUSHUDICT_ENCODING);
+#endif
 #endif
         QString line;
 
@@ -171,9 +184,12 @@ void BushuViewWidget::slotBushuSelected()
 #if QT_VERSION < 0x060000
             QStringList chars
                 = stream.readLine().split( ' ', QString::SkipEmptyParts );
-#else
+#elif QT_VERSION < 0x060400
             QStringList chars
                 = codec->toUnicode(stream.readLine().toLatin1()).split( ' ', Qt::SkipEmptyParts );
+#else
+            QStringList chars
+                = QString(toUnicode(stream.readLine().toLatin1())).split( ' ', Qt::SkipEmptyParts );
 #endif
             QString bushuName = chars[ 0 ];
             if ( selectedBushuName == bushuName )

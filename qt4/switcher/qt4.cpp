@@ -38,8 +38,10 @@
 #include <QtCore/QSocketNotifier>
 #if QT_VERSION < 0x060000
 # include <QtCore/QTextCodec>
-#else
+#elif QT_VERSION < 0x060400
 # include <QTextCodec>
+#else
+# include <QStringDecoder>
 #endif
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
@@ -297,9 +299,15 @@ void UimImSwitcher::slotStdinActivated()
 #endif
 
             /* convert to unicode */
+#if QT_VERSION < 0x060400
             QTextCodec *codec
                 = QTextCodec::codecForName( QByteArray( charset.toLatin1() ) );
             msg = codec->toUnicode( s );
+#else
+            auto toUnicode
+                = QStringDecoder( charset.toLatin1() );
+            msg = toUnicode( s );
+#endif
         }
         else
         {

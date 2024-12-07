@@ -6,7 +6,9 @@ TEMPLATE = app
 INCLUDEPATH += @srcdir@/../../qt4
 LIBS += @LIBINTL@
 
-QT += core5compat
+!versionAtLeast(QT_VERSION, 6.4.0) {
+    QT += core5compat
+}
 
 # Input
 HEADERS += @srcdir@/../../qt4/toolbar/common-quimhelpertoolbar.h \
