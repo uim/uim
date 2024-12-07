@@ -277,10 +277,17 @@ void QUimHelperManager::sendImList()
     for ( it = info.begin(); it != info.end(); ++it )
     {
         QString leafstr;
+#if QT_VERSION < 0x060000
         leafstr.sprintf( "%s\t%s\t%s\t",
                          ( *it ).name.toUtf8().data(),
                          uim_get_language_name_from_locale( ( *it ).lang.toUtf8().data() ),
                          ( *it).short_desc.toUtf8().data() );
+#else
+        leafstr = QString("%1\t%2\t%3\t")
+                         .arg(( *it ).name)
+                         .arg(QString::fromLatin1(uim_get_language_name_from_locale( ( *it ).lang.toUtf8().data() )))
+                         .arg(( *it).short_desc);
+#endif
 
         if ( QString::compare( ( *it ).name, current_im_name ) == 0 )
             leafstr.append( "selected" );
@@ -297,7 +304,11 @@ void QUimHelperManager::send_im_change_whole_desktop( const char *name )
 {
     QString msg;
 
+#if QT_VERSION < 0x060000
     msg.sprintf("im_change_whole_desktop\n%s\n", name);
+#else
+    msg = QString("im_change_whole_desktop\n%1\n").arg(QString::fromLatin1(name));
+#endif
     uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 }
 
