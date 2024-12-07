@@ -43,7 +43,9 @@
 #include "util.h"
 
 class QLabel;
+#if QT_VERSION < 0x060000
 class QStringList;
+#endif
 class QTableWidget;
 
 class XimCandidateWindow : public QFrame
