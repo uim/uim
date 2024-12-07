@@ -392,8 +392,12 @@ void UnicodeViewWidget::writeConfig()
 
     // splitter
     QString str;
+#if QT_VERSION < 0x060000
     QTextStream out( &str );
     out << *m_mainSplitter;
+#else
+    str = QString::fromLatin1(m_mainSplitter->saveState());
+#endif
     settings.setValue( "/uim-kdehelper/chardict/unicodeview/splitter", str );
 }
 void UnicodeViewWidget::readConfig()
@@ -406,8 +410,12 @@ void UnicodeViewWidget::readConfig()
         "/uim-kdehelper/chardict/unicodeview/splitter" ).toString();
     if ( !str.isEmpty() )
     {
+#if QT_VERSION < 0x060000
         QTextStream in( &str );
         in >> *m_mainSplitter;
+#else
+        m_mainSplitter->restoreState(str.toLatin1());
+#endif
     }
 }
 
