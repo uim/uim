@@ -168,7 +168,11 @@ void UimImSwitcher::createGUI()
 
     // main layout
     QVBoxLayout *mainLayout = new QVBoxLayout( this );
+#if QT_VERSION < 0x060000
     mainLayout->setMargin( 6 );
+#else
+    mainLayout->setContentsMargins( 6, 6, 6, 6 );
+#endif
     mainLayout->setSpacing( 6 );
     mainLayout->addWidget( listview );
     mainLayout->addWidget( groupBox );

@@ -94,7 +94,11 @@ void BushuViewWidget::setupWidgets()
                       this, SIGNAL( charSelected( const QString & ) ) );
 
     QVBoxLayout *vLayout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     vLayout->setMargin( 0 );
+#else
+    vLayout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     vLayout->addWidget( bushuLabel );
     vLayout->addWidget( m_bushuListView );
 

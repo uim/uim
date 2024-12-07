@@ -155,7 +155,11 @@ KUimCharDict::~KUimCharDict()
 void KUimCharDict::setupWidgets()
 {
     QVBoxLayout * layout = new QVBoxLayout( this );
+#if QT_VERSION < 0x060000
     layout->setMargin( 4 );
+#else
+    layout->setContentsMargins( 4, 4, 4, 4 );
+#endif
     layout->setSpacing( 6 );
 
     QWidget *upperHWidget = new QWidget( this );
@@ -211,7 +215,11 @@ void KUimCharDict::setupWidgets()
     QFrame *separator = new QFrame( this );
     separator->setFrameShape( QFrame::HLine );
     separator->setFrameShadow( QFrame::Sunken );
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->addWidget( upperHWidget );
     layout->addWidget( separator );
     layout->addWidget( m_widgetStack );

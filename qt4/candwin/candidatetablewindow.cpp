@@ -90,7 +90,11 @@ CandidateTableWindow::CandidateTableWindow(QWidget *parent)
 
     QGridLayout *buttonLayout = new QGridLayout;
     buttonLayout->setSpacing(BLOCK_SPACING - 2 * HOMEPOSITION_SPACING);
+#if QT_VERSION < 0x060000
     buttonLayout->setMargin(0);
+#else
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
+#endif
     buttonLayout->addLayout(lLayout, 0, 0);
     buttonLayout->addLayout(rLayout, 0, 1);
     buttonLayout->addLayout(aLayout, 0, 2);
@@ -99,7 +103,11 @@ CandidateTableWindow::CandidateTableWindow(QWidget *parent)
     buttonLayout->addLayout(asLayout, 1, 2);
 
     QVBoxLayout *layout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     layout->setSpacing(0);
     layout->addLayout(buttonLayout);
     layout->addWidget(numLabel);
@@ -190,7 +198,11 @@ QGridLayout *CandidateTableWindow::createLayout(int row, int column,
 {
     QGridLayout *layout = new QGridLayout;
     layout->setSpacing(HOMEPOSITION_SPACING);
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < column; j++) {
             KeyButton *button = new KeyButton;

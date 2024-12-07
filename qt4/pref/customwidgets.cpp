@@ -218,7 +218,11 @@ CustomPathnameEdit::CustomPathnameEdit( struct uim_custom *c, QWidget *parent )
                       this, SLOT(slotPathnameButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 3 );
     layout->addWidget( m_lineEdit );
     layout->addWidget( m_fileButton );
@@ -381,7 +385,11 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
                       this, SLOT(slotEditButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 3 );
     layout->addWidget( m_lineEdit );
     layout->addWidget( m_editButton );
@@ -660,7 +668,11 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent )
                       this, SLOT(slotKeyButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 3 );
     layout->addWidget( m_lineEdit );
     layout->addWidget( m_editButton );
@@ -1223,7 +1235,11 @@ CustomTable::CustomTable( struct uim_custom *c, QWidget *parent )
             this, SLOT(slotEditButtonClicked()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 3 );
     layout->addStretch();
     layout->addWidget( editButton );

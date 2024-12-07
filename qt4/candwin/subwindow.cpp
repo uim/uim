@@ -72,7 +72,11 @@ SubWindow::SubWindow(QWidget *parent)
     connect(m_hookTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
 
     QVBoxLayout *layout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     layout->addWidget(m_contentsEdit);
     setLayout(layout);
 

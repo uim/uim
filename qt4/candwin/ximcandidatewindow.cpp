@@ -123,7 +123,11 @@ XimCandidateWindow::XimCandidateWindow(QWidget *parent)
     connect(notifier, SIGNAL(activated(int)),
                       this, SLOT(slotStdinActivated(int)));
     QVBoxLayout *layout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     layout->setSpacing(0);
     layout->addWidget(cList);
     layout->addWidget(numLabel);
