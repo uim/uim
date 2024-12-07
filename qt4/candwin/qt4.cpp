@@ -50,7 +50,9 @@
 # include <QtGui/QVBoxLayout>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# endif
 # include <QtWidgets/QHeaderView>
 # include <QtWidgets/QLabel>
 # include <QtWidgets/QTableWidget>

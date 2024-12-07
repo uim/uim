@@ -44,7 +44,9 @@
 # include <QtGui/QLabel>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# endif
 # include <QtWidgets/QLabel>
 #endif
 
