@@ -41,7 +41,9 @@
 # include <qpa/qplatforminputcontextplugin_p.h>
 #endif
 
+#if QT_VERSION < 0x060000
 class QStringList;
+#endif
 
 class QUimInfoManager;
 

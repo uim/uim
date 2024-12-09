@@ -44,7 +44,9 @@
 # include <QtGui/QLabel>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# endif
 # include <QtWidgets/QLabel>
 #endif
 
@@ -569,8 +571,13 @@ bool CandidateWindowProxy::eventFilter(QObject *obj, QEvent *event)
         if (event->type() == QEvent::Move) {
             QWidget *widget = QApplication::focusWidget();
             if (widget) {
+#if QT_VERSION < 0x060000
                 QRect rect
                     = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
+#else
+                QRect rect
+                    = widget->inputMethodQuery(Qt::ImCursorRectangle).toRect();
+#endif
                 QPoint p = widget->mapToGlobal(rect.topLeft());
                 layoutWindow(p.x(), p.y(), rect.height());
             } else {

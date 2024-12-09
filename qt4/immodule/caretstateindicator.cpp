@@ -57,7 +57,11 @@ CaretStateIndicator::CaretStateIndicator(QWidget *parent):
     QWidget(parent, Qt::ToolTip), m_window(0)
 {
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     layout->setSpacing(0);
     setLayout(layout);
 
@@ -96,7 +100,11 @@ void CaretStateIndicator::update(const QString &str)
 void CaretStateIndicator::updateLabels(const QString &str)
 {
     if (!str.isEmpty()) {
+#if QT_VERSION < 0x060000
         QStringList lines = str.split('\n', QString::SkipEmptyParts);
+#else
+        QStringList lines = str.split('\n', Qt::SkipEmptyParts);
+#endif
         QStringList cols;
         for (int i = 0; i < lines.count(); i++) {
             if (lines.at(i).startsWith(QLatin1String("branch\t"))) {
@@ -125,7 +133,11 @@ void CaretStateIndicator::updateLabels(const QString &str)
     }
     QWidget *widget = QApplication::focusWidget();
     if (widget) {
+#if QT_VERSION < 0x060000
         QRect rect = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
+#else
+        QRect rect = widget->inputMethodQuery(Qt::ImCursorRectangle).toRect();
+#endif
         move(widget->mapToGlobal(rect.bottomLeft())
             + QPoint(0, CaretStateIndicator::SPACING));
         m_window = widget->window();

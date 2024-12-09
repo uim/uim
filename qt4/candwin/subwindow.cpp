@@ -41,7 +41,12 @@ SUCH DAMAGE.
 # include <QtGui/QVBoxLayout>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# else
+#  include <QScreen>
+#  include <QGuiApplication>
+# endif
 # include <QtWidgets/QTextBrowser>
 # include <QtWidgets/QVBoxLayout>
 #endif
@@ -67,7 +72,11 @@ SubWindow::SubWindow(QWidget *parent)
     connect(m_hookTimer, SIGNAL(timeout()), this, SLOT(timerDone()));
 
     QVBoxLayout *layout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     layout->addWidget(m_contentsEdit);
     setLayout(layout);
 
@@ -110,7 +119,11 @@ void SubWindow::timerDone()
 
 void SubWindow::layoutWindow(const QRect &rect, bool isVertical)
 {
+#if QT_VERSION < 0x060000
     const QRect screenRect = QApplication::desktop()->screenGeometry();
+#else
+    const QRect screenRect = QGuiApplication::primaryScreen()->geometry();
+#endif
 
     const int w = width();
     const int candX = rect.x();

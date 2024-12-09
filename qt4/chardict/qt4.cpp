@@ -99,7 +99,11 @@ int main( int argc, char *argv[] )
         QString arg( argv[ i ] );
         if ( !arg.isEmpty() && arg.startsWith( QLatin1String( "-mode=" ) ) )
         {
+#if QT_VERSION < 0x060000
             QStringList list = arg.split( '=', QString::SkipEmptyParts );
+#else
+            QStringList list = arg.split( '=', Qt::SkipEmptyParts );
+#endif
             if ( list.count() < 2 || list[ 1 ].isEmpty() )
                 continue;
             QString mode = list[ 1 ];
@@ -155,7 +159,11 @@ KUimCharDict::~KUimCharDict()
 void KUimCharDict::setupWidgets()
 {
     QVBoxLayout * layout = new QVBoxLayout( this );
+#if QT_VERSION < 0x060000
     layout->setMargin( 4 );
+#else
+    layout->setContentsMargins( 4, 4, 4, 4 );
+#endif
     layout->setSpacing( 6 );
 
     QWidget *upperHWidget = new QWidget( this );
@@ -211,7 +219,11 @@ void KUimCharDict::setupWidgets()
     QFrame *separator = new QFrame( this );
     separator->setFrameShape( QFrame::HLine );
     separator->setFrameShadow( QFrame::Sunken );
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->addWidget( upperHWidget );
     layout->addWidget( separator );
     layout->addWidget( m_widgetStack );

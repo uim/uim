@@ -97,7 +97,9 @@ UimPrefDialog::UimPrefDialog( QWidget *parent )
         QApplication::exit( -1 );
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    setWindowTitle( "uim-pref-qt6" );
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     setWindowTitle( "uim-pref-qt5" );
 #else
     setWindowTitle( "uim-pref-qt4" );
@@ -152,7 +154,11 @@ void UimPrefDialog::setupWidgets()
 void UimPrefDialog::createMainWidgets()
 {
     QVBoxLayout *mainVLayout = new QVBoxLayout( this );
+#if QT_VERSION < 0x060000
     mainVLayout->setMargin( 6 );
+#else
+    mainVLayout->setContentsMargins( 6, 6, 6, 6 );
+#endif
 
     QSplitter *mainSplitter = new QSplitter( this );
 
@@ -173,7 +179,11 @@ void UimPrefDialog::createMainWidgets()
     QWidget *buttonHWidget = new QWidget( this );
     buttonHWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed);
     QHBoxLayout *buttonHLayout = new QHBoxLayout( buttonHWidget );
+#if QT_VERSION < 0x060000
     buttonHLayout->setMargin( 6 );
+#else
+    buttonHLayout->setContentsMargins( 6, 6, 6, 6 );
+#endif
     buttonHLayout->setSpacing( 6 );
     QPushButton *defaultButton = new QPushButton( _("Defaults"), buttonHWidget );
     connect( defaultButton, SIGNAL(clicked()),
@@ -197,7 +207,11 @@ void UimPrefDialog::createMainWidgets()
     QFrame *separator = new QFrame( this );
     separator->setFrameShape( QFrame::HLine );
     separator->setFrameShadow( QFrame::Sunken );
+#if QT_VERSION < 0x060000
     mainVLayout->setMargin( 0 );
+#else
+    mainVLayout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     mainVLayout->addWidget( mainSplitter );
     mainVLayout->addWidget( separator );
     mainVLayout->addWidget( buttonHWidget );
@@ -374,7 +388,11 @@ void QConfirmDialog::setupWidgets( const QString&msg )
 {
     QVBoxLayout *vLayout = new QVBoxLayout( this );
     vLayout->setSpacing( 6 );
+#if QT_VERSION < 0x060000
     vLayout->setMargin( 6 );
+#else
+    vLayout->setContentsMargins( 6, 6, 6, 6 );
+#endif
     QLabel *msgLabel = new QLabel( msg, this );
     QFrame *sep = new QFrame( this );
     sep->setFrameShape( QFrame::HLine );
@@ -428,7 +446,11 @@ void GroupPageWidget::setupWidgets()
         return;
 
     QVBoxLayout *vLayout = new QVBoxLayout( this );
+#if QT_VERSION < 0x060000
     vLayout->setMargin( 6 );
+#else
+    vLayout->setContentsMargins( 6, 6, 6, 6 );
+#endif
     vLayout->setSpacing( 3 );
     
     struct uim_custom_group *group
@@ -598,7 +620,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeInteger( QGroupBox *vbox, stru
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addStretch();
@@ -620,7 +646,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeString( QGroupBox *vbox, struc
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( lineEdit );
@@ -641,7 +671,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypePathname( QGroupBox *vbox, str
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( pathnameEdit );
@@ -663,7 +697,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeChoice( QGroupBox *vbox, struc
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( choiceCombo );
@@ -684,7 +722,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeOrderedList( QGroupBox *vbox, 
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( olistEditBox );
@@ -705,7 +747,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QGroupBox *vbox, struct u
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( keyEditBox );
@@ -726,7 +772,11 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeTable( QGroupBox *vbox, struct
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( tableBox );

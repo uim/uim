@@ -1,0 +1,31 @@
+include(../../qt4/common.pro)
+
+TEMPLATE = app
+
+# to include qtgettext.h
+INCLUDEPATH += @srcdir@/../../qt4
+
+LIBS += @LIBINTL@
+
+!versionAtLeast(QT_VERSION, 6.4.0) {
+    QT += core5compat
+}
+
+# Input
+HEADERS += @srcdir@/../../qt4/candwin/abstractcandidatewindow.h \
+           @srcdir@/../../qt4/candwin/candidatetablewindow.h \
+           @srcdir@/../../qt4/candwin/candidatewindow.h \
+           @srcdir@/../../qt4/candwin/subwindow.h \
+           @srcdir@/../../qt4/candwin/util.h \
+           @srcdir@/../../qt4/candwin/ximcandidatewindow.h
+SOURCES += @srcdir@/../../qt4/candwin/abstractcandidatewindow.cpp \
+           @srcdir@/../../qt4/candwin/candidatetablewindow.cpp \
+           @srcdir@/../../qt4/candwin/candidatewindow.cpp \
+           @srcdir@/../../qt4/candwin/qt4.cpp \
+           @srcdir@/../../qt4/candwin/subwindow.cpp \
+           @srcdir@/../../qt4/candwin/util.cpp \
+           @srcdir@/../../qt4/candwin/ximcandidatewindow.cpp
+
+TARGET = uim-candwin-qt6
+
+target.path += @DESTDIR@@UIM_LIBEXECDIR@

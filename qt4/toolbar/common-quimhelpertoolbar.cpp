@@ -52,7 +52,9 @@
 #include "uim/uim-scm.h"
 #include "qtgettext.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define UIM_ADD_QT_VERSION(command) command "-qt6"
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #define UIM_ADD_QT_VERSION(command) command "-qt5"
 #else
 #define UIM_ADD_QT_VERSION(command) command "-qt4"
@@ -70,7 +72,11 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     : QFrame( parent )
 {
     m_layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     m_layout->setMargin( 0 );
+#else
+    m_layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     m_layout->setSpacing( 0 );
 
     m_indicator = new UimStateIndicator( this );
@@ -313,5 +319,9 @@ void QUimHelperToolbar::slotExecHelp()
 
 void QUimHelperToolbar::setMargin( int margin )
 {
+#if QT_VERSION < 0x060000
     m_layout->setMargin( margin );
+#else
+    m_layout->setContentsMargins( margin, margin, margin, margin );
+#endif
 }

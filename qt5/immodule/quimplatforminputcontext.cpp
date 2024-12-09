@@ -490,7 +490,11 @@ void QUimPlatformInputContext::update()
 #endif
 
     if (w && proxy != NULL) {
+#if QT_VERSION < 0x060000
         QRect mf = w->inputMethodQuery(Qt::ImMicroFocus).toRect();
+#else
+        QRect mf = w->inputMethodQuery(Qt::ImCursorRectangle).toRect();
+#endif
         QPoint p = w->mapToGlobal(mf.topLeft());
         proxy->layoutWindow(p.x(), p.y(), mf.height());
     }

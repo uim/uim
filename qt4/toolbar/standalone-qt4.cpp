@@ -46,7 +46,12 @@
 # include <QtGui/QHBoxLayout>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# else
+#  include <QScreen>
+#  include <QGuiApplication>
+# endif
 # include <QtWidgets/QHBoxLayout>
 #endif
 
@@ -63,7 +68,11 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
     uim_init();
 
     QHBoxLayout *layout = new QHBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin( 0 );
+#else
+    layout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     layout->setSpacing( 0 );
     setLayout( layout );
 
@@ -83,8 +92,13 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
 
     // Move
     int panelHeight = 64; // FIXME!
+#if QT_VERSION < 0x060000
     int screenwidth = QApplication::desktop()->screenGeometry().width();
     int screenheight = QApplication::desktop()->screenGeometry().height();
+#else
+    int screenwidth = QGuiApplication::primaryScreen()->geometry().width();
+    int screenheight = QGuiApplication::primaryScreen()->geometry().height();
+#endif
     QPoint p( screenwidth - panelHeight - toolbar->width() - handler->width(),
             screenheight - height() - panelHeight );
     move( p );

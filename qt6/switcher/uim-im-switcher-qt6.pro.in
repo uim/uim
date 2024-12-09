@@ -1,0 +1,19 @@
+include(../../qt4/common.pro)
+
+TEMPLATE = app
+
+# to include qtgettext.h
+INCLUDEPATH += @srcdir@/../../qt4
+LIBS += -lreplace -luim -luim-scm -luim-custom @LIBINTL@
+
+!versionAtLeast(QT_VERSION, 6.4.0) {
+    QT += core5compat
+}
+
+# Input
+HEADERS += @srcdir@/../../qt4/switcher/qt4.h
+SOURCES += @srcdir@/../../qt4/switcher/qt4.cpp
+
+TARGET = uim-im-switcher-qt6
+
+target.path += @DESTDIR@@exec_prefix@/bin

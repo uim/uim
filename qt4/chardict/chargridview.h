@@ -43,7 +43,9 @@ SUCH DAMAGE.
 class QFont;
 class QMouseEvent;
 class QResizeEvent;
+#if QT_VERSION < 0x060000
 class QStringList;
+#endif
 
 class CharGridView : public QTableWidget
 {

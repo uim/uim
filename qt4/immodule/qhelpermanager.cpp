@@ -34,7 +34,13 @@ SUCH DAMAGE.
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#elif QT_VERSION < 0x060400
+# include <QTextCodec>
+#else
+# include <QStringDecoder>
+#endif
 
 #include "uim/uim.h"
 #include "uim/uim-helper.h"
@@ -134,10 +140,17 @@ void QUimHelperManager::parseHelperStr( const QString &str )
                     QString charset = lines[ 1 ].split( '=' ) [ 1 ];
 
                     /* convert to unicode */
+#if QT_VERSION < 0x060400
                     QTextCodec *codec
                         = QTextCodec::codecForName( charset.toLatin1() );
                     if ( codec && !lines[ 2 ].isEmpty() )
                         commit_str = codec->toUnicode( lines[ 2 ].toLatin1() );
+#else
+                    auto toUnicode
+                        = QStringDecoder( charset.toLatin1() );
+                    if ( toUnicode.isValid() && !lines[ 2 ].isEmpty() )
+                        commit_str = toUnicode( lines[ 2 ].toLatin1() );
+#endif
                 } else {
                     commit_str = lines[ 1 ];
                 }
@@ -277,10 +290,17 @@ void QUimHelperManager::sendImList()
     for ( it = info.begin(); it != info.end(); ++it )
     {
         QString leafstr;
+#if QT_VERSION < 0x060000
         leafstr.sprintf( "%s\t%s\t%s\t",
                          ( *it ).name.toUtf8().data(),
                          uim_get_language_name_from_locale( ( *it ).lang.toUtf8().data() ),
                          ( *it).short_desc.toUtf8().data() );
+#else
+        leafstr = QString("%1\t%2\t%3\t")
+                         .arg(( *it ).name)
+                         .arg(QString::fromLatin1(uim_get_language_name_from_locale( ( *it ).lang.toUtf8().data() )))
+                         .arg(( *it).short_desc);
+#endif
 
         if ( QString::compare( ( *it ).name, current_im_name ) == 0 )
             leafstr.append( "selected" );
@@ -297,7 +317,11 @@ void QUimHelperManager::send_im_change_whole_desktop( const char *name )
 {
     QString msg;
 
+#if QT_VERSION < 0x060000
     msg.sprintf("im_change_whole_desktop\n%s\n", name);
+#else
+    msg = QString("im_change_whole_desktop\n%1\n").arg(QString::fromLatin1(name));
+#endif
     uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 }
 

@@ -59,9 +59,17 @@ QString get_messages(int fd)
 
 QList<QStringList> parse_messages(const QString &message)
 {
+#if QT_VERSION < 0x060000
     QStringList messageList = message.split("\f\f", QString::SkipEmptyParts);
+#else
+    QStringList messageList = message.split("\f\f", Qt::SkipEmptyParts);
+#endif
     QList<QStringList> result;
     for (int i = 0, j = messageList.count(); i < j; i++)
+#if QT_VERSION < 0x060000
         result.append(messageList[i].split('\f', QString::SkipEmptyParts));
+#else
+        result.append(messageList[i].split('\f', Qt::SkipEmptyParts));
+#endif
     return result;
 }

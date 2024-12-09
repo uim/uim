@@ -36,7 +36,13 @@
 
 #include <QtCore/QEvent>
 #include <QtCore/QSocketNotifier>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#elif QT_VERSION < 0x060400
+# include <QTextCodec>
+#else
+# include <QStringDecoder>
+#endif
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
 # include <QtGui/QGroupBox>
@@ -168,7 +174,11 @@ void UimImSwitcher::createGUI()
 
     // main layout
     QVBoxLayout *mainLayout = new QVBoxLayout( this );
+#if QT_VERSION < 0x060000
     mainLayout->setMargin( 6 );
+#else
+    mainLayout->setContentsMargins( 6, 6, 6, 6 );
+#endif
     mainLayout->setSpacing( 6 );
     mainLayout->addWidget( listview );
     mainLayout->addWidget( groupBox );
@@ -269,19 +279,35 @@ void UimImSwitcher::slotStdinActivated()
     char *s;
     while ( ( s = uim_helper_get_message() ) )
     {
+#if QT_VERSION < 0x060000
         const QStringList lines = QString( s ).split( '\n',
             QString::SkipEmptyParts );
+#else
+        const QStringList lines = QString( s ).split( '\n',
+            Qt::SkipEmptyParts );
+#endif
         if ( !lines.isEmpty() && lines.count() > 1
             && lines[ 1 ].startsWith( QLatin1String( "charset" ) ) )
         {
             /* get charset */
+#if QT_VERSION < 0x060000
             const QString charset
                 = lines[ 1 ].split( '=', QString::SkipEmptyParts ) [ 1 ];
+#else
+            const QString charset
+                = lines[ 1 ].split( '=', Qt::SkipEmptyParts ) [ 1 ];
+#endif
 
             /* convert to unicode */
+#if QT_VERSION < 0x060400
             QTextCodec *codec
                 = QTextCodec::codecForName( QByteArray( charset.toLatin1() ) );
             msg = codec->toUnicode( s );
+#else
+            auto toUnicode
+                = QStringDecoder( charset.toLatin1() );
+            msg = toUnicode( s );
+#endif
         }
         else
         {
@@ -307,7 +333,11 @@ void UimImSwitcher::parseHelperStrImList( const QString &message )
     listview->setRowCount( 0 );
     listview->clearContents();
 
+#if QT_VERSION < 0x060000
     const QStringList lines = message.split( '\n', QString::SkipEmptyParts );
+#else
+    const QStringList lines = message.split( '\n', Qt::SkipEmptyParts );
+#endif
     for ( int i = 2; i < lines.count(); i++ )
     {
         const QStringList iminfoList = lines[ i ].split( '\t' );

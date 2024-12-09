@@ -44,7 +44,11 @@
 # include <QtGui/QInputContext>
 #else
 # if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
-#  include <QtX11Extras/QX11Info>
+#  if QT_VERSION < 0x060000
+#   include <QtX11Extras/QX11Info>
+#  else
+#   include <QtGui/private/qtx11extras_p.h>
+#  endif
 # endif
 # include <QtCore/qdatastream.h>
 # include <qpa/qplatforminputcontext.h>

@@ -38,7 +38,13 @@ SUCH DAMAGE.
 
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#elif QT_VERSION < 0x060400
+# include <QTextCodec>
+#else
+# include <QStringDecoder>
+#endif
 #include <QtCore/QTextStream>
 #if QT_VERSION < 0x050000
 # include <QtGui/QFrame>
@@ -94,7 +100,11 @@ void BushuViewWidget::setupWidgets()
                       this, SIGNAL( charSelected( const QString & ) ) );
 
     QVBoxLayout *vLayout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     vLayout->setMargin( 0 );
+#else
+    vLayout->setContentsMargins( 0, 0, 0, 0 );
+#endif
     vLayout->addWidget( bushuLabel );
     vLayout->addWidget( m_bushuListView );
 
@@ -111,12 +121,29 @@ void BushuViewWidget::readDict()
     if ( file.open( QIODevice::ReadOnly ) )
     {
         QTextStream stream( &file );
+#if QT_VERSION < 0x060000
         stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
+#else
+        stream.setEncoding(QStringConverter::Latin1);
+#if QT_VERSION < 0x060400
+        QTextCodec *codec = QTextCodec::codecForName(BUSHUDICT_ENCODING);
+#else
+        auto toUnicode = QStringDecoder(BUSHUDICT_ENCODING);
+#endif
+#endif
         QString line;
         while ( !stream.atEnd() )
         {
+#if QT_VERSION < 0x060000
             QString bushuName
                 = stream.readLine().split( ' ', QString::SkipEmptyParts ) [ 0 ];
+#elif QT_VERSION < 0x060400
+            QString bushuName
+                = codec->toUnicode(stream.readLine().toLatin1()).split( ' ', Qt::SkipEmptyParts ) [ 0 ];
+#else
+            QString bushuName
+                = QString(toUnicode(stream.readLine().toLatin1())).split( ' ', Qt::SkipEmptyParts ) [ 0 ];
+#endif
 
             // insert last
             m_bushuListView->addItem( bushuName );
@@ -139,14 +166,31 @@ void BushuViewWidget::slotBushuSelected()
     if ( file.open( QIODevice::ReadOnly ) )
     {
         QTextStream stream( &file );
+#if QT_VERSION < 0x060000
         stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
+#else
+        stream.setEncoding(QStringConverter::Latin1);
+#if QT_VERSION < 0x060400
+        QTextCodec *codec = QTextCodec::codecForName(BUSHUDICT_ENCODING);
+#else
+        auto toUnicode = QStringDecoder(BUSHUDICT_ENCODING);
+#endif
+#endif
         QString line;
 
         // search selected bushu line by line
         while ( !stream.atEnd() )
         {
+#if QT_VERSION < 0x060000
             QStringList chars
                 = stream.readLine().split( ' ', QString::SkipEmptyParts );
+#elif QT_VERSION < 0x060400
+            QStringList chars
+                = codec->toUnicode(stream.readLine().toLatin1()).split( ' ', Qt::SkipEmptyParts );
+#else
+            QStringList chars
+                = QString(toUnicode(stream.readLine().toLatin1())).split( ' ', Qt::SkipEmptyParts );
+#endif
             QString bushuName = chars[ 0 ];
             if ( selectedBushuName == bushuName )
             {
@@ -165,8 +209,12 @@ void BushuViewWidget::writeConfig()
 
     // splitter
     QString str;
+#if QT_VERSION < 0x060000
     QTextStream out( &str );
     out << *m_mainSplitter;
+#else
+    str = QString::fromLatin1(m_mainSplitter->saveState());
+#endif
     settings.setValue( "/uim-kdehelper/chardict/bushuview/splitter", str );
 }
 
@@ -180,8 +228,12 @@ void BushuViewWidget::readConfig()
         "/uim-kdehelper/chardict/bushuview/splitter" ).toString();
     if ( !str.isEmpty() )
     {
+#if QT_VERSION < 0x060000
         QTextStream in( &str );
         in >> *m_mainSplitter;
+#else
+        m_mainSplitter->restoreState(str.toLatin1());
+#endif
     }
 }
 

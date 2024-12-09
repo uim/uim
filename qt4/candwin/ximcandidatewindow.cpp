@@ -41,7 +41,13 @@
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
+#if QT_VERSION < 0x060000
+# include <QtCore/QTextCodec>
+#elif QT_VERSION < 0x060400
+# include <QTextCodec>
+#else
+# include <QStringDecoder>
+#endif
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
 # include <QtGui/QDesktopWidget>
@@ -51,7 +57,12 @@
 # include <QtGui/QVBoxLayout>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# else
+#  include <QScreen>
+#  include <QGuiApplication>
+# endif
 # include <QtWidgets/QHeaderView>
 # include <QtWidgets/QLabel>
 # include <QtWidgets/QTableWidget>
@@ -118,7 +129,11 @@ XimCandidateWindow::XimCandidateWindow(QWidget *parent)
     connect(notifier, SIGNAL(activated(int)),
                       this, SLOT(slotStdinActivated(int)));
     QVBoxLayout *layout = new QVBoxLayout;
+#if QT_VERSION < 0x060000
     layout->setMargin(0);
+#else
+    layout->setContentsMargins(0, 0, 0, 0);
+#endif
     layout->setSpacing(0);
     layout->addWidget(cList);
     layout->addWidget(numLabel);
@@ -147,20 +162,37 @@ void XimCandidateWindow::activateCand(const QStringList &list)
     cList->setRowCount(0);
     stores.clear();
 
+#if QT_VERSION < 0x060400
     // get charset and create codec
     QTextCodec *codec = 0;
+#else
+    // get charset and create decoder
+    QStringDecoder toUnicode = QStringDecoder();
+#endif
     if (!list[1].isEmpty()
         && list[1].startsWith(QLatin1String("charset")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[1].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[1].split('=', Qt::SkipEmptyParts);
+#endif
+#if QT_VERSION < 0x060400
         codec = QTextCodec::codecForName(l[1].toLatin1());
+#else
+        toUnicode = QStringDecoder(l[1].toLatin1());
+#endif
     }
 
     // get display_limit
     if (!list[2].isEmpty()
         && list[2].startsWith(QLatin1String("display_limit")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[2].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[2].split('=', Qt::SkipEmptyParts);
+#endif
         displayLimit = l[1].toInt();
     }
 
@@ -179,8 +211,13 @@ void XimCandidateWindow::activateCand(const QStringList &list)
         // store data
         CandData d;
         QString headString;
+#if QT_VERSION < 0x060400
         if (codec)
             headString = codec->toUnicode(l[0].toLatin1());
+#else
+        if (toUnicode.isValid())
+            headString = toUnicode(l[0].toLatin1());
+#endif
         else
             headString = l [0];
 
@@ -189,8 +226,13 @@ void XimCandidateWindow::activateCand(const QStringList &list)
         l.pop_front();
         QString candString = l [0];
 
+#if QT_VERSION < 0x060400
         if (codec)
             d.str = codec->toUnicode(candString.toLatin1());
+#else
+        if (toUnicode.isValid())
+            d.str = toUnicode(candString.toLatin1());
+#endif
         else
             d.str = candString;
 
@@ -238,8 +280,13 @@ void XimCandidateWindow::moveCand(const QStringList &list)
     const int topwin_y = list[2].toInt();
     const int cw_wi = width();
     const int cw_he = height();
+#if QT_VERSION < 0x060000
     const int sc_wi = QApplication::desktop()->screenGeometry().width();
     const int sc_he = QApplication::desktop()->screenGeometry().height();
+#else
+    const int sc_wi = QGuiApplication::primaryScreen()->geometry().width();
+    const int sc_he = QGuiApplication::primaryScreen()->geometry().height();
+#endif
 
     int x, y;
     if (sc_wi < topwin_x + cw_wi)
@@ -317,20 +364,37 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
 
     int page = 0;
 
+#if QT_VERSION < 0x060400
     // get charset and create codec
     QTextCodec *codec = 0;
+#else
+    // get charset and create decoder
+    QStringDecoder toUnicode = QStringDecoder();
+#endif
     if (!list[1].isEmpty()
         && list[1].startsWith(QLatin1String("charset")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[1].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[1].split('=', Qt::SkipEmptyParts);
+#endif
+#if QT_VERSION < 0x060400
         codec = QTextCodec::codecForName(l[1].toLatin1());
+#else
+        toUnicode = QStringDecoder(l[1].toLatin1());
+#endif
     }
 
     // get page
     if (!list[2].isEmpty()
         && list[2].startsWith(QLatin1String("page")))
     {
+#if QT_VERSION < 0x060000
         const QStringList l = list[2].split('=', QString::SkipEmptyParts);
+#else
+        const QStringList l = list[2].split('=', Qt::SkipEmptyParts);
+#endif
         page = l[1].toInt();
     }
 
@@ -347,8 +411,13 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
         // store data
         CandData &d = stores[page * displayLimit + i - 3];
         QString headString;
+#if QT_VERSION < 0x060400
         if (codec)
             headString = codec->toUnicode(l [0].toLatin1());
+#else
+        if (toUnicode.isValid())
+            headString = toUnicode(l [0].toLatin1());
+#endif
         else
             headString = l [0];
 
@@ -357,8 +426,13 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
         l.pop_front();
         QString candString = l [0];
 
+#if QT_VERSION < 0x060400
         if (codec)
             d.str = codec->toUnicode(candString.toLatin1());
+#else
+        if (toUnicode.isValid())
+            d.str = toUnicode(candString.toLatin1());
+#endif
         else
             d.str = candString;
 

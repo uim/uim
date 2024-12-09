@@ -55,6 +55,7 @@ AC_PATH_PROGS(SHA256, sha256 sha256sum)
 AC_PATH_PROGS(SED, sed gsed)
 AX_PATH_QMAKE4
 AX_PATH_QMAKE5
+AX_PATH_QMAKE6
 
 AM_MAINTAINER_MODE
 
@@ -1163,9 +1164,34 @@ fi
 
 AM_CONDITIONAL(QT5_IMMODULE, test "x$with_qt5_immodule" = xyes)
 
+dnl *****************************
+dnl *** Check for Qt6 Library ***
+dnl *****************************
+AC_ARG_WITH(qt6,
+  AC_HELP_STRING([--with-qt6],
+    [build Qt6 helper applications]),
+  [],
+  [with_qt6=no])
+
+AM_CONDITIONAL(QT6, test "x$with_qt6" = xyes)
+
+AC_ARG_WITH(qt6-immodule,
+  AC_HELP_STRING([--with-qt6-immodule],
+    [build Qt6-immodule extension]),
+  [],
+  [with_qt6_immodule=no])
+
+if test "x$with_qt6" = xyes || test "x$with_qt6_immodule" = xyes; then
+  if test -z "$QMAKE6"; then
+    AC_MSG_ERROR([no qmake for Qt6 found])
+  fi
+fi
+
+AM_CONDITIONAL(QT6_IMMODULE, test "x$with_qt6_immodule" = xyes)
+
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-    [determine default toolkit (gtk, gtk3, qt, qt4 or qt5) @<:@default=gtk@:>@]),
+    [determine default toolkit (gtk, gtk3, qt, qt4, qt5 or qt6) @<:@default=gtk@:>@]),
   [],
   [enable_default_toolkit=no])
 
@@ -1186,6 +1212,9 @@ if test "x$enable_default_toolkit" != xno; then
   elif test "x$enable_default_toolkit" = xqt5 && \
        test "x$with_qt5" = xyes; then
     default_toolkit=qt5
+  elif test "x$enable_default_toolkit" = xqt6 && \
+       test "x$with_qt6" = xyes; then
+    default_toolkit=qt6
   fi
 fi
 
@@ -1194,6 +1223,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test "x$default_toolkit" = xqt5)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT6, test "x$default_toolkit" = xqt6)
 AC_SUBST(default_toolkit)
 
 AC_ARG_ENABLE(fep,
@@ -1482,6 +1512,9 @@ if test "x$enable_pref" != xno; then
     enable_pref=yes
   elif test x"$default_toolkit" = xqt5 && \
        test x"$with_qt5" = xyes; then
+    enable_pref=yes
+  elif test x"$default_toolkit" = xqt6 && \
+       test x"$with_qt6" = xyes; then
     enable_pref=yes
   else
     enable_pref=no
@@ -1864,6 +1897,20 @@ AC_CONFIG_FILES([Makefile
                  qt5/switcher/Makefile
                  qt5/toolbar/uim-toolbar-qt5.pro
                  qt5/toolbar/Makefile
+                 qt6/Makefile
+                 qt6/candwin/Makefile
+                 qt6/candwin/uim-candwin-qt6.pro
+                 qt6/chardict/Makefile
+                 qt6/chardict/uim-chardict-qt6.pro
+                 qt6/edittest/Makefile
+                 qt6/immodule/quimplatforminputcontextplugin.pro
+                 qt6/immodule/Makefile
+                 qt6/pref/uim-pref-qt6.pro
+                 qt6/pref/Makefile
+                 qt6/switcher/uim-im-switcher-qt6.pro
+                 qt6/switcher/Makefile
+                 qt6/toolbar/uim-toolbar-qt6.pro
+                 qt6/toolbar/Makefile
                  xim/Makefile
                  fep/Makefile
                  emacs/Makefile
@@ -1985,6 +2032,35 @@ if test "x$with_qt5_immodule" = xyes; then
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
+    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+  set +e
+fi
+
+# Generate Makefiles for Qt6 by CMake and qmake
+if test "x$with_qt6" = xyes; then
+  if test "x$with_qt6_immodule" = xyes; then
+    qt6_immodule_option="DEFINES+=QT6_IMMODULE"
+  fi
+  set -e
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/candwin/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt6/candwin/uim-candwin-qt6.pro
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/chardict/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt6/chardict/uim-chardict-qt6.pro
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/pref/Makefile.qmake \
+    ${qt6_immodule_option} \
+    ${ac_abs_top_builddir}/qt6/pref/uim-pref-qt6.pro
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/switcher/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt6/switcher/uim-im-switcher-qt6.pro
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/toolbar/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt6/toolbar/uim-toolbar-qt6.pro
+  set +e
+fi
+
+if test "x$with_qt6_immodule" = xyes; then
+  set -e
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/immodule/Makefile.qmake \
+    ${ac_abs_top_builddir}/qt6/immodule/quimplatforminputcontextplugin.pro
+  ${QMAKE6} -o ${ac_abs_top_builddir}/qt6/edittest/Makefile.qmake \
     ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
   set +e
 fi

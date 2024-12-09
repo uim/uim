@@ -40,7 +40,12 @@
 # include <QtGui/QLabel>
 #else
 # include <QtWidgets/QApplication>
-# include <QtWidgets/QDesktopWidget>
+# if QT_VERSION < 0x060000
+#  include <QtWidgets/QDesktopWidget>
+# else
+#  include <QScreen>
+#  include <QGuiApplication>
+# endif
 # include <QtWidgets/QLabel>
 #endif
 
@@ -166,8 +171,13 @@ void AbstractCandidateWindow::layoutWindow(int x, int y, int h)
     int destX = x;
     int destY = y + h;
 
+#if QT_VERSION < 0x060000
     int screenW = QApplication::desktop()->screenGeometry().width();
     int screenH = QApplication::desktop()->screenGeometry().height();
+#else
+    int screenW = QGuiApplication::primaryScreen()->geometry().width();
+    int screenH = QGuiApplication::primaryScreen()->geometry().height();
+#endif
 
     if (destX + width() > screenW)
         destX = screenW - width();
