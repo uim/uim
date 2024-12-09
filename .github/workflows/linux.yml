@@ -38,10 +38,10 @@ jobs:
           chmod -R go+rw .
       - name: Build Docker image
         run: |
-          docker-compose build ${{ matrix.image }}
+          docker compose build ${{ matrix.image }}
       - name: Run Docker image
         run: |
-          docker-compose run ${{ matrix.image }}
+          docker compose run ${{ matrix.image }}
 
       # Release
       - name: Extract tag
