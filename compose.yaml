@@ -1,5 +1,3 @@
-version: "3.5"
-
 services:
   debian-12-core:
     image: uim/uim-debian-12-core
