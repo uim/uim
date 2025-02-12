@@ -3,7 +3,6 @@
 set -eux
 
 /source/configure \
-  --enable-maintainer-mode \
   --prefix=/tmp/local \
   --with-qt4 \
   --with-qt4-immodule \
