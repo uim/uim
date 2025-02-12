@@ -22,6 +22,7 @@ RUN \
     libqt5x11extras5-dev \
     librsvg2-bin \
     libx11-dev \
+    libxft-dev \
     make \
     pkg-config \
     qt5-qmake \
