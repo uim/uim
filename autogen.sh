@@ -2,7 +2,8 @@
 
 set -e
 
-${AUTORECONF:-autoreconf} --force --install "$@"
 if command -v intltoolize >/dev/null; then
-    intltoolize --copy --force --automake
+  mkdir -p m4.generated
+  intltoolize --copy --force --automake
 fi
+${AUTORECONF:-autoreconf} --force --install "$@"
