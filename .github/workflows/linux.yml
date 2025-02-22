@@ -19,7 +19,7 @@ jobs:
           - debian-12-qt5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Install dependencies to generate configure
