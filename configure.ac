@@ -317,7 +317,9 @@ AC_PATH_XTRA
 use_xim=no
 if test x"$have_x" != xdisabled && test x"$have_x" != xno; then
   PKG_CHECK_MODULES(XIM, xext, use_xim=yes, use_xim=no)
-  if test "x$use_xim" = xyes && test -z "$CXX"; then
+  # uim-xim doesn't require C++11 for now but this is an easy way to
+  # check whether C++ compiler is available or not.
+  if test "x$use_xim" = xyes && test "x$ac_cv_prog_cxx_cxx11" = xno; then
     use_xim=no
   fi
   AC_MSG_CHECKING([whether to have Xft support])
