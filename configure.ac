@@ -317,6 +317,9 @@ AC_PATH_XTRA
 use_xim=no
 if test x"$have_x" != xdisabled && test x"$have_x" != xno; then
   PKG_CHECK_MODULES(XIM, xext, use_xim=yes, use_xim=no)
+  if test "x$use_xim" = xyes && test -z "$CXX"; then
+    use_xim=no
+  fi
   AC_MSG_CHECKING([whether to have Xft support])
   AM_PATH_XFT(yes, XFT=true, XFT=false)
   if test x"$XFT" = xtrue; then
