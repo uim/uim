@@ -1,7 +1,9 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
+echo "::group::configure"
+set -x
 /source/configure \
   --enable-dict \
   --enable-gnome-applet \
@@ -25,8 +27,23 @@ set -eux
   --with-gtk3 \
   --with-sj3 \
   --with-wnn
+set +x
+echo "::endgroup::"
 
+echo "::group::distcheck"
+set -x
 sudo -H make distcheck
-make sum
+set +x
+echo "::endgroup::"
 
+echo "::group::sum"
+set -x
+make sum
+set +x
+echo "::endgroup::"
+
+echo "::group::dist"
+set -x
 sudo -H mv *.tar.* *.sum /source/
+set +x
+echo "::endgroup::"
