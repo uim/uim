@@ -40,7 +40,6 @@ jobs:
           ./autogen.sh
           popd
           popd
-          chmod -R go+rw .
       - name: Build Docker image
         run: |
           docker compose build ${{ matrix.image }}
