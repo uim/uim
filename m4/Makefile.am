@@ -1,6 +1,4 @@
 EXTRA_DIST = \
-	ac_cxx_have_stl.m4 \
-	ac_cxx_namespace.m4 \
 	ax_cflags_gcc_option.m4 \
 	ax_create_stdint_h.m4 \
 	ax_func_sigsetjmp.m4 \
