@@ -11,7 +11,10 @@ INCLUDEPATH += @srcdir@/../../qt4/candwin \
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
-QT += gui-private core5compat
+QT += gui-private
+!versionAtLeast(QT_VERSION, 6.4.0) {
+    QT += core5compat
+}
 
 # Input
 HEADERS += @srcdir@/../../qt4/immodule/candidatewindowproxy.h \
