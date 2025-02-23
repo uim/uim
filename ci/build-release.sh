@@ -47,7 +47,7 @@ echo "::endgroup::"
 
 echo "::group::distcheck"
 set -x
-sudo -H make distcheck
+make distcheck
 set +x
 echo "::endgroup::"
 
