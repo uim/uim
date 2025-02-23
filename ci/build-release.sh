@@ -2,9 +2,25 @@
 
 set -eu
 
+echo "::group::autogen"
+set -x
+rm -rf ~/source
+cp -a /source ~/source
+pushd ~/source
+./autogen.sh
+pushd sigscheme
+./autogen.sh
+pushd libgcroots
+./autogen.sh
+popd
+popd
+popd
+set +x
+echo "::endgroup::"
+
 echo "::group::configure"
 set -x
-/source/configure \
+~/source/configure \
   --enable-dict \
   --enable-gnome-applet \
   --enable-gnome3-applet \
@@ -18,11 +34,10 @@ set -x
   --with-eb \
   --with-eb-conf=/etc/eb.conf \
   --with-ffi \
-  --with-qt4 \
-  --with-qt4-immodule \
-  --with-qt4-qt3-support \
   --with-qt5 \
   --with-qt5-immodule \
+  --with-qt6 \
+  --with-qt6-immodule \
   --with-gtk2 \
   --with-gtk3 \
   --with-sj3 \

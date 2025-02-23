@@ -1,16 +1,25 @@
-uim 1.8.9 Release Note
+uim 1.9.0 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.8.8 is the latest stable release of uim.
+This distribution of uim 1.9.0 is the latest stable release of uim.
 
 Please report any problem with uim.
 
 Homepage:            https://github.com/uim/uim
 Mailinglist:         uim-en@googlegroups.com
 Bug tracking system: https://github.com/uim/uim/issues?state=open
+
+What's New in 1.9.0
+-------------------
+
+  - Improve Qt support including Qt6 support
+  - Improve NetBSD support
+
+See NEWS.md for the fully detailed changes.
+
 
 What's New in 1.8.9
 -------------------

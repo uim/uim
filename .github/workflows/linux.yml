@@ -47,59 +47,41 @@ jobs:
         run: |
           docker compose run ${{ matrix.image }}
 
-      # Release
-      - name: Extract tag
-        if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
-        id: tag
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build Docker image
         run: |
-          tag=$(echo ${{ github.ref }} | sed -e 's,^refs/tags/,,')
-          echo ::set-output name=name::${tag}
-      - uses: actions/setup-ruby@v1
-        if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
-      - name: Extract the news for the current release
-        if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
+          docker compose build debian-12-release
+      - name: Run Docker image
         run: |
-          ruby extract-news.rb ${{ steps.tag.outputs.name }} | tee news-current.txt
-      - uses: actions/create-release@v1
-        if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
-        id: create-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          docker compose run debian-12-release
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.tag.outputs.name }}
-          body_path: news-current.txt
-      - uses: actions/upload-release-asset@v1
+          name: source
+          path: |
+            *.sum
+            *.tar.gz
+            *.tar.bz2
+      - name: Publish
         if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: uim-${{ steps.tag.outputs.name }}.tar.gz
-          asset_name: uim-${{ steps.tag.outputs.name }}.tar.gz
-          asset_content_type: application/gzip
-      - uses: actions/upload-release-asset@v1
-        if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: uim-${{ steps.tag.outputs.name }}.tar.bz2
-          asset_name: uim-${{ steps.tag.outputs.name }}.tar.bz2
-          asset_content_type: application/x-bzip2
-      - uses: actions/upload-release-asset@v1
-        if: |
-          startsWith(github.ref, 'refs/tags/') && matrix.image == 'debian-10-release'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: uim-${{ steps.tag.outputs.name }}.sum
-          asset_name: uim-${{ steps.tag.outputs.name }}.sum
-          asset_content_type: text/plain
+          github.ref_type == 'tag'
+        run: |
+          ruby \
+            -e 'print("## uim ");
+                puts(ARGF.read.split(/^## /)[1].
+                       gsub(/\[(GH-\d+)\]\(.+?\)/) {$1}.
+                       strip)' \
+            NEWS.md | tee release-note.md
+          title="$(head -n1 release-note.md | sed -e 's/^## //')"
+          tail -n +2 release-note.md > release-note-without-version.md
+          gh release create ${GITHUB_REF_NAME} \
+            --discussion-category Announcements \
+            --notes-file release-note-without-version.md \
+            --title "${title}" \
+            --verify-tag \
+            uim-${GITHUB_REF_NAME}*

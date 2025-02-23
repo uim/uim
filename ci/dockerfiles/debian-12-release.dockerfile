@@ -12,10 +12,11 @@ RUN \
   apt update -qq && \
   apt install -y \
     asciidoc \
+    autoconf \
+    autopoint \
     cmake \
     extra-cmake-modules \
     g++ \
-    gauche-dev \
     gcc \
     intltool \
     libanthy-dev \
@@ -35,11 +36,14 @@ RUN \
     librsvg2-bin \
     libsqlite3-dev \
     libssl-dev \
+    libtool \
     libwnn-dev \
     libx11-dev \
     make \
     pkg-config \
     qt5-qmake \
+    qt6-base-private-dev \
+    qt6-declarative-dev \
     qtbase5-dev \
     qtbase5-private-dev \
     qtdeclarative5-dev \
@@ -60,7 +64,5 @@ USER uim
 
 RUN mkdir -p /home/uim/build
 WORKDIR /home/uim/build
-
-ENV QT_SELECT=qt5
 
 CMD /source/ci/build-release.sh
