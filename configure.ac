@@ -1472,7 +1472,7 @@ if test "x$enable_kde4_applet" = xyes && test "x$CMAKE" = xno; then
 fi
 
 AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
-if test "x$with_qt4" = xyes || test "x$with_qt5" = xyes; then
+if test "x$with_qt4" = xyes || test "x$with_qt5" = xyes || test "x$with_qt6"; then
   if test "x$KDE4_CONFIG" != xno; then
     KDE4_ICONDIR=`$KDE4_CONFIG --expandvars --install icon`
   fi

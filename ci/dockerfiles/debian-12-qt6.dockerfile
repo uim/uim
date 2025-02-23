@@ -17,18 +17,14 @@ RUN \
     gcc \
     intltool \
     libedit-dev \
-    libkf5plasma-dev \
     libncurses-dev \
-    libqt5x11extras5-dev \
     librsvg2-bin \
     libx11-dev \
     libxft-dev \
     make \
     pkg-config \
-    qt5-qmake \
-    qtbase5-dev \
-    qtbase5-private-dev \
-    qtdeclarative5-dev \
+    qt6-base-private-dev \
+    qt6-declarative-dev \
     ruby \
     sudo \
     tzdata && \
@@ -47,4 +43,4 @@ USER uim
 RUN mkdir -p /home/uim/build
 WORKDIR /home/uim/build
 
-CMD /source/ci/build-qt5.sh
+CMD /source/ci/build-qt6.sh

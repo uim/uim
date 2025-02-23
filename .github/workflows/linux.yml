@@ -17,6 +17,7 @@ jobs:
           - debian-12-core
           - debian-12-gtk3
           - debian-12-qt5
+          - debian-12-qt6
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

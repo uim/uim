@@ -47,8 +47,10 @@
 
 #if QT_VERSION < 0x060000
 # include <QtCore/QTextCodec>
-#else
+#elif QT_VERSION < 0x060400
 # include <QTextCodec>
+#else
+# include <QStringDecoder>
 #endif
 #if QT_VERSION >= 0x050000
 # undef Expose
@@ -822,12 +824,20 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     free(p->mb);
     p->mb = rhs_string_mb;
     free(p->utf8);
+#if QT_VERSION < 0x060400
     {
         QTextCodec *codec = QTextCodec::codecForLocale();
         QString qs = codec->toUnicode(rhs_string_mb);
         char *rhs_string_utf8 = strdup(qs.toUtf8().data());
         p->utf8 = rhs_string_utf8;
     }
+#else
+    {
+        auto toUnicode = QStringDecoder(QStringConverter::System);
+        auto qs = toUnicode(rhs_string_mb);
+        p->utf8 = strdup(qs.toUtf8().data());
+    }
+#endif
     p->ks = rhs_keysym;
     return n;
 error:
