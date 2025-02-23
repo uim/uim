@@ -592,6 +592,24 @@
 /qt5/toolbar/uim-toolbar-qt5.pro
 /qt5/toolbar/*.o
 
+# Must use out-of-source build
+# /qt6/
+/qt6/Makefile.in
+# /qt6/candwin/
+/qt6/candwin/Makefile.in
+# /qt6/chardict/
+/qt6/chardict/Makefile.in
+# /qt6/edittest/
+/qt6/edittest/Makefile.in
+# /qt6/immodule/
+/qt6/immodule/Makefile.in
+# /qt6/pref/
+/qt6/pref/Makefile.in
+# /qt6/switcher/
+/qt6/switcher/Makefile.in
+# /qt6/toolbar/
+/qt6/toolbar/Makefile.in
+
 # /replace/
 /replace/.deps/
 /replace/.libs/
