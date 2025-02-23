@@ -34,7 +34,7 @@
 
 (require "util.scm")
 (require "ustr.scm")
-(require "japanese.scm")
+(require "japanese-utf8/japanese.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "anthy-utf8-custom.scm")
 (require-custom "anthy-key-custom.scm")
@@ -89,12 +89,12 @@
      ((anthy-utf8-context-converting ac)
       (anthy-utf8-do-commit ac))
      ((anthy-utf8-context-transposing ac)
-      (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac))))
+      (im-commit ac (anthy-utf8-transposing-text ac)))
      ((and
        (anthy-utf8-context-on ac)
        (anthy-utf8-has-preedit? ac))
       (im-commit
-       ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac))))))
+       ac (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac)))))
     (anthy-utf8-flush ac)
     (anthy-utf8-update-preedit ac)))
 
@@ -105,14 +105,14 @@
        ((anthy-utf8-context-converting ac)
 	(anthy-utf8-do-commit ac))
        ((anthy-utf8-context-transposing ac)
-	(im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac)))
+	(im-commit ac (anthy-utf8-transposing-text ac))
 	(anthy-utf8-flush ac))
        ((and
 	 (anthy-utf8-context-on ac)
 	 (anthy-utf8-has-preedit? ac)
 	 (not (= old-kana new-mode)))
 	(im-commit
-	 ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac))))
+	 ac (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac)))
 	(anthy-utf8-flush ac)))
       (anthy-utf8-update-preedit ac))))
 
@@ -590,7 +590,7 @@
 	       (> (string-length preconv-str)
 		  0))
 	  (begin
-	    (anthy-utf8-lib-set-string ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+	    (anthy-utf8-lib-set-string ac-id preconv-str)
 	    (let ((nr-segments (anthy-utf8-lib-get-nr-segments ac-id)))
 	      (ustr-set-latter-seq! (anthy-utf8-context-segments ac)
 				    (make-list nr-segments 0))
@@ -716,16 +716,16 @@
        
        ;; direct key => commit
        (direct
-	(im-commit ac (anthy-utf8-lib-eucjp-to-utf8 direct)))
+	(im-commit ac direct))
 
        ;; space key => commit
        ((anthy-space-key? key key-state)
 	(if (anthy-utf8-context-alnum ac)
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (list-ref
+	    (im-commit ac (list-ref
 			   ja-alnum-space
 			   (- (anthy-utf8-context-alnum-type ac)
-			      anthy-type-halfwidth-alnum))))
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (list-ref ja-space (anthy-utf8-context-kana-mode ac))))))
+			      anthy-type-halfwidth-alnum)))
+	    (im-commit ac (list-ref ja-space (anthy-utf8-context-kana-mode ac)))))
 
        ((anthy-non-composing-symbol? ac key)
 	(anthy-utf8-commit-raw ac))
@@ -806,7 +806,7 @@
                (> (string-length preconv-str) 0)
                type)
         (begin
-          (anthy-utf8-lib-set-string ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+          (anthy-utf8-lib-set-string ac-id preconv-str)
           (expand-segment)
           (anthy-utf8-lib-commit-segment ac-id 0 type))))))
 
@@ -859,7 +859,7 @@
 	 (if (anthy-commit-key? key key-state)
 	     (begin
 	       (anthy-utf8-learn-transposing-text ac)
-	       (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac)))
+	       (im-commit ac (anthy-utf8-transposing-text ac))
 	       (anthy-utf8-flush ac)
 	       #f)
 	     #t)
@@ -897,7 +897,7 @@
 	     #t)
 	 ; implicit commit
 	 (begin
-	   (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac)))
+	   (im-commit ac (anthy-utf8-transposing-text ac))
 	   (anthy-utf8-flush ac)
 	   (anthy-utf8-proc-input-state ac key key-state))))))))
 
@@ -1147,7 +1147,7 @@
 	(begin
 	  (im-commit
 	   ac
-	   (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t (ja-opposite-kana kana))))
+	   (anthy-utf8-make-whole-string ac #t (ja-opposite-kana kana)))
 	  (anthy-utf8-flush ac)))
 
        ;; Transposing状態へ移行
@@ -1165,7 +1165,7 @@
        ((anthy-hiragana-key? key key-state)
         (if (not (= kana anthy-type-hiragana))
 	  (begin
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	    (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	    (anthy-utf8-flush ac)))
 	(anthy-utf8-context-set-kana-mode! ac anthy-type-hiragana)
 	(anthy-utf8-context-set-alnum! ac #f))
@@ -1173,7 +1173,7 @@
        ((anthy-katakana-key? key key-state)
         (if (not (= kana anthy-type-katakana))
 	  (begin
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	    (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	    (anthy-utf8-flush ac)))
 	(anthy-utf8-context-set-kana-mode! ac anthy-type-katakana)
 	(anthy-utf8-context-set-alnum! ac #f))
@@ -1181,7 +1181,7 @@
        ((anthy-halfkana-key? key key-state)
         (if (not (= kana anthy-type-halfkana))
 	  (begin
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	    (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	    (anthy-utf8-flush ac)))
 	(anthy-utf8-context-set-kana-mode! ac anthy-type-halfkana)
 	(anthy-utf8-context-set-alnum! ac #f))
@@ -1209,7 +1209,7 @@
 	 (not (anthy-utf8-context-alnum ac))
 	 (anthy-kana-toggle-key? key key-state))
 	(begin
-	  (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	  (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	  (anthy-utf8-flush ac)
 	  (anthy-utf8-context-kana-toggle ac)))
 
@@ -1225,7 +1225,7 @@
 	(begin
 	  (im-commit
 	   ac
-	   (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	   (anthy-utf8-make-whole-string ac #t kana))
 	  (anthy-utf8-flush ac)))
 
        ;; left
@@ -1397,7 +1397,7 @@
 	       force-check?)
 	      (begin
 		(anthy-utf8-lib-set-prediction-src-string
-		 ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+		 ac-id reconv-str)
 		(let ((nr (anthy-utf8-lib-get-nr-predictions ac-id)))
 		  (if (and
 		       nr
@@ -1431,7 +1431,7 @@
 (define anthy-utf8-context-transposing-state-preedit
   (lambda (ac)
     (let ((transposing-text (anthy-utf8-transposing-text ac)))
-      (list (cons preedit-reverse (anthy-utf8-lib-eucjp-to-utf8 transposing-text))
+      (list (cons preedit-reverse transposing-text)
 	    (cons preedit-cursor "")))))
 
 (define anthy-utf8-transposing-text
@@ -1473,7 +1473,7 @@
     (let* ((preconv
 	    (ja-join-vu (string-to-list
 			 (anthy-utf8-make-whole-string ac #t anthy-type-hiragana))))
-	   (unconv-candidate (anthy-utf8-lib-utf8-to-eucjp (anthy-utf8-lib-get-unconv-candidate ac-id seg-idx)))
+	   (unconv-candidate (anthy-utf8-lib-get-unconv-candidate ac-id seg-idx))
 	   (unconv (if unconv-candidate
 		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
@@ -1525,7 +1525,7 @@
 			  preedit-underline))
 		(cand (if (> cand-idx anthy-candidate-type-halfwidth-alnum)
 			  (anthy-utf8-lib-get-nth-candidate ac-id seg-idx cand-idx)
-			  (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-get-raw-candidate ac ac-id seg-idx cand-idx))))
+			  (anthy-utf8-get-raw-candidate ac ac-id seg-idx cand-idx)))
 		(seg (list (cons attr cand))))
 	   (if (and separator
 		    (< 0 seg-idx))
@@ -1548,15 +1548,15 @@
       (list
        (and (not (ustr-cursor-at-beginning? preconv-str))
 	    (cons preedit-underline
-		  (anthy-utf8-lib-eucjp-to-utf8 (string-append-map-ustr-former extract-kana preconv-str))))
+		  (string-append-map-ustr-former extract-kana preconv-str)))
        (and (> (string-length pending) 0)
-	    (cons preedit-underline (anthy-utf8-lib-eucjp-to-utf8 pending)))
+	    (cons preedit-underline pending))
        (and (anthy-utf8-has-preedit? ac)
 	    (cons preedit-cursor ""))
        (and (not (ustr-cursor-at-end? preconv-str))
 	    (cons
 	     preedit-underline
-	     (anthy-utf8-lib-eucjp-to-utf8 (string-append-map-ustr-latter extract-kana preconv-str))))))))
+	     (string-append-map-ustr-latter extract-kana preconv-str)))))))
 
 (define anthy-utf8-get-commit-string
   (lambda (ac)
@@ -1567,9 +1567,8 @@
 				  anthy-candidate-type-halfwidth-alnum)
 			       (anthy-utf8-lib-get-nth-candidate
 				ac-id seg-idx cand-idx)
-			       (anthy-utf8-lib-eucjp-to-utf8
                                  (anthy-utf8-get-raw-candidate
-                                   ac ac-id seg-idx cand-idx))))
+                                   ac ac-id seg-idx cand-idx)))
 			 (iota (ustr-length segments))
 			 (ustr-whole-seq segments)))))
 
