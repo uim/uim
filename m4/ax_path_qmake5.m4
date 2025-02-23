@@ -27,7 +27,7 @@ AC_DEFUN([AX_PATH_QMAKE5], [
   ax_guessed_qt5_dirs="/usr/local/lib/qt5/bin:${ax_guessed_qt5_dirs}"
   ax_guessed_qt5_dirs="/usr/lib/qt5/bin:${ax_guessed_qt5_dirs}"
   if type dpkg-architecture > /dev/null 2>&1; then
-    multiarch=$(dpkg-archtecture --query DEB_BUILD_MULTIARCH)
+    multiarch=$(dpkg-architecture --query DEB_BUILD_MULTIARCH)
     ax_guessed_qt5_dirs="/usr/lib/${multiarch}/qt5/bin:${ax_guessed_qt5_dirs}"
   fi
   AC_PROG_EGREP

@@ -27,7 +27,7 @@ AC_DEFUN([AX_PATH_QMAKE6], [
   ax_guessed_qt6_dirs="/usr/local/lib/qt6/bin:${ax_guessed_qt6_dirs}"
   ax_guessed_qt6_dirs="/usr/lib/qt6/bin:${ax_guessed_qt6_dirs}"
   if type dpkg-architecture > /dev/null 2>&1; then
-    multiarch=$(dpkg-archtecture --query DEB_BUILD_MULTIARCH)
+    multiarch=$(dpkg-architecture --query DEB_BUILD_MULTIARCH)
     ax_guessed_qt6_dirs="/usr/lib/${multiarch}/qt6/bin:${ax_guessed_qt6_dirs}"
   fi
   AC_PROG_EGREP
