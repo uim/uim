@@ -303,8 +303,10 @@ void CandidateWindowProxy::initializeProcess()
     qputenv("__UIM_CANDWIN_CALLED", QByteArray("STARTED"));
 #if QT_VERSION < 0x050000
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
-#else
+#elif QT_VERSION < 0x060000
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
+#else
+    process->start(UIM_LIBEXECDIR "/uim-candwin-qt6", QStringList() << style);
 #endif
     qputenv("__UIM_CANDWIN_CALLED", QByteArray("DONE"));
     process->waitForStarted();
