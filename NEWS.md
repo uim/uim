@@ -1,5 +1,27 @@
 # NEWS
 
+## 1.9.1
+
+### Improvements
+
+  * Anthy: Added support for anthy-unicode.
+    * [GH-166](https://github.com/uim/uim/issues/166)
+    * [GH-189](https://github.com/uim/uim/issues/189)
+    * Patch by Takao Fujiwara
+
+### Fixes
+
+  * Qt: Fixed a bug that Qt5 candidate windows is used with Qt6
+    applications.
+    * [GH-227](https://github.com/uim/uim/issues/227)
+    * Patch by yyyjajp
+
+### Thanks
+
+  * Takao Fujiwara
+
+  * yyyjajp
+
 ## 1.9.0
 
 ### Improvements
