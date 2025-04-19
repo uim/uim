@@ -1,0 +1,26 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "uim-en@googlegroups.com",
+                "Name": "The uim developers"
+            }
+        ],
+        "Category": "Utilities",
+        "Dependencies": [
+        ],
+        "Description": "Input Method Indicator (uim)",
+        "Description[ja]": "入力メソッドインジケータ (uim)",
+        "EnabledByDefault": true,
+        "Icon": "/usr/share/uim/pixmaps/uim-icon64.png",
+        "Id": "com.github.uim.status",
+        "License": "BSD",
+        "Name": "Uim Status",
+        "Version": "0.1",
+        "Website": "https://github.com/uim/uim"
+    },
+    "X-KDE-ParentApp": "",
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-RemoteLocation": ""
+}
