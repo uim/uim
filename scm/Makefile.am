@@ -1,8 +1,9 @@
 scmdir = $(pkgdatadir)
+uimconfdir = $(sysconfdir)/uim
 
 MOSTLYCLEANFILES = $(GENERATED_SCM_FILES)
 dist_scm_DATA = $(SCM_FILES)
-scm_DATA = $(GENERATED_SCM_FILES)
+uimconf_DATA = $(GENERATED_SCM_FILES)
 GENERATED_SCM_FILES = installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  im-switcher.scm \
