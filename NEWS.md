@@ -1,5 +1,24 @@
 # NEWS
 
+## 1.9.2
+
+### Improvements
+
+  * Qt: Changed to use `metadata.json` from `metadata.desktop` because
+    `metadata.desktop` is deprecated.
+    * [GH-230](https://github.com/uim/uim/issues/230)
+    * Patch by 이신혁
+
+  * Qt: Specified `cmake_minimum_required()` explicitly for CMake 4.
+    * [GH-231](https://github.com/uim/uim/issues/231)
+    * Reported by SteelDynamite
+
+### Thanks
+
+  * 이신혁
+
+  * SteelDynamite
+
 ## 1.9.1
 
 ### Improvements
