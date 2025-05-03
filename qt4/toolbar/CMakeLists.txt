@@ -1,3 +1,10 @@
+# AlmaLinux 8: 3.26
+# AlmaLinux 9: 3.26
+# Debian bookworm: 3.25
+# Ubuntu 22.04: 3.22
+# Ubuntu 24.04: 3.28
+cmake_minimum_required(VERSION 3.22)
+
 project(plasma-uim)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
