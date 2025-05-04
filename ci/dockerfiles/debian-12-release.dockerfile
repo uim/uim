@@ -13,6 +13,7 @@ RUN \
   apt install -y \
     asciidoc \
     autoconf \
+    autoconf-archive \
     autopoint \
     cmake \
     extra-cmake-modules \
