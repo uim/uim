@@ -1,5 +1,17 @@
 # NEWS
 
+## 1.9.3
+
+### Improvements
+
+  * Updated bundled SigScheme 0.9.2 that is C23 ready. GCC 15 uses C23
+    by default.
+    * Reported by SteelDynamite
+
+### Thanks
+
+  * SteelDynamite
+
 ## 1.9.2
 
 ### Improvements
