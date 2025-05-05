@@ -1781,8 +1781,8 @@ AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
 
 # Add include path
-INCLUDES='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
-AC_SUBST(INCLUDES)
+AM_CPPFLAGS='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
+AC_SUBST(AM_CPPFLAGS)
 
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
