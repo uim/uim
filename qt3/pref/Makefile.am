@@ -1,7 +1,7 @@
 EXTRA_DIST = keyeditformbase.ui  olisteditformbase.ui
 
 if QT
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I..
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I..
 
 if PREF
 HEADER_FILES = \

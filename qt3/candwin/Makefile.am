@@ -1,5 +1,5 @@
 if QT
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I..
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I..
 
 HEADER_FILES = qt.h
 MOC_FILES = qt.moc

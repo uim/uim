@@ -1,5 +1,5 @@
 if QT
-INCLUDES += -I$(top_srcdir) -I$(top_builddir)
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
 QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
 QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
 
