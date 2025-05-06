@@ -1,13 +1,13 @@
 EXTRA_DIST = UimApplet.panel-applet.in.in \
 	     uim-applet-menu.xml
 
-if GNOME3_APPLET
-helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
-
 AM_CPPFLAGS =					\
 	-I$(top_builddir)/uim			\
 	-I$(top_srcdir)/replace			\
 	-I$(top_srcdir)
+
+if GNOME3_APPLET
+helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 uim_toolbar_applet_gnome3_libdir = $(pkglibdir)
 uim_toolbar_applet_gnome3_lib_LTLIBRARIES = libuim-toolbar-applet-gnome3.la
