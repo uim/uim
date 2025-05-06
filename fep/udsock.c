@@ -62,7 +62,7 @@
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
-#include "uim-posix.h"
+#include <uim/uim-posix.h>
 #include "udsock.h"
 
 static int s_send_sockfd = -1;
