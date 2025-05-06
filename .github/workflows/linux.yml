@@ -19,6 +19,7 @@ jobs:
         image:
           - arch-linux-core
           - arch-linux-gtk3
+          - arch-linux-qt6
           - debian-12-core
           - debian-12-gtk3
           - debian-12-qt5
