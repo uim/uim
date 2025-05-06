@@ -1,5 +1,17 @@
 # NEWS
 
+## 1.9.5 - 2025-05-06
+
+### Fixes
+
+  * GTK+ 3: Fixed a build problem.
+    * [GH-237](https://github.com/uim/uim/issues/237)
+    * Patch by hazen2215
+
+### Thanks
+
+  * hazen2215
+
 ## 1.9.4 - 2025-05-06
 
 ### Improvements
