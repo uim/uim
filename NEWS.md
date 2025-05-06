@@ -1,18 +1,31 @@
 # NEWS
 
-## 1.9.3
+## 1.9.4 - 2025-05-06
 
 ### Improvements
 
-  * Updated bundled SigScheme 0.9.2 that is C23 ready. GCC 15 uses C23
-    by default.
+  * Suppressed `incompatible-pointer-types` warnings.
+    * Reported by SteelDynamite
+
+  * Updated bundled SigScheme to 0.9.3.
+
+### Thanks
+
+  * SteelDynamite
+
+## 1.9.3 - 2025-05-04
+
+### Improvements
+
+  * Updated bundled SigScheme to 0.9.2 that is C23 ready. GCC 15 uses
+    C23 by default.
     * Reported by SteelDynamite
 
 ### Thanks
 
   * SteelDynamite
 
-## 1.9.2
+## 1.9.2 - 2025-05-04
 
 ### Improvements
 
@@ -31,7 +44,7 @@
 
   * SteelDynamite
 
-## 1.9.1
+## 1.9.1 - 2025-04-13
 
 ### Improvements
 
@@ -53,7 +66,7 @@
 
   * yyyjajp
 
-## 1.9.0
+## 1.9.0 - 2025-02-23
 
 ### Improvements
 
