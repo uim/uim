@@ -9,6 +9,8 @@
 
   * Updated bundled SigScheme to 0.9.3.
 
+  * Dropped support for GTK+ 2.
+
 ### Thanks
 
   * SteelDynamite
