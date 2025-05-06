@@ -34,7 +34,7 @@
 #ifndef UIM_FEP_UDSOCK_H
 #define UIM_FEP_UDSOCK_H
 
-#include "uim.h"
+#include <uim/uim.h>
 
 #ifndef UNIX_PATH_MAX
 #define UNIX_PATH_MAX 100
