@@ -1,7 +1,10 @@
 EXTRA_DIST = uimapplet.desktop.in
 
 if QT
-AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I..
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
 QT_CXXFLAGS = $(UIM_QT_CXXFLAGS)
 QT_LDFLAGS  = $(UIM_QT_LDFLAGS)
 

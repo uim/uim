@@ -1780,10 +1780,6 @@ AM_CONDITIONAL(DO_CHECK_IN_TEST,
 AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
 
-# Add include path
-AM_CPPFLAGS='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
-AC_SUBST(AM_CPPFLAGS)
-
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 AC_SUBST(DESTDIR)

@@ -1,5 +1,9 @@
 if GTK3
 if PREF
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
 
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
@@ -16,7 +20,7 @@ uim_pref_gtk3_LDADD    = @GTK3_LIBS@ $(top_builddir)/uim/libuim-custom.la \
 if LIBUIM_X_UTIL
 uim_pref_gtk3_LDADD += $(top_builddir)/uim/libuim-x-util.la
 endif
-uim_pref_gtk3_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
+uim_pref_gtk3_CPPFLAGS = $(helper_defs) $(AM_CPPFLAGS)
 uim_pref_gtk3_CFLAGS   = @GTK3_CFLAGS@
 endif
 endif

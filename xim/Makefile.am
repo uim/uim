@@ -2,12 +2,17 @@ EXTRA_DIST = uim-xim.1
 
 if XIM
 
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
+
 bin_PROGRAMS = uim-xim
 uim_xim_LDFLAGS =  @X_LIBS@
 uim_xim_LDADD =  -lXext -lX11 $(top_builddir)/uim/libuim-scm.la \
 		 $(top_builddir)/uim/libuim.la \
 		 $(top_builddir)/uim/libuim-x-util.la
-uim_xim_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
+uim_xim_CPPFLAGS = $(AM_CPPFLAGS)
 uim_xim_CFLAGS = @X_CFLAGS@ -Wall
 uim_xim_CXXFLAGS = @X_CFLAGS@ -Wall
 man1_MANS = uim-xim.1

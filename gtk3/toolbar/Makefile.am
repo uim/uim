@@ -4,6 +4,11 @@ EXTRA_DIST = UimApplet.panel-applet.in.in \
 if GNOME3_APPLET
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
+
 uim_toolbar_applet_gnome3_libdir = $(pkglibdir)
 uim_toolbar_applet_gnome3_lib_LTLIBRARIES = libuim-toolbar-applet-gnome3.la
 
@@ -16,7 +21,7 @@ libuim_toolbar_applet_gnome3_la_LIBADD = @GTK3_LIBS@ @GNOME3_APPLET_LIBS@ \
 			   $(top_builddir)/uim/libuim-custom.la
 libuim_toolbar_applet_gnome3_la_CPPFLAGS = \
 			   -DUIM_UIDATADIR="\"${xmluidir}\"" \
-			   $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
+			   $(helper_defs) $(AM_CPPFLAGS)
 libuim_toolbar_applet_gnome3_la_LDFLAGS = \
 			   -module -avoid-version
 
@@ -55,7 +60,7 @@ uim_toolbar_gtk3_SOURCES  = ../../gtk2/toolbar/standalone-gtk.c \
 uim_toolbar_gtk3_LDADD    = @GTK3_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_gtk3_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_toolbar_gtk3_CPPFLAGS = $(AM_CPPFLAGS)
 uim_toolbar_gtk3_CFLAGS   = @GTK3_CFLAGS@
 
 uim_toolbar_gtk3_systray_SOURCES  = ../../gtk2/toolbar/systray-gtk.c \
@@ -67,6 +72,6 @@ uim_toolbar_gtk3_systray_LDADD    = @GTK3_LIBS@ \
 				   $(top_builddir)/uim/libuim-scm.la \
 				   $(top_builddir)/uim/libuim.la \
 				   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_gtk3_systray_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_toolbar_gtk3_systray_CPPFLAGS = $(AM_CPPFLAGS)
 uim_toolbar_gtk3_systray_CFLAGS   = @GTK3_CFLAGS@
 endif

@@ -3,13 +3,18 @@ EXTRA_DIST = GNOME_UimApplet.server.in.in
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 if GNOME_APPLET
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
+
 libexec_PROGRAMS =  uim-toolbar-applet
 
 uim_toolbar_applet_LDADD = @GTK2_LIBS@ @GNOME_APPLET_LIBS@ \
 			   $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_applet_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
+uim_toolbar_applet_CPPFLAGS = $(helper_defs) $(AM_CPPFLAGS)
 uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @GNOME_APPLET_CFLAGS@
 if GCC
 # to cancel "-std=gnu89 -pedantic -Werror" and accept the string
@@ -48,7 +53,7 @@ uim_toolbar_gtk_SOURCES  = standalone-gtk.c common-gtk.c
 uim_toolbar_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_toolbar_gtk_CPPFLAGS = $(AM_CPPFLAGS)
 uim_toolbar_gtk_CFLAGS   = @GTK2_CFLAGS@
 
 uim_toolbar_gtk_systray_SOURCES  = systray-gtk.c common-gtk.c \
@@ -58,5 +63,5 @@ uim_toolbar_gtk_systray_LDADD    = @GTK2_LIBS@ \
 				   $(top_builddir)/uim/libuim-scm.la \
 				   $(top_builddir)/uim/libuim.la \
 				   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_gtk_systray_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_toolbar_gtk_systray_CPPFLAGS = $(AM_CPPFLAGS)
 uim_toolbar_gtk_systray_CFLAGS   = @GTK2_CFLAGS@

@@ -4,8 +4,13 @@ uim_gtk_im_module_file = $(DESTDIR)$(sysconfdir)/gtk-2.0/gtk.immodules
 moduledir = $(uim_gtk_im_module_path)/@GTK_BINARY_VERSION@/immodules
 
 if GTK2
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
+
 im_uim_la = im-uim.la
-im_uim_la_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+im_uim_la_CPPFLAGS = $(AM_CPPFLAGS)
 im_uim_la_CFLAGS = @GTK2_CFLAGS@
 module_LTLIBRARIES = $(im_uim_la)
 

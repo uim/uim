@@ -1,7 +1,10 @@
 EXTRA_DIST = bushu.t
 
 if QT
-AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I..
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
 
 HEADER_FILES = \
 	bushuviewwidget.h \
@@ -29,7 +32,7 @@ uim_chardict_qt_SOURCES = \
 uim_chardict_qt_CXXFLAGS = @UIM_QT_CXXFLAGS@ -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 
 uim_chardict_qt_LDFLAGS  = @UIM_QT_LDFLAGS@
-uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la @LTLIBINTL@ 
+uim_chardict_qt_LDADD    = $(top_builddir)/uim/libuim.la @LTLIBINTL@
 qt.cpp: qt.moc
 
 bushuviewwidget.cpp: bushuviewwidget.moc

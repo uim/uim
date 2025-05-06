@@ -4,12 +4,17 @@ helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 if GTK2
 if DICT
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
+
 bin_PROGRAMS = uim-dict-gtk
 
 uim_dict_gtk_SOURCES  = main-gtk.c canna-cclass.c canna-cclass.h word-win-gtk.c word-win-gtk.h word-list-win-gtk.c word-list-win-gtk.h util.c util.h word-list-view-gtk.c word-list-view-gtk.h word.c word.h dict.c dict.h cclass-dialog.c cclass-dialog.h
 uim_dict_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			$(top_builddir)/uim/libuim.la
-uim_dict_gtk_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
+uim_dict_gtk_CPPFLAGS = $(helper_defs) $(AM_CPPFLAGS)
 uim_dict_gtk_CFLAGS   = @GTK2_CFLAGS@
 uim_dict_uidir = $(datadir)/uim/helperdata
 uim_dict_ui_DATA = uim-dict-ui.xml

@@ -3,8 +3,13 @@ uim_gtk3_im_module_path = $(libdir)/gtk-3.0
 moduledir = $(uim_gtk3_im_module_path)/@GTK3_BINARY_VERSION@/immodules
 
 if GTK3
+AM_CPPFLAGS =					\
+	-I$(top_builddir)/uim			\
+	-I$(top_srcdir)/replace			\
+	-I$(top_srcdir)
+
 im_uim_la = im-uim.la
-im_uim_la_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+im_uim_la_CPPFLAGS = $(AM_CPPFLAGS)
 im_uim_la_CFLAGS = @GTK3_CFLAGS@
 module_LTLIBRARIES = $(im_uim_la)
 
