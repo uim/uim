@@ -1225,7 +1225,7 @@ uim_scm_init_proc0(const char *name, uim_lisp (*func)(void))
   assert(name);
   assert(func);
 
-  scm_register_func(name, (scm_procedure_fixed_0)func, SCM_PROCEDURE_FIXED_0);
+  scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_0);
 }
 
 void
@@ -1235,7 +1235,7 @@ uim_scm_init_proc1(const char *name, uim_lisp (*func)(uim_lisp))
   assert(name);
   assert(func);
 
-  scm_register_func(name, (scm_procedure_fixed_1)func, SCM_PROCEDURE_FIXED_1);
+  scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_1);
 }
 
 void
@@ -1245,7 +1245,7 @@ uim_scm_init_proc2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
   assert(name);
   assert(func);
 
-  scm_register_func(name, (scm_procedure_fixed_2)func, SCM_PROCEDURE_FIXED_2);
+  scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_2);
 }
 
 void
@@ -1256,7 +1256,7 @@ uim_scm_init_proc3(const char *name,
   assert(name);
   assert(func);
 
-  scm_register_func(name, (scm_procedure_fixed_3)func, SCM_PROCEDURE_FIXED_3);
+  scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_3);
 }
 
 void
@@ -1267,7 +1267,7 @@ uim_scm_init_proc4(const char *name,
   assert(name);
   assert(func);
 
-  scm_register_func(name, (scm_procedure_fixed_4)func, SCM_PROCEDURE_FIXED_4);
+  scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_4);
 }
 
 void
@@ -1279,7 +1279,7 @@ uim_scm_init_proc5(const char *name,
   assert(name);
   assert(func);
 
-  scm_register_func(name, (scm_procedure_fixed_5)func, SCM_PROCEDURE_FIXED_5);
+  scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_5);
 }
 
 void

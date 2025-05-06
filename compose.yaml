@@ -1,4 +1,11 @@
 services:
+  arch-linux-core:
+    image: uim/uim-arch-linux-core
+    build:
+      context: ci/dockerfiles
+      dockerfile: arch-linux-core.dockerfile
+    volumes:
+      - .:/source:delegated
   debian-12-core:
     image: uim/uim-debian-12-core
     build:
