@@ -11,7 +11,6 @@ gtk3/pref/gtk-custom-widgets.c
 gtk3/pref/gtk.c
 gtk3/switcher/gtk.c
 gtk3/toolbar/eggtrayicon.c
-gtk3/toolbar/applet-gnome.c
 gtk3/toolbar/common-gtk.c
 gtk3/toolbar/standalone-gtk.c
 gtk3/toolbar/applet-gnome3.c
