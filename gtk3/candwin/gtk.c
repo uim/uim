@@ -419,11 +419,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   GtkTreeSelection *selection;
   GdkRectangle cursor_location;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-#else
-  vbox = gtk_vbox_new(FALSE, 0);
-#endif
   frame = gtk_frame_new(NULL);
 
   cwin->stores = g_ptr_array_new();
@@ -483,11 +479,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cwin->num_label = gtk_label_new("");
 
   /* hbox with prev and next page button: [[<] num_label [>]] */
-#if GTK_CHECK_VERSION(3, 2, 0)
   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-  hbox = gtk_hbox_new(FALSE, 0);
-#endif
   cwin->prev_page_button = gtk_button_new_with_label("<");
   cwin->next_page_button = gtk_button_new_with_label(">");
   gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(cwin->prev_page_button),
@@ -801,9 +793,7 @@ candwin_show_page(gchar **str)
 
   uim_cand_win_gtk_set_page(cwin, page);
   gtk_widget_show_all(GTK_WIDGET(cwin));
-#if GTK_CHECK_VERSION(3, 7, 8)
   gtk_widget_queue_resize_no_redraw(cwin->view);
-#endif
 }
 
 static void str_parse(gchar *str)
@@ -1116,11 +1106,7 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
 static void
 uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
 {
-#if GTK_CHECK_VERSION(2, 90, 0)
   gint x, y, w, h, sw, sh, x2, y2, w2, h2;
-#else
-  gint x, y, w, h, sw, sh, x2, y2, w2, h2, d, d2;
-#endif
   GdkRectangle rect;
   GtkTreePath *path;
   GtkTreeViewColumn *focus_column;
@@ -1132,24 +1118,14 @@ uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
   gtk_tree_view_get_cell_area(GTK_TREE_VIEW(cwin->view), path, NULL, &rect);
   gtk_tree_path_free(path);
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
                           &x, &y, &w, &h);
-#else
-  gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
-                          &x, &y, &w, &h, &d);
-#endif
   gdk_window_get_origin(gtk_widget_get_window(GTK_WIDGET(cwin)), &x, &y);
 
   sw = gdk_screen_get_width  (gdk_screen_get_default ());
   sh = gdk_screen_get_height (gdk_screen_get_default ());
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
                           &x2, &y2, &w2, &h2);
-#else
-  gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
-                          &x2, &y2, &w2, &h2, &d2);
-#endif
   if (x + w + w2 > sw)
     x = x - w2;
   else

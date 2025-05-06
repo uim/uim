@@ -87,11 +87,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Switch input method"),
     NULL,
     "im_switcher",
-#if GTK_CHECK_VERSION(2, 90, 0)
     "uim-im-switcher-gtk3",
-#else
-    "uim-im-switcher-gtk",
-#endif
     "toolbar-show-switcher-button?",
     UIM_FALSE
   },
@@ -100,11 +96,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Preference"),
     NULL,
     GTK_STOCK_PREFERENCES,
-#if GTK_CHECK_VERSION(2, 90, 0)
     "uim-pref-gtk3",
-#else
-    "uim-pref-gtk",
-#endif
     "toolbar-show-pref-button?",
     UIM_FALSE
   },
@@ -113,11 +105,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Japanese dictionary editor"),
     NULL,
     "uim-dict",
-#if GTK_CHECK_VERSION(2, 90, 0)
     "uim-dict-gtk3",
-#else
-    "uim-dict-gtk",
-#endif
     "toolbar-show-dict-button?",
     UIM_FALSE
   },
@@ -126,11 +114,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Input pad"),
     NULL,
     GTK_STOCK_BOLD,
-#if GTK_CHECK_VERSION(2, 90, 0)
     "uim-input-pad-ja-gtk3",
-#else
-    "uim-input-pad-ja",
-#endif
     "toolbar-show-input-pad-button?",
     UIM_FALSE
   },
@@ -138,11 +122,7 @@ static struct _CommandEntry command_entry[] = {
   {
     N_("Handwriting input pad"),
     "H",
-#if GTK_CHECK_VERSION(2, 6, 0)
     GTK_STOCK_EDIT,
-#else
-    NULL,
-#endif
     "uim-tomoe-gtk",
     "toolbar-show-handwriting-input-pad-button?",
     UIM_FALSE
@@ -180,19 +160,13 @@ static void reset_icon(void);
 static void
 set_button_style(GtkWidget *button, gint type)
 {
-#if GTK_CHECK_VERSION(2, 90, 0)
     GtkStyleContext *context = gtk_widget_get_style_context(button);
     GtkCssProvider *provider = gtk_css_provider_new();
     switch (type) {
     case TYPE_ICON:
         gtk_css_provider_load_from_data(provider,
                                         "#uim-systray-button {\n"
-#if GTK_CHECK_VERSION(3, 14, 0)
                                         " outline-width: 0;\n"
-#else
-                                        " -GtkWidget-focus-line-width: 0;\n"
-                                        " -GtkWidget-focus-padding: 0;\n"
-#endif
                                         " padding-top: 0;\n"
                                         " padding-bottom: 0;\n"
                                         " padding-left: 2px;\n"
@@ -218,7 +192,6 @@ set_button_style(GtkWidget *button, gint type)
                                    GTK_STYLE_PROVIDER(provider),
                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     g_object_unref(provider);
-#endif
     switch (type) {
     case TYPE_ICON:
         gtk_widget_set_name(button, "uim-systray-button");
@@ -270,31 +243,18 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
   g_return_if_fail(GTK_IS_BUTTON(button));
 
   gdk_window_get_origin(gtk_widget_get_window(button), x, y);
-#if GTK_CHECK_VERSION(2, 90, 0)
   button_height = gdk_window_get_height(gtk_widget_get_window(button));
-#else
-  gdk_drawable_get_size(gtk_widget_get_window(button), NULL, &button_height);
-#endif
 
-#if GTK_CHECK_VERSION(2, 18, 0)
   if (!gtk_widget_get_has_window(button)) {
     GtkAllocation allocation;
     gtk_widget_get_allocation(button, &allocation);
     *x += allocation.x;
   }
-#else
-  if (GTK_WIDGET_NO_WINDOW(button))
-    *x += button->allocation.x;
-#endif
 
   sc_height = gdk_screen_get_height(gdk_screen_get_default());
   sc_width = gdk_screen_get_width(gdk_screen_get_default());
 
-#if GTK_CHECK_VERSION(3, 0, 0)
   gtk_widget_get_preferred_size(GTK_WIDGET(menu), &requisition, NULL);
-#else
-  gtk_widget_size_request(GTK_WIDGET(menu), &requisition);
-#endif
 
   menu_width = requisition.width;
   menu_height = requisition.height;
@@ -466,15 +426,9 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     if (selected != -1) {
       menu_item = gtk_check_menu_item_new();
       label = gtk_label_new(label_list->data);
-#if GTK_CHECK_VERSION(3, 2, 0)
       hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-      hbox = gtk_hbox_new(FALSE, 0);
-#endif
-#if GTK_CHECK_VERSION(2, 4, 0)
       gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
 					    TRUE);
-#endif
       if (register_icon(icon_list->data))
 	img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
       else
@@ -494,9 +448,7 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
       if (register_icon(icon_list->data)) {
 	img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img); 
-#if GTK_CHECK_VERSION(2, 16, 0)
 	gtk_image_menu_item_set_always_show_image(GTK_IMAGE_MENU_ITEM(menu_item), TRUE);
-#endif
       }
     }
 
@@ -849,11 +801,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   }
   toplevel = gtk_widget_get_toplevel(widget);
   is_hidden = (is_hidden && strcmp(display_time, "always"));
-#if GTK_CHECK_VERSION(2, 18, 0)
   if (gtk_widget_get_visible(toplevel) == is_hidden) {
-#else
-  if (GTK_WIDGET_VISIBLE(toplevel) == is_hidden) {
-#endif
     if (is_hidden) {
       gtk_widget_hide(toplevel);
     } else {
@@ -1138,11 +1086,7 @@ toolbar_new(gint type)
   init_icon();
 
   /* create widgets */
-#if GTK_CHECK_VERSION(3, 2, 0)
   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-  hbox = gtk_hbox_new(FALSE, 0);
-#endif
 
   im_menu = gtk_menu_new();
   prop_menu = gtk_menu_new();
@@ -1188,17 +1132,5 @@ uim_toolbar_applet_new(void)
 GtkWidget *
 uim_toolbar_trayicon_new(void)
 {
-#if !GTK_CHECK_VERSION(2, 90, 0)
-  gtk_rc_parse_string("\n"
-		      "   style \"uim-systray-button-style\"\n"
-		      "   {\n"
-		      "      GtkWidget::focus-line-width=0\n"
-		      "      GtkWidget::focus-padding=0\n"
-		      "      ythickness=0\n"
-		      "   }\n" "\n"
-		      "    widget \"*.uim-systray-button\" style \"uim-systray-button-style\"\n"
-		      "\n");
-#endif
-
   return toolbar_new(TYPE_ICON);
 }

@@ -180,21 +180,13 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->sub_window.active          = FALSE;
 
   /* build window */
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-#else
-  vbox = gtk_vbox_new(FALSE, 0);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox), cwin->scrolled_window, TRUE, TRUE, 0);
   uim_cand_win_gtk_set_scrollable(cwin, FALSE);
 
   /* hbox with prev and next page button: [[<] num_label [>]] */
-#if GTK_CHECK_VERSION(3, 2, 0)
   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-  hbox = gtk_hbox_new(FALSE, 0);
-#endif
   cwin->prev_page_button = gtk_button_new_with_label("<");
   cwin->next_page_button = gtk_button_new_with_label(">");
   gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(cwin->prev_page_button),
@@ -726,11 +718,7 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
 
-#if GTK_CHECK_VERSION(3, 0, 0)
   gtk_widget_get_preferred_size(GTK_WIDGET(cwin), &req, NULL);
-#else
-  gtk_widget_size_request(GTK_WIDGET(cwin), &req);
-#endif
   cw_wi = req.width;
   cw_he = req.height;
 
@@ -765,10 +753,8 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   }
 
   gtk_window_move(GTK_WINDOW(cwin), x, y);
-#if GTK_CHECK_VERSION(3, 7, 8)
   if (gtk_widget_get_mapped(cwin->view) && GTK_IS_TREE_VIEW(cwin->view))
     gtk_widget_queue_resize_no_redraw(cwin->view);
-#endif
 
   uim_cand_win_gtk_layout_sub_window(cwin);
 }
@@ -838,11 +824,7 @@ uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
 void
 uim_cand_win_gtk_real_layout_sub_window(UIMCandWinGtk *cwin)
 {
-#if GTK_CHECK_VERSION(2, 90, 0)
   gint x, y, w, h, sw, sh, x2, y2, w2, h2;
-#else
-  gint x, y, w, h, d, sw, sh, x2, y2, w2, h2, d2;
-#endif
   GdkRectangle rect;
   GtkTreePath *path;
   GtkTreeViewColumn *focus_column;
@@ -854,24 +836,14 @@ uim_cand_win_gtk_real_layout_sub_window(UIMCandWinGtk *cwin)
   gtk_tree_view_get_cell_area(GTK_TREE_VIEW(cwin->view), path, NULL, &rect);
   gtk_tree_path_free(path);
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
 			  &x, &y, &w, &h);
-#else
-  gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
-			  &x, &y, &w, &h, &d);
-#endif
   gdk_window_get_origin(gtk_widget_get_window(GTK_WIDGET(cwin)), &x, &y);
 
   sw = gdk_screen_get_width  (gdk_screen_get_default ());
-  sh = gdk_screen_get_height (gdk_screen_get_default ()); 
-#if GTK_CHECK_VERSION(2, 90, 0)
+  sh = gdk_screen_get_height (gdk_screen_get_default ());
   gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
 			  &x2, &y2, &w2, &h2);
-#else
-  gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
-			  &x2, &y2, &w2, &h2, &d2);
-#endif
   if (x + w + w2 > sw)
     x = x - w2;
   else

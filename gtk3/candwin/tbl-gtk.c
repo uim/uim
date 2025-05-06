@@ -381,11 +381,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   GdkRectangle cursor_location;
   gint row, col;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   cwin->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-#else
-  cwin->vbox = gtk_vbox_new(FALSE, 0);
-#endif
   cwin->frame = gtk_frame_new(NULL);
 
   cwin->stores = g_ptr_array_new();
@@ -447,11 +443,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cwin->num_label = gtk_label_new("");
 
   /* hbox with prev and next page button: [[<] num_label [>]] */
-#if GTK_CHECK_VERSION(3, 2, 0)
   cwin->hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-  cwin->hbox = gtk_hbox_new(FALSE, 0);
-#endif
   cwin->prev_page_button = gtk_button_new_with_label("<");
   cwin->next_page_button = gtk_button_new_with_label(">");
   gtk_box_pack_start(GTK_BOX(cwin->hbox), GTK_WIDGET(cwin->prev_page_button),

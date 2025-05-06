@@ -331,11 +331,7 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
 static void
 remove_cur_toplevel()
 {
-#if GTK_CHECK_VERSION(2, 18, 0)
   if (cur_toplevel && gtk_widget_is_toplevel(cur_toplevel)) {
-#else
-  if (cur_toplevel && GTK_WIDGET_TOPLEVEL(cur_toplevel)) {
-#endif
     if (cur_key_press_handler_id)
       g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
     if (cur_key_release_handler_id)
@@ -372,11 +368,7 @@ update_cur_toplevel(IMUIMContext *uic)
 
   if (uic->widget) {
     GtkWidget *toplevel = gtk_widget_get_toplevel(uic->widget);
-#if GTK_CHECK_VERSION(2, 18, 0)
     if (toplevel && gtk_widget_is_toplevel(toplevel)) {
-#else
-    if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
-#endif
       if (cur_toplevel != toplevel) {
 	remove_cur_toplevel();
 	cur_toplevel = toplevel;
@@ -413,15 +405,10 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
       if (cur_toplevel && GTK_IS_WINDOW(cur_toplevel)) {
         GtkWindowGroup *group;
         GtkWindow *window;
-	
+
         window = GTK_WINDOW(cur_toplevel);
         group = gtk_window_get_group(window);
-#if GTK_CHECK_VERSION(2, 22, 0)
         grab_widget = gtk_window_group_get_current_grab(group);
-#else
-        if (group && group->grabs)
-          grab_widget = GTK_WIDGET(group->grabs->data);
-#endif
       }
     }
   }
@@ -520,20 +507,12 @@ index_changed_cb(UIMCandWinGtk *cwin, IMUIMContext *uic)
 static void
 layout_candwin(IMUIMContext *uic)
 {
-#if GTK_CHECK_VERSION(2, 90, 0)
   gint x, y, width, height;
-#else
-  gint x, y, width, height, depth;
-#endif
 
   g_return_if_fail(uic);
 
   if (uic->win && uic->cwin) {
-#if GTK_CHECK_VERSION(2, 90, 0)
     gdk_window_get_geometry(uic->win, &x, &y, &width, &height);
-#else
-    gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-#endif
     gdk_window_get_origin(uic->win, &x, &y);
     {
       GtkWindow *window = NULL;
@@ -1801,16 +1780,6 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
     if (rv)
       return FALSE;
 
-#if !GTK_CHECK_VERSION(2, 90, 0)
-    /* FIXME: Can't compile with GSEAL_ENABLE */
-    if (GTK_IS_TEXT_VIEW(uic->widget))
-      GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
-    else if (GTK_IS_ENTRY(uic->widget)) {
-      /* FIXME: Can't compile with GSEAL_ENABLE */
-      if (gtk_editable_get_editable(GTK_EDITABLE(uic->widget)))
-        GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
-    }
-#endif
     return TRUE;
   }
 

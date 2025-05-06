@@ -344,17 +344,9 @@ buttontable_create(gchar **table, int len)
   gint i,j;
   gint rows = ((len-2)/ BUTTON_H_ALIGN)+1;
 
-#if GTK_CHECK_VERSION(3, 4, 0)
   _table = gtk_grid_new();
   gtk_grid_set_row_spacing(GTK_GRID(_table), 3);
   gtk_grid_set_column_spacing(GTK_GRID(_table), 3);
-#else
-  _table = gtk_table_new(rows,
-			 BUTTON_H_ALIGN,
-			 TRUE);
-  gtk_table_set_row_spacings(GTK_TABLE(_table), 3);
-  gtk_table_set_col_spacings(GTK_TABLE(_table), 3);
-#endif
 
   for (i=0; i < rows; i++) {
     for (j=0; j < BUTTON_H_ALIGN; j++) {
@@ -367,16 +359,9 @@ buttontable_create(gchar **table, int len)
       g_signal_connect(button, "clicked",
 		       G_CALLBACK(padbutton_clicked), "button");
 
-#if GTK_CHECK_VERSION(3, 4, 0)
       gtk_widget_set_hexpand(button, TRUE);
       gtk_widget_set_vexpand(button, TRUE);
       gtk_grid_attach(GTK_GRID(_table), button, j, i, 1, 1);
-#else
-      gtk_table_attach_defaults(GTK_TABLE(_table),
-				button,
-				j, j + 1,
-				i, i + 1);
-#endif
     }
   }
  out:
@@ -388,11 +373,7 @@ create_tab(gchar *table[], guint len)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(table, len),
@@ -406,11 +387,7 @@ create_hiragana_tab(void)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(hiragana, sizeof(hiragana)/sizeof(gchar*)),
@@ -427,11 +404,7 @@ create_katakana_tab(void)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(katakana, sizeof(katakana)/sizeof(gchar*)),
@@ -448,11 +421,7 @@ create_eisu_tab(void)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(alphabet_capital, sizeof(alphabet_capital)/sizeof(gchar*)),
@@ -476,11 +445,7 @@ create_symbol_tab(void)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(dot, sizeof(dot)/sizeof(gchar*)),
@@ -504,11 +469,7 @@ create_greek_tab(void)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(greek_capital, sizeof(greek_capital)/sizeof(gchar*)),
@@ -526,11 +487,7 @@ create_cyrillic_tab(void)
 {
   GtkWidget *vbox;
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
-  vbox = gtk_vbox_new(FALSE, 10);
-#endif
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(cyrillic_capital, sizeof(cyrillic_capital)/sizeof(gchar*)),

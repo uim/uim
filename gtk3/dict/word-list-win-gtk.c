@@ -34,12 +34,8 @@
 #include <config.h>
 
 #include <stdlib.h>
-# include <gtk/gtk.h>
-#if GTK_CHECK_VERSION(2, 90, 0)
-# include <gdk/gdkkeysyms-compat.h>
-#else
-# include <gdk/gdkkeysyms.h>
-#endif
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms-compat.h>
 
 #include "gettext.h"
 
@@ -245,11 +241,7 @@ word_list_window_init (WordListWindow *window)
   gtk_window_set_default_size(GTK_WINDOW(window), 600, 450);
   gtk_window_set_title(GTK_WINDOW(window), _("Edit the dictionary"));
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-#else
-  vbox = gtk_vbox_new(FALSE, 0);
-#endif
   gtk_container_add(GTK_CONTAINER(window), vbox);
   gtk_widget_show(vbox);
 
@@ -568,19 +560,10 @@ popup_menu_action_cb(GtkAction *action, WordListWindow *window)
   }
 }
 
-#if GTK_CHECK_VERSION(2, 6, 0) && !GTK_CHECK_VERSION(2, 18, 0)
-static void
-activate_url(GtkAboutDialog *about, const gchar *link, gpointer data)
-{
-  /* g_print("show url %s\n", link); */
-}
-#endif
-
 static void
 help_about_action_cb(GtkAction *action, WordListWindow *window)
 {
   const gchar *name = N_("uim-dict");
-#if GTK_CHECK_VERSION(2, 6, 0)
   GdkPixbuf *pixbuf, *transparent;
   const gchar *filename = UIM_PIXMAPSDIR "/uim-dict.png";
   const gchar *authors[] = {
@@ -600,10 +583,7 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
     transparent = gdk_pixbuf_add_alpha(pixbuf, TRUE, 0xff, 0xff, 0xff);
     g_object_unref(pixbuf);
   }
-  
-#if !GTK_CHECK_VERSION(2, 18, 0)
-  gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
-#endif
+
   gtk_show_about_dialog (GTK_WINDOW(window),
 			 "name", name,
 			 "version", VERSION,
@@ -613,37 +593,6 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
 			 "logo", transparent,
 			 NULL);
   g_object_unref(transparent);
-#else
-  GtkWidget *about_dialog, *label1;
-  const gchar *copyright = N_(
-    "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-    "Copyright 2004-2013 uim Project https://github.com/uim/uim\n"
-    "All rights reserved.");
-  gchar *about_name =
-    g_strdup_printf("<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
-
-  about_dialog = gtk_dialog_new_with_buttons(_("About uim-dict"), NULL,
-					     GTK_DIALOG_MODAL,
-					     GTK_STOCK_OK,
-					     GTK_RESPONSE_ACCEPT, NULL);
-  gtk_container_set_border_width(GTK_CONTAINER(about_dialog), 8);
-
-  label1 = gtk_label_new(NULL);
-  gtk_widget_show(label1);
-  gtk_label_set_markup(GTK_LABEL(label1), about_name);
-  g_free(about_name);
-  gtk_box_pack_start(
-      GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(about_dialog))),
-      label1, FALSE, FALSE, 0);
-
-  gtk_window_set_transient_for(GTK_WINDOW(about_dialog),
-			       GTK_WINDOW(window));
-  gtk_window_set_position(GTK_WINDOW(about_dialog),
-			  GTK_WIN_POS_CENTER_ON_PARENT);
-  gtk_dialog_run(GTK_DIALOG(about_dialog));
-
-  gtk_widget_destroy(about_dialog);
-#endif
 }
 
 static void

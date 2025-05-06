@@ -87,11 +87,7 @@ int main( int   argc,
     g_signal_connect(G_OBJECT (window), "delete_event",
                        G_CALLBACK(exit), NULL);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
     vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-#else
-    vbox = gtk_vbox_new (FALSE, 0);
-#endif
     gtk_container_add (GTK_CONTAINER (window), vbox);
     gtk_widget_show (vbox);
 
@@ -107,41 +103,33 @@ int main( int   argc,
     gtk_box_pack_start (GTK_BOX (vbox), entry, TRUE, TRUE, 0);
     gtk_widget_show (entry);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-    hbox = gtk_hbox_new (FALSE, 0);
-#endif
     gtk_container_add (GTK_CONTAINER (vbox), hbox);
     gtk_widget_show (hbox);
-                                  
+
     check = gtk_check_button_new_with_label("Editable");
     gtk_box_pack_start (GTK_BOX (hbox), check, TRUE, TRUE, 0);
     g_signal_connect (G_OBJECT(check), "toggled",
 			G_CALLBACK(entry_toggle_editable), entry);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), TRUE);
     gtk_widget_show (check);
-    
+
     check = gtk_check_button_new_with_label("Visible");
     gtk_box_pack_start (GTK_BOX (hbox), check, TRUE, TRUE, 0);
     g_signal_connect (G_OBJECT(check), "toggled",
 			G_CALLBACK(entry_toggle_visibility), entry);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), TRUE);
     gtk_widget_show (check);
-                                   
+
     button = gtk_button_new_with_label ("Close");
     g_signal_connect_swapped (G_OBJECT (button), "clicked",
 			       G_CALLBACK(exit),
 			       G_OBJECT (window));
     gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
-#if GTK_CHECK_VERSION(2, 18, 0)
     gtk_widget_set_can_default (button, TRUE);
-#else
-    GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-#endif
     gtk_widget_grab_default (button);
     gtk_widget_show (button);
-    
+
     gtk_widget_show(window);
 
     g_print("elapsed time: %f\n",g_timer_elapsed(tim,NULL));

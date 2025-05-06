@@ -25,9 +25,6 @@
 
 #include "eggtrayicon.h"
 
-#if !GTK_CHECK_VERSION(2, 90, 0)
-#include <gdkconfig.h>
-#endif
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
 #include <gtk/gtk.h>
@@ -74,13 +71,8 @@ static void    egg_tray_icon_style_set (GtkWidget   *widget,
                                         GtkStyle    *previous_style);
 static gboolean egg_tray_icon_delete   (GtkWidget   *widget,
                                         GdkEventAny *event);
-#if GTK_CHECK_VERSION(2, 90, 0)
 static gboolean egg_tray_icon_draw   (GtkWidget      *widget,
                                       cairo_t *cr);
-#else
-static gboolean egg_tray_icon_expose   (GtkWidget      *widget,
-                                        GdkEventExpose *event);
-#endif
 
 static void egg_tray_icon_clear_manager_window     (EggTrayIcon *icon);
 static void egg_tray_icon_update_manager_window    (EggTrayIcon *icon);
@@ -142,11 +134,7 @@ egg_tray_icon_class_init (EggTrayIconClass *klass)
   widget_class->realize = egg_tray_icon_realize;
   widget_class->style_set = egg_tray_icon_style_set;
   widget_class->delete_event = egg_tray_icon_delete;
-#if GTK_CHECK_VERSION(2, 90, 0)
   widget_class->draw = egg_tray_icon_draw;
-#else
-  widget_class->expose_event = egg_tray_icon_expose;
-#endif
 
   g_object_class_install_property (gobject_class,
 				   PROP_ORIENTATION,
@@ -211,13 +199,8 @@ egg_tray_icon_clear_manager_window (EggTrayIcon *icon)
     {
       GdkWindow *gdkwin;
 
-#if GTK_CHECK_VERSION(2, 24, 0)
       gdkwin = gdk_x11_window_lookup_for_display (display,
                                               icon->manager_window);
-#else
-      gdkwin = gdk_window_lookup_for_display (display,
-                                              icon->manager_window);
-#endif
 
       gdk_window_remove_filter (gdkwin, egg_tray_icon_manager_filter, icon);
 
@@ -258,24 +241,17 @@ egg_tray_icon_get_property (GObject    *object,
 }
 
 static gboolean
-#if GTK_CHECK_VERSION(2, 90, 0)
 egg_tray_icon_draw (GtkWidget *widget,
                     cairo_t *cr)
-#else
-egg_tray_icon_expose (GtkWidget *widget,
-                      GdkEventExpose *event)
-#endif
 {
   EggTrayIcon *icon = EGG_TRAY_ICON (widget);
   GtkWidget *focus_child;
   gint border_width, x, y, width, height;
   gboolean retval = FALSE;
 
-#if GTK_CHECK_VERSION(2, 8, 0)
   if (icon->manager_visual_rgba)
     {
       /* Clear to transparent */
-#if GTK_CHECK_VERSION(2, 90, 0)
       GdkRectangle rect;
       if (gdk_cairo_get_clip_rectangle(cr, &rect)) {
         cairo_set_source_rgba (cr, 0, 0, 0, 0);
@@ -283,39 +259,14 @@ egg_tray_icon_expose (GtkWidget *widget,
         gdk_cairo_rectangle (cr, &rect);
         cairo_fill (cr);
       }
-#else
-      cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
-      cairo_set_source_rgba (cr, 0, 0, 0, 0);
-      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-      gdk_cairo_region (cr, event->region);
-      cairo_fill (cr);
-      cairo_destroy (cr); 
-#endif
-    }
-  else
-#endif
-    {
-      /* Clear to parent-relative pixmap */
-#if !GTK_CHECK_VERSION(2, 90, 0)
-      gdk_window_clear_area (gtk_widget_get_window(widget),
-          event->area.x, event->area.y,
-                             event->area.width, event->area.height);
-#endif
     }
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   if (GTK_WIDGET_CLASS (parent_class)->draw)
     retval = GTK_WIDGET_CLASS (parent_class)->draw (widget, cr);
-#else
-  if (GTK_WIDGET_CLASS (parent_class)->expose_event)
-    retval = GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
-#endif
 
   focus_child = gtk_container_get_focus_child(GTK_CONTAINER (widget));
-#if GTK_CHECK_VERSION(2, 18, 0)
   if (focus_child && gtk_widget_has_focus (focus_child))
     {
-#if GTK_CHECK_VERSION(2, 90, 0)
       border_width = gtk_container_get_border_width(GTK_CONTAINER (widget));
 
       x = border_width;
@@ -326,42 +277,7 @@ egg_tray_icon_expose (GtkWidget *widget,
 
       gtk_render_focus (gtk_widget_get_style_context(widget),
                         cr, x, y, width, height);
-#else
-      GtkAllocation allocation;
-      border_width = gtk_container_get_border_width(GTK_CONTAINER (widget));
-
-      gtk_widget_get_allocation(widget, &allocation);
-
-      x = allocation.x + border_width;
-      y = allocation.y + border_width;
-
-      width  = allocation.width  - 2 * border_width;
-      height = allocation.height - 2 * border_width;
-
-      gtk_paint_focus (gtk_widget_get_style(widget),
-                       gtk_widget_get_window(widget),
-                       gtk_widget_get_state (widget),
-                       &event->area, widget, "tray_icon",
-                       x, y, width, height);
-#endif
     }
-#else
-  if (focus_child && GTK_WIDGET_HAS_FOCUS (focus_child))
-    {
-      border_width = GTK_CONTAINER (widget)->border_width;
-
-      x = widget->allocation.x + border_width;
-      y = widget->allocation.y + border_width;
-
-      width  = widget->allocation.width  - 2 * border_width;
-      height = widget->allocation.height - 2 * border_width;
- 
-      gtk_paint_focus (widget->style, widget->window,
-                       GTK_WIDGET_STATE (widget),
-                       &event->area, widget, "tray_icon",
-                       x, y, width, height);
-    }
-#endif
   return retval;
 }
 
@@ -463,20 +379,10 @@ egg_tray_icon_get_visual_property (EggTrayIcon *icon)
     }
 
   icon->manager_visual = visual;
-#if GTK_CHECK_VERSION(2, 22, 0)
   gdk_visual_get_red_pixel_details(visual, NULL, NULL, &red_prec);
   gdk_visual_get_blue_pixel_details(visual, NULL, NULL, &blue_prec);
   gdk_visual_get_green_pixel_details(visual, NULL, NULL, &green_prec);
   depth = gdk_visual_get_depth(visual);
-#else
-  if (visual)
-    {
-      red_prec = visual->red_prec;
-      blue_prec = visual->blue_prec;
-      green_prec = visual->green_prec;
-      depth = visual->depth;
-    }
-#endif
   icon->manager_visual_rgba = visual != NULL &&
     (red_prec + blue_prec + green_prec < depth);
 
@@ -540,16 +446,12 @@ egg_tray_icon_send_manager_message (EggTrayIcon *icon,
   ev.data.l[4] = data3;
 
   display = GDK_DISPLAY_XDISPLAY (gtk_widget_get_display (GTK_WIDGET (icon)));
-  
+
   gdk_error_trap_push ();
   XSendEvent (display,
 	      icon->manager_window, False, NoEventMask, (XEvent *)&ev);
   gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (icon)));
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_error_trap_pop_ignored ();
-#else
-  gdk_error_trap_pop ();
-#endif
 }
 
 static void
@@ -585,29 +487,20 @@ egg_tray_icon_update_manager_window (EggTrayIcon *icon)
 
   XUngrabServer (xdisplay);
   XFlush (xdisplay);
-  
+
   if (icon->manager_window != None)
     {
       GdkWindow *gdkwin;
 
-#if GTK_CHECK_VERSION(2, 24, 0)
       gdkwin = gdk_x11_window_lookup_for_display (gtk_widget_get_display (GTK_WIDGET (icon)),
 					      icon->manager_window);
-#else
-      gdkwin = gdk_window_lookup_for_display (gtk_widget_get_display (GTK_WIDGET (icon)),
-					      icon->manager_window);
-#endif
-      
+
       gdk_window_add_filter (gdkwin, egg_tray_icon_manager_filter, icon);
 
       egg_tray_icon_get_orientation_property (icon);
       egg_tray_icon_get_visual_property (icon);
 
-#if GTK_CHECK_VERSION(2, 20, 0)
       if (gtk_widget_get_realized (GTK_WIDGET (icon)))
-#else
-      if (GTK_WIDGET_REALIZED (GTK_WIDGET (icon)))
-#endif
         {
           if ((icon->manager_visual == NULL &&
                gtk_widget_get_visual (widget) == gdk_screen_get_system_visual (screen)) ||
@@ -654,7 +547,6 @@ egg_tray_icon_delete (GtkWidget   *widget,
   return TRUE;
 }
 
-#if GTK_CHECK_VERSION(2, 90, 0)
 static void
 egg_tray_icon_set_colormap (EggTrayIcon *icon)
 {
@@ -675,42 +567,6 @@ egg_tray_icon_set_colormap (EggTrayIcon *icon)
 
   gtk_widget_set_visual (GTK_WIDGET (icon), visual);
 }
-#else
-static void
-egg_tray_icon_set_colormap (EggTrayIcon *icon)
-{
-  GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (icon));
-  GdkColormap *colormap;
-  GdkVisual *visual = icon->manager_visual;
-  gboolean new_colormap = FALSE;
-
-  /* To avoid uncertainty about colormaps, _NET_SYSTEM_TRAY_VISUAL is supposed
-   * to be either the screen default visual or a TrueColor visual; ignore it
-   * if it is something else
-   */
-  if (visual && visual->type != GDK_VISUAL_TRUE_COLOR)
-    visual = NULL;
-
-  if (visual == NULL || visual == gdk_screen_get_system_visual (screen))
-    colormap = gdk_screen_get_system_colormap (screen);
-  else if (visual == gdk_screen_get_rgb_visual (screen))
-    colormap = gdk_screen_get_rgb_colormap (screen);
-#if GTK_CHECK_VERSION(2, 8, 0)
-  else if (visual == gdk_screen_get_rgba_visual (screen))
-    colormap = gdk_screen_get_rgba_colormap (screen);
-#endif
-  else
-    {
-      colormap = gdk_colormap_new (visual, FALSE);
-      new_colormap = TRUE;
-    }
-
-  gtk_widget_set_colormap (GTK_WIDGET (icon), colormap);
-
-  if (new_colormap)
-    g_object_unref (colormap);
-}
-#endif
 
 static void
 egg_tray_icon_realize (GtkWidget *widget)
@@ -727,23 +583,14 @@ egg_tray_icon_realize (GtkWidget *widget)
   if (icon->manager_visual_rgba)
     {
       /* Set a transparent background */
-#if GTK_CHECK_VERSION(3, 4, 0)
       GdkRGBA transparent = { 0, 0, 0, 0 };
       gdk_window_set_background_rgba (gtk_widget_get_window(widget),
                                       &transparent);
-#else
-      GdkColor transparent = { 0, 0, 0, 0 }; /* Only pixel=0 matters */
-      gdk_window_set_background (gtk_widget_get_window(widget), &transparent);
-#endif
     }
   else
     {
       /* Set a parent-relative background pixmap */
-#if GTK_CHECK_VERSION(2, 90, 0)
       gdk_window_set_background_pattern (gtk_widget_get_window(widget), NULL);
-#else
-      gdk_window_set_back_pixmap (gtk_widget_get_window(widget), NULL, TRUE);
-#endif
     }
 
   if (icon->manager_window != None)
@@ -816,11 +663,7 @@ egg_tray_icon_send_message (EggTrayIcon *icon,
 		  icon->manager_window, False, StructureNotifyMask, (XEvent *)&ev);
     }
   gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (icon)));
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_error_trap_pop_ignored ();
-#else
-  gdk_error_trap_pop ();
-#endif
 
   return stamp;
 }

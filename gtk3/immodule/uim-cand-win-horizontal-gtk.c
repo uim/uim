@@ -62,17 +62,9 @@ static void uim_cand_win_horizontal_gtk_init(UIMCandWinHorizontalGtk *cwin);
 static void uim_cand_win_horizontal_gtk_class_init(UIMCandWinGtkClass *klass);
 static void uim_cand_win_horizontal_gtk_dispose(GObject *obj);
 static void button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data);
-#if GTK_CHECK_VERSION(2, 90, 0)
 static gboolean label_draw(GtkWidget *label, cairo_t *cr, gpointer data);
-#else
-static gboolean label_exposed(GtkWidget *label, GdkEventExpose *event, gpointer data);
-#endif
 static void clear_button(struct index_button *idxbutton, gint cell_index);
-#if GTK_CHECK_VERSION(3, 4, 0)
 static void show_table(GtkGrid *view, GPtrArray *buttons);
-#else
-static void show_table(GtkTable *view, GPtrArray *buttons);
-#endif
 static void scale_label(GtkEventBox *button, double factor);
 
 
@@ -137,13 +129,8 @@ uim_cand_win_horizontal_gtk_init (UIMCandWinHorizontalGtk *horizontal_cwin)
   horizontal_cwin->buttons = g_ptr_array_new();
   horizontal_cwin->selected = NULL;
 
-#if GTK_CHECK_VERSION(3, 4, 0)
   cwin->view = gtk_grid_new();
   gtk_grid_set_column_spacing(GTK_GRID(cwin->view), 10);
-#else
-  cwin->view = gtk_table_new(1, DEFAULT_NR_CELLS, FALSE);
-  gtk_table_set_col_spacings(GTK_TABLE(cwin->view), 10);
-#endif
   viewport = gtk_viewport_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(viewport), cwin->view);
   gtk_container_add(GTK_CONTAINER(cwin->scrolled_window), viewport);
@@ -159,18 +146,10 @@ uim_cand_win_horizontal_gtk_init (UIMCandWinHorizontalGtk *horizontal_cwin)
     gtk_container_add(GTK_CONTAINER(button), label);
     scale_label(GTK_EVENT_BOX(button), PANGO_SCALE_LARGE);
     g_signal_connect(button, "button-press-event", G_CALLBACK(button_clicked), horizontal_cwin);
-#if GTK_CHECK_VERSION(2, 90, 0)
     g_signal_connect_after(label, "draw", G_CALLBACK(label_draw), horizontal_cwin);
-#else
-    g_signal_connect_after(label, "expose-event", G_CALLBACK(label_exposed), horizontal_cwin);
-#endif
-#if GTK_CHECK_VERSION(3, 4, 0)
     gtk_widget_set_hexpand(button, TRUE);
     gtk_widget_set_vexpand(button, TRUE);
     gtk_grid_attach(GTK_GRID(cwin->view), button, col, 0, 1, 1);
-#else
-    gtk_table_attach_defaults(GTK_TABLE(cwin->view), button, col, col + 1, 0, 1);
-#endif
     idxbutton = g_malloc(sizeof(struct index_button));
     if (idxbutton) {
       idxbutton->button = GTK_EVENT_BOX(button);
@@ -187,39 +166,6 @@ uim_cand_win_horizontal_gtk_init (UIMCandWinHorizontalGtk *horizontal_cwin)
   gtk_window_set_resizable(GTK_WINDOW(cwin), FALSE);
 }
 
-#if !GTK_CHECK_VERSION(2, 90, 0)
-static void
-get_layout_x(GtkLabel *label, gint *xp)
-{
-  GtkMisc *misc;
-  GtkWidget *widget; 
-  gfloat xalign;
-  gint req_width, x;
-  
-  misc = GTK_MISC(label);
-  widget = GTK_WIDGET(label);
-
-  if (gtk_widget_get_direction(widget) == GTK_TEXT_DIR_LTR)
-    xalign = misc->xalign;
-  else
-    xalign = 1.0 - misc->xalign;
-
-  req_width = widget->requisition.width;
-
-  x = floor(widget->allocation.x + (gint)misc->xpad +
-	     xalign * (widget->allocation.width - req_width));
-
-  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
-    x = MAX(x, widget->allocation.x + misc->xpad);
-  else
-    x = MIN(x, widget->allocation.x + widget->allocation.width - misc->xpad);
-
-  if (xp)
-    *xp = x;
-}
-#endif
-
-#if GTK_CHECK_VERSION(2, 90, 0)
 static gboolean
 label_draw(GtkWidget *label, cairo_t *cr, gpointer data)
 {
@@ -260,31 +206,6 @@ label_draw(GtkWidget *label, cairo_t *cr, gpointer data)
 
   return FALSE;
 }
-#else
-static gboolean
-label_exposed(GtkWidget *label, GdkEventExpose *event, gpointer data)
-{
-  UIMCandWinHorizontalGtk *horizontal_cwin = data;
-  struct index_button *selected;
-  GtkWidget *selected_label = NULL;
-
-  selected = horizontal_cwin->selected;
-  if (selected)
-    selected_label = gtk_bin_get_child(GTK_BIN(selected->button));
-
-  if (label == selected_label) {
-    gint x;
-    get_layout_x(GTK_LABEL(label), &x);
-    gdk_draw_layout_with_colors(label->window,
-		      label->style->black_gc, x, 0,
-		      GTK_LABEL(label)->layout,
-		      &label->style->text[GTK_STATE_SELECTED],
-		      &label->style->bg[GTK_STATE_SELECTED]);
-  }
-
-  return FALSE;
-}
-#endif
 
 static void
 button_clicked(GtkEventBox *button, GdkEventButton *event, gpointer data)
@@ -387,19 +308,11 @@ assign_cellbutton(UIMCandWinHorizontalGtk *horizontal_cwin,
     gtk_container_add(GTK_CONTAINER(button), label);
     scale_label(GTK_EVENT_BOX(button), PANGO_SCALE_LARGE);
     g_signal_connect(button, "button-press-event", G_CALLBACK(button_clicked), horizontal_cwin);
-#if GTK_CHECK_VERSION(2, 90, 0)
     g_signal_connect_after(label, "draw", G_CALLBACK(label_draw), horizontal_cwin);
-#else
-    g_signal_connect_after(label, "expose-event", G_CALLBACK(label_exposed), horizontal_cwin);
-#endif
-#if GTK_CHECK_VERSION(3, 4, 0)
     gtk_widget_set_hexpand(button, TRUE);
     gtk_widget_set_vexpand(button, TRUE);
     gtk_grid_attach(GTK_GRID(UIM_CAND_WIN_GTK(horizontal_cwin)->view), button,
                     cand_index, 0, 1, 1);
-#else
-    gtk_table_attach_defaults(GTK_TABLE(UIM_CAND_WIN_GTK(horizontal_cwin)->view), button, cand_index, cand_index + 1, 0, 1);
-#endif
     idxbutton = g_malloc(sizeof(struct index_button));
     if (idxbutton) {
       idxbutton->button = GTK_EVENT_BOX(button);
@@ -598,9 +511,6 @@ update_table_button(UIMCandWinHorizontalGtk *horizontal_cwin, guint new_page)
       g_free(idxbutton);
       g_ptr_array_remove_index(buttons, i);
     }
-#if !GTK_CHECK_VERSION(3, 4, 0)
-    gtk_table_resize(GTK_TABLE(cwin->view), 1, cand_index);
-#endif
   }
 }
 
@@ -626,11 +536,7 @@ uim_cand_win_horizontal_gtk_set_page(UIMCandWinHorizontalGtk *horizontal_cwin, g
     new_page = page;
 
   update_table_button(horizontal_cwin, new_page);
-#if GTK_CHECK_VERSION(3, 4, 0)
   show_table(GTK_GRID(cwin->view), horizontal_cwin->buttons);
-#else
-  show_table(GTK_TABLE(cwin->view), horizontal_cwin->buttons);
-#endif
 
   cwin->page_index = new_page;
 
@@ -652,11 +558,7 @@ uim_cand_win_horizontal_gtk_set_page(UIMCandWinHorizontalGtk *horizontal_cwin, g
 }
 
 static void
-#if GTK_CHECK_VERSION(3, 4, 0)
 show_table(GtkGrid *view, GPtrArray *buttons)
-#else
-show_table(GtkTable *view, GPtrArray *buttons)
-#endif
 {
   gint col;
 
@@ -720,11 +622,7 @@ void
 uim_cand_win_horizontal_gtk_layout_sub_window(UIMCandWinHorizontalGtk *horizontal_cwin)
 {
   UIMCandWinGtk *cwin;
-#if GTK_CHECK_VERSION(2, 90, 0)
   gint x, y, w, h, x2, y2, w2, h2, x3, y3;
-#else
-  gint x, y, w, h, d, x2, y2, w2, h2, d2, x3, y3;
-#endif
   struct index_button *idxbutton;
 
   g_return_if_fail(UIM_IS_CAND_WIN_HORIZONTAL_GTK(horizontal_cwin));
@@ -733,22 +631,12 @@ uim_cand_win_horizontal_gtk_layout_sub_window(UIMCandWinHorizontalGtk *horizonta
   if (!cwin->sub_window.window)
     return;
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
                           &x, &y, &w, &h);
-#else
-  gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
-                          &x, &y, &w, &h, &d);
-#endif
   gdk_window_get_origin(gtk_widget_get_window(GTK_WIDGET(cwin)), &x, &y);
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
                           &x2, &y2, &w2, &h2);
-#else
-  gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
-                          &x2, &y2, &w2, &h2, &d2);
-#endif
 
   if (horizontal_cwin->selected) {
     GtkWidget *button;
@@ -756,16 +644,11 @@ uim_cand_win_horizontal_gtk_layout_sub_window(UIMCandWinHorizontalGtk *horizonta
     button = GTK_WIDGET(idxbutton->button);
     gdk_window_get_origin(gtk_widget_get_window(button), &x3, &y3);
 
-#if GTK_CHECK_VERSION(2, 18, 0)
     if (!gtk_widget_get_has_window(button)) {
       GtkAllocation allocation;
       gtk_widget_get_allocation(button, &allocation);
       x3 += allocation.x;
     }
-#else
-    if (GTK_WIDGET_NO_WINDOW(button))
-      x3 += button->allocation.x;
-#endif
   }
   y = y + h;
 

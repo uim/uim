@@ -72,9 +72,7 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   GdkCursor *cursor;
   GtkWidget *toolbar;
   gint height, width;
-#if GTK_CHECK_VERSION(3, 0, 0)
   GdkDevice *device = gtk_get_current_event_device();
-#endif
 
   /* do nothing unless left mouse button is pressed */
   if (event->button != 1)
@@ -83,23 +81,12 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   switch (event->type) {
   case GDK_BUTTON_PRESS:
     cursor = gdk_cursor_new(GDK_FLEUR);
-#if GTK_CHECK_VERSION(3, 0, 0)
     gdk_device_grab(device, gtk_widget_get_window(widget),
                      GDK_OWNERSHIP_NONE, FALSE,
-#else
-    gdk_pointer_grab(gtk_widget_get_window(widget), FALSE,
-#endif
 		     GDK_BUTTON_RELEASE_MASK |
 		     GDK_POINTER_MOTION_MASK,
-#if !GTK_CHECK_VERSION(3, 0, 0)
-		     NULL,
-#endif
 		     cursor, event->time);
-#if GTK_CHECK_VERSION(3, 0, 0)
     g_object_unref(cursor);
-#else
-    gdk_cursor_unref(cursor);
-#endif
 
     gtk_window_get_position(GTK_WINDOW(widget),
 		    	    &window_drag_start_x,
@@ -110,18 +97,13 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
     break;
   case GDK_2BUTTON_PRESS:
     toolbar = GTK_WIDGET(data);
-#if GTK_CHECK_VERSION(2, 18, 0)
     if (gtk_widget_get_visible(toolbar)) {
-#else
-    if (GTK_WIDGET_VISIBLE(toolbar)) {
-#endif
       gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
       gtk_widget_hide(toolbar);
     } else {
       height = -1;
       gtk_widget_show(toolbar);
     }
-#if GTK_CHECK_VERSION(2, 90, 0)
     {
       GtkRequisition minimum_size, natural_size;
       gtk_widget_get_preferred_size(widget, &minimum_size, &natural_size);
@@ -131,9 +113,6 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
         natural_size.height = minimum_size.height;
       size_request_cb(widget, &natural_size, NULL);
     }
-#else
-    gtk_widget_set_size_request(widget, -1, height);
-#endif
     break;
   default:
     break;
@@ -151,12 +130,8 @@ helper_win_set_position(GtkWidget *window, gint x, gint y)
   sc_w = gdk_screen_width();
   sc_h = gdk_screen_height();
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   w = gdk_window_get_width(gtk_widget_get_window(window));
   h = gdk_window_get_height(gtk_widget_get_window(window));
-#else
-  gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
-#endif
 
   if (wx < 0)
     wx = 0;
@@ -195,11 +170,7 @@ button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   if (!toolbar_dragging)
     return FALSE;
 
-#if GTK_CHECK_VERSION(3, 0, 0)
   gdk_device_ungrab(gtk_get_current_event_device(), event->time);
-#else
-  gdk_pointer_ungrab(event->time);
-#endif
 
   pointer_drag_start_x = -1;
   pointer_drag_start_y = -1;
@@ -208,7 +179,6 @@ button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   return FALSE;
 }
 
-#if GTK_CHECK_VERSION(2, 90, 0)
 static gboolean
 handle_draw_cb(GtkWidget *widget, cairo_t *cr)
 {
@@ -219,44 +189,12 @@ handle_draw_cb(GtkWidget *widget, cairo_t *cr)
   return FALSE;
 }
 
-#else
-static gboolean
-handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
-{
-  GdkRectangle *rect = &event->area;
-
-#if GTK_CHECK_VERSION(2, 18, 0)
-  GtkAllocation allocation;
-  gtk_widget_get_allocation(widget, &allocation);
-  gtk_paint_handle(gtk_widget_get_style(widget), gtk_widget_get_window(widget),
-		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
-		   rect, widget, "handlebox",
-		   allocation.x, allocation.y,
-		   allocation.width, allocation.height,
-		   GTK_ORIENTATION_VERTICAL);
-#else
-  gtk_paint_handle(widget->style, widget->window,
-                   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
-                   rect, widget, "handlebox",
-                   widget->allocation.x, widget->allocation.y,
-                   widget->allocation.width, widget->allocation.height,
-                   GTK_ORIENTATION_VERTICAL);
-#endif
-
-  return FALSE;
-}
-#endif
-
 static void
 size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
 {
   gint x, y;
 
-#if GTK_CHECK_VERSION(2, 20, 0)
   if (gtk_widget_get_mapped(widget)) {
-#else
-  if (GTK_WIDGET_MAPPED(widget)) {
-#endif
     gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
     helper_win_set_position(widget, x, y);
   }
@@ -266,11 +204,7 @@ static void
 size_request_cb(GtkWidget *widget, GtkRequisition *req, gpointer data)
 {
 
-#if GTK_CHECK_VERSION(2, 20, 0)
   if (gtk_widget_get_mapped(widget)) {
-#else
-  if (GTK_WIDGET_MAPPED(widget)) {
-#endif
     gint width, height;
     gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
 
@@ -312,11 +246,7 @@ main(int argc, char *argv[])
   gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
   gtk_container_add(GTK_CONTAINER(window), frame);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
   hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
-  hbox = gtk_hbox_new(FALSE, 0);
-#endif
   gtk_container_add(GTK_CONTAINER(frame), hbox);
 
   handle = gtk_drawing_area_new();
@@ -326,13 +256,8 @@ main(int argc, char *argv[])
   toolbar = (GtkWidget*)uim_toolbar_standalone_new();
   gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
 
-#if GTK_CHECK_VERSION(2, 90, 0)
   g_signal_connect(G_OBJECT(handle), "draw",
 		   G_CALLBACK(handle_draw_cb), NULL);
-#else
-  g_signal_connect(G_OBJECT(handle), "expose-event",
-		   G_CALLBACK(handle_expose_event_cb), NULL);
-#endif
 
   g_signal_connect(G_OBJECT(window), "delete_event",
 		   G_CALLBACK(delete_event), NULL);
@@ -344,10 +269,6 @@ main(int argc, char *argv[])
 		   G_CALLBACK(motion_notify_event_cb), NULL);
   g_signal_connect(G_OBJECT(window), "size-allocate",
 		   G_CALLBACK(size_allocate_cb), NULL);
-#if !GTK_CHECK_VERSION(2, 90, 0)
-  g_signal_connect(G_OBJECT(window), "size-request",
-		   G_CALLBACK(size_request_cb), NULL);
-#endif
 
   gtk_widget_show_all(GTK_WIDGET(window));
 
