@@ -27,20 +27,20 @@ im_uim_la_LIBADD += -lm
 
 
 IM_UIM_SOURCES = \
-	../../gtk2/immodule/gtk-im-uim.c ../../gtk2/immodule/gtk-im-uim.h \
-	../../gtk2/immodule/key-util-gtk.c ../../gtk2/immodule/key-util-gtk.h \
-	../../gtk2/immodule/uim-cand-win-gtk.c \
-	../../gtk2/immodule/uim-cand-win-gtk.h \
-	../../gtk2/immodule/uim-cand-win-vertical-gtk.c \
-	../../gtk2/immodule/uim-cand-win-vertical-gtk.h \
-	../../gtk2/immodule/uim-cand-win-tbl-gtk.c \
-	../../gtk2/immodule/uim-cand-win-tbl-gtk.h \
-	../../gtk2/immodule/uim-cand-win-horizontal-gtk.c \
-	../../gtk2/immodule/uim-cand-win-horizontal-gtk.h \
-	../../gtk2/immodule/caret-state-indicator.c \
-	../../gtk2/immodule/caret-state-indicator.h \
-	../../gtk2/immodule/compose.c ../../gtk2/immodule/compose.h \
-	../../gtk2/immodule/text-util.c ../../gtk2/immodule/text-util.h
+	gtk-im-uim.c gtk-im-uim.h \
+	key-util-gtk.c key-util-gtk.h \
+	uim-cand-win-gtk.c \
+	uim-cand-win-gtk.h \
+	uim-cand-win-vertical-gtk.c \
+	uim-cand-win-vertical-gtk.h \
+	uim-cand-win-tbl-gtk.c \
+	uim-cand-win-tbl-gtk.h \
+	uim-cand-win-horizontal-gtk.c \
+	uim-cand-win-horizontal-gtk.h \
+	caret-state-indicator.c \
+	caret-state-indicator.h \
+	compose.c compose.h \
+	text-util.c text-util.h
 
 QUERY_COMMAND = gtk-query-immodules-3.0
 

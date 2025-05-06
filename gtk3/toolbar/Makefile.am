@@ -27,8 +27,7 @@ libuim_toolbar_applet_gnome3_la_LDFLAGS = \
 
 libuim_toolbar_applet_gnome3_la_CFLAGS = @GTK3_CFLAGS@ @GNOME3_APPLET_CFLAGS@
 
-libuim_toolbar_applet_gnome3_la_SOURCES = applet-gnome3.c \
-			       ../../gtk2/toolbar/common-gtk.c
+libuim_toolbar_applet_gnome3_la_SOURCES = applet-gnome3.c common-gtk.c
 
 APPLET_LOCATION = $(pkglibdir)/libuim-toolbar-applet-gnome3.so
 
@@ -55,18 +54,17 @@ endif
 
 if GTK3
 bin_PROGRAMS = uim-toolbar-gtk3 uim-toolbar-gtk3-systray
-uim_toolbar_gtk3_SOURCES  = ../../gtk2/toolbar/standalone-gtk.c \
-			       ../../gtk2/toolbar/common-gtk.c
+uim_toolbar_gtk3_SOURCES  = standalone-gtk.c common-gtk.c
 uim_toolbar_gtk3_LDADD    = @GTK3_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
 uim_toolbar_gtk3_CPPFLAGS = $(AM_CPPFLAGS)
 uim_toolbar_gtk3_CFLAGS   = @GTK3_CFLAGS@
 
-uim_toolbar_gtk3_systray_SOURCES  = ../../gtk2/toolbar/systray-gtk.c \
-				   ../../gtk2/toolbar/common-gtk.c \
-				   ../../gtk2/toolbar/eggtrayicon.c \
-				   ../../gtk2/toolbar/eggtrayicon.h
+uim_toolbar_gtk3_systray_SOURCES  = systray-gtk.c \
+				   common-gtk.c \
+				   eggtrayicon.c \
+				   eggtrayicon.h
 uim_toolbar_gtk3_systray_LDADD    = @GTK3_LIBS@ \
 				   @X11_LIBS@ \
 				   $(top_builddir)/uim/libuim-scm.la \

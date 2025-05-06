@@ -8,12 +8,12 @@ AM_CPPFLAGS =					\
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
 bin_PROGRAMS = uim-pref-gtk3
-uim_pref_gtk3_SOURCES  = ../../gtk2/pref/gtk.c \
-			../../gtk2/pref/gtk-custom-widgets.c \
-			../../gtk2/pref/gtk-custom-widgets.h \
-			../../gtk2/pref/gtk-keytab.h \
-			../../gtk2/immodule/key-util-gtk.c \
-			../../gtk2/immodule/key-util-gtk.h
+uim_pref_gtk3_SOURCES  = gtk.c \
+			gtk-custom-widgets.c \
+			gtk-custom-widgets.h \
+			gtk-keytab.h \
+			../immodule/key-util-gtk.c \
+			../immodule/key-util-gtk.h
 uim_pref_gtk3_LDADD    = @GTK3_LIBS@ $(top_builddir)/uim/libuim-custom.la \
 			$(top_builddir)/uim/libuim-scm.la \
 			$(top_builddir)/uim/libuim.la
