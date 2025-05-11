@@ -158,7 +158,7 @@ endif
 if SQLITE3
 uim_plugin_LTLIBRARIES += libuim-sqlite3.la
 libuim_sqlite3_la_SOURCES = sqlite3.c
-libuim_sqlite3_la_LIBADD = @SQLITE3_LIBS@ libuim.la
+libuim_sqlite3_la_LIBADD = @SQLITE3_LIBS@ libuim-scm.la libuim.la
 libuim_sqlite3_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_sqlite3_la_CPPFLAGS = $(AM_CPPFLAGS) @SQLITE3_CFLAGS@
 endif
