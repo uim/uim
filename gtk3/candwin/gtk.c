@@ -45,7 +45,11 @@
 
 #include "../immodule/caret-state-indicator.h"
 #include "../immodule/uim-cand-win-gtk.h"
-#include "../immodule/uim-cand-win-vertical-gtk.h"
+#ifdef UIM_CANDWIN_STYLE_TABLE
+#  include "../immodule/uim-cand-win-tbl-gtk.h"
+#else
+#  include "../immodule/uim-cand-win-vertical-gtk.h"
+#endif
 
 static UIMCandWinGtk *cwin;
 static GtkWidget *caret_state_indicator;
@@ -60,7 +64,11 @@ static void index_changed_cb(UIMCandWinGtk *cwin)
 static void
 init_candidate_win(void)
 {
+#ifdef UIM_CANDWIN_STYLE_TABLE
+  cwin = UIM_CAND_WIN_GTK(uim_cand_win_tbl_gtk_new());
+#else
   cwin = UIM_CAND_WIN_GTK(uim_cand_win_vertical_gtk_new());
+#endif
   g_signal_connect(G_OBJECT(cwin), "index-changed",
 		   G_CALLBACK(index_changed_cb), NULL);
   caret_state_indicator = caret_state_indicator_new();
