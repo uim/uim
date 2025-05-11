@@ -137,30 +137,18 @@ word_window_init(WordWindow *window)
   GtkWidget *button_add, *button_clear;
 #endif
 
-#if GTK_CHECK_VERSION(3, 2, 0)
-  vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-#else
   vbox1 = gtk_vbox_new(FALSE, 10);
-#endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox1), 10);
 
   /* Necessary information area */
-#if GTK_CHECK_VERSION(3, 2, 0)
-  vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-#else
   vbox2 = gtk_vbox_new(FALSE, 6);
-#endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
   label = gtk_label_new(_("Necessary information"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
-  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
   hbox = gtk_hbox_new(FALSE, 0);
-#endif
   gtk_box_pack_start(GTK_BOX(vbox2), hbox, TRUE, TRUE, 0);
 
   label = gtk_label_new("     ");
@@ -173,22 +161,14 @@ word_window_init(WordWindow *window)
 		    word_window_necessary_create(window));
 
   /* Additional information area */
-#if GTK_CHECK_VERSION(3, 2, 0)
-  vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-#else
   vbox2 = gtk_vbox_new(FALSE, 6);
-#endif
   gtk_box_pack_start(GTK_BOX(vbox1), vbox2, TRUE, TRUE, 0);
 
   label = gtk_label_new (_("Additional information"));
   gtk_misc_set_alignment(GTK_MISC(label), 0.0, 1.0);
   gtk_box_pack_start(GTK_BOX(vbox2), label, TRUE, TRUE, 0);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
-  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
   hbox = gtk_hbox_new(FALSE, 0);
-#endif
   gtk_box_pack_start(GTK_BOX(vbox2), hbox, TRUE, TRUE, 0);
 
   label = gtk_label_new("     ");
@@ -293,56 +273,27 @@ word_window_necessary_create(WordWindow *window)
   GtkWidget *alignment, *spin_freq;
   int i;
 
-#if GTK_CHECK_VERSION(3, 4, 0)
-  table1 = gtk_grid_new();
-  gtk_grid_set_row_spacing(GTK_GRID(table1), 5);
-  gtk_grid_set_column_spacing(GTK_GRID(table1), 5);
-#else
   table1 = gtk_table_new(5, 5, FALSE);
-#endif
 
   label = gtk_label_new_with_mnemonic(_("_Phonetic:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(label, TRUE);
-  gtk_grid_attach(GTK_GRID(table1), label, 0, 0, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 0, 1, GTK_FILL, 0, 5, 5);
-#endif
 
   entry_phon = gtk_entry_new();
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry_phon);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_grid_attach(GTK_GRID(table1), entry_phon, 1, 0, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), entry_phon, 1, 2, 0, 1, 0, 0, 5, 5);
-#endif
 
   label = gtk_label_new_with_mnemonic(_("_Literal:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(label, TRUE);
-  gtk_grid_attach(GTK_GRID(table1), label, 0, 1, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 1, 2, GTK_FILL, 0, 5, 5);
-#endif
 
   entry_desc = gtk_entry_new();
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry_desc);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_grid_attach(GTK_GRID(table1), entry_desc, 1, 1, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), entry_desc, 1, 2, 1, 2, 0, 0, 5, 5);
-#endif
 
   label = gtk_label_new_with_mnemonic(_("Part of _Speech:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(label, TRUE);
-  gtk_grid_attach(GTK_GRID(table1), label, 0, 2, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 2, 3, GTK_FILL, 0, 5, 5);
-#endif
   {
     GtkWidget *alignment_pos_broad;
     gint pos_num;
@@ -370,15 +321,8 @@ word_window_necessary_create(WordWindow *window)
     gtk_container_add(GTK_CONTAINER(alignment_pos_broad),
 		      combobox_pos_broad);
     gtk_widget_show(alignment_pos_broad);
-#if GTK_CHECK_VERSION(3, 4, 0)
-    gtk_widget_set_hexpand(alignment_pos_broad, TRUE);
-    gtk_widget_set_vexpand(alignment_pos_broad, TRUE);
-    gtk_grid_attach(GTK_GRID(table1), alignment_pos_broad,
-                    1, 2, 1, 1);
-#else
     gtk_table_attach(GTK_TABLE(table1), alignment_pos_broad,
 		     1, 2, 2, 3, GTK_FILL, GTK_FILL, 5, 5);
-#endif
     gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_pos_broad), 0);
 
     g_signal_connect(G_OBJECT(combobox_pos_broad), "changed",
@@ -388,22 +332,11 @@ word_window_necessary_create(WordWindow *window)
   label = gtk_label_new_with_mnemonic(_("_Frequency:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
   gtk_widget_show(label);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(label, TRUE);
-  gtk_grid_attach(GTK_GRID(table1), label, 0, 4, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 4, 5, GTK_FILL, 0, 5, 5);
-#endif
 
   alignment = gtk_alignment_new(0.0, 0.5, 0.0, 0.0);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(alignment, TRUE);
-  gtk_grid_attach(GTK_GRID(table1), alignment,
-                  1, 4, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table1), alignment,
 		   1, 2, 4, 5, GTK_FILL, 0, 5, 5);
-#endif
   gtk_widget_show(alignment);
   adjustment_freq = (GtkAdjustment*)gtk_adjustment_new(1.0, 1.0, 65535.0,
 						       1.0, 100.0, 0);
@@ -425,43 +358,22 @@ word_window_additional_create(WordWindow *window)
   GtkWidget *table;
   GtkWidget *label, *entry, *button;
 
-#if GTK_CHECK_VERSION(3, 4, 0)
-  table = gtk_grid_new();
-  gtk_grid_set_row_spacing(GTK_GRID(table), 5);
-  gtk_grid_set_column_spacing(GTK_GRID(table), 5);
-#else
   table = gtk_table_new(5, 5, FALSE);
-#endif
 
   label = gtk_label_new_with_mnemonic(_("Part of Speech(_narrow):"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
   gtk_widget_show(label);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(label, TRUE);
-  gtk_grid_attach(GTK_GRID(table), label, 0, 0, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1, GTK_FILL, 0, 5, 5);
-#endif
 
   entry = gtk_entry_new();
   gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry);
   gtk_widget_show(entry);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(entry, TRUE);
-  gtk_grid_attach(GTK_GRID(table), entry, 1, 0, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table), entry, 1, 2, 0, 1, GTK_FILL, 0, 5, 5);
-#endif
 
   button = gtk_button_new_with_mnemonic(_("_Browse..."));
   gtk_widget_show(button);
-#if GTK_CHECK_VERSION(3, 4, 0)
-  gtk_widget_set_hexpand(button, TRUE);
-  gtk_grid_attach(GTK_GRID(table), button, 2, 0, 1, 1);
-#else
   gtk_table_attach(GTK_TABLE(table), button, 2, 3, 0, 1, GTK_FILL, 0, 5, 5);
-#endif
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(button_cclass_browse_clicked_cb), window);
 

@@ -46,11 +46,7 @@
 static void word_list_view_class_init   (WordListViewClass *klass);
 static void word_list_view_init         (WordListView *view);
 static void word_list_view_finalize     (GObject *object);
-#if GTK_CHECK_VERSION(2, 90, 0)
-static void word_list_view_destroy      (GtkWidget *object);
-#else
 static void word_list_view_destroy      (GtkObject *object);
-#endif
 
 static void word_list_view_set_property (GObject *object,
 					 guint prop_id,
@@ -118,11 +114,7 @@ static void
 word_list_view_class_init(WordListViewClass *klass)
 {
     GObjectClass   *gobject_class = G_OBJECT_CLASS(klass);
-#if GTK_CHECK_VERSION(2, 90, 0)
-    GtkWidgetClass *object_class = GTK_WIDGET_CLASS(klass);
-#else
     GtkObjectClass *object_class = GTK_OBJECT_CLASS(klass);
-#endif
 
     parent_class = g_type_class_peek_parent(klass);
 
@@ -353,11 +345,7 @@ word_list_view_finalize(GObject *object)
 }
 
 static void
-#if GTK_CHECK_VERSION(2, 90, 0)
-word_list_view_destroy(GtkWidget *object)
-#else
 word_list_view_destroy(GtkObject *object)
-#endif
 {
    WordListView *view = WORD_LIST_VIEW(object);
 
@@ -366,15 +354,9 @@ word_list_view_destroy(GtkObject *object)
      view->dict = NULL;
    }
 
-#if GTK_CHECK_VERSION(2, 90, 0)
-   if (GTK_WIDGET_CLASS(parent_class)->destroy) {
-     GTK_WIDGET_CLASS(parent_class)->destroy(object);
-   }
-#else
    if (GTK_OBJECT_CLASS(parent_class)->destroy) {
      GTK_OBJECT_CLASS(parent_class)->destroy(object);
    }
-#endif
 }
 
 /*

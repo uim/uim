@@ -367,15 +367,9 @@ create_switcher(void)
   g_signal_connect(G_OBJECT(switcher_win), "focus-in-event",
 		   G_CALLBACK(reload_im_list), NULL);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
-  vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  vbox3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
-#else
   vbox1 = gtk_vbox_new(FALSE, 0);
   vbox3 = gtk_vbox_new(FALSE, 0);
   hbox = gtk_hbox_new(FALSE, 8);
-#endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox3), 4);
 
   scrolled_win = gtk_scrolled_window_new(NULL, NULL);
@@ -395,11 +389,7 @@ create_switcher(void)
   gtk_frame_set_label_align(GTK_FRAME(frame), 0.015, 0.5);
 
   gtk_box_pack_start(GTK_BOX(vbox3), frame, FALSE, FALSE, 6);
-#if GTK_CHECK_VERSION(3, 2, 0)
-  vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-#else
   vbox2 = gtk_vbox_new(FALSE, 8);
-#endif
   gtk_container_set_border_width(GTK_CONTAINER(vbox2), 10);
   gtk_container_add(GTK_CONTAINER(frame), vbox2);
 
@@ -418,11 +408,7 @@ create_switcher(void)
   /* set radio0 (Change whole desktop) as default */
   gtk_toggle_button_set_active((GtkToggleButton *)radio0, TRUE);
 
-#if GTK_CHECK_VERSION(3, 2, 0)
-  setting_button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-#else
   setting_button_box = gtk_hbutton_box_new();
-#endif
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
   gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
 

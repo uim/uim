@@ -34,12 +34,8 @@
 #include <config.h>
 
 #include <stdlib.h>
-# include <gtk/gtk.h>
-#if GTK_CHECK_VERSION(2, 90, 0)
-# include <gdk/gdkkeysyms-compat.h>
-#else
-# include <gdk/gdkkeysyms.h>
-#endif
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "gettext.h"
 
@@ -245,11 +241,7 @@ word_list_window_init (WordListWindow *window)
   gtk_window_set_default_size(GTK_WINDOW(window), 600, 450);
   gtk_window_set_title(GTK_WINDOW(window), _("Edit the dictionary"));
 
-#if GTK_CHECK_VERSION(3, 2, 0)
-  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-#else
   vbox = gtk_vbox_new(FALSE, 0);
-#endif
   gtk_container_add(GTK_CONTAINER(window), vbox);
   gtk_widget_show(vbox);
 

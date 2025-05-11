@@ -100,11 +100,7 @@ caret_state_indicator_new(void)
   label  = gtk_label_new("");
   frame = gtk_frame_new(NULL);
   gtk_container_add(GTK_CONTAINER(frame), label);
-#if GTK_CHECK_VERSION(3, 2, 0)
-  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-#else
   hbox = gtk_hbox_new(TRUE, 0);
-#endif
   gtk_box_pack_start(GTK_BOX(hbox), frame, TRUE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), hbox);
 
