@@ -1623,20 +1623,6 @@ if test "x$enable_debug" = xyes; then
     CXXFLAGS="$CXXFLAGS -g"
   fi
 
-  # Restricting the C dialect tends to cause system library disfunction such as
-  # on glibc and Darwin libc. So this option is only specified at debugging
-  # mode.
-  #
-  # -std=gnu89 is required only for (old?) glibc. -std=c89 is sufficient for
-  # other environments.
-  AC_LANG_WERROR  # Turn warning-only unknown options into error.
-  if test "x$ax_cv_lib_glibc" = xyes; then
-    AX_CFLAGS_GCC_OPTION([-std=gnu89])
-  else
-    AX_CFLAGS_GCC_OPTION([-std=c89])
-  fi
-  AX_LANG_WNOERROR  # end AC_LANG_WERROR
-
   QT_CONFIG_OPTS="debug"
 else
   CFLAGS="$CFLAGS -DNDEBUG"
