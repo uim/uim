@@ -185,7 +185,6 @@ word_list_view_init(WordListView *view)
     gtk_scrolled_window_set_vadjustment(&view->container, GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)));
 
     treeview = gtk_tree_view_new();
-    gtk_tree_view_set_rules_hint (GTK_TREE_VIEW(treeview), TRUE);
     view->view = GTK_TREE_VIEW(treeview);
 
     gtk_container_add(GTK_CONTAINER(&view->container), treeview);
