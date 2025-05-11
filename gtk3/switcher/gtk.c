@@ -335,7 +335,6 @@ create_switcher_treeview(void)
   gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), GTK_TREE_MODEL(tree_store));
 
   g_object_unref (tree_store);
-  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW(switcher_tree_view), TRUE);
   /* expand all rows after the treeview widget has been realized */
   g_signal_connect (G_OBJECT(switcher_tree_view), "realize",
 		    G_CALLBACK (gtk_tree_view_expand_all), NULL);

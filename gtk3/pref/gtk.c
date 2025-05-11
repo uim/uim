@@ -309,7 +309,6 @@ create_pref_treeview(void)
   gtk_tree_view_set_model (GTK_TREE_VIEW(pref_tree_view),
 			   GTK_TREE_MODEL(tree_store));
   g_object_unref (tree_store);
-  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW(pref_tree_view), TRUE);
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pref_tree_view));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
   g_signal_connect (G_OBJECT(selection), "changed",

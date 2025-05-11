@@ -157,7 +157,6 @@ uim_cand_win_vertical_gtk_init (UIMCandWinVerticalGtk *vertical_cwin)
 						    "text", COLUMN_CANDIDATE,
 						    (const gchar *)NULL);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(cwin->view), TRUE);
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(cwin->view), FALSE);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 

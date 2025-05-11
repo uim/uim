@@ -437,7 +437,6 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cwin->view = gtk_tree_view_new();
   g_signal_connect(G_OBJECT(cwin->view), "destroy",
   		   G_CALLBACK(cb_tree_view_destroy), cwin->stores);
-  gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(cwin->view), TRUE);
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(cwin->view), FALSE);
   gtk_container_add(GTK_CONTAINER(scrolled_window), cwin->view);
 
