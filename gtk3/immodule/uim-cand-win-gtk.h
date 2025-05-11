@@ -89,7 +89,7 @@ struct _UIMCandWinGtkClass {
   GtkWindowClass parent_class;
 
   /* signals */
-  void (*index_changed) (UIMCandWinGtkClass *cwin);
+  void (*index_changed) (UIMCandWinGtk *cwin);
 
   /* member functions */
   void (*set_index)		(UIMCandWinGtk *cwin, gint index);
