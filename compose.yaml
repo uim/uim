@@ -27,6 +27,13 @@ services:
       dockerfile: debian-12-core.dockerfile
     volumes:
       - .:/source:delegated
+  debian-12-gtk2:
+    image: uim/uim-debian-12-gtk2
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-12-gtk2.dockerfile
+    volumes:
+      - .:/source:delegated
   debian-12-gtk3:
     image: uim/uim-debian-12-gtk3
     build:

@@ -21,6 +21,7 @@ jobs:
           - arch-linux-gtk3
           - arch-linux-qt6
           - debian-12-core
+          - debian-12-gtk2
           - debian-12-gtk3
           - debian-12-qt5
           - debian-12-qt6
