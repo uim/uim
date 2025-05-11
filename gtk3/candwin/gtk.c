@@ -47,6 +47,8 @@
 #include "../immodule/uim-cand-win-gtk.h"
 #ifdef UIM_CANDWIN_STYLE_TABLE
 #  include "../immodule/uim-cand-win-tbl-gtk.h"
+#elif defined(UIM_CANDWIN_STYLE_HORIZONTAL)
+#  include "../immodule/uim-cand-win-horizontal-gtk.h"
 #else
 #  include "../immodule/uim-cand-win-vertical-gtk.h"
 #endif
@@ -66,6 +68,8 @@ init_candidate_win(void)
 {
 #ifdef UIM_CANDWIN_STYLE_TABLE
   cwin = UIM_CAND_WIN_GTK(uim_cand_win_tbl_gtk_new());
+#elif defined(UIM_CANDWIN_STYLE_HORIZONTAL)
+  cwin = UIM_CAND_WIN_GTK(uim_cand_win_horizontal_gtk_new());
 #else
   cwin = UIM_CAND_WIN_GTK(uim_cand_win_vertical_gtk_new());
 #endif
