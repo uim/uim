@@ -1,0 +1,28 @@
+<oaf_info>
+<oaf_server iid="OAFIID:GNOME_UimApplet_Factory"
+	 	type="exe"
+        	location="@LIBEXECDIR@/uim-toolbar-applet">
+
+        <oaf_attribute name="repo_ids" type="stringv">
+                <item value="IDL:Bonobo/GenericFactory:1.0"/>
+                <item value="IDL:Bonobo/Unknown:1.0"/>
+        </oaf_attribute>
+        <oaf_attribute name="name" type="string" _value="uim Applet Factory"/>
+        <oaf_attribute name="description" type="string" _value="uim applet factory"/>
+</oaf_server>
+
+<oaf_server iid="OAFIID:GNOME_UimApplet"
+		type="factory"
+		location="OAFIID:GNOME_UimApplet_Factory">
+
+        <oaf_attribute name="repo_ids" type="stringv">
+                <item value="IDL:GNOME/Vertigo/PanelAppletShell:1.0"/>
+                <item value="IDL:Bonobo/Control:1.0"/>
+                <item value="IDL:Bonobo/Unknown:1.0"/>
+        </oaf_attribute>
+        <oaf_attribute name="name" type="string" _value="Input Method Indicator"/>
+        <oaf_attribute name="description" type="string" _value="Indicates and controls the state of input method (for uim)"/>
+        <oaf_attribute name="panel:category" type="string" _value="Utilities"/>
+        <oaf_attribute name="panel:icon" type="string" value="@UIM_PIXMAPSDIR@/uim-icon.png"/>
+</oaf_server>
+</oaf_info>

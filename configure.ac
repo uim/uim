@@ -805,6 +805,53 @@ uim_pixmapsdir=`eval eval echo ${datadir}/${PACKAGE_TARNAME}/pixmaps`
 AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${uim_pixmapsdir}", [pixmaps directory])
 AC_SUBST(uim_pixmapsdir)
 
+dnl ******************************
+dnl *** Check for GTK+ Library ***
+dnl ******************************
+AC_ARG_WITH(gtk2,
+  AC_HELP_STRING([--without-gtk2],
+    [do not build against GTK+2]),
+  [],
+  [with_gtk2=yes])
+
+if test "x$with_gtk2" != xno; then
+  PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0 gdk-x11-2.0,
+                    with_gtk2=yes, with_gtk2=no)
+  PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0 gdk-x11-2.0,
+                    with_gtk2_4=yes, with_gtk2_4=no)
+fi
+
+AM_CONDITIONAL(GTK2, test "x$with_gtk2" = xyes)
+AM_CONDITIONAL(GTK2_4, test "x$with_gtk2_4" = xyes)
+
+if test "x$with_gtk2" = xyes; then
+  GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
+  GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
+  AC_SUBST(GTK_BINARY_VERSION)
+  AC_SUBST(GTK_LIBDIR)
+  AC_DEFINE(USE_GTK2, 1, [use GTK+2])
+fi
+
+AC_ARG_ENABLE(gnome-applet,
+  AC_HELP_STRING([--disable-gnome-applet],
+    [disable uim applet for GNOME2 panel]),
+  [],
+  [enable_gnome_applet=yes])
+
+if test "x$enable_gnome_applet" != xno; then
+  PKG_CHECK_MODULES(GNOME_APPLET, libpanelapplet-2.0,
+                    enable_gnome_applet=yes, enable_gnome_applet=no)
+  PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0,
+                    panelapplet_have_set_background_api=yes,
+                    panelapplet_have_set_background_api=no)
+fi
+
+if test x"$panelapplet_have_set_background_api" = xyes; then
+  AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
+fi
+
+AM_CONDITIONAL(GNOME_APPLET, test "x$enable_gnome_applet" = xyes)
+
 dnl *******************************
 dnl *** Check for GTK+3 Library ***
 dnl *******************************
@@ -1785,6 +1832,17 @@ AC_CONFIG_FILES([Makefile
                  uim/Makefile
                  uim/version.h
                  scm/Makefile
+                 gtk2/Makefile
+                 gtk2/candwin/Makefile
+                 gtk2/dict/Makefile
+                 gtk2/dict/uim-dict-ui.xml
+                 gtk2/immodule/Makefile
+                 gtk2/pad/Makefile
+                 gtk2/pref/Makefile
+                 gtk2/switcher/Makefile
+                 gtk2/test/Makefile
+                 gtk2/test/test.sh
+                 gtk2/toolbar/Makefile
                  gtk3/Makefile
                  gtk3/candwin/Makefile
                  gtk3/dict/Makefile
@@ -2022,6 +2080,8 @@ Configure Result :
    OpenSSL         : ${enable_openssl}
    SQLite3         : ${with_sqlite3}
    ffi             : ${with_ffi}
+   GTK+2           : ${with_gtk2}
+   GNOME2 Applet   : ${enable_gnome_applet}
    GTK+3           : ${with_gtk3}
    GNOME3 Applet   : ${enable_gnome3_applet}
    Qt3             : ${with_qt}
