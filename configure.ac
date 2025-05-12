@@ -1146,31 +1146,43 @@ AM_CONDITIONAL(QT6_IMMODULE, test "x$with_qt6_immodule" = xyes)
 
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-    [determine default toolkit (gtk, gtk3, qt, qt4, qt5 or qt6) @<:@default=gtk@:>@]),
+    [determine default toolkit (gtk, gtk3, qt, qt4, qt5 or qt6) @<:@default=auto@:>@]),
   [],
-  [enable_default_toolkit=no])
+  [enable_default_toolkit=auto])
 
-default_toolkit=gtk
-if test "x$enable_default_toolkit" != xno; then
-  if test "x$enable_default_toolkit" = xgtk && \
-     test "x$with_gtk2" = xyes; then
-    default_toolkit=gtk
-  elif test "x$enable_default_toolkit" = xgtk3 && \
-       test "x$with_gtk3" = xyes; then
+default_toolkit=no
+if test "x$enable_default_toolkit" = xauto; then
+  if test "x$with_gtk3" = xyes; then
     default_toolkit=gtk3
-  elif test "x$enable_default_toolkit" = xqt && \
-       test "x$with_qt" = xyes; then
-    default_toolkit=qt
-  elif test "x$enable_default_toolkit" = xqt4 && \
-       test "x$with_qt4" = xyes; then
-    default_toolkit=qt4
-  elif test "x$enable_default_toolkit" = xqt5 && \
-       test "x$with_qt5" = xyes; then
-    default_toolkit=qt5
-  elif test "x$enable_default_toolkit" = xqt6 && \
-       test "x$with_qt6" = xyes; then
+  elif test "x$with_qt6" = xyes; then
     default_toolkit=qt6
+  elif test "x$with_qt5" = xyes; then
+    default_toolkit=qt5
+  elif test "x$with_gtk" = xyes; then
+    default_toolkit=gtk
+  elif test "x$with_qt4" = xyes; then
+    default_toolkit=qt4
+  elif test "x$with_qt" = xyes; then
+    default_toolkit=qt
   fi
+elif test "x$enable_default_toolkit" = xgtk && \
+     test "x$with_gtk2" = xyes; then
+  default_toolkit=gtk
+elif test "x$enable_default_toolkit" = xgtk3 && \
+     test "x$with_gtk3" = xyes; then
+  default_toolkit=gtk3
+elif test "x$enable_default_toolkit" = xqt && \
+     test "x$with_qt" = xyes; then
+  default_toolkit=qt
+elif test "x$enable_default_toolkit" = xqt4 && \
+     test "x$with_qt4" = xyes; then
+  default_toolkit=qt4
+elif test "x$enable_default_toolkit" = xqt5 && \
+     test "x$with_qt5" = xyes; then
+  default_toolkit=qt5
+elif test "x$enable_default_toolkit" = xqt6 && \
+     test "x$with_qt6" = xyes; then
+  default_toolkit=qt6
 fi
 
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test "x$default_toolkit" = xgtk)
