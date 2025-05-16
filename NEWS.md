@@ -1,5 +1,27 @@
 # NEWS
 
+## 1.9.6 - 2025-05-16
+
+### Improvements
+
+  * `configure`: Changed the default value of
+    `--enable-default-toolkit`. It detects the default toolkit
+    automatically by default.
+
+  * GTK+ 3: Simplified.
+
+  * GTK+ 2: Added again.
+    * [GH-236](https://github.com/uim/uim/issues/236)
+    * Patch by hazen2215
+
+### Fixes
+
+  * sqlite3: Added missing `libuim-scm.la` dependency.
+
+### Thanks
+
+  * hazen2215
+
 ## 1.9.5 - 2025-05-06
 
 ### Fixes
