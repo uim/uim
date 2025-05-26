@@ -2091,6 +2091,8 @@ Configure Result :
    Qt4 Qt3Support  : ${enable_qt4_qt3support}
    Qt5             : ${with_qt5}
    Qt5 immodule    : ${with_qt5_immodule}
+   Qt6             : ${with_qt6}
+   Qt6 immodule    : ${with_qt6_immodule}
    KDE3 Applet     : ${enable_kde_applet}
    KDE4 Applet     : ${enable_kde4_applet}
    FEP             : ${enable_fep}
