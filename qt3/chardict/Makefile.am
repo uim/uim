@@ -11,13 +11,11 @@ HEADER_FILES = \
 	bushuviewwidget.h \
 	unicodeviewwidget.h \
 	chargridview.h \
-	kseparator.h \
 	qt.h
 MOC_FILES = \
 	bushuviewwidget.moc \
 	unicodeviewwidget.moc \
 	chargridview.moc \
-	kseparator.moc \
 	qt.moc
 
 noinst_HEADERS = $(HEADER_FILES)
@@ -28,7 +26,6 @@ uim_chardict_qt_SOURCES = \
 	qt.cpp qt.h \
 	bushuviewwidget.cpp bushuviewwidget.h \
 	chargridview.cpp chargridview.h \
-	kseparator.cpp kseparator.h \
 	unicodeviewwidget.cpp unicodeviewwidget.h
 uim_chardict_qt_CXXFLAGS = @UIM_QT_CXXFLAGS@ -DBUSHUDICT=\"$(datadir)/uim/helperdata/bushu.t\"
 
@@ -39,7 +36,6 @@ qt.cpp: qt.moc
 bushuviewwidget.cpp: bushuviewwidget.moc
 unicodeviewwidget.cpp: unicodeviewwidget.moc
 chargridview.cpp: chargridview.moc
-kseparator.cpp: kseparator.moc
 helperdatadir = $(datadir)/uim/helperdata
 helperdata_DATA = bushu.t
 

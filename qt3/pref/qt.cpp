@@ -34,7 +34,6 @@
 
 #include "qt.h"
 #include "customwidgets.h"
-#include "kseparator.h"
 
 #include <qvbox.h>
 #include <qhbox.h>
@@ -179,8 +178,12 @@ void UimPrefDialog::createMainWidgets()
     buttonHLayout->addWidget( m_applyButton );
     buttonHLayout->addWidget( cancelButton );
 
+    QFrame *separator = new QFrame( this );
+    separator->setFrameShape( QFrame::HLine );
+    separator->setFrameShadow( QFrame::Sunken );
+
     mainVLayout->addWidget( mainSplitter );
-    mainVLayout->addWidget( new KSeparator( this ) );
+    mainVLayout->addWidget( separator );
     mainVLayout->addWidget( buttonHWidget );
 }
 
@@ -352,7 +355,9 @@ void QConfirmDialog::setupWidgets( const QString&msg )
     vLayout->setSpacing( 6 );
     vLayout->setMargin( 6 );
     QLabel *msgLabel = new QLabel( msg, this );
-    KSeparator *sep = new KSeparator( this );
+    QFrame *sep = new QFrame( this );
+    sep->setFrameShape( QFrame::HLine );
+    sep->setFrameShadow( QFrame::Sunken );
     vLayout->addWidget( msgLabel );
     vLayout->addWidget( sep );
 
@@ -413,7 +418,9 @@ void GroupPageWidget::setupWidgets()
     groupLabel->setAlignment( Qt::AlignLeft );
     vLayout->addWidget( groupLabel );
     
-    KSeparator *separator = new KSeparator( this );
+    QFrame *separator = new QFrame( this );
+    separator->setFrameShape( QFrame::HLine );
+    separator->setFrameShadow( QFrame::Sunken );
     vLayout->addWidget( separator );
 
     /* default QVGroupBox */
