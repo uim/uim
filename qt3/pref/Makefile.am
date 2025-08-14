@@ -10,12 +10,10 @@ AM_CPPFLAGS =					\
 if PREF
 HEADER_FILES = \
 	customwidgets.h \
-	kseparator.h \
 	qt.h
 
 MOC_FILES = \
 	customwidgets.moc \
-	kseparator.moc \
 	qt.moc
 
 UI_TMP_FILES = \
@@ -37,9 +35,9 @@ nodist_uim_pref_qt_SOURCES = \
 	keyeditformbase.cpp \
 	keyeditformbase.h
 uim_pref_qt_SOURCES = \
-	qt.cpp customwidgets.cpp kseparator.cpp \
+	qt.cpp customwidgets.cpp \
 	../qtgettext.h qt.h \
-	customwidgets.h kseparator.h
+	customwidgets.h
 
 uim_pref_qt_CXXFLAGS = $(UIM_QT_CXXFLAGS)
 uim_pref_qt_LDFLAGS  = $(UIM_QT_LDFLAGS)
@@ -52,7 +50,6 @@ customwidgets.h:olisteditformbase.h keyeditformbase.h
 
 qt.cpp: qt.moc olisteditformbase.h keyeditformbase.h
 customwidgets.cpp: customwidgets.moc
-kseparator.cpp: kseparator.moc
 
 UIC_IMPL_FLAGS = -pch "qtgettext.h" -tr mygettext
 

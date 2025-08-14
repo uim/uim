@@ -33,7 +33,6 @@ SUCH DAMAGE.
 #include "qt.h"
 #include "bushuviewwidget.h"
 #include "unicodeviewwidget.h"
-#include "kseparator.h"
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -181,8 +180,12 @@ void KUimCharDict::setupWidgets()
     m_unicodeView->hide();
     m_widgetStack->addWidget( m_unicodeView, UNICODE );
 
+    QFrame *separator = new QFrame( this );
+    separator->setFrameShape( QFrame::HLine );
+    separator->setFrameShadow( QFrame::Sunken );
+
     layout->addWidget( upperHWidget );
-    layout->addWidget( new KSeparator( this ) );
+    layout->addWidget( separator );
     layout->addWidget( m_widgetStack );
 }
 
