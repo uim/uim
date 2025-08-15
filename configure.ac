@@ -1538,6 +1538,8 @@ fi
 
 AM_CONDITIONAL(PREF, test x"$enable_pref" = xyes)
 
+AM_CONDITIONAL([CHARDICT], [test "x$with_qt" = xyes || test "x$with_qt4" = xyes || test "x$with_qt5" = xyes || test "x$with_qt6" = xyes])
+
 AC_ARG_ENABLE(anthy-static,
   AC_HELP_STRING([--enable-anthy-static],
     [enable static Anthy]),
@@ -1915,6 +1917,7 @@ AC_CONFIG_FILES([Makefile
                  emacs/uim-version.el
                  tables/Makefile
                  byeoru-data/Makefile
+                 data/Makefile
                  test/Makefile
                  test2/Makefile
                  test2/run-singletest.sh

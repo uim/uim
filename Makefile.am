@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4.generated -I m4
 
 SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
           gtk2 gtk3 qt3 qt4 qt5 qt6 notify
-SUBDIRS += xim fep emacs pixmaps examples tables byeoru-data
+SUBDIRS += xim fep emacs pixmaps examples tables byeoru-data data
 if USE_NLS
   SUBDIRS += po
 endif
