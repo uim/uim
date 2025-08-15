@@ -6,8 +6,6 @@ if QT4
 all clean mocclean install uninstall:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake INSTALL_ROOT=$(DESTDIR) $@
 
-helperdatadir = $(datadir)/uim/helperdata
-helperdata_DATA = bushu.t
 endif
 
 # *.pro is required to run Makefile.qmake. So distclean-am is deferred.
@@ -28,5 +26,4 @@ EXTRA_DIST = uim-chardict-qt4.pro.in \
 	     bushuviewwidget.cpp \
 	     chargridview.cpp \
 	     qt4.cpp \
-	     unicodeviewwidget.cpp \
-	     bushu.t
+	     unicodeviewwidget.cpp

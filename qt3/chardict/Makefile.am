@@ -1,5 +1,3 @@
-EXTRA_DIST = bushu.t
-
 if QT
 AM_CPPFLAGS =					\
 	-I$(top_builddir)/uim			\
@@ -36,8 +34,6 @@ qt.cpp: qt.moc
 bushuviewwidget.cpp: bushuviewwidget.moc
 unicodeviewwidget.cpp: unicodeviewwidget.moc
 chargridview.cpp: chargridview.moc
-helperdatadir = $(datadir)/uim/helperdata
-helperdata_DATA = bushu.t
 
 CLEANFILES = \
 	$(MOC_FILES)
