@@ -1,0 +1,140 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>KeyEditFormBase</class>
+<widget class="TQDialog">
+    <property name="name">
+        <cstring>KeyEditFormBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>392</width>
+            <height>229</height>
+        </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>5</hsizetype>
+            <vsizetype>5</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="caption">
+        <string>KeyEditDialog</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="TQLayoutWidget" row="0" column="0">
+            <property name="name">
+                <cstring>layout9</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="TQListView">
+                    <column>
+                        <property name="text">
+                            <string>Key Combination</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
+                    <property name="name">
+                        <cstring>m_listView</cstring>
+                    </property>
+                </widget>
+                <widget class="TQLayoutWidget">
+                    <property name="name">
+                        <cstring>layout8</cstring>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_addButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Add</string>
+                            </property>
+                        </widget>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_removeButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Remove</string>
+                            </property>
+                        </widget>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_editButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Edit</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer1</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>77</width>
+                                    <height>50</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_okButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>OK</string>
+                            </property>
+                        </widget>
+                        <widget class="TQPushButton">
+                            <property name="name">
+                                <cstring>m_cancelButton</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Cancel</string>
+                            </property>
+                        </widget>
+                    </vbox>
+                </widget>
+            </hbox>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_okButton</sender>
+        <signal>clicked()</signal>
+        <receiver>KeyEditFormBase</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>KeyEditFormBase</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

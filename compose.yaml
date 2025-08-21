@@ -20,6 +20,13 @@ services:
       dockerfile: arch-linux-qt6.dockerfile
     volumes:
       - .:/source:delegated
+  arch-linux-tqt:
+    image: uim/uim-arch-linux-tqt
+    build:
+      context: ci/dockerfiles
+      dockerfile: arch-linux-tqt.dockerfile
+    volumes:
+      - .:/source:delegated
   debian-12-core:
     image: uim/uim-debian-12-core
     build:
@@ -60,5 +67,12 @@ services:
     build:
       context: ci/dockerfiles
       dockerfile: debian-12-release.dockerfile
+    volumes:
+      - .:/source:delegated
+  debian-12-tqt:
+    image: uim/uim-debian-12-tqt
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-12-tqt.dockerfile
     volumes:
       - .:/source:delegated
