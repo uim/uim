@@ -1537,9 +1537,9 @@ AC_SUBST(KDE_INCLUDE_DIR)
 
 AM_CONDITIONAL(KDE_APPLET, test "x$enable_kde_applet" = xyes)
 
-dnl **********************************
-dnl *** test for TDE applet.. XXX ***
-dnl **********************************
+dnl ****************************
+dnl *** test for TDE applet. ***
+dnl ****************************
 AC_ARG_ENABLE(tde-applet,
   AC_HELP_STRING([--disable-tde-applet],
     [do not build uim applet for TDE panel]),
