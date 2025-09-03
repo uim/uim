@@ -640,6 +640,77 @@
 /test2/Makefile
 /test2/run-singletest.sh
 
+# /tqt/
+/tqt/Makefile
+/tqt/Makefile.in
+
+# /tqt/candwin/
+/tqt/candwin/.deps/
+/tqt/candwin/.libs/
+/tqt/candwin/uim-candwin-tqt
+/tqt/candwin/Makefile
+/tqt/candwin/Makefile.in
+/tqt/candwin/*.moc
+/tqt/candwin/*.o
+
+# /tqt/chardict/
+/tqt/chardict/.deps/
+/tqt/chardict/Makefile
+/tqt/chardict/Makefile.in
+/tqt/chardict/uim-chardict-tqt
+/tqt/chardict/*.moc
+/tqt/chardict/*.o
+
+# /tqt/immodule/
+/tqt/immodule/.deps/
+/tqt/immodule/.libs/
+/tqt/immodule/Makefile
+/tqt/immodule/Makefile.in
+/tqt/immodule/*.la
+/tqt/immodule/*.lo
+/tqt/immodule/*.moc
+
+# /tqt/pref/
+/tqt/pref/.deps/
+/tqt/pref/.libs/
+/tqt/pref/Makefile
+/tqt/pref/Makefile.in
+/tqt/pref/keyeditformbase.cpp
+/tqt/pref/keyeditformbase.h
+/tqt/pref/olisteditformbase.cpp
+/tqt/pref/olisteditformbase.h
+/tqt/pref/uim-pref-tqt
+/tqt/pref/*.moc
+/tqt/pref/*.o
+
+# /tqt/switcher/
+/tqt/switcher/.deps/
+/tqt/switcher/.libs/
+/tqt/switcher/Makefile
+/tqt/switcher/Makefile.in
+/tqt/switcher/uim-im-switcher-tqt
+/tqt/switcher/*.moc
+/tqt/switcher/*.o
+
+# /tqt/test/
+/tqt/test/.deps/
+/tqt/test/Makefile
+/tqt/test/Makefile.in
+/tqt/test/qedittest
+/tqt/test/*.o
+
+# /tqt/toolbar/
+/tqt/toolbar/.deps/
+/tqt/toolbar/.libs/
+/tqt/toolbar/Makefile
+/tqt/toolbar/Makefile.in
+/tqt/toolbar/uimapplet.desktop
+/tqt/toolbar/uim-toolbar-tqt
+/tqt/toolbar/*.la
+/tqt/toolbar/*.lo
+/tqt/toolbar/*.moc
+/tqt/toolbar/*.o
+
 # /uim/
 /uim/.deps/
 /uim/.libs/

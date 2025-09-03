@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Plugin
+Icon=@uim_pixmapsdir@/uim-icon.png
+Name = uim
+Comment = Input Method Indicator (uim)
+X-TDE-Library = uim_panelapplet
+X-TDE-UniqueApplet = true
