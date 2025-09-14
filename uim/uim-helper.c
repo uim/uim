@@ -343,6 +343,12 @@ uim_unset_uim_fd(uim_context uc)
   uc->uim_fd = -1;
 }
 
+int
+uim_get_uim_fd(uim_context uc)
+{
+  return uc->uim_fd;
+}
+
 /* Public API for uim_issetugid(). */
 /* TODO: should be renamed to uim_helper_issetugid() */
 uim_bool

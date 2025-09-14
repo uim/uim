@@ -59,8 +59,9 @@ char *uim_helper_buffer_append(char *buf,
 void uim_helper_buffer_shift(char *buf, int count);
 char *uim_helper_buffer_get_message(char *buf);
 
-void uim_set_uim_fd(uim_context, int);
-void uim_unset_uim_fd(uim_context);
+void uim_set_uim_fd(uim_context uc, int fd);
+void uim_unset_uim_fd(uim_context uc);
+int uim_get_uim_fd(uim_context uc);
 
 uim_bool
 uim_helper_is_setugid(void);
