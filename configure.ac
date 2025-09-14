@@ -1805,8 +1805,8 @@ AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based 
 if test "x$enable_debug" = xyes; then
   # add -g flag to CFLAGS regardless of GCC=yes or not
   if test "x$ac_cv_prog_cc_g" = xyes; then
-    CFLAGS="$CFLAGS -g"
-    CXXFLAGS="$CXXFLAGS -g"
+    CFLAGS="$CFLAGS -g3 -O0"
+    CXXFLAGS="$CXXFLAGS -g3 -O0"
   fi
 
   QT_CONFIG_OPTS="debug"
