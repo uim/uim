@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:13
 
 RUN \
   echo "debconf debconf/frontend select Noninteractive" | \
@@ -11,13 +11,24 @@ RUN \
 RUN \
   apt update -qq && \
   apt install -y \
+    cmake \
+    extra-cmake-modules \
+    g++ \
     gcc \
     intltool \
     libedit-dev \
+    libkf5plasma-dev \
     libncurses-dev \
+    libqt5x11extras5-dev \
     librsvg2-bin \
+    libx11-dev \
+    libxft-dev \
     make \
     pkg-config \
+    qt5-qmake \
+    qtbase5-dev \
+    qtbase5-private-dev \
+    qtdeclarative5-dev \
     ruby \
     sudo \
     tzdata && \
@@ -36,4 +47,4 @@ USER uim
 RUN mkdir -p /home/uim/build
 WORKDIR /home/uim/build
 
-CMD /source/ci/build-core.sh
+CMD /source/ci/build-qt5.sh
