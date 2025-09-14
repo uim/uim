@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:13
 
 RUN \
   echo "debconf debconf/frontend select Noninteractive" | \
@@ -11,45 +11,15 @@ RUN \
 RUN \
   apt update -qq && \
   apt install -y \
-    asciidoc \
-    autoconf \
-    autoconf-archive \
-    autopoint \
-    cmake \
-    extra-cmake-modules \
-    g++ \
     gcc \
     intltool \
-    libanthy-dev \
-    libcanna1g-dev \
-    libcurl4-gnutls-dev \
-    libeb16-dev \
     libedit-dev \
-    libexpat1-dev \
-    libffi-dev \
-    libgtk-3-bin \
-    libgtk-3-dev \
     libgtk-4-bin \
     libgtk-4-dev \
-    libkf5plasma-dev \
-    libm17n-dev \
     libncurses-dev \
-    libnotify-dev \
-    libqt5x11extras5-dev \
     librsvg2-bin \
-    libsqlite3-dev \
-    libssl-dev \
-    libtool \
-    libwnn-dev \
-    libx11-dev \
     make \
     pkg-config \
-    qt5-qmake \
-    qt6-base-private-dev \
-    qt6-declarative-dev \
-    qtbase5-dev \
-    qtbase5-private-dev \
-    qtdeclarative5-dev \
     ruby \
     sudo \
     tzdata && \
@@ -68,4 +38,4 @@ USER uim
 RUN mkdir -p /home/uim/build
 WORKDIR /home/uim/build
 
-CMD /source/ci/build-release.sh
+CMD /source/ci/build-gtk4.sh

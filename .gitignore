@@ -34,6 +34,10 @@
 /byeoru-data/Makefile
 /byeoru-data/Makefile.in
 
+# /data/
+/data/Makefile
+/data/Makefile.in
+
 # /doc/
 /doc/Makefile.in
 /doc/Makefile
@@ -225,6 +229,19 @@
 /gtk3/toolbar/uim-toolbar-gtk3
 /gtk3/toolbar/uim-toolbar-gtk3-systray
 /gtk3/toolbar/*.o
+
+# /gtk4/
+/gtk4/Makefile
+/gtk4/Makefile.in
+
+# /gtk4/immodule/
+/gtk4/immodule/.deps/
+/gtk4/immodule/.libs/
+/gtk4/immodule/Makefile
+/gtk4/immodule/Makefile.in
+/gtk4/immodule/libim-uim.la
+/gtk4/immodule/*.lo
+/gtk4/immodule/*.o
 
 # /m4/
 /m4/Makefile.in
