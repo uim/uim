@@ -27,39 +27,39 @@ services:
       dockerfile: arch-linux-tqt.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-core:
-    image: uim/uim-debian-12-core
+  debian-13-core:
+    image: uim/uim-debian-13-core
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-core.dockerfile
+      dockerfile: debian-13-core.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-gtk2:
-    image: uim/uim-debian-12-gtk2
+  debian-13-gtk2:
+    image: uim/uim-debian-13-gtk2
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-gtk2.dockerfile
+      dockerfile: debian-13-gtk2.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-gtk3:
-    image: uim/uim-debian-12-gtk3
+  debian-13-gtk3:
+    image: uim/uim-debian-13-gtk3
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-gtk3.dockerfile
+      dockerfile: debian-13-gtk3.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-qt5:
-    image: uim/uim-debian-12-qt5
+  debian-13-qt5:
+    image: uim/uim-debian-13-qt5
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-qt5.dockerfile
+      dockerfile: debian-13-qt5.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-qt6:
-    image: uim/uim-debian-12-qt6
+  debian-13-qt6:
+    image: uim/uim-debian-13-qt6
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-qt6.dockerfile
+      dockerfile: debian-13-qt6.dockerfile
     volumes:
       - .:/source:delegated
   debian-12-release:
@@ -69,10 +69,10 @@ services:
       dockerfile: debian-12-release.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-tqt:
-    image: uim/uim-debian-12-tqt
+  debian-13-tqt:
+    image: uim/uim-debian-13-tqt
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-tqt.dockerfile
+      dockerfile: debian-13-tqt.dockerfile
     volumes:
       - .:/source:delegated

@@ -21,12 +21,12 @@ jobs:
           - arch-linux-gtk3
           - arch-linux-qt6
           - arch-linux-tqt
-          - debian-12-core
-          - debian-12-gtk2
-          - debian-12-gtk3
-          - debian-12-qt5
-          - debian-12-qt6
-          - debian-12-tqt
+          - debian-13-core
+          - debian-13-gtk2
+          - debian-13-gtk3
+          - debian-13-qt5
+          - debian-13-qt6
+          - debian-13-tqt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

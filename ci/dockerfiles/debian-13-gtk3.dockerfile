@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:13
 
 RUN \
   echo "debconf debconf/frontend select Noninteractive" | \
@@ -11,20 +11,15 @@ RUN \
 RUN \
   apt update -qq && \
   apt install -y \
-    cmake \
-    extra-cmake-modules \
-    g++ \
     gcc \
     intltool \
     libedit-dev \
+    libgtk-3-bin \
+    libgtk-3-dev \
     libncurses-dev \
     librsvg2-bin \
-    libx11-dev \
-    libxft-dev \
     make \
     pkg-config \
-    qt6-base-private-dev \
-    qt6-declarative-dev \
     ruby \
     sudo \
     tzdata && \
@@ -43,4 +38,4 @@ USER uim
 RUN mkdir -p /home/uim/build
 WORKDIR /home/uim/build
 
-CMD /source/ci/build-qt6.sh
+CMD /source/ci/build-gtk3.sh
