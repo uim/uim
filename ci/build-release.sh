@@ -40,6 +40,7 @@ set -x
   --with-qt6-immodule \
   --with-gtk2 \
   --with-gtk3 \
+  --with-gtk4 \
   --with-sj3 \
   --with-wnn
 set +x

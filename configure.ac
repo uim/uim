@@ -816,9 +816,9 @@ uim_pixmapsdir=`eval eval echo ${datadir}/${PACKAGE_TARNAME}/pixmaps`
 AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${uim_pixmapsdir}", [pixmaps directory])
 AC_SUBST(uim_pixmapsdir)
 
-dnl ******************************
-dnl *** Check for GTK+ Library ***
-dnl ******************************
+dnl *******************************
+dnl *** Check for GTK+2 Library ***
+dnl *******************************
 AC_ARG_WITH(gtk2,
   AC_HELP_STRING([--without-gtk2],
     [do not build against GTK+2]),
@@ -905,6 +905,29 @@ if test "x$enable_gnome3_applet" = xyes; then
     LIBPANEL_APPLET_DIR=`$PKG_CONFIG --variable=libpanel_applet_dir libpanel-applet`
   fi
   AC_SUBST(LIBPANEL_APPLET_DIR)
+fi
+
+dnl *******************************
+dnl *** Check for GTK 4 Library ***
+dnl *******************************
+AC_ARG_WITH(gtk4,
+  AC_HELP_STRING([--without-gtk4],
+    [do not build GTK 4 immodule and helper applications]),
+  [],
+  [with_gtk4=yes])
+
+if test "x$with_gtk4" != xno; then
+  PKG_CHECK_MODULES(GTK4, gtk4, with_gtk4=yes, with_gtk4=no)
+fi
+
+AM_CONDITIONAL(GTK4, test "x$with_gtk4" = xyes)
+
+if test "x$with_gtk4" = xyes; then
+  AC_DEFINE(USE_GTK4, 1, [use GTK 4])
+  GTK4_BINARY_VERSION=`$PKG_CONFIG gtk4 --variable=gtk_binary_version`
+  GTK4_LIBDIR=`$PKG_CONFIG gtk4 --variable=libdir`
+  AC_SUBST(GTK4_BINARY_VERSION)
+  AC_SUBST(GTK4_LIBDIR)
 fi
 
 AC_ARG_ENABLE(debug,
@@ -1269,12 +1292,16 @@ AM_CONDITIONAL(QT6_IMMODULE, test "x$with_qt6_immodule" = xyes)
 
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-    [determine default toolkit (gtk, gtk3, qt, tqt, qt4, qt5 or qt6) @<:@default=auto@:>@]),
+    [determine default toolkit (gtk, gtk3, gtk4, qt, tqt, qt4, qt5 or qt6) @<:@default=auto@:>@]),
   [],
   [enable_default_toolkit=auto])
 
 default_toolkit=no
 if test "x$enable_default_toolkit" = xauto; then
+  dnl TODO: We can enable this when we add support for GTK 4 based candidate
+  dnl window.
+  dnl if test "x$with_gtk4" = xyes; then
+  dnl   default_toolkit=gtk4
   if test "x$with_gtk3" = xyes; then
     default_toolkit=gtk3
   elif test "x$with_qt6" = xyes; then
@@ -1296,6 +1323,9 @@ elif test "x$enable_default_toolkit" = xgtk && \
 elif test "x$enable_default_toolkit" = xgtk3 && \
      test "x$with_gtk3" = xyes; then
   default_toolkit=gtk3
+elif test "x$enable_default_toolkit" = xgtk4 && \
+     test "x$with_gtk4" = xyes; then
+  default_toolkit=gtk4
 elif test "x$enable_default_toolkit" = xqt && \
      test "x$with_qt" = xyes; then
   default_toolkit=qt
@@ -1315,6 +1345,7 @@ fi
 
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test "x$default_toolkit" = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK4, test "x$default_toolkit" = xgtk4)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_TQT, test "x$default_toolkit" = xtqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
@@ -1981,6 +2012,8 @@ AC_CONFIG_FILES([Makefile
                  gtk3/test/Makefile
                  gtk3/test/test.sh
                  gtk3/toolbar/Makefile
+                 gtk4/Makefile
+                 gtk4/immodule/Makefile
                  qt3/Makefile
                  qt3/candwin/Makefile
                  qt3/chardict/Makefile
@@ -2221,6 +2254,7 @@ Configure Result :
    GNOME2 Applet   : ${enable_gnome_applet}
    GTK+3           : ${with_gtk3}
    GNOME3 Applet   : ${enable_gnome3_applet}
+   GTK4            : ${with_gtk4}
    Qt3             : ${with_qt}
    Qt3 immodule    : ${with_qt_immodule}
    TQt             : ${with_tqt}

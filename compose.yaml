@@ -48,6 +48,13 @@ services:
       dockerfile: debian-13-gtk3.dockerfile
     volumes:
       - .:/source:delegated
+  debian-13-gtk4:
+    image: uim/uim-debian-13-gtk4
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-13-gtk4.dockerfile
+    volumes:
+      - .:/source:delegated
   debian-13-qt5:
     image: uim/uim-debian-13-qt5
     build:
