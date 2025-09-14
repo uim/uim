@@ -490,11 +490,8 @@ uim_im_context_check_helper_connection(UIMIMContext *uic)
 /* class functions */
 
 static void
-convert_key_event(GdkEvent *event, int *ukey, int *umod)
+convert_key_event(guint keyval, GdkModifierType mod, int *ukey, int *umod)
 {
-  int keyval = gdk_key_event_get_keyval(event);
-  int mod = gdk_event_get_modifier_state(event);
-
   *umod = 0;
 
   /* 1. check key */
@@ -628,18 +625,53 @@ convert_key_event(GdkEvent *event, int *ukey, int *umod)
 }
 
 static gboolean
+is_control_gdk_keyval(guint keyval)
+{
+  switch (keyval) {
+  case GDK_KEY_BackSpace:
+  case GDK_KEY_Tab:
+  case GDK_KEY_Linefeed:
+  case GDK_KEY_Clear:
+  case GDK_KEY_Return:
+  case GDK_KEY_Escape:
+  case GDK_KEY_Delete:
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+static gboolean
 uim_im_context_filter_keypress(GtkIMContext *context, GdkEvent *event)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(context);
-  int ukey, umod;
-  int handled;
 
-  convert_key_event(event, &ukey, &umod);
-  if (gdk_event_get_event_type(event) == GDK_KEY_RELEASE)
-    handled = uim_release_key(uic->uc, ukey, umod);
+  const gboolean is_release =
+    gdk_event_get_event_type(event) == GDK_KEY_RELEASE;
+  guint keyval = gdk_key_event_get_keyval(event);
+  GdkModifierType modifier_type = gdk_event_get_modifier_state(event);
+
+  int ukey, umod;
+  int pass_through;
+  convert_key_event(keyval, modifier_type, &ukey, &umod);
+  if (is_release)
+    pass_through = uim_release_key(uic->uc, ukey, umod);
   else
-    handled = uim_press_key(uic->uc, ukey, umod);
-  return handled;
+    pass_through = uim_press_key(uic->uc, ukey, umod);
+
+  if (pass_through && !is_release && !is_control_gdk_keyval(keyval) &&
+      modifier_type == 0) {
+    const gunichar code_point = gdk_keyval_to_unicode(keyval);
+    if (code_point > 0) {
+      gchar utf8_character[7];
+      int length = g_unichar_to_utf8(code_point, utf8_character);
+      utf8_character[length] = '\0';
+      commit_cb(uic, utf8_character);
+    }
+  }
+
+  const bool consumed = !pass_through;
+  return consumed;
 }
 
 static gboolean
