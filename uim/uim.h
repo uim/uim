@@ -662,7 +662,7 @@ uim_set_preedit_cb(uim_context uc,
  * @param key keycode and value is 32 to 126.
  * @param state keystate
  *
- * @return 0 if IM not handle the event, otherwise the event is handled by IM so please stop key event handling.
+ * @return non-0 if IM doesn't handle the event, otherwise the event is handled by IM so please stop key event handling.
  */
 int
 uim_press_key(uim_context uc, int key, int state);
@@ -673,7 +673,7 @@ uim_press_key(uim_context uc, int key, int state);
  * @param key keycode and valued is 32 to 126.
  * @param state keystate
  *
- * @return 0 if IM not handle the event, otherwise the event is handled by IM so please stop key event handling.
+ * @return non-0 if IM doesn't handle the event, otherwise the event is handled by IM so please stop key event handling.
  */
 int
 uim_release_key(uim_context uc, int key, int state);
