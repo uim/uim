@@ -9,3 +9,6 @@ ${AUTORECONF:-autoreconf} --force --install "$@"
 sed -i.bak -e 's/ \.intltool-merge-cache$/ .intltool-merge-cache{,.lock}/g' \
   po/Makefile.in.in
 rm -f po/Makefile.in.in.bak
+
+cd sigscheme
+./autogen.sh "$@"
