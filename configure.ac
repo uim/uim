@@ -1666,6 +1666,28 @@ fi
 
 AM_CONDITIONAL(KDE4_APPLET, test "x$enable_kde4_applet" = xyes)
 
+dnl ****************************
+dnl *** test for KDE5 applet ***
+dnl ****************************
+AC_ARG_ENABLE(kde5-applet,
+  AC_HELP_STRING([--disable-kde5-applet],
+    [do not build uim KDE Plasma 5 widget]),
+  [],
+  [enable_kde5_applet=yes])
+
+if test "x$enable_kde5_applet" != xno; then
+  if test "x$with_qt5" != xyes; then
+    enable_kde5_applet=no
+  fi
+fi
+
+if test "x$enable_kde5_applet" = xyes && test "x$CMAKE" = xno; then
+  AC_MSG_WARN([no CMake found])
+  enable_kde5_applet=no
+fi
+
+AM_CONDITIONAL(KDE5_APPLET, test "x$enable_kde5_applet" = xyes)
+
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--disable-pref],
     [do not build graphical utility to edit user settings]),
@@ -2118,7 +2140,6 @@ if test "x$CMAKE" != xno; then
   cmake_option="-DCMAKE_BUILD_TYPE=${cmake_build_type}"
   cmake_option="${cmake_option} -DCMAKE_INSTALL_PREFIX=${prefix}"
   cmake_option="${cmake_option} -DCMAKE_SKIP_RPATH=true"
-  cmake_option="${cmake_option} -DKDE4_USE_ALWAYS_FULL_RPATH=false"
 fi
 
 if test "x$with_qt4" = xyes; then
@@ -2183,12 +2204,15 @@ if test "x$with_qt5" = xyes; then
     qt5_immodule_option="DEFINES+=QT5_IMMODULE"
   fi
   set -e
-  # FIXME: move CMAKE_CXX_FLAGS into cmake_option
-  ${CMAKE} \
-    -B ${ac_abs_top_builddir}/qt5/applet.cmake \
-    -S ${ac_abs_top_srcdir}/qt5/applet \
-    -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
-    ${cmake_option}
+  # Generate a Makefile for KDE5 applet by cmake
+  if test "x$enable_kde5_applet" = xyes; then
+    # FIXME: move CMAKE_CXX_FLAGS into cmake_option
+    ${CMAKE} \
+      -B ${ac_abs_top_builddir}/qt5/applet.cmake \
+      -S ${ac_abs_top_srcdir}/qt5/applet \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+      ${cmake_option}
+  fi
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
@@ -2276,6 +2300,7 @@ Configure Result :
    Qt6 immodule    : ${with_qt6_immodule}
    KDE3 Applet     : ${enable_kde_applet}
    KDE4 Applet     : ${enable_kde4_applet}
+   KDE5 Applet     : ${enable_kde5_applet}
    TDE Applet      : ${enable_tde_applet}
    FEP             : ${enable_fep}
    Emacs           : ${enable_emacs}
