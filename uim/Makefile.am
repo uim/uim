@@ -186,6 +186,7 @@ libuim_eb_la_CPPFLAGS = $(AM_CPPFLAGS) \
 libuim_eb_la_CFLAGS = @EBCONF_PTHREAD_CFLAGS@ -Wall
 endif
 
+if LIBUIM_X_UTIL
 if XKB
 uim_plugin_LTLIBRARIES += libuim-xkb.la
 libuim_xkb_la_SOURCES = uim-xkb.c
@@ -193,6 +194,7 @@ libuim_xkb_la_LIBADD = libuim-scm.la libuim.la libuim-x-util.la @X11_LIBS@
 libuim_xkb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_xkb_la_CFLAGS = @X11_CFLAGS@
 libuim_xkb_la_CPPFLAGS = $(AM_CPPFLAGS)
+endif
 endif
 
 if OSX_DCS
