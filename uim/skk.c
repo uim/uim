@@ -196,7 +196,7 @@ static char *quote_word(const char *word, const char *prefix);
 #define SKK_SERV_TRY_COMPLETION	(1<<2)
 
 static int skkservsock = -1;
-static FILE *rserv, *wserv;
+static FILE *wserv;
 /* prototype */
 static int open_skkserv(const char *hostname, int portnum, int family);
 static void close_skkserv(void);
@@ -3835,8 +3835,8 @@ open_skkserv(const char *hostname, int portnum, int family)
 #if 0
   uim_notify_info("uim-skk: SKKSERVER=%s", hostname);
 #endif
+  if (skkservsock != -1) close_skkserv();
   skkservsock = sock;
-  rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");
 
   enable_completion =
@@ -3851,7 +3851,8 @@ close_skkserv()
   if (skkservsock >= 0) {
     fprintf(wserv, "0\n");
     fflush(wserv);
-    close(skkservsock);
+    fclose(wserv); // also close/release skkservsock
+    wserv = NULL;
     skkservsock = -1;
   }
 }
