@@ -46,12 +46,6 @@ jobs:
       - name: Generate configure
         run: |
           ./autogen.sh
-          pushd sigscheme
-          ./autogen.sh
-          pushd libgcroots
-          ./autogen.sh
-          popd
-          popd
       - name: Build Docker image
         run: |
           docker compose build ${{ matrix.image }}
