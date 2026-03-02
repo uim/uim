@@ -72,7 +72,7 @@ jobs:
       - name: Run Docker image
         run: |
           docker compose run debian-12-release
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: source
           path: |
