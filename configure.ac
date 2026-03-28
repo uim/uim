@@ -1988,7 +1988,7 @@ AC_ARG_WITH(libgcroots,
                            [use alternative libgcroots instead of
                             package-bundled one.
                             WHICH=(installed|tiny-subst)
-                            @<:@default=installed@:>@]))
+                            @<:@default=no@:>@]))
 
 case "${with_libgcroots:=no}" in
   no)
@@ -1997,9 +1997,13 @@ case "${with_libgcroots:=no}" in
     GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/libgcroots/include'
   ;;
   yes|installed)
-    PKG_CHECK_MODULES(GCROOTS, [gcroots],
-                      [],
-                      [AC_MSG_ERROR([installed libgcroots is not found.])])
+    PKG_CHECK_MODULES(
+      BDWGC, [bdw-gc >= 8.3.0],
+      [],
+      [PKG_CHECK_MODULES(
+        GCROOTS, [gcroots >= 0.2.3],
+        [],
+        [AC_MSG_ERROR([neither BDWGC nor libgcroots was found.])])])
   ;;
   tiny-subst)
     # use src/gcroots/gcroots.[hc]
@@ -2011,6 +2015,8 @@ case "${with_libgcroots:=no}" in
   ;;
 esac
 
+AC_SUBST(BDWGC_LIBS)
+AC_SUBST(BDWGC_CFLAGS)
 AC_SUBST(GCROOTS_LIBS)
 AC_SUBST(GCROOTS_CFLAGS)
 
