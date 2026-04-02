@@ -11,6 +11,52 @@ concurrency:
   group: ${{ github.head_ref || github.sha }}-${{ github.workflow }}
   cancel-in-progress: true
 jobs:
+  bdwgc:
+    name: BDWGC
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - name: Setup
+        run: |
+          ./setup.sh
+      - name: Generate configure
+        run: |
+          ./autogen.sh
+      - name: "BDWGC: Checkout"
+        uses: actions/checkout@v6
+        with:
+          path: bdwgc
+          repository: bdwgc/bdwgc
+      - name: "BDWGC: Configure"
+        run: |
+          cmake \
+            -S bdwgc \
+            -B bdwgc.build \
+            -G Ninja \
+            -DCMAKE_INSTALL_PREFIX=/usr
+      - name: "BDWGC: Build"
+        run: |
+          cmake --build bdwgc.build
+      - name: "BDWGC: Install"
+        run: |
+          sudo cmake --install bdwgc.build
+      - name: Configure
+        run: |
+          ./configure \
+            --enable-maintainer-mode \
+            --prefix=/usr \
+            --with-libgcroots=installed
+      - name: Build
+        run: |
+          make -j$(nproc)
+      - name: Install
+        run: |
+          sudo make install
+      - name: Test
+        run: |
+          make check VERBOSE=1
   test:
     name: ${{ matrix.image }}
     strategy:

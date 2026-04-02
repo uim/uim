@@ -7,7 +7,7 @@ if USE_NLS
   SUBDIRS += po
 endif
 
-EXTRA_DIST = RELNOTE Rakefile autogen.sh \
+EXTRA_DIST = RELNOTE Rakefile autogen.sh setup.sh \
 	uim.pc.in uim.desktop \
 	intltool-extract.in intltool-merge.in intltool-update.in
 
