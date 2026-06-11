@@ -30,21 +30,21 @@
 
 ;; SKK is a Japanese input method
 ;;
-;; UTF-8
+;; EUC-JP
 ;;
-;; SKKã®å…¥åŠ›ã¯ä¸‹è¨˜ã®çŠ¶æ…‹ã§æ§‹æˆã•ã‚Œã‚‹
+;; SKK¤ÎÆşÎÏ¤Ï²¼µ­¤Î¾õÂÖ¤Ç¹½À®¤µ¤ì¤ë
 ;; Following is list of SKK input state
-;;  ç›´æ¥å…¥åŠ› direct
-;;  æ¼¢å­—å…¥åŠ› kanji
-;;  è¦‹å‡ºã—èªè£œå®Œ completion
-;;  å¤‰æ›ä¸­ converting
-;;  é€ã‚ŠãŒãª okuri
-;;  è‹±æ•° latin
-;;  å…¨è§’è‹±æ•° wide-latin
-;;  æ¼¢å­—ã‚³ãƒ¼ãƒ‰å…¥åŠ› kcode
+;;  Ä¾ÀÜÆşÎÏ direct
+;;  ´Á»úÆşÎÏ kanji
+;;  ¸«½Ğ¤·¸ìÊä´° completion
+;;  ÊÑ´¹Ãæ converting
+;;  Á÷¤ê¤¬¤Ê okuri
+;;  ±Ñ¿ô latin
+;;  Á´³Ñ±Ñ¿ô wide-latin
+;;  ´Á»ú¥³¡¼¥ÉÆşÎÏ kcode
 ;;
 ;;
-(require "japanese-utf8.scm")
+(require "japanese.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "skk-custom.scm")
 (require-custom "skk-key-custom.scm")
@@ -54,7 +54,7 @@
 
 ;; TODO: Support new custom type string-list. It involves character
 ;; encoding conversion problem.  -- YamaKen 2005-02-02
-(define skk-auto-start-henkan-keyword-list '("ã‚’" "ã€" "ã€‚" "ï¼" "ï¼Œ" "ï¼Ÿ" "ã€" "ï¼" "ï¼›" "ï¼š" ")" ";" ":" "ï¼‰" "â€" "ã€‘" "ã€" "ã€‹" "ã€‰" "ï½" "ï¼½" "ã€•" "}" "]" "?" "." "," "!"))
+(define skk-auto-start-henkan-keyword-list '("¤ò" "¡¢" "¡£" "¡¥" "¡¤" "¡©" "¡×" "¡ª" "¡¨" "¡§" ")" ";" ":" "¡Ë" "¡É" "¡Û" "¡Ù" "¡Õ" "¡Ó" "¡Ñ" "¡Ï" "¡Í" "}" "]" "?" "." "," "!"))
 
 (define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
 (define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
@@ -135,8 +135,8 @@
     (skk-preedit-attr-child-committed      . preedit-underline)
     (skk-preedit-attr-child-dialog	   . preedit-none)
     (skk-preedit-attr-dcomp		   . preedit-underline)
-    (skk-child-context-beginning-mark      . "ã€")
-    (skk-child-context-end-mark		   . "ã€‘")
+    (skk-child-context-beginning-mark      . "¡Ú")
+    (skk-child-context-end-mark		   . "¡Û")
     (skk-show-cursor-on-preedit?	   . #t)
     (skk-show-candidates-with-okuri?       . #f)))
 
@@ -184,9 +184,9 @@
 (register-action 'action_skk_hiragana
 		 (lambda (sc)
 		   '(ja_hiragana
-		     "ã‚"
-		     "ã²ã‚‰ãŒãª"
-		     "ã²ã‚‰ãŒãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "¤¢"
+		     "¤Ò¤é¤¬¤Ê"
+		     "¤Ò¤é¤¬¤ÊÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (and (not (skk-latin-state? dsc))
@@ -201,9 +201,9 @@
 (register-action 'action_skk_katakana
 		 (lambda (sc)
 		   '(ja_katakana
-		     "ã‚¢"
-		     "ã‚«ã‚¿ã‚«ãƒŠ"
-		     "ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "¥¢"
+		     "¥«¥¿¥«¥Ê"
+		     "¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (and (not (skk-latin-state? dsc))
@@ -218,9 +218,9 @@
 (register-action 'action_skk_hankana
 		 (lambda (sc)
 		   '(ja_halfkana
-		     "ï½±"
-		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠ"
-		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "±"
+		     "È¾³Ñ¥«¥¿¥«¥Ê"
+		     "È¾³Ñ¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (and (not (skk-latin-state? dsc))
@@ -236,8 +236,8 @@
 		 (lambda (sc)
 		   '(ja_halfwidth_alnum
 		     "a"
-		     "ç›´æ¥å…¥åŠ›"
-		     "ç›´æ¥(ç„¡å¤‰æ›)å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "Ä¾ÀÜÆşÎÏ"
+		     "Ä¾ÀÜ(ÌµÊÑ´¹)ÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (eq? (skk-context-state dsc)
@@ -250,9 +250,9 @@
 (register-action 'action_skk_wide_latin
 		 (lambda (sc)
 		   '(ja_fullwidth_alnum
-		     "ï¼¡"
-		     "å…¨è§’è‹±æ•°"
-		     "å…¨è§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "£Á"
+		     "Á´³Ñ±Ñ¿ô"
+		     "Á´³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (eq? (skk-context-state dsc)
@@ -265,9 +265,9 @@
 (register-action 'action_skk_roma
 		 (lambda (sc)
 		   '(ja_romaji
-		     "ï¼²"
-		     "ãƒ­ãƒ¼ãƒå­—"
-		     "ãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "£Ò"
+		     "¥í¡¼¥Ş»ú"
+		     "¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (= (skk-context-input-rule dsc)
@@ -280,9 +280,9 @@
 (register-action 'action_skk_azik
 		 (lambda (sc)
 		   '(ja_azik
-		     "ï¼º"
+		     "£Ú"
 		     "AZIK"
-		     "AZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "AZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (= (skk-context-input-rule dsc)
@@ -295,9 +295,9 @@
 (register-action 'action_skk_act
 		 (lambda (sc)
 		   '(ja_act
-		     "ï¼£"
+		     "£Ã"
 		     "ACT"
-		     "ACTæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "ACT³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (= (skk-context-input-rule dsc)
@@ -311,9 +311,9 @@
 (register-action 'action_skk_kzik
 		 (lambda (sc)
 		   '(ja_kzik
-		     "ï¼«"
+		     "£Ë"
 		     "KZIK"
-		     "KZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
+		     "KZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
 		 (lambda (sc)
 		   (let ((dsc (skk-find-descendant-context sc)))
 		     (= (skk-context-input-rule dsc)
@@ -376,19 +376,19 @@
                   (set! skk-set-henkan-point-key '())
 		  skk-ja-rk-rule)
 		 ((= input-rule skk-input-rule-azik)
-		  (require "japanese-azik-utf8.scm")
+		  (require "japanese-azik.scm")
                   (set! skk-okuri-char-alist ja-azik-skk-okuri-char-alist)
                   (set! skk-downcase-alist ja-azik-skk-downcase-alist) 
                   (set! skk-set-henkan-point-key ja-azik-skk-set-henkan-point-key)
 		  ja-azik-rule)
 		 ((= input-rule skk-input-rule-act)
-		  (require "japanese-act-utf8.scm")
+		  (require "japanese-act.scm")
                   (set! skk-okuri-char-alist ja-act-skk-okuri-char-alist)
                   (set! skk-downcase-alist ja-act-skk-downcase-alist)
                   (set! skk-set-henkan-point-key ja-act-skk-set-henkan-point-key)
 		  ja-act-rule)
 		 ((= input-rule skk-input-rule-kzik)
-		  (require "japanese-kzik-utf8.scm")
+		  (require "japanese-kzik.scm")
                   (set! skk-okuri-char-alist '())
                   (set! skk-downcase-alist '())
                   (set! skk-set-henkan-point-key '())
@@ -790,7 +790,7 @@
 	    (eq? stat 'skk-state-kanji)
 	    (eq? stat 'skk-state-completion)
 	    (eq? stat 'skk-state-okuri)))
-	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "â–½"))
+	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "¢¦"))
       (if (and
 	   (null? csc)
 	   (eq? stat 'skk-state-kcode))
@@ -798,7 +798,7 @@
       (if (or
 	   (not (null? csc))
 	   (eq? stat 'skk-state-converting))
-	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "â–¼"))
+	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "¢§"))
       ;; head without child context
       (if (and
 	   (null? csc)
@@ -1798,7 +1798,7 @@
 	   #t)
        (if (null? (skk-context-child-context sc))
 	   (begin
-	     ;; å€™è£œWindowã®è¡¨ç¤ºã‚’é–‹å§‹ã™ã‚‹ã‹
+	     ;; ¸õÊäWindow¤ÎÉ½¼¨¤ò³«»Ï¤¹¤ë¤«
 	     (skk-check-candidate-window-begin sc)
 	     ;;
 	     (if (skk-context-candidate-window sc)
@@ -2327,7 +2327,7 @@
 (register-im
  'skk
  "ja"
- "UTF-8"
+ "EUC-JP"
  skk-im-name-label
  skk-im-short-desc
  #f
