@@ -534,6 +534,13 @@ opt_end:
   init_escseq(&attr_uim);
   set_signal_handler();
 
+  /*
+   * A resize may happen after the child pty is created but before SIGWINCH
+   * handlers are installed. Run the normal SIGWINCH path once to avoid leaving
+   * the child pty with a stale winsize before entering the main loop.
+   */
+  sigwinch_handler();
+
   if (s_path_setmode[0] != '\0' && mkfifo(s_path_setmode, 0600) != -1) {
     s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
 #ifndef __CYGWIN32__
