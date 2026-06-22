@@ -15,7 +15,7 @@ jobs:
     name: BDWGC
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Setup
@@ -25,7 +25,7 @@ jobs:
         run: |
           ./autogen.sh
       - name: "BDWGC: Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: bdwgc
           repository: bdwgc/bdwgc
@@ -76,7 +76,7 @@ jobs:
           - debian-13-tqt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Install dependencies to generate configure
@@ -102,7 +102,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
