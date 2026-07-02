@@ -72,6 +72,8 @@
 #define MOD_CTRL  4
 
 static int strcmp_prefix(const char *str, int str_len, const char *prefix);
+static int csi_tilde_key2ukey(unsigned int key);
+static int csi_final_key2ukey(char key);
 
 int tty2key(char key)
 {
@@ -162,11 +164,34 @@ int *escape_sequence2key(const char *str, int str_len)
   } else if (key_f11       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f11      )), len > 0)) { rval[0] = UKey_F11;
   } else if (key_f12       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f12      )), len > 0)) { rval[0] = UKey_F12;
   } else {
-    unsigned char key, mod;
+    unsigned int key, mod;
+    char final;
     len = 0;
-    if ((sscanf(str, "\033[%hhu;%hhuu%n",    &key, &mod, &len) == 2 && len > 0) ||
-        (sscanf(str, "\033[27;%hhu;%hhu~%n", &mod, &key, &len) == 2 && len > 0)) {
-      rval[0] = tty2key(key);
+    rval[0] = UKey_Other;
+    if ((sscanf(str, "\033[%u;%uu%n",    &key, &mod, &len) == 2 && len > 0) ||
+        (sscanf(str, "\033[27;%u;%u~%n", &mod, &key, &len) == 2 && len > 0)) {
+      if (key <= 0x7f) {
+        rval[0] = tty2key((char)key);
+      } else {
+        rval[0] = UKey_Other;
+      }
+    } else if (sscanf(str, "\033[%u;%u~%n", &key, &mod, &len) == 2 && len > 0) {
+      /*
+       * xterm style modified special keys can be reported when an application
+       * enables an enhanced keyboard protocol.
+       */
+      rval[0] = csi_tilde_key2ukey(key);
+    } else if (sscanf(str, "\033[1;%u%c%n", &mod, &final, &len) == 2 && len > 0) {
+      /*
+       * xterm style modified cursor/function keys, e.g.
+       *   CSI 1 ; 5 A  -> Ctrl-Up
+       *   CSI 1 ; 2 H  -> Shift-Home
+       *   CSI 1 ; 3 P  -> Alt-F1
+       */
+      rval[0] = csi_final_key2ukey(final);
+    }
+
+    if (rval[0] != UKey_Other) {
       if (mod > 1) {
         mod--;
         if (mod & MOD_SHIFT) {
@@ -180,12 +205,89 @@ int *escape_sequence2key(const char *str, int str_len)
         }
       }
     } else {
-      rval[0] = UKey_Other;
       len = not_enough < 0 ? TRUE : FALSE;
     }
   }
   rval[1] = len;
   return rval;
+}
+
+static int csi_tilde_key2ukey(unsigned int key)
+{
+  switch (key) {
+  case 1:
+  case 7:
+    return UKey_Home;
+  case 2:
+    return UKey_Insert;
+  case 3:
+    return UKey_Delete;
+  case 4:
+  case 8:
+    return UKey_End;
+  case 5:
+    return UKey_Prior;
+  case 6:
+    return UKey_Next;
+  case 11:
+    return UKey_F1;
+  case 12:
+    return UKey_F2;
+  case 13:
+    return UKey_F3;
+  case 14:
+    return UKey_F4;
+  case 15:
+    return UKey_F5;
+  case 17:
+    return UKey_F6;
+  case 18:
+    return UKey_F7;
+  case 19:
+    return UKey_F8;
+  case 20:
+    return UKey_F9;
+  case 21:
+    return UKey_F10;
+  case 23:
+    return UKey_F11;
+  case 24:
+    return UKey_F12;
+  default:
+    return UKey_Other;
+  }
+}
+
+static int csi_final_key2ukey(char key)
+{
+  switch (key) {
+  case 'A':
+    return UKey_Up;
+  case 'B':
+    return UKey_Down;
+  case 'C':
+    return UKey_Right;
+  case 'D':
+    return UKey_Left;
+  case 'H':
+    return UKey_Home;
+  case 'F':
+    return UKey_End;
+  case 'I':
+    return UKey_Focus;
+  case 'O':
+    return UKey_Focus;
+  case 'P':
+    return UKey_F1;
+  case 'Q':
+    return UKey_F2;
+  case 'R':
+    return UKey_F3;
+  case 'S':
+    return UKey_F4;
+  default:
+    return UKey_Other;
+  }
 }
 
 /*
@@ -226,6 +328,9 @@ void print_key(int key, int key_state)
   }
   if (key_state & UMod_Control) {
     printf("<Control>");
+  }
+  if (key_state & UMod_Shift) {
+    printf("<Shift>");
   }
 
   if (key == '"' || key == '\\') {
