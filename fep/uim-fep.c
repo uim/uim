@@ -169,6 +169,7 @@ static const char *get_default_im_name(void);
 static int make_color_escseq(const char *instr, struct attribute_tag *attr);
 static int colorname2n(const char *name);
 static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp);
+static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len);
 static void main_loop(void);
 static void recover_loop(void);
 static struct winsize *get_winsize(void);
@@ -743,6 +744,95 @@ static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *win
 }
 #endif
 
+static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len)
+{
+  char *p;
+
+  if (g_opt.status_type != LASTLINE || g_win == NULL || len <= 1) {
+    return len;
+  }
+
+  for (p = buf; p < buf + len - 1; p++) {
+    unsigned int rows, cols, ypixels, xpixels;
+    int old_len = 0;
+    char replacement[80];
+    int new_len;
+    int adjusted = FALSE;
+
+    if (p[0] != ESCAPE_CODE || p[1] != '[') {
+      continue;
+    }
+
+    if (sscanf(p, "\033[48;%u;%u;%u;%ut%n",
+               &rows, &cols, &ypixels, &xpixels, &old_len) == 4 &&
+        old_len > 0) {
+      /*
+       * In-band text area resize notification:
+       *   CSI 48 ; rows ; cols ; ypixels ; xpixels t
+       *
+       * In LASTLINE mode, adjust the reported row and pixel height to exclude
+       * the bottom line reserved for the uim-fep status line.
+       */
+      if (rows > g_win->ws_row) {
+        unsigned int adjusted_ypixels = ypixels;
+        unsigned int removed_rows = rows - g_win->ws_row;
+
+        if (ypixels > 0) {
+          unsigned int cell_height = ypixels / rows;
+
+          if (cell_height > 0 && ypixels > cell_height * removed_rows) {
+            adjusted_ypixels = ypixels - cell_height * removed_rows;
+          }
+        }
+        new_len = snprintf(replacement, sizeof(replacement),
+                           "\033[48;%u;%u;%u;%ut",
+                           g_win->ws_row, cols, adjusted_ypixels, xpixels);
+        adjusted = TRUE;
+      }
+    } else if (sscanf(p, "\033[4;%u;%ut%n", &ypixels, &xpixels, &old_len) == 2 &&
+               old_len > 0) {
+      /*
+       * xterm-style text area pixel size report: CSI 4 ; ypixels ; xpixels t.
+       * The report does not include a row count, so infer the real row count
+       * from LASTLINE mode: g_win->ws_row is already one row smaller than the
+       * real terminal height.
+       */
+      if (ypixels > 0) {
+        unsigned int real_rows = g_win->ws_row + 1;
+        unsigned int cell_height = ypixels / real_rows;
+        unsigned int adjusted_ypixels = ypixels;
+
+        if (cell_height > 0 && ypixels > cell_height) {
+          adjusted_ypixels = ypixels - cell_height;
+        }
+        new_len = snprintf(replacement, sizeof(replacement),
+                           "\033[4;%u;%ut", adjusted_ypixels, xpixels);
+        adjusted = TRUE;
+      }
+    } else if (sscanf(p, "\033[8;%u;%ut%n", &rows, &cols, &old_len) == 2 &&
+               old_len > 0) {
+      /* xterm-style text area size report: CSI 8 ; rows ; cols t. */
+      if (rows > g_win->ws_row) {
+        new_len = snprintf(replacement, sizeof(replacement),
+                           "\033[8;%u;%ut", g_win->ws_row, cols);
+        adjusted = TRUE;
+      }
+    }
+
+    if (adjusted && new_len >= 0 && new_len < (int)sizeof(replacement) && new_len <= old_len) {
+      memcpy(p, replacement, new_len);
+      if (new_len < old_len) {
+        memmove(p + new_len, p + old_len, buf + len - (p + old_len));
+        len -= old_len - new_len;
+        buf[len] = '\0';
+      }
+      p += new_len - 1;
+    }
+  }
+
+  return len;
+}
+
 #define BUFSIZE 4096
 static void main_loop(void)
 {
@@ -882,6 +972,7 @@ static void main_loop(void)
         return;
       }
       buf[len] = '\0';
+      len = adjust_terminal_size_reports(buf, len);
       debug(("read \"%s\"\n", buf));
 
 #define LARGE_INPUT_THRESHOLD 13
@@ -941,6 +1032,7 @@ static void main_loop(void)
                 if ((nr = read_stdin(buf + len, sizeof(buf) - len - 1)) != -1) {
                   len += nr;
                   buf[len] = '\0';
+                  len = adjust_terminal_size_reports(buf, len);
                   debug(("read_again \"%s\"\n", buf));
                   i--;
                   continue;
