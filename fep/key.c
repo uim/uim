@@ -60,18 +60,16 @@
 #include "key.h"
 #include "uim-fep.h"
 
-#define _KEY_UP    "\033[A"
-#define _KEY_DOWN  "\033[B"
-#define _KEY_RIGHT "\033[C"
-#define _KEY_LEFT  "\033[D"
-#define _KEY_FOCUS_IN   "\033[I"
-#define _KEY_FOCUS_OUT  "\033[O"
-
 #define MOD_SHIFT 1
 #define MOD_ALT   2
 #define MOD_CTRL  4
 
+#define MAX_CSI_SEQUENCE_LEN 128
+#define CSI_NOT_CSI 0
+#define CSI_INCOMPLETE (-1)
+
 static int strcmp_prefix(const char *str, int str_len, const char *prefix);
+static int csi_sequence_length(const char *str, int str_len);
 static int csi_tilde_key2ukey(unsigned int key);
 static int csi_final_key2ukey(char key);
 
@@ -125,8 +123,12 @@ int tty2key_state(char key)
 
 /*
  * strに対応するキーコードとエスケープシーケンスの長さと修飾キーを返す
- * 見つからなかったらUKey_Escapeと、途中まで一致しているエスケープシー
- * ケンスがある場合はTRUEない場合はFALSEを返す
+ * 見つからなかったらUKey_Otherを返す
+ *
+ * When rval[0] == UKey_Other, rval[1] has the following meanings:
+ *   0    : no escape sequence was recognized
+ *   TRUE : input may be an incomplete escape sequence
+ *   > 1  : complete but unsupported escape/control sequence length
  */
 int *escape_sequence2key(const char *str, int str_len)
 {
@@ -134,13 +136,7 @@ int *escape_sequence2key(const char *str, int str_len)
   int len;
   int not_enough = 0;
   rval[2] = 0;
-  if        (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_UP       )), len > 0) { rval[0] = UKey_Up;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_DOWN     )), len > 0) { rval[0] = UKey_Down;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_RIGHT    )), len > 0) { rval[0] = UKey_Right;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_LEFT     )), len > 0) { rval[0] = UKey_Left;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_FOCUS_IN )), len > 0) { rval[0] = UKey_Focus;
-  } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_FOCUS_OUT)), len > 0) { rval[0] = UKey_Focus;
-  } else if (key_backspace != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_backspace)), len > 0)) { rval[0] = UKey_Backspace;
+  if        (key_backspace != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_backspace)), len > 0)) { rval[0] = UKey_Backspace;
   } else if (key_dc        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_dc       )), len > 0)) { rval[0] = UKey_Delete;    
   } else if (key_left      != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_left     )), len > 0)) { rval[0] = UKey_Left;
   } else if (key_up        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_up       )), len > 0)) { rval[0] = UKey_Up;
@@ -164,31 +160,120 @@ int *escape_sequence2key(const char *str, int str_len)
   } else if (key_f11       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f11      )), len > 0)) { rval[0] = UKey_F11;
   } else if (key_f12       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f12      )), len > 0)) { rval[0] = UKey_F12;
   } else {
-    unsigned int key, mod;
+    unsigned int key, mod, event_type;
     char final;
+    int csi_len;
+    int parsed = FALSE;
+
     len = 0;
     rval[0] = UKey_Other;
-    if ((sscanf(str, "\033[%u;%uu%n",    &key, &mod, &len) == 2 && len > 0) ||
-        (sscanf(str, "\033[27;%u;%u~%n", &mod, &key, &len) == 2 && len > 0)) {
+    if (sscanf(str, "\033[%u;%u:%uu%n", &key, &mod, &event_type, &len) == 3 && len > 0) {
+      /*
+       * CSI-u / Kitty keyboard protocol style key event with event type:
+       *   CSI key ; modifiers : event-type u
+       *
+       * event-type:
+       *   1 = press
+       *   2 = repeat
+       *   3 = release
+       *
+       * Only press/repeat events are converted to UKey_* here.  Other
+       * event types are treated as complete but unsupported sequences so
+       * that they are not split into ordinary bytes.
+       */
+      parsed = TRUE;
+      if ((event_type == 1 || event_type == 2) && key <= 0x7f) {
+        rval[0] = tty2key((char)key);
+      }
+    } else if ((sscanf(str, "\033[%u;%uu%n",    &key, &mod, &len) == 2 && len > 0) ||
+               (sscanf(str, "\033[27;%u;%u~%n", &mod, &key, &len) == 2 && len > 0)) {
+      /*
+       * Modified ordinary character keys:
+       *   CSI key ; modifiers u       (CSI-u / fixterms style)
+       *   CSI 27 ; modifiers ; key ~  (xterm modifyOtherKeys style)
+       *
+       * The literal 27 in the second form is the xterm modifyOtherKeys
+       * introducer for ordinary character keys.  The actual key code is
+       * the third parameter.
+       */
+      parsed = TRUE;
       if (key <= 0x7f) {
         rval[0] = tty2key((char)key);
-      } else {
-        rval[0] = UKey_Other;
+      }
+    } else if (sscanf(str, "\033[%uu%n", &key, &len) == 1 && len > 0) {
+      /*
+       * CSI-u / Kitty keyboard protocol style key event without modifiers:
+       *   CSI key u
+       *
+       * The modifiers and event type are omitted.  Treat this as an
+       * unmodified key press.
+       */
+      parsed = TRUE;
+      mod = 1;
+      if (key <= 0x7f) {
+        rval[0] = tty2key((char)key);
       }
     } else if (sscanf(str, "\033[%u;%u~%n", &key, &mod, &len) == 2 && len > 0) {
       /*
-       * xterm style modified special keys can be reported when an application
-       * enables an enhanced keyboard protocol.
+       * xterm style modified special keys:
+       *   CSI number ; modifiers ~
+       *
+       * Examples include function keys and navigation keys such as
+       * CSI 23 ; 5 ~ for Ctrl-F11.
        */
+      parsed = TRUE;
       rval[0] = csi_tilde_key2ukey(key);
-    } else if (sscanf(str, "\033[1;%u%c%n", &mod, &final, &len) == 2 && len > 0) {
+    } else if (sscanf(str, "\033[%u~%n", &key, &len) == 1 && len > 0) {
       /*
-       * xterm style modified cursor/function keys, e.g.
+       * xterm/VT style unmodified special keys:
+       *   CSI number ~
+       *
+       * Example: CSI 13 ~ -> F3.
+       */
+      parsed = TRUE;
+      mod = 1;
+      rval[0] = csi_tilde_key2ukey(key);
+    } else if (sscanf(str, "\033[1;%u:%u%c%n", &mod, &event_type, &final, &len) == 3 &&
+               len > 0 && (rval[0] = csi_final_key2ukey(final)) != UKey_Other) {
+      /*
+       * xterm style cursor/function keys with an event type:
+       *   CSI 1 ; modifiers : event-type final
+       *
+       * final identifies the key, e.g. A/B/C/D for cursor keys,
+       * H/F for Home/End, and P/Q/R/S for F1-F4.
+       *
+       * Treat event type 3 as a release event and consume it without
+       * converting it to a key.
+       */
+      parsed = TRUE;
+      if (event_type != 1 && event_type != 2) {
+        rval[0] = UKey_Other;
+      }
+    } else if (sscanf(str, "\033[1;%u%c%n", &mod, &final, &len) == 2 &&
+               len > 0 && (rval[0] = csi_final_key2ukey(final)) != UKey_Other) {
+      /*
+       * xterm style modified cursor/function keys:
+       *   CSI 1 ; modifiers final
+       *
+       * Examples:
        *   CSI 1 ; 5 A  -> Ctrl-Up
        *   CSI 1 ; 2 H  -> Shift-Home
        *   CSI 1 ; 3 P  -> Alt-F1
        */
-      rval[0] = csi_final_key2ukey(final);
+      parsed = TRUE;
+    } else if (sscanf(str, "\033[%c%n", &final, &len) == 1 &&
+               len > 0 && (rval[0] = csi_final_key2ukey(final)) != UKey_Other) {
+      /*
+       * xterm style unmodified cursor/function keys:
+       *   CSI final
+       *
+       * Examples:
+       *   CSI A  -> Up
+       *   CSI H  -> Home
+       *   CSI P  -> F1
+       */
+      mod = 1;
+      parsed = TRUE;
     }
 
     if (rval[0] != UKey_Other) {
@@ -204,12 +289,45 @@ int *escape_sequence2key(const char *str, int str_len)
           rval[2] |= UMod_Alt;
         }
       }
-    } else {
-      len = not_enough < 0 ? TRUE : FALSE;
+    } else if (!parsed) {
+      csi_len = csi_sequence_length(str, str_len);
+      if (csi_len > 0) {
+        /* Complete but unsupported CSI sequence. */
+        len = csi_len;
+      } else if (csi_len == CSI_INCOMPLETE) {
+        /* Incomplete CSI sequence. Ask the caller to read more. */
+        len = TRUE;
+      } else {
+        len = not_enough < 0 ? TRUE : FALSE;
+      }
     }
   }
   rval[1] = len;
   return rval;
+}
+
+static int csi_sequence_length(const char *str, int str_len)
+{
+  int i;
+
+  if (str_len < 2) {
+    return CSI_NOT_CSI;
+  }
+  if (str[0] != ESCAPE_CODE || str[1] != '[') {
+    return CSI_NOT_CSI;
+  }
+
+  for (i = 2; i < str_len && i < MAX_CSI_SEQUENCE_LEN; i++) {
+    /* CSI final byte, ECMA-48 style. */
+    if (str[i] >= 0x40 && str[i] <= 0x7e) {
+      return i + 1;
+    }
+  }
+
+  if (str_len >= MAX_CSI_SEQUENCE_LEN) {
+    return MAX_CSI_SEQUENCE_LEN;
+  }
+  return CSI_INCOMPLETE;
 }
 
 static int csi_tilde_key2ukey(unsigned int key)
@@ -314,12 +432,17 @@ static int strcmp_prefix(const char *str, int str_len, const char *prefix)
 }
 
 
-void print_key(int key, int key_state)
+void print_key(int key, int key_state, const char* str, int str_len, int recurse)
 {
-  if (key == 'q' && key_state == 0) {
+  int i;
+  int print_double_quote = TRUE;
+  if (key == 'q' && key_state == 0 && !recurse) {
     done(EXIT_SUCCESS);
   }
-  printf("\"");
+  if(!recurse)
+  {
+    printf("\"");
+  }
   if (key_state & UMod_Alt) {
     printf("<Alt>");
   }
@@ -648,8 +771,22 @@ void print_key(int key, int key_state)
     case UKey_Hyper_key:
       printf("Hyper_key");
       break;
+    case UKey_Other:
+      printf("Other\"");
+      print_double_quote = FALSE;
+      for (i = 0; i < str_len; i++) {
+        printf(" ");
+        print_key(tty2key(str[i]), tty2key_state(str[i]), NULL, 0, TRUE);
+      }
+      break;
     }
   }
-  printf("\"\r\n");
+  if(!recurse) {
+    if(print_double_quote)
+    {
+      printf("\"");
+    }
+    printf("\r\n");
+  }
 }
 
