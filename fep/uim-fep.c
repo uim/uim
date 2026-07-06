@@ -906,7 +906,17 @@ static void main_loop(void)
           }
           key_continue = TRUE;
 
-          if (key == UKey_Other) {
+          /*
+           * If escape_sequence2key() returns UKey_Other, key_and_key_len[1]
+           * has the following meanings:
+           *
+           *   0    : not an escape sequence; fall back to byte input
+           *   TRUE : incomplete escape sequence; wait for more input
+           *   > 1  : complete but unsupported escape/control sequence
+           *
+           * Complete unknown sequences must not be split into ordinary bytes.
+           */
+          if (key == UKey_Other && key_and_key_len[1] <= 1) {
 
             int not_enough;
             key = tty2key(buf[i]);
@@ -947,16 +957,16 @@ static void main_loop(void)
             }
             key_len = 1;
 
-          } else { /* key != UKey_Other */
+          } else {
             key_len = key_and_key_len[1];
             key_state |= key_and_key_len[2];
           }
 
           if (g_opt.print_key) {
-            print_key(key, key_state);
+            print_key(key, key_state, &buf[i], key_len);
           } else {
             int raw;
-            if (key != UKey_Focus) {
+            if (key != UKey_Focus && key != UKey_Other) {
               raw = press_key(key, key_state);
               if (!draw()) {
                 if (g_opt.status_type == BACKTICK) {
@@ -964,7 +974,7 @@ static void main_loop(void)
                 }
               }
             }
-            if ((key == UKey_Focus) || (raw && !g_start_preedit)) {
+            if ((key == UKey_Focus) || (key == UKey_Other) || (raw && !g_start_preedit)) {
               int cpy_len = key_len + (i - start_i);
               memcpy(master_buf + master_buf_len, buf + start_i, cpy_len);
               master_buf_len += cpy_len;

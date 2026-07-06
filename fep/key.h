@@ -37,6 +37,6 @@
 int tty2key(char key);
 int tty2key_state(char key);
 int *escape_sequence2key(const char *str, int str_len);
-void print_key(int key, int key_state);
+void print_key(int key, int key_state, const char *str, int str_len);
 
 #endif
