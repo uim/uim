@@ -64,6 +64,10 @@
 #define MOD_ALT   2
 #define MOD_CTRL  4
 
+#define KEY_EVENT_PRESS   1
+#define KEY_EVENT_REPEAT  2
+#define KEY_EVENT_RELEASE 3
+
 #define MAX_CSI_SEQUENCE_LEN 128
 #define CSI_NOT_CSI 0
 #define CSI_INCOMPLETE (-1)
@@ -173,16 +177,16 @@ int *escape_sequence2key(const char *str, int str_len)
        *   CSI key ; modifiers : event-type u
        *
        * event-type:
-       *   1 = press
-       *   2 = repeat
-       *   3 = release
+       *   KEY_EVENT_PRESS(1)   = press
+       *   KEY_EVENT_REPEAT(2)  = repeat
+       *   KEY_EVENT_RELEASE(3) = release
        *
        * Only press/repeat events are converted to UKey_* here.  Other
        * event types are treated as complete but unsupported sequences so
        * that they are not split into ordinary bytes.
        */
       parsed = TRUE;
-      if ((event_type == 1 || event_type == 2) && key <= 0x7f) {
+      if ((event_type == KEY_EVENT_PRESS || event_type == KEY_EVENT_REPEAT) && key <= 0x7f) {
         rval[0] = tty2key((char)key);
       }
     } else if ((sscanf(str, "\033[%u;%uu%n",    &key, &mod, &len) == 2 && len > 0) ||
@@ -242,11 +246,11 @@ int *escape_sequence2key(const char *str, int str_len)
        * final identifies the key, e.g. A/B/C/D for cursor keys,
        * H/F for Home/End, and P/Q/R/S for F1-F4.
        *
-       * Treat event type 3 as a release event and consume it without
+       * Treat KEY_EVENT_RELEASE(3) as a release event and consume it without
        * converting it to a key.
        */
       parsed = TRUE;
-      if (event_type != 1 && event_type != 2) {
+      if (event_type != KEY_EVENT_PRESS && event_type != KEY_EVENT_REPEAT) {
         rval[0] = UKey_Other;
       }
     } else if (sscanf(str, "\033[1;%u%c%n", &mod, &final, &len) == 2 &&
@@ -432,15 +436,14 @@ static int strcmp_prefix(const char *str, int str_len, const char *prefix)
 }
 
 
-void print_key(int key, int key_state, const char* str, int str_len, int recurse)
+static void print_key_internal(int key, int key_state, const char *str, int str_len, int recurse)
 {
   int i;
   int print_double_quote = TRUE;
   if (key == 'q' && key_state == 0 && !recurse) {
     done(EXIT_SUCCESS);
   }
-  if(!recurse)
-  {
+  if (!recurse) {
     printf("\"");
   }
   if (key_state & UMod_Alt) {
@@ -776,17 +779,21 @@ void print_key(int key, int key_state, const char* str, int str_len, int recurse
       print_double_quote = FALSE;
       for (i = 0; i < str_len; i++) {
         printf(" ");
-        print_key(tty2key(str[i]), tty2key_state(str[i]), NULL, 0, TRUE);
+        print_key_internal(tty2key(str[i]), tty2key_state(str[i]), NULL, 0, TRUE);
       }
       break;
     }
   }
-  if(!recurse) {
-    if(print_double_quote)
-    {
+  if (!recurse) {
+    if (print_double_quote) {
       printf("\"");
     }
     printf("\r\n");
   }
+}
+
+void print_key(int key, int key_state, const char *str, int str_len)
+{
+    print_key_internal(key, key_state, str, str_len, FALSE);
 }
 

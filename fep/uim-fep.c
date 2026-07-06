@@ -963,7 +963,7 @@ static void main_loop(void)
           }
 
           if (g_opt.print_key) {
-            print_key(key, key_state, &buf[i], key_len, FALSE);
+            print_key(key, key_state, &buf[i], key_len);
           } else {
             int raw;
             if (key != UKey_Focus && key != UKey_Other) {
