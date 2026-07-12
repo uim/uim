@@ -778,7 +778,7 @@ static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len)
         unsigned int removed_rows = rows - g_win->ws_row;
 
         if (ypixels > 0) {
-          unsigned int cell_height = ypixels / rows;
+          unsigned int cell_height = ypixels / rows + (ypixels % rows != 0);
 
           if (cell_height > 0 && ypixels > cell_height * removed_rows) {
             adjusted_ypixels = ypixels - cell_height * removed_rows;
@@ -786,7 +786,7 @@ static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len)
         }
         new_len = snprintf(replacement, sizeof(replacement),
                            "\033[48;%u;%u;%u;%ut",
-                           g_win->ws_row, cols, adjusted_ypixels, xpixels);
+                           (unsigned int)g_win->ws_row, cols, adjusted_ypixels, xpixels);
         adjusted = TRUE;
       }
     } else if (sscanf(p, "\033[4;%u;%ut%n", &ypixels, &xpixels, &old_len) == 2 &&
@@ -799,7 +799,7 @@ static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len)
        */
       if (ypixels > 0) {
         unsigned int real_rows = g_win->ws_row + 1;
-        unsigned int cell_height = ypixels / real_rows;
+        unsigned int cell_height = ypixels / real_rows + (ypixels % real_rows != 0);
         unsigned int adjusted_ypixels = ypixels;
 
         if (cell_height > 0 && ypixels > cell_height) {
@@ -814,7 +814,7 @@ static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len)
       /* xterm-style text area size report: CSI 8 ; rows ; cols t. */
       if (rows > g_win->ws_row) {
         new_len = snprintf(replacement, sizeof(replacement),
-                           "\033[8;%u;%ut", g_win->ws_row, cols);
+                           "\033[8;%u;%ut", (unsigned int)g_win->ws_row, cols);
         adjusted = TRUE;
       }
     }
