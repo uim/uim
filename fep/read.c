@@ -81,14 +81,15 @@ int my_select(int n, fd_set *readfds, struct timeval *timeout)
  * pselect
  * ungetがあるときはpselectを呼ばない. 
  */
-int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask)
+int my_pselect(int n, fd_set *readfds, const struct timespec *timeout,
+               const sigset_t *sigmask)
 {
   if (s_buf_size > 0) {
     FD_ZERO(readfds);
     FD_SET(g_win_in, readfds);
     return 1;
   }
-  return pselect_(n, readfds, NULL, NULL, NULL, sigmask);
+  return pselect_(n, readfds, NULL, NULL, timeout, sigmask);
 }
 
 /*
@@ -133,6 +134,14 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
   int ret;
   sigset_t orig_sigmask;
   sigset_t pending_signals;
+  struct timeval select_timeout;
+  struct timeval *select_timeout_ptr = NULL;
+
+  if (timeout != NULL) {
+    select_timeout.tv_sec = timeout->tv_sec;
+    select_timeout.tv_usec = timeout->tv_nsec / 1000;
+    select_timeout_ptr = &select_timeout;
+  }
 
   /* シグナルが保留されているか */
   sigpending(&pending_signals);
@@ -153,9 +162,8 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     return -1;
   }
 
-  /* timeout は使わない */
   sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
-  ret = select(n, readfds, writefds, exceptfds, NULL);
+  ret = select(n, readfds, writefds, exceptfds, select_timeout_ptr);
   sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
   return ret;
 }

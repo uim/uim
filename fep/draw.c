@@ -116,6 +116,23 @@ static struct point_tag width2point_col(int width);
 static int width2lineno_char(int width);
 static int width2lineno_col(int width);
 
+/*
+ * Return the current on-screen preedit cursor position.
+ */
+int get_preedit_cursor_position(int *row, int *col)
+{
+  struct point_tag dest;
+
+  if (!g_start_preedit || g_opt.no_report_cursor) {
+    return FALSE;
+  }
+
+  dest = width2point_char(s_preedit->cursor);
+  *row = dest.row;
+  *col = dest.col;
+  return TRUE;
+}
+
 #if defined(DEBUG) && DEBUG > 2
 static void print_preedit(struct preedit_tag *p);
 #endif

@@ -57,5 +57,6 @@ void clear_backtick(void);
 int is_commit_and_preedit(void);
 void draw_commit_and_preedit(void);
 void draw_winch(struct winsize *prevwin);
+int get_preedit_cursor_position(int *row, int *col);
 
 #endif
