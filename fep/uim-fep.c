@@ -849,6 +849,7 @@ static int s_cursor_hidden;
 static struct timespec s_pending_pty_sequence_deadline;
 
 enum tracked_pty_sequence_id {
+  PTY_SEQUENCE_UNKNOWN = -1,
   PTY_SEQUENCE_SYNC_BEGIN,
   PTY_SEQUENCE_SYNC_END,
   PTY_SEQUENCE_CURSOR_HIDE,
@@ -882,8 +883,8 @@ static int pending_pty_sequence_is_prefix(void)
   return FALSE;
 }
 
-/* Return the ID of a completed tracked sequence, or -1 if incomplete. */
-static int completed_pty_sequence(void)
+/* Return the ID of a completed tracked sequence, or UNKNOWN if incomplete. */
+static enum tracked_pty_sequence_id completed_pty_sequence(void)
 {
   size_t i;
 
@@ -893,7 +894,7 @@ static int completed_pty_sequence(void)
       return s_tracked_pty_sequences[i].id;
     }
   }
-  return -1;
+  return PTY_SEQUENCE_UNKNOWN;
 }
 
 /* Move the terminal cursor to the current on-screen preedit position. */
@@ -1002,12 +1003,12 @@ static void filter_pty_output(const char *buf, ssize_t len)
     }
 
     if (s_pending_pty_sequence_len < sizeof(s_pending_pty_sequence)) {
-      int sequence;
+      enum tracked_pty_sequence_id sequence;
 
       s_pending_pty_sequence[s_pending_pty_sequence_len++] = buf[i++];
       sequence = completed_pty_sequence();
-      if (sequence >= 0) {
-        output_completed_pty_sequence((enum tracked_pty_sequence_id)sequence);
+      if (sequence != PTY_SEQUENCE_UNKNOWN) {
+        output_completed_pty_sequence(sequence);
       } else if (!pending_pty_sequence_is_prefix()) {
         char pending[PTY_SEQUENCE_MAX];
         size_t pending_len = s_pending_pty_sequence_len;
