@@ -842,6 +842,7 @@ static void make_page_strs(void)
         /* はみ出たが、次に移さない */
         assert(page_width == 0);
         next = TRUE;
+        add_extra_page = TRUE; /* ページを閉じて1つ消費するので、次ページを確保する */
                                                   /* 全角1文字の幅 */
         if (s_max_width >= cand_label_width + (int)strlen(":") + 2 + (int)strlen(" ") + index_width) {
           /* 候補 + インデックス */
@@ -887,6 +888,8 @@ static void make_page_strs(void)
     }
 
     if (next) { /* do fix the page */
+      /* 不変条件: 書き込み前に page は常に nr_pages 未満 (assert は NDEBUG で無効) */
+      assert(page < s_candidate.nr_pages);
       if (index_width == UNDEFINED) {
         s_candidate.index_col[page] = UNDEFINED;
       } else {
