@@ -325,6 +325,16 @@ int is_commit_and_preedit(void)
 }
 
 /*
+ * Return TRUE if a new preedit started with a commit is still waiting to
+ * be shown by draw_commit_and_preedit(). Unlike is_commit_and_preedit(),
+ * this is TRUE even before g_commit is reset.
+ */
+int has_pending_preedit(void)
+{
+  return s_save_preedit.width > 0;
+}
+
+/*
  * is_commit_and_preedit() == TRUEのときに呼ばれ，
  * プリエディットを出力する
  */
