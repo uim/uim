@@ -1150,8 +1150,12 @@ static void main_loop(void)
 #endif
 
       for (end = len - 1; end >= 0 && !isdigit((unsigned char)buf[end]); --end);
-      /* プリエディットを編集中でなければモードを変更する */
-      if (end >= 0 && !g_start_preedit) {
+      /*
+       * Change the mode unless a preedit is being edited. has_pending_preedit()
+       * is also checked because a preedit that starts together with a commit
+       * is not yet reflected in g_start_preedit or is_commit_and_preedit().
+       */
+      if (end >= 0 && !g_start_preedit && !has_pending_preedit()) {
         int mode;
 
         for (start = end; start > 0 && isdigit((unsigned char)buf[start - 1]); --start);
