@@ -89,6 +89,7 @@
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
+#include <time.h>
 #ifdef HAVE_STROPTS_H
 #include <stropts.h>
 #endif
@@ -170,6 +171,8 @@ static int make_color_escseq(const char *instr, struct attribute_tag *attr);
 static int colorname2n(const char *name);
 static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp);
 static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len);
+static void filter_pty_output(const char *buf, ssize_t len);
+static void flush_pending_pty_sequence(void);
 static void main_loop(void);
 static void recover_loop(void);
 static struct winsize *get_winsize(void);
@@ -833,6 +836,194 @@ static ssize_t adjust_terminal_size_reports(char *buf, ssize_t len)
   return len;
 }
 
+#define NSEC_PER_MSEC (1000L * 1000L)
+#define NSEC_PER_SEC (1000L * 1000L * 1000L)
+#define PTY_SEQUENCE_TIMEOUT_MSEC 20L
+#define PTY_SEQUENCE_TIMEOUT_NSEC (PTY_SEQUENCE_TIMEOUT_MSEC * NSEC_PER_MSEC)
+#define PTY_SEQUENCE_MAX 8
+
+static char s_pending_pty_sequence[PTY_SEQUENCE_MAX];
+static size_t s_pending_pty_sequence_len;
+static int s_synchronized_update;
+static int s_cursor_hidden;
+static struct timespec s_pending_pty_sequence_deadline;
+
+enum tracked_pty_sequence_id {
+  PTY_SEQUENCE_UNKNOWN = -1,
+  PTY_SEQUENCE_SYNC_BEGIN,
+  PTY_SEQUENCE_SYNC_END,
+  PTY_SEQUENCE_CURSOR_HIDE,
+  PTY_SEQUENCE_CURSOR_SHOW
+};
+
+struct tracked_pty_sequence {
+  const char *str;
+  size_t len;
+  enum tracked_pty_sequence_id id;
+};
+
+static const struct tracked_pty_sequence s_tracked_pty_sequences[] = {
+  { "\033[?2026h", 8, PTY_SEQUENCE_SYNC_BEGIN },  /* Begin synchronized output. */
+  { "\033[?2026l", 8, PTY_SEQUENCE_SYNC_END },    /* End synchronized output. */
+  { "\033[?25l", 6, PTY_SEQUENCE_CURSOR_HIDE },  /* Hide the cursor. */
+  { "\033[?25h", 6, PTY_SEQUENCE_CURSOR_SHOW }   /* Show the cursor. */
+};
+
+/* Return whether the pending bytes can still form a tracked sequence. */
+static int pending_pty_sequence_is_prefix(void)
+{
+  size_t i;
+
+  for (i = 0; i < sizeof(s_tracked_pty_sequences) / sizeof(s_tracked_pty_sequences[0]); i++) {
+    if (s_pending_pty_sequence_len <= s_tracked_pty_sequences[i].len &&
+        memcmp(s_pending_pty_sequence, s_tracked_pty_sequences[i].str, s_pending_pty_sequence_len) == 0) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/* Return the ID of a completed tracked sequence, or UNKNOWN if incomplete. */
+static enum tracked_pty_sequence_id completed_pty_sequence(void)
+{
+  size_t i;
+
+  for (i = 0; i < sizeof(s_tracked_pty_sequences) / sizeof(s_tracked_pty_sequences[0]); i++) {
+    if (s_pending_pty_sequence_len == s_tracked_pty_sequences[i].len &&
+        memcmp(s_pending_pty_sequence, s_tracked_pty_sequences[i].str, s_pending_pty_sequence_len) == 0) {
+      return s_tracked_pty_sequences[i].id;
+    }
+  }
+  return PTY_SEQUENCE_UNKNOWN;
+}
+
+/* Move the terminal cursor to the current on-screen preedit position. */
+static void restore_preedit_cursor(void)
+{
+  int row, col;
+
+  if (get_preedit_cursor_position(&row, &col)) {
+    put_cursor_address(row, col);
+  }
+}
+
+/* Update the tracked terminal state and output a completed sequence. */
+static void output_completed_pty_sequence(enum tracked_pty_sequence_id sequence)
+{
+  int was_protected = s_synchronized_update || s_cursor_hidden;
+  int will_be_protected;
+
+  switch (sequence) {
+  case PTY_SEQUENCE_SYNC_BEGIN:
+    s_synchronized_update = TRUE;
+    break;
+  case PTY_SEQUENCE_SYNC_END:
+    s_synchronized_update = FALSE;
+    break;
+  case PTY_SEQUENCE_CURSOR_HIDE:
+    s_cursor_hidden = TRUE;
+    break;
+  case PTY_SEQUENCE_CURSOR_SHOW:
+    s_cursor_hidden = FALSE;
+    break;
+  }
+
+  will_be_protected = s_synchronized_update || s_cursor_hidden;
+  if (was_protected && !will_be_protected) {
+    restore_preedit_cursor();
+  }
+
+  put_pty_str(s_pending_pty_sequence, s_pending_pty_sequence_len);
+  s_pending_pty_sequence_len = 0;
+}
+
+/* Output an incomplete pending sequence unchanged and clear it. */
+static void flush_pending_pty_sequence(void)
+{
+  if (s_pending_pty_sequence_len > 0) {
+    put_pty_str(s_pending_pty_sequence, s_pending_pty_sequence_len);
+    s_pending_pty_sequence_len = 0;
+  }
+}
+
+/* Set the fixed deadline for completing a newly pending sequence. */
+static void start_pending_pty_sequence(void)
+{
+  clock_gettime(CLOCK_MONOTONIC, &s_pending_pty_sequence_deadline);
+  s_pending_pty_sequence_deadline.tv_nsec += PTY_SEQUENCE_TIMEOUT_NSEC;
+  if (s_pending_pty_sequence_deadline.tv_nsec >= NSEC_PER_SEC) {
+    s_pending_pty_sequence_deadline.tv_sec++;
+    s_pending_pty_sequence_deadline.tv_nsec -= NSEC_PER_SEC;
+  }
+}
+
+/* Return whether the pending sequence expired and report time remaining. */
+static int pending_pty_sequence_timeout(struct timespec *remaining)
+{
+  struct timespec now;
+
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  remaining->tv_sec = s_pending_pty_sequence_deadline.tv_sec - now.tv_sec;
+  remaining->tv_nsec = s_pending_pty_sequence_deadline.tv_nsec - now.tv_nsec;
+  if (remaining->tv_nsec < 0) {
+    remaining->tv_sec--;
+    remaining->tv_nsec += NSEC_PER_SEC;
+  }
+  if (remaining->tv_sec < 0 ||
+      (remaining->tv_sec == 0 && remaining->tv_nsec == 0)) {
+    remaining->tv_sec = 0;
+    remaining->tv_nsec = 0;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/* Track selected control sequences while forwarding child PTY output. */
+static void filter_pty_output(const char *buf, ssize_t len)
+{
+  ssize_t i = 0;
+
+  while (i < len) {
+    if (s_pending_pty_sequence_len == 0) {
+      const char *escape = memchr(buf + i, ESCAPE_CODE, len - i);
+      ssize_t text_len;
+
+      if (escape == NULL) {
+        put_pty_str(buf + i, len - i);
+        return;
+      }
+      text_len = escape - (buf + i);
+      if (text_len > 0) {
+        put_pty_str(buf + i, text_len);
+        i += text_len;
+      }
+      s_pending_pty_sequence[s_pending_pty_sequence_len++] = buf[i++];
+      start_pending_pty_sequence();
+      continue;
+    }
+
+    if (s_pending_pty_sequence_len < sizeof(s_pending_pty_sequence)) {
+      enum tracked_pty_sequence_id sequence;
+
+      s_pending_pty_sequence[s_pending_pty_sequence_len++] = buf[i++];
+      sequence = completed_pty_sequence();
+      if (sequence != PTY_SEQUENCE_UNKNOWN) {
+        output_completed_pty_sequence(sequence);
+      } else if (!pending_pty_sequence_is_prefix()) {
+        char pending[PTY_SEQUENCE_MAX];
+        size_t pending_len = s_pending_pty_sequence_len;
+
+        memcpy(pending, s_pending_pty_sequence, pending_len);
+        s_pending_pty_sequence_len = 0;
+        put_pty_str(pending, 1);
+        filter_pty_output(pending + 1, pending_len - 1);
+      }
+    } else {
+      flush_pending_pty_sequence();
+    }
+  }
+}
+
 #define BUFSIZE 4096
 static void main_loop(void)
 {
@@ -863,6 +1054,10 @@ static void main_loop(void)
   nfd++;
 
   while (TRUE) {
+    struct timespec timeout;
+    const struct timespec *timeout_ptr = NULL;
+    int selected;
+
     /* コミットされたときにプリエディットがあるか */
     if (is_commit_and_preedit()) {
       struct timeval t;
@@ -892,7 +1087,21 @@ static void main_loop(void)
       FD_SET(g_helper_fd, &fds);
     }
 
-    if (my_pselect(nfd, &fds, &s_orig_sigmask) <= 0) {
+    /* Use the pending sequence deadline as the next pselect timeout. */
+    if (s_pending_pty_sequence_len > 0) {
+      if (pending_pty_sequence_timeout(&timeout)) {
+        flush_pending_pty_sequence();
+        continue;
+      }
+      timeout_ptr = &timeout;
+    }
+
+    selected = my_pselect(nfd, &fds, timeout_ptr, &s_orig_sigmask);
+    if (selected == 0) {
+      flush_pending_pty_sequence();
+      continue;
+    }
+    if (selected < 0) {
       /* signalで割り込まれたときにくる。selectの返り値は-1でerrno==EINTR */
       debug(("signal flag = %x\n", s_signal_flag));
       if ((s_signal_flag & SIG_FLAG_DONE   ) != 0) {
@@ -1087,6 +1296,7 @@ static void main_loop(void)
     if (!g_opt.print_key && FD_ISSET(s_master, &fds)) {
       if ((len = read(s_master, buf, sizeof(buf) - 1)) == -1 || len == 0) {
         /* 子プロセスが終了した */
+        flush_pending_pty_sequence();
         return;
       }
       buf[len] = '\0';
@@ -1102,14 +1312,14 @@ static void main_loop(void)
           }
           str1_len = len - (str1 - buf);
           /* str1はclear_screenかclr_eosの次の文字列を指している */
-          put_pty_str(buf, len - str1_len);
+          filter_pty_output(buf, len - str1_len);
           draw_statusline_force_restore();
-          put_pty_str(str1, str1_len);
+          filter_pty_output(str1, str1_len);
         } else {
-          put_pty_str(buf, len);
+          filter_pty_output(buf, len);
         }
       } else {
-        put_pty_str(buf, len);
+        filter_pty_output(buf, len);
       }
     }
 
@@ -1319,6 +1529,7 @@ static void sigwinch_handler(void)
 
 void done(int exit_value)
 {
+  flush_pending_pty_sequence();
   uim_quit();
   quit_escseq();
   quit_helper();

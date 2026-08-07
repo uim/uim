@@ -46,9 +46,11 @@
 #ifdef HAVE_SIGNAL_H
 #include <signal.h>
 #endif
+#include <time.h>
 
 int my_select(int n, fd_set *readfds, struct timeval *timeout);
-int my_pselect(int n, fd_set *readfds, const sigset_t *sigmask);
+int my_pselect(int n, fd_set *readfds, const struct timespec *timeout,
+               const sigset_t *sigmask);
 ssize_t read_stdin(void *buf, int count);
 void unget_stdin(const char *str, int count);
 

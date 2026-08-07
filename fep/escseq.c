@@ -1222,7 +1222,9 @@ void put_pty_str(const char *str, int len)
   set_attr(str, len);
   g_commit = FALSE;
   s_cursor.row = s_cursor.col = UNDEFINED;
-  debug(("<put_pty_str \"%s\">", str));
+  debug(("<put_pty_str \""));
+  debug_write(str, len);
+  debug(("\">\n"));
 }
 
 
