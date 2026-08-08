@@ -1,5 +1,7 @@
 include(../../qt4/common.pro)
 
+CONFIG += c++17
+
 # to include qtgettext.h
 INCLUDEPATH += @srcdir@/../../qt4
 LIBS += @LIBINTL@ @X11_LIBS@

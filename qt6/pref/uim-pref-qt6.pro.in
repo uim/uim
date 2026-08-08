@@ -1,6 +1,7 @@
 include(../../qt4/common.pro)
 
 TEMPLATE = app
+CONFIG += c++17
 
 # to include qtgettext.h
 INCLUDEPATH += @srcdir@/../../qt4
