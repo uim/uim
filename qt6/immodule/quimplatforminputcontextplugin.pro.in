@@ -2,6 +2,7 @@ include(../../qt4/common.pro)
 
 TEMPLATE = lib
 CONFIG += plugin
+CONFIG += c++17
 
 # to include util.h and for quimplatforminputcontext.cpp
 INCLUDEPATH += @srcdir@/../../qt4/candwin \
