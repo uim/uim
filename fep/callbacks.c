@@ -842,7 +842,9 @@ static void make_page_strs(void)
         /* はみ出たが、次に移さない */
         assert(page_width == 0);
         next = TRUE;
-        add_extra_page = TRUE; /* ページを閉じて1つ消費するので、次ページを確保する */
+        if (index + 1 - start < nr_in_virtual_page) {
+          add_extra_page = TRUE; /* 後続候補を表示するため次ページを確保する */
+        }
                                                   /* 全角1文字の幅 */
         if (s_max_width >= cand_label_width + (int)strlen(":") + 2 + (int)strlen(" ") + index_width) {
           /* 候補 + インデックス */
