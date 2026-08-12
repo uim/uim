@@ -68,7 +68,6 @@ jobs:
           - arch-linux-qt6
           - arch-linux-tqt
           - debian-13-core
-          - debian-13-gtk2
           - debian-13-gtk3
           - debian-13-gtk4
           - debian-13-qt5

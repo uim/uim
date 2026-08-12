@@ -22,7 +22,6 @@ echo "::group::configure"
 set -x
 ~/source/configure \
   --enable-dict \
-  --enable-gnome-applet \
   --enable-gnome3-applet \
   --enable-kde-applet \
   --enable-kde4-applet \
@@ -38,7 +37,6 @@ set -x
   --with-qt5-immodule \
   --with-qt6 \
   --with-qt6-immodule \
-  --with-gtk2 \
   --with-gtk3 \
   --with-gtk4 \
   --with-sj3 \

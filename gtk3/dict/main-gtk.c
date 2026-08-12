@@ -94,7 +94,7 @@ parse_arg(int argc, char *argv[])
 	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_ANTHY;
       break;
     case 'h':
-      fprintf(stderr, "Usage: uim-dict-gtk [OPTION...]\n");
+      fprintf(stderr, "Usage: uim-dict-gtk3 [OPTION...]\n");
       fprintf(stderr, "\n");
       fprintf(stderr, "Options:\n");
       fprintf(stderr, " -h            Show this help\n");
