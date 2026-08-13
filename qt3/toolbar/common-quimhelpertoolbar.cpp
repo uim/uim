@@ -193,7 +193,7 @@ void QUimHelperToolbar::addExecDictButton()
 void QUimHelperToolbar::slotExecDict()
 {
     /* exec uim-dict */
-    system( "uim-dict-gtk&" );
+    system( "uim-dict-gtk3&" );
 }
 
 void QUimHelperToolbar::addExecInputPadButton()

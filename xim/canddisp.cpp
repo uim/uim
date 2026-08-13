@@ -59,8 +59,6 @@
   #define CANDWIN_PROG_SUFFIX	"-tqt"
 #elif defined(USE_QT4_CANDWIN)
   #define CANDWIN_PROG_SUFFIX	"-qt4"
-#elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
-  #define CANDWIN_PROG_SUFFIX	"-gtk"
 #elif defined(USE_GTK3_CANDWIN)
   #define CANDWIN_PROG_SUFFIX	"-gtk3"
 #else
