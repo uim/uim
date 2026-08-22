@@ -87,6 +87,7 @@ static void prop_list_update_cb(void *ptr, const char *str);
 static struct preedit_tag *dup_preedit(struct preedit_tag *p);
 static void init_candidate(int nr, int display_limit);
 static void make_page_strs(void);
+static void make_page_strs_until(int index);
 static int numwidth(int n);
 static int index2page(int index);
 static void reset_candidate(void);
@@ -392,24 +393,19 @@ static void activate_cb(void *ptr, int nr, int display_limit)
 static void select_cb(void *ptr, int index)
 {
   int current_index;
-  int current_page;
 
   debug2(("select_cb(index = %d)\n", index));
   return_if_fail(s_candidate.nr != UNDEFINED);
   return_if_fail(0 <= index && index < s_candidate.nr);
 
   current_index = s_candidate.index;
-  current_page = s_candidate.page;
   if (current_index == index) {
     return;
   }
   start_callbacks();
   s_candidate.index = index;
   s_candidate.page = index2page(index);
-  if (s_candidate.page != current_page &&
-      s_candidate.page_strs[s_candidate.page] == NULL) {
-    make_page_strs();
-  }
+  make_page_strs_until(s_candidate.index);
 }
 
 /*
@@ -432,8 +428,7 @@ static void shift_page_cb(void *ptr, int direction)
   return_if_fail(0 <= index && index < s_candidate.nr);
   s_candidate.page = page;
   s_candidate.index = index;
-  if (s_candidate.page_strs[page] == NULL)
-    make_page_strs();
+  make_page_strs_until(s_candidate.index);
   uim_set_candidate_index(g_context, s_candidate.index);
 }
 
@@ -948,6 +943,30 @@ static void make_page_strs(void)
 }
 
 /*
+ * Generate pages in order until the page containing index is available.
+ */
+static void make_page_strs_until(int index)
+{
+  int page;
+  int page_to_generate;
+
+  return_if_fail(0 <= index && index < s_candidate.nr);
+
+  for (page_to_generate = 0; page_to_generate < s_candidate.nr_pages; page_to_generate++) {
+    page = index2page(index);
+    return_if_fail(page >= 0);
+    if (page_to_generate > page) {
+      break;
+    }
+    if (s_candidate.page_strs[page_to_generate] == NULL) {
+      s_candidate.page = page_to_generate;
+      make_page_strs();
+    }
+  }
+  s_candidate.page = index2page(index);
+}
+
+/*
  * nの文字列表現の幅を返す
  * nは0以上でなければならない。
  */
@@ -1109,7 +1128,11 @@ void callbacks_winch(void)
   current_index = s_candidate.index;
   init_candidate(s_candidate.nr, s_candidate.limit);
   s_candidate.index = current_index;
-  make_page_strs();
+  if (s_candidate.index == UNDEFINED) {
+    make_page_strs();
+  } else {
+    make_page_strs_until(s_candidate.index);
+  }
 }
 
 void callbacks_set_mode(int mode)
