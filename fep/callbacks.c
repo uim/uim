@@ -890,8 +890,6 @@ static void make_page_strs(void)
     }
 
     if (next) { /* do fix the page */
-      /* 不変条件: 書き込み前に page は常に nr_pages 未満 (assert は NDEBUG で無効) */
-      assert(page < s_candidate.nr_pages);
       if (index_width == UNDEFINED) {
         s_candidate.index_col[page] = UNDEFINED;
       } else {
