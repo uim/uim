@@ -1730,14 +1730,14 @@
       (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))
      ((eq? skk-candidate-selection-style 'ddskk-like)
       (if (> (+ (skk-context-nth sc) 1) (- skk-candidate-op-count 1))
-	  (if (> (+ (skk-context-nth sc) skk-nr-candidate-max)
-		 (- (skk-context-nr-candidates sc) 1))
-	      ;; go into recursive learning state
-	      (skk-context-set-nth! sc (skk-context-nr-candidates sc))
-	      ;; just shift to next page
-	      (im-shift-page-candidate sc #t))
-	  ;; just increment index unless candidate window exist
-	  (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))))
+          (let ((old-nth (skk-context-nth sc)))
+            ;; Shift to the next page and detect wrapping at the end.
+            (im-shift-page-candidate sc #t)
+            (if (<= (skk-context-nth sc) old-nth)
+                ;; go into recursive learning state
+                (skk-context-set-nth! sc (skk-context-nr-candidates sc))))
+          ;; just increment index unless candidate window exist
+          (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))))
     (skk-context-set-candidate-op-count!
      sc
      (+ 1 (skk-context-candidate-op-count sc)))
@@ -1772,7 +1772,7 @@
 		(skk-back-to-kanji-state sc)
 		#f)
 	      (begin
-		(if (> (skk-context-nth sc) (- skk-candidate-op-count 2))
+		(if (= (skk-context-nth sc) (- skk-candidate-op-count 1))
 		    (begin
 		      (skk-reset-candidate-window sc)
 		      (skk-context-set-nth! sc
