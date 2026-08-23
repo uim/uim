@@ -34,13 +34,8 @@ noinst_LTLIBRARIES += libuim-counted-init.la
 # static libraaries is supported by libtool. And no violent rm of *.a
 # and *.la is performed to avoid system-dependent unexpected
 # result. It's libtool's responsibility.  -- YamaKen 2006-05-20
-uim_plugin_LTLIBRARIES = 
-uim_plugindir = $(pkglibdir)/plugin
-
-# Libtool relinks plugins against libraries in $(libdir) when installing
-# them. Ensure that the core libraries are installed before the plugins
-# when make install is run in parallel.
-install-uim_pluginLTLIBRARIES: install-libLTLIBRARIES
+uimplugin_LTLIBRARIES =
+uimplugindir = $(pkglibdir)/plugin
 
 BUILT_SOURCES = sigscheme-combined
 .PHONY: sigscheme-combined
@@ -64,22 +59,22 @@ libuim_la_SOURCES = \
 		gettext.h intl.c \
 		rk.c
 
-uim_plugin_LTLIBRARIES += libuim-fileio.la
+uimplugin_LTLIBRARIES += libuim-fileio.la
 libuim_fileio_la_SOURCES = fileio.c
 libuim_fileio_la_LIBADD = libuim-scm.la libuim.la
-libuim_fileio_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_fileio_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_fileio_la_CPPFLAGS = $(AM_CPPFLAGS)
 
-uim_plugin_LTLIBRARIES += libuim-socket.la
+uimplugin_LTLIBRARIES += libuim-socket.la
 libuim_socket_la_SOURCES = socket.c
 libuim_socket_la_LIBADD = libuim-scm.la libuim.la
-libuim_socket_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_socket_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_socket_la_CPPFLAGS = $(AM_CPPFLAGS)
 
-uim_plugin_LTLIBRARIES += libuim-process.la
+uimplugin_LTLIBRARIES += libuim-process.la
 libuim_process_la_SOURCES = process.c
 libuim_process_la_LIBADD = libuim-scm.la libuim.la
-libuim_process_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_process_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_process_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 if NOTIFY
@@ -89,18 +84,18 @@ endif
 libuim_custom_la_SOURCES = uim-custom.c
 
 if M17NLIB
-  uim_plugin_LTLIBRARIES += libuim-m17nlib.la
+  uimplugin_LTLIBRARIES += libuim-m17nlib.la
   libuim_m17nlib_la_SOURCES = m17nlib.c
   libuim_m17nlib_la_LIBADD = @M17NLIB_LIBS@ libuim-scm.la libuim.la
-  libuim_m17nlib_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_m17nlib_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
   libuim_m17nlib_la_CPPFLAGS = $(AM_CPPFLAGS) @M17NLIB_CFLAGS@
 endif
 
 if WNN
-uim_plugin_LTLIBRARIES += libuim-wnn.la
+uimplugin_LTLIBRARIES += libuim-wnn.la
 libuim_wnn_la_SOURCES = wnnlib.h wnnlib.c
 libuim_wnn_la_LIBADD = libuim.la $(WNN_LIBS) -lwnn @WNN_LIBADD@
-libuim_wnn_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_wnn_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_wnn_la_CPPFLAGS = $(AM_CPPFLAGS) $(WNN_CPPFLAGS)
 endif
 
@@ -108,10 +103,10 @@ if ANTHY
 if ENABLE_ANTHY_STATIC
   libuim_la_SOURCES += anthy.c
 else
-  uim_plugin_LTLIBRARIES += libuim-anthy.la
+  uimplugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
   libuim_anthy_la_LIBADD = @ANTHY_LIBS@ libuim-scm.la libuim.la
-  libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_anthy_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 endif
@@ -120,69 +115,69 @@ if ANTHY_UTF8
 if ENABLE_ANTHY_UTF8_STATIC
   libuim_la_SOURCES += anthy-utf8.c
 else
-  uim_plugin_LTLIBRARIES += libuim-anthy-utf8.la
+  uimplugin_LTLIBRARIES += libuim-anthy-utf8.la
   libuim_anthy_utf8_la_SOURCES = anthy-utf8.c
   libuim_anthy_utf8_la_LIBADD = @ANTHY_UTF8_LIBS@ libuim-scm.la libuim.la
-  libuim_anthy_utf8_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_anthy_utf8_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
   libuim_anthy_utf8_la_CPPFLAGS = $(AM_CPPFLAGS) @ANTHY_UTF8_CFLAGS@
 endif
 endif
 
 if MANA
-uim_plugin_LTLIBRARIES += libuim-mana.la
+uimplugin_LTLIBRARIES += libuim-mana.la
 libuim_mana_la_SOURCES = mana.c
 libuim_mana_la_LIBADD = libuim-scm.la libuim.la
-libuim_mana_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_mana_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_mana_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 
 if CURL
-uim_plugin_LTLIBRARIES += libuim-curl.la
+uimplugin_LTLIBRARIES += libuim-curl.la
 libuim_curl_la_SOURCES = curl.c
 libuim_curl_la_LIBADD = @CURL_LIBS@ libuim.la
-libuim_curl_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_curl_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_curl_la_CPPFLAGS = $(AM_CPPFLAGS) @CURL_CFLAGS@
 endif
 
 if EXPAT
-uim_plugin_LTLIBRARIES += libuim-expat.la
+uimplugin_LTLIBRARIES += libuim-expat.la
 libuim_expat_la_SOURCES = expat.c
 libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la libuim-scm.la
-libuim_expat_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_expat_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_expat_la_CPPFLAGS = $(AM_CPPFLAGS) @EXPAT_CFLAGS@
 endif
 
 if OPENSSL
-uim_plugin_LTLIBRARIES += libuim-openssl.la
+uimplugin_LTLIBRARIES += libuim-openssl.la
 libuim_openssl_la_SOURCES = openssl.c
 libuim_openssl_la_LIBADD = @OPENSSL_LIBS@ libuim.la
-libuim_openssl_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_openssl_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_openssl_la_CPPFLAGS = $(AM_CPPFLAGS) @OPENSSL_CPPFLAGS@
 endif
 
 if SQLITE3
-uim_plugin_LTLIBRARIES += libuim-sqlite3.la
+uimplugin_LTLIBRARIES += libuim-sqlite3.la
 libuim_sqlite3_la_SOURCES = sqlite3.c
 libuim_sqlite3_la_LIBADD = @SQLITE3_LIBS@ libuim-scm.la libuim.la
-libuim_sqlite3_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_sqlite3_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_sqlite3_la_CPPFLAGS = $(AM_CPPFLAGS) @SQLITE3_CFLAGS@
 endif
 
 if FFI
-uim_plugin_LTLIBRARIES += libuim-ffi.la
+uimplugin_LTLIBRARIES += libuim-ffi.la
 libuim_ffi_la_SOURCES = ffi.c
 libuim_ffi_la_LIBADD = @FFI_LIBS@ libuim.la
-libuim_ffi_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_ffi_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_ffi_la_CPPFLAGS = $(AM_CPPFLAGS) @FFI_CFLAGS@
 endif
 
 if EB
-uim_plugin_LTLIBRARIES += libuim-eb.la
+uimplugin_LTLIBRARIES += libuim-eb.la
 libuim_eb_la_SOURCES = eb.c uim-eb.c uim-eb.h
 libuim_eb_la_LIBADD = libuim-scm.la libuim.la \
 		      @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
 		      @EBCONF_INTLLIBS@
-libuim_eb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module \
+libuim_eb_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module \
 		       @EBCONF_PTHREAD_LDFLAGS@
 libuim_eb_la_CPPFLAGS = $(AM_CPPFLAGS) \
 			@EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
@@ -193,44 +188,44 @@ endif
 
 if LIBUIM_X_UTIL
 if XKB
-uim_plugin_LTLIBRARIES += libuim-xkb.la
+uimplugin_LTLIBRARIES += libuim-xkb.la
 libuim_xkb_la_SOURCES = uim-xkb.c
 libuim_xkb_la_LIBADD = libuim-scm.la libuim.la libuim-x-util.la @X11_LIBS@
-libuim_xkb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_xkb_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_xkb_la_CFLAGS = @X11_CFLAGS@
 libuim_xkb_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 endif
 
 if OSX_DCS
-uim_plugin_LTLIBRARIES += libuim-osx-dcs.la
+uimplugin_LTLIBRARIES += libuim-osx-dcs.la
 libuim_osx_dcs_la_SOURCES = osx-dcs.m
 libuim_osx_dcs_la_OBJCFLAGS = -x objective-c
 libuim_osx_dcs_la_LDFLAGS = -avoid-version -module -framework Cocoa
 endif
 
 if SKK
-uim_plugin_LTLIBRARIES += libuim-skk.la
+uimplugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
-libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_skk_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 
-uim_plugin_LTLIBRARIES += libuim-look.la
+uimplugin_LTLIBRARIES += libuim-look.la
 libuim_look_la_SOURCES = look.c bsdlook.h
 libuim_look_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la
-libuim_look_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_look_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_look_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 libuim_bsdlook_la_SOURCES = bsdlook.h bsdlook.c
 libuim_bsdlook_la_LIBADD =
 libuim_bsdlook_la_CPPFLAGS = $(AM_CPPFLAGS)
 
-uim_plugin_LTLIBRARIES += libuim-lolevel.la
+uimplugin_LTLIBRARIES += libuim-lolevel.la
 libuim_lolevel_la_SOURCES = lolevel.c
 libuim_lolevel_la_LIBADD = libuim.la libuim-scm.la
-libuim_lolevel_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_lolevel_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_lolevel_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 libuimincludedir =  $(includedir)/uim
@@ -290,10 +285,10 @@ libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) \
 libuim_custom_la_LIBADD = libuim-scm.la libuim.la
 libuim_custom_la_CPPFLAGS = $(uim_defs) $(AM_CPPFLAGS)
 
-uim_plugin_LTLIBRARIES += libuim-custom-enabler.la
+uimplugin_LTLIBRARIES += libuim-custom-enabler.la
 libuim_custom_enabler_la_SOURCES = uim-custom-enabler.c
 libuim_custom_enabler_la_LIBADD = libuim-custom.la libuim-scm.la libuim.la
-libuim_custom_enabler_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_custom_enabler_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_custom_enabler_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 libuim_counted_init_la_SOURCES = counted-init.c counted-init.h
@@ -331,10 +326,10 @@ uim_help_LDADD = libuim-scm.la libuim.la
 uim_help_SOURCES = uim-help.c
 
 if LIBEDIT
-  uim_plugin_LTLIBRARIES += libuim-editline.la
+  uimplugin_LTLIBRARIES += libuim-editline.la
   libuim_editline_la_SOURCES = editline.c
   libuim_editline_la_LIBADD = @LIBEDIT_LIBS@ libuim-scm.la libuim.la
-  libuim_editline_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_editline_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
   libuim_editline_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 
