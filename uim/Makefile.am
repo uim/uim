@@ -37,11 +37,6 @@ noinst_LTLIBRARIES += libuim-counted-init.la
 uimplugin_LTLIBRARIES =
 uimplugindir = $(pkglibdir)/plugin
 
-# Libtool relinks plugins against libraries in $(libdir) when installing
-# them. Ensure that the core libraries are installed before the plugins
-# when make install is run in parallel.
-install-uim_pluginLTLIBRARIES: install-libLTLIBRARIES
-
 BUILT_SOURCES = sigscheme-combined
 .PHONY: sigscheme-combined
 sigscheme-combined:
