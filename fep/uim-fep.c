@@ -1045,8 +1045,9 @@ static void main_loop(void)
   ssize_t len;
   fd_set fds;
   int nfd;
-  char *_clear_screen = cut_padding(clear_screen);
-  char *_clr_eos = cut_padding(clr_eos);
+  char *clear_screen_seq = cut_padding(clear_screen);
+  char *clr_eos_seq = cut_padding(clr_eos);
+  const char *clear_display_seq = "\033[2J";
   const char *errstr;
 
   if (g_win_in > s_master) {
@@ -1321,15 +1322,19 @@ static void main_loop(void)
 
       /* クリアされた時にモードを再描画する */
       if (g_opt.status_type == LASTLINE) {
-        char *str1 = rstrstr_len(buf, _clear_screen, len);
-        char *str2 = rstrstr_len(buf, _clr_eos, len);
-        if (str1 != NULL || str2 != NULL) {
+        char *str1 = rstrstr_len(buf, clear_screen_seq, len);
+        char *str2 = rstrstr_len(buf, clr_eos_seq, len);
+        char *str3 = rstrstr_len(buf, clear_display_seq, len);
+        if (str1 != NULL || str2 != NULL || str3 != NULL) {
           int str1_len;
-          if (str2 > str1) {
+          if (str1 == NULL || (str2 != NULL && str2 > str1)) {
             str1 = str2;
           }
+          if (str1 == NULL || (str3 != NULL && str3 > str1)) {
+            str1 = str3;
+          }
           str1_len = len - (str1 - buf);
-          /* str1はclear_screenかclr_eosの次の文字列を指している */
+          /* str1 points to the string following the screen-clearing sequence */
           filter_pty_output(buf, len - str1_len);
           s_statusline_redraw_pending = TRUE;
           filter_pty_output(str1, str1_len);
