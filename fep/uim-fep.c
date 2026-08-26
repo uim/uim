@@ -846,6 +846,7 @@ static char s_pending_pty_sequence[PTY_SEQUENCE_MAX];
 static size_t s_pending_pty_sequence_len;
 static int s_synchronized_update;
 static int s_cursor_hidden;
+static int s_statusline_redraw_pending;
 static struct timespec s_pending_pty_sequence_deadline;
 
 enum tracked_pty_sequence_id {
@@ -1022,6 +1023,19 @@ static void filter_pty_output(const char *buf, ssize_t len)
       flush_pending_pty_sequence();
     }
   }
+}
+
+/* Redraw the status line after protected terminal output has ended. */
+static void redraw_statusline_if_ready(void)
+{
+  if (!s_statusline_redraw_pending ||
+      s_synchronized_update ||
+      s_cursor_hidden) {
+    return;
+  }
+
+  s_statusline_redraw_pending = FALSE;
+  draw_statusline_force_restore();
 }
 
 #define BUFSIZE 4096
@@ -1317,11 +1331,12 @@ static void main_loop(void)
           str1_len = len - (str1 - buf);
           /* str1はclear_screenかclr_eosの次の文字列を指している */
           filter_pty_output(buf, len - str1_len);
-          draw_statusline_force_restore();
+          s_statusline_redraw_pending = TRUE;
           filter_pty_output(str1, str1_len);
         } else {
           filter_pty_output(buf, len);
         }
+        redraw_statusline_if_ready();
       } else {
         filter_pty_output(buf, len);
       }
