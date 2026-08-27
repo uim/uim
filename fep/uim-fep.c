@@ -854,7 +854,8 @@ enum tracked_pty_sequence_id {
   PTY_SEQUENCE_SYNC_BEGIN,
   PTY_SEQUENCE_SYNC_END,
   PTY_SEQUENCE_CURSOR_HIDE,
-  PTY_SEQUENCE_CURSOR_SHOW
+  PTY_SEQUENCE_CURSOR_SHOW,
+  PTY_SEQUENCE_SCROLL_REGION_RESET
 };
 
 struct tracked_pty_sequence {
@@ -867,7 +868,8 @@ static const struct tracked_pty_sequence s_tracked_pty_sequences[] = {
   { "\033[?2026h", 8, PTY_SEQUENCE_SYNC_BEGIN },  /* Begin synchronized output. */
   { "\033[?2026l", 8, PTY_SEQUENCE_SYNC_END },    /* End synchronized output. */
   { "\033[?25l", 6, PTY_SEQUENCE_CURSOR_HIDE },  /* Hide the cursor. */
-  { "\033[?25h", 6, PTY_SEQUENCE_CURSOR_SHOW }   /* Show the cursor. */
+  { "\033[?25h", 6, PTY_SEQUENCE_CURSOR_SHOW },   /* Show the cursor. */
+  { "\033[r", 3, PTY_SEQUENCE_SCROLL_REGION_RESET } /* Reset the scroll region. */
 };
 
 /* Return whether the pending bytes can still form a tracked sequence. */
@@ -926,6 +928,17 @@ static void output_completed_pty_sequence(enum tracked_pty_sequence_id sequence)
     break;
   case PTY_SEQUENCE_CURSOR_SHOW:
     s_cursor_hidden = FALSE;
+    break;
+  case PTY_SEQUENCE_SCROLL_REGION_RESET:
+    if (g_opt.status_type == LASTLINE) {
+      /*
+       * The child pty does not include the status line. Keep the outer
+       * terminal's last line outside the child's scroll region.
+       */
+      put_change_scroll_region(0, g_win->ws_row - 1);
+      s_pending_pty_sequence_len = 0;
+      return;
+    }
     break;
   }
 
