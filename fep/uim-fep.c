@@ -846,6 +846,7 @@ static char s_pending_pty_sequence[PTY_SEQUENCE_MAX];
 static size_t s_pending_pty_sequence_len;
 static int s_synchronized_update;
 static int s_cursor_hidden;
+static int s_statusline_redraw_pending;
 static struct timespec s_pending_pty_sequence_deadline;
 
 enum tracked_pty_sequence_id {
@@ -853,7 +854,8 @@ enum tracked_pty_sequence_id {
   PTY_SEQUENCE_SYNC_BEGIN,
   PTY_SEQUENCE_SYNC_END,
   PTY_SEQUENCE_CURSOR_HIDE,
-  PTY_SEQUENCE_CURSOR_SHOW
+  PTY_SEQUENCE_CURSOR_SHOW,
+  PTY_SEQUENCE_SCROLL_REGION_RESET
 };
 
 struct tracked_pty_sequence {
@@ -866,7 +868,8 @@ static const struct tracked_pty_sequence s_tracked_pty_sequences[] = {
   { "\033[?2026h", 8, PTY_SEQUENCE_SYNC_BEGIN },  /* Begin synchronized output. */
   { "\033[?2026l", 8, PTY_SEQUENCE_SYNC_END },    /* End synchronized output. */
   { "\033[?25l", 6, PTY_SEQUENCE_CURSOR_HIDE },  /* Hide the cursor. */
-  { "\033[?25h", 6, PTY_SEQUENCE_CURSOR_SHOW }   /* Show the cursor. */
+  { "\033[?25h", 6, PTY_SEQUENCE_CURSOR_SHOW },   /* Show the cursor. */
+  { "\033[r", 3, PTY_SEQUENCE_SCROLL_REGION_RESET } /* Reset the scroll region. */
 };
 
 /* Return whether the pending bytes can still form a tracked sequence. */
@@ -925,6 +928,17 @@ static void output_completed_pty_sequence(enum tracked_pty_sequence_id sequence)
     break;
   case PTY_SEQUENCE_CURSOR_SHOW:
     s_cursor_hidden = FALSE;
+    break;
+  case PTY_SEQUENCE_SCROLL_REGION_RESET:
+    if (g_opt.status_type == LASTLINE) {
+      /*
+       * The child pty does not include the status line. Keep the outer
+       * terminal's last line outside the child's scroll region.
+       */
+      put_change_scroll_region(0, g_win->ws_row - 1);
+      s_pending_pty_sequence_len = 0;
+      return;
+    }
     break;
   }
 
@@ -1024,6 +1038,19 @@ static void filter_pty_output(const char *buf, ssize_t len)
   }
 }
 
+/* Redraw the status line after protected terminal output has ended. */
+static void redraw_statusline_if_ready(void)
+{
+  if (!s_statusline_redraw_pending ||
+      s_synchronized_update ||
+      s_cursor_hidden) {
+    return;
+  }
+
+  s_statusline_redraw_pending = FALSE;
+  draw_statusline_force_restore();
+}
+
 #define BUFSIZE 4096
 static void main_loop(void)
 {
@@ -1031,8 +1058,9 @@ static void main_loop(void)
   ssize_t len;
   fd_set fds;
   int nfd;
-  char *_clear_screen = cut_padding(clear_screen);
-  char *_clr_eos = cut_padding(clr_eos);
+  char *clear_screen_seq = cut_padding(clear_screen);
+  char *clr_eos_seq = cut_padding(clr_eos);
+  const char *clear_display_seq = "\033[2J";
   const char *errstr;
 
   if (g_win_in > s_master) {
@@ -1307,21 +1335,26 @@ static void main_loop(void)
 
       /* クリアされた時にモードを再描画する */
       if (g_opt.status_type == LASTLINE) {
-        char *str1 = rstrstr_len(buf, _clear_screen, len);
-        char *str2 = rstrstr_len(buf, _clr_eos, len);
-        if (str1 != NULL || str2 != NULL) {
+        char *str1 = rstrstr_len(buf, clear_screen_seq, len);
+        char *str2 = rstrstr_len(buf, clr_eos_seq, len);
+        char *str3 = rstrstr_len(buf, clear_display_seq, len);
+        if (str1 != NULL || str2 != NULL || str3 != NULL) {
           int str1_len;
-          if (str2 > str1) {
+          if (str1 == NULL || (str2 != NULL && str2 > str1)) {
             str1 = str2;
           }
+          if (str1 == NULL || (str3 != NULL && str3 > str1)) {
+            str1 = str3;
+          }
           str1_len = len - (str1 - buf);
-          /* str1はclear_screenかclr_eosの次の文字列を指している */
+          /* str1 points to the string following the screen-clearing sequence */
           filter_pty_output(buf, len - str1_len);
-          draw_statusline_force_restore();
+          s_statusline_redraw_pending = TRUE;
           filter_pty_output(str1, str1_len);
         } else {
           filter_pty_output(buf, len);
         }
+        redraw_statusline_if_ready();
       } else {
         filter_pty_output(buf, len);
       }
