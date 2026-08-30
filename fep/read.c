@@ -154,7 +154,8 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
       sigismember(&pending_signals, SIGUSR1)  ||
       sigismember(&pending_signals, SIGUSR2)  ||
       sigismember(&pending_signals, SIGTSTP)  ||
-      sigismember(&pending_signals, SIGCONT)
+      sigismember(&pending_signals, SIGCONT)  ||
+      sigismember(&pending_signals, SIGCHLD)
      ) {
     sigprocmask(SIG_SETMASK, sigmask, &orig_sigmask);
     sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
