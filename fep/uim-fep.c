@@ -86,8 +86,14 @@
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
 #endif
 #include <time.h>
 #ifdef HAVE_STROPTS_H
@@ -146,6 +152,8 @@ uim_context g_context;
 
 /* 疑似端末のmasterのファイル記述子 */
 static int s_master;
+/* Child process launched by forkpty() */
+static pid_t s_child_pid = -1;
 /* 起動時の端末状態 */
 static struct termios s_save_tios;
 
@@ -164,6 +172,7 @@ static sigset_t s_orig_sigmask;
 #define SIG_FLAG_USR1    (1 << 3)
 #define SIG_FLAG_USR2    (1 << 4)
 #define SIG_FLAG_TSTP    (1 << 5)
+#define SIG_FLAG_CHILD   (1 << 6)
 
 static void init_uim(const char *engine);
 static const char *get_default_im_name(void);
@@ -184,6 +193,7 @@ static void sigtstp_handler(void);
 static void sigwinch_handler(void);
 static void sigusr1_handler(void);
 static void sigusr2_handler(void);
+static int child_exited(void);
 static void usage(void);
 static void version(void);
 
@@ -518,6 +528,7 @@ opt_end:
       perror(command[0]);
       done(EXIT_FAILURE);
     }
+    s_child_pid = child;
   }
 
   free(command);
@@ -544,6 +555,9 @@ opt_end:
    * the child pty with a stale winsize before entering the main loop.
    */
   sigwinch_handler();
+  if (child_exited()) {
+    done(EXIT_SUCCESS);
+  }
 
   if (s_path_setmode[0] != '\0' && mkfifo(s_path_setmode, 0600) != -1) {
     s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
@@ -1132,6 +1146,13 @@ static void main_loop(void)
     if (selected < 0) {
       /* signalで割り込まれたときにくる。selectの返り値は-1でerrno==EINTR */
       debug(("signal flag = %x\n", s_signal_flag));
+      if ((s_signal_flag & SIG_FLAG_CHILD) != 0) {
+        s_signal_flag &= ~SIG_FLAG_CHILD;
+        if (child_exited()) {
+          flush_pending_pty_sequence();
+          return;
+        }
+      }
       if ((s_signal_flag & SIG_FLAG_DONE   ) != 0) {
         s_signal_flag &= ~SIG_FLAG_DONE;
         done(1);
@@ -1437,6 +1458,7 @@ static void set_signal_handler(void)
   sigaddset(&sigmask, SIGUSR2);
   sigaddset(&sigmask, SIGTSTP);
   sigaddset(&sigmask, SIGCONT);
+  sigaddset(&sigmask, SIGCHLD);
   sigprocmask(SIG_BLOCK, &sigmask, &s_orig_sigmask);
 
   /* シグナルをブロックしない */
@@ -1455,6 +1477,7 @@ static void set_signal_handler(void)
   sigaction(SIGUSR2, &act, NULL);
   sigaction(SIGTSTP, &act, NULL);
   sigaction(SIGCONT, &act, NULL);
+  sigaction(SIGCHLD, &act, NULL);
 }
 
 static void reset_signal_handler(void)
@@ -1475,6 +1498,7 @@ static void reset_signal_handler(void)
   sigaction(SIGUSR2, &act, NULL);
   sigaction(SIGTSTP, &act, NULL);
   sigaction(SIGCONT, &act, NULL);
+  sigaction(SIGCHLD, &act, NULL);
 }
 
 static void signal_handler(int sig_no)
@@ -1500,7 +1524,33 @@ static void signal_handler(int sig_no)
     case SIGTSTP:
       s_signal_flag |= SIG_FLAG_TSTP;
       break;
+    case SIGCHLD:
+      s_signal_flag |= SIG_FLAG_CHILD;
+      break;
   }
+}
+
+static int child_exited(void)
+{
+  pid_t result;
+  int status;
+
+  if (s_child_pid < 0) {
+    return FALSE;
+  }
+
+  result = waitpid(s_child_pid, &status, WNOHANG);
+  if (result == s_child_pid) {
+    s_child_pid = -1;
+    return TRUE;
+  }
+  if (result == -1) {
+    if (errno == ECHILD) {
+      s_child_pid = -1;
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 static void recover(void)
