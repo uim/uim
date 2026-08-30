@@ -23,6 +23,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  xmload.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  japanese-act.scm japanese-kzik.scm japanese-custom.scm \
+ japanese-utf8.scm japanese-azik-utf8.scm japanese-kana-utf8.scm \
+ japanese-act-utf8.scm japanese-kzik-utf8.scm japanese-custom-utf8.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
  canna.scm cannav3-socket.scm canna-custom.scm canna-key-custom.scm \
@@ -30,6 +32,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  sj3.scm sj3-custom.scm sj3-key-custom.scm sj3v2-socket.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
+ skk-eucjp.scm skk-custom-eucjp.scm \
  mana.scm mana-custom.scm mana-key-custom.scm \
  tcode.scm trycode.scm \
  tutcode.scm tutcode-custom.scm tutcode-key-custom.scm tutcode-bushu.scm \
