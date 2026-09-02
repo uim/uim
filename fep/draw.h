@@ -52,6 +52,7 @@ int draw(void);
 void draw_statusline_restore(void);
 void draw_statusline_force_no_restore(void);
 void draw_statusline_force_restore(void);
+void recover_display(void);
 void clear_lastline(void);
 void clear_backtick(void);
 int is_commit_and_preedit(void);

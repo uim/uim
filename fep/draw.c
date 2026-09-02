@@ -650,6 +650,22 @@ void draw_statusline_force_restore(void)
 }
 
 /*
+ * Erase the display state owned by uim-fep before switching to transparent
+ * recovery mode.
+ */
+void recover_display(void)
+{
+  if (g_start_preedit) {
+    erase_preedit();
+    end_preedit();
+  }
+
+  if (g_opt.status_type == BACKTICK) {
+    clear_backtick();
+  }
+}
+
+/*
  * 最下行を消す
  * カーソルは最下行に移動する
  */
