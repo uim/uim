@@ -120,6 +120,7 @@
 #endif
 
 #include <uim/uim.h>
+#include <uim/uim-internal.h>
 
 #include "udsock.h"
 #include "str.h"
@@ -189,6 +190,9 @@ static void set_signal_handler(void);
 static void reset_signal_handler(void);
 static void signal_handler(int sig_no);
 static void recover(void);
+static int fatal_error_occurred(void);
+static void reset_getmode(void);
+static void recover_if_fatal(void);
 static void sigtstp_handler(void);
 static void sigwinch_handler(void);
 static void sigusr1_handler(void);
@@ -1221,12 +1225,14 @@ static void main_loop(void)
       }
     }
 
+    recover_if_fatal();
 
     /* キーボード(stdin)からの入力 */
     if (FD_ISSET(g_win_in, &fds)) {
       int key_state = 0;
       if (!g_focus_in) {
         focus_in();
+        recover_if_fatal();
       }
 
       if ((len = read_stdin(buf, sizeof(buf) - 1)) == -1 || len == 0) {
@@ -1322,6 +1328,7 @@ static void main_loop(void)
             int raw;
             if (key != UKey_Focus && key != UKey_Other) {
               raw = press_key(key, key_state);
+              recover_if_fatal();
               if (!draw()) {
                 if (g_opt.status_type == BACKTICK) {
                   update_backtick();
@@ -1383,6 +1390,7 @@ static void main_loop(void)
 
     if (g_helper_fd >= 0 && FD_ISSET(g_helper_fd, &fds)) {
       helper_handler();
+      recover_if_fatal();
       draw();
     }
   }
@@ -1555,12 +1563,43 @@ static int child_exited(void)
 
 static void recover(void)
 {
+  reset_getmode();
+  recover_display();
   reset_signal_handler();
-  put_exit_attribute_mode();
-  put_restore_cursor();
-  put_cursor_normal();
+  quit_escseq();
   recover_loop();
   done(EXIT_SUCCESS);
+}
+
+static int fatal_error_occurred(void)
+{
+#if UIM_USE_ERROR_GUARD
+  return uim_caught_fatal_error();
+#else
+  return FALSE;
+#endif
+}
+
+static void reset_getmode(void)
+{
+  FILE *fp;
+
+  if (s_path_getmode[0] == '\0') {
+    return;
+  }
+
+  fp = fopen(s_path_getmode, "wt");
+  if (fp != NULL) {
+    fprintf(fp, "0\n");
+    fclose(fp);
+  }
+}
+
+static void recover_if_fatal(void)
+{
+  if (fatal_error_occurred()) {
+    recover();
+  }
 }
 
 /*
@@ -1616,10 +1655,14 @@ static void sigwinch_handler(void)
 
 void done(int exit_value)
 {
+  int fatal = fatal_error_occurred();
+
   flush_pending_pty_sequence();
-  uim_quit();
+  if (!fatal) {
+    uim_quit();
+    quit_helper();
+  }
   quit_escseq();
-  quit_helper();
   if (g_opt.status_type == BACKTICK) {
     clear_backtick();
   }
