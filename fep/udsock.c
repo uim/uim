@@ -156,6 +156,18 @@ void init_recvsocket(const char *sock_path)
   chmod(path, S_IRUSR|S_IWUSR);
 }
 
+void unlink_recvsocket(const char *sock_path)
+{
+  const char *path;
+
+  if (s_recv_sockfd == -1) {
+    return;
+  }
+
+  path = usersockname(sock_path);
+  unlink(path);
+}
+
 void close_socket(void)
 {
   if (s_send_sockfd != -1) {
