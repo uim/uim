@@ -9,7 +9,8 @@ endif
 
 EXTRA_DIST = RELNOTE Rakefile autogen.sh setup.sh \
 	uim.pc.in uim.desktop \
-	intltool-extract.in intltool-merge.in intltool-update.in
+	intltool-extract.in intltool-merge.in intltool-update.in \
+	po/POTFILES.encodings po/xgettext
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc

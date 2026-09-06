@@ -1466,6 +1466,8 @@ if test "x$USE_NLS" = xyes; then
            [
 dnl Workaround for intltoolize. It requires ^IT_PROG_INTLTOOL.
 IT_PROG_INTLTOOL([0.36.3],[no-xml])
+XGETTEXT='$(top_srcdir)/po/xgettext'
+AC_SUBST([XGETTEXT])
 ],
            [AC_MSG_ERROR([nls support requires intltool to be installed.])])
 fi

@@ -1,0 +1,22 @@
+# Encoding and path for source files that are not UTF-8.
+EUC-JP scm/ajax-ime-custom.scm
+EUC-JP scm/ajax-ime.scm
+EUC-JP scm/anthy-custom.scm
+EUC-JP scm/baidu-olime-jp-custom.scm
+EUC-JP scm/canna-custom.scm
+EUC-JP scm/google-cgiapi-jp-custom.scm
+EUC-JP scm/japanese-custom.scm
+EUC-JP scm/mana-custom.scm
+EUC-JP scm/prime-custom.scm
+EUC-JP scm/prime.scm
+EUC-JP scm/sj3-custom.scm
+EUC-JP scm/sj3.scm
+EUC-JP scm/skk-custom.scm
+EUC-JP scm/tcode.scm
+EUC-JP scm/trycode.scm
+EUC-JP scm/tutcode-rule-custom.scm
+EUC-JP scm/tutcode.scm
+EUC-JP scm/wnn-custom.scm
+EUC-JP scm/wnn.scm
+EUC-JP scm/yahoo-jp-custom.scm
+EUC-JP scm/yahoo-jp.scm

@@ -1,0 +1,164 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Basename qw(dirname);
+use File::Copy qw(move);
+use File::Temp qw(tempdir);
+use Cwd qw(abs_path);
+use POSIX qw(WEXITSTATUS WIFEXITED);
+
+sub find_real_xgettext {
+  my $self_real = abs_path($0);
+
+  for my $dir (split /:/, $ENV{PATH} // '') {
+    next if $dir eq '';
+    my $candidate = "$dir/xgettext";
+    next unless -x $candidate;
+    my $candidate_real = abs_path($candidate);
+    next if defined $self_real && defined $candidate_real &&
+            $candidate_real eq $self_real;
+    return $candidate;
+  }
+
+  die "xgettext wrapper: cannot find the real xgettext\n";
+}
+
+sub normalize_path {
+  my ($path) = @_;
+  $path =~ s{^\./}{};
+  $path =~ s{^\.\./}{};
+  return $path;
+}
+
+sub read_encoding_map {
+  my ($filename) = @_;
+  my %map;
+
+  # POTFILES.encodings lists only non-UTF-8 files; all other files use UTF-8.
+  open my $fh, '<', $filename
+    or die "xgettext wrapper: cannot open $filename: $!\n";
+  while (my $line = <$fh>) {
+    chomp $line;
+    next if $line =~ /^\s*(?:#|$)/;
+    my ($encoding, $path) = split /\s+/, $line, 2;
+    die "xgettext wrapper: invalid line in $filename: $line\n"
+      unless defined $path;
+    $map{normalize_path($path)} = $encoding;
+  }
+  close $fh or die "xgettext wrapper: cannot close $filename: $!\n";
+
+  return \%map;
+}
+
+sub parse_option_value {
+  my ($args, $name) = @_;
+
+  for my $i (0 .. $#{$args}) {
+    if ($args->[$i] =~ /^\Q$name\E=(.*)$/) {
+      return $1;
+    }
+    if ($args->[$i] eq $name && $i < $#{$args}) {
+      return $args->[$i + 1];
+    }
+  }
+
+  return undef;
+}
+
+sub replace_argument {
+  my ($args, $name, $value) = @_;
+  my @result;
+  my $replaced = 0;
+
+  for (my $i = 0; $i <= $#{$args}; $i++) {
+    my $arg = $args->[$i];
+    if (index($arg, "$name=") == 0) {
+      push @result, "$name=$value";
+      $replaced = 1;
+    } elsif ($arg eq $name) {
+      push @result, $name, $value;
+      $i++;
+      $replaced = 1;
+    } else {
+      push @result, $arg;
+    }
+  }
+
+  push @result, "$name=$value" unless $replaced;
+  return @result;
+}
+
+sub run_command {
+  my (@args) = @_;
+  system @args;
+  return 127 if $? == -1;
+  return WEXITSTATUS($?) if WIFEXITED($?);
+  return 128 + ($? & 127);
+}
+
+my $real_xgettext = find_real_xgettext();
+my $files_from = parse_option_value(\@ARGV, '--files-from');
+
+# intltool-update invokes xgettext once for capability detection. Pass through
+# invocations that do not process a POTFILES list.
+if (!defined $files_from) {
+  exec $real_xgettext, @ARGV
+    or die "xgettext wrapper: cannot execute $real_xgettext: $!\n";
+}
+
+my $script_dir = dirname($0);
+my $encoding_map = read_encoding_map("$script_dir/POTFILES.encodings");
+
+open my $files_fh, '<', $files_from
+  or die "xgettext wrapper: cannot open $files_from: $!\n";
+my %files_by_encoding;
+while (my $line = <$files_fh>) {
+  chomp $line;
+  next if $line =~ /^\s*$/;
+  my $encoding = $encoding_map->{normalize_path($line)} // 'UTF-8';
+  push @{$files_by_encoding{$encoding}}, $line;
+}
+close $files_fh or die "xgettext wrapper: cannot close $files_from: $!\n";
+
+my $output = parse_option_value(\@ARGV, '--output');
+die "xgettext wrapper: --output is required\n" unless defined $output;
+
+my $tmpdir = tempdir('uim-xgettext-XXXXXX', DIR => dirname($output),
+                     CLEANUP => 1);
+my @potfiles;
+my $group_number = 0;
+
+# xgettext has one --from-code setting per invocation, so process each group
+# separately and combine the resulting catalogs below.
+for my $encoding (sort keys %files_by_encoding) {
+  my $files = "$tmpdir/files-$group_number";
+  my $pot = "$tmpdir/messages-$group_number.pot";
+  open my $group_fh, '>', $files
+    or die "xgettext wrapper: cannot create $files: $!\n";
+  print {$group_fh} "$_\n" for @{$files_by_encoding{$encoding}};
+  close $group_fh or die "xgettext wrapper: cannot close $files: $!\n";
+
+  my @args = replace_argument(\@ARGV, '--files-from', $files);
+  @args = replace_argument(\@args, '--output', $pot);
+  @args = replace_argument(\@args, '--from-code', $encoding);
+
+  my $status = run_command($real_xgettext, @args);
+  exit $status if $status != 0;
+  push @potfiles, $pot;
+  $group_number++;
+}
+
+if (@potfiles == 1) {
+  move($potfiles[0], $output)
+    or die "xgettext wrapper: cannot move $potfiles[0] to $output: $!\n";
+} else {
+  # Merge the catalogs generated for each source encoding into the final catalog.
+  my $msgcat = $ENV{MSGCAT} // 'msgcat';
+  my $status = run_command($msgcat, '--sort-output',
+                           '--output-file', $output, @potfiles);
+  exit $status if $status != 0;
+}
+
+exit 0;
