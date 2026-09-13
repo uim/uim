@@ -259,21 +259,6 @@ AC_ARG_WITH(skk,
 
 AM_CONDITIONAL(SKK, test "x$with_skk" = xyes)
 
-# **********************
-# *** Tests for cURL ***
-# **********************
-AC_ARG_WITH(curl,
-  AS_HELP_STRING([--with-curl],
-    [build with libcurl]),
-  [],
-  [with_curl=no])
-
-if test "x$with_curl" != xno; then
-  PKG_CHECK_MODULES(CURL, libcurl >= 7.16.4, with_curl=yes, with_curl=no)
-fi
-
-AM_CONDITIONAL(CURL, test "x$with_curl" = xyes)
-
 # ***********************
 # *** Tests for expat ***
 # ***********************
@@ -2212,7 +2197,6 @@ Configure Result :
    SKK             : ${with_skk}
    Wnn             : ${with_wnn}
    m17n-lib        : ${with_m17nlib}
-   cURL            : ${with_curl}
    expat           : ${expat_found}
    OpenSSL         : ${enable_openssl}
    SQLite3         : ${with_sqlite3}
