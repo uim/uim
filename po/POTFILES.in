@@ -32,9 +32,6 @@ qt4/pref/olisteditformbase.cpp
 qt4/switcher/qt4.cpp
 qt4/toolbar/common-quimhelpertoolbar.cpp
 scm/action.scm
-scm/ajax-ime-custom.scm
-scm/ajax-ime-key-custom.scm
-scm/ajax-ime.scm
 scm/annotation-custom.scm
 scm/annotation-filter.scm
 scm/annotation.scm
@@ -103,9 +100,6 @@ scm/wnn-custom.scm
 scm/wnn-key-custom.scm
 scm/wnn.scm
 scm/xmload.scm
-scm/yahoo-jp-custom.scm
-scm/yahoo-jp-key-custom.scm
-scm/yahoo-jp.scm
 tqt/chardict/bushuviewwidget.cpp
 tqt/chardict/qt.cpp
 tqt/chardict/unicodeviewwidget.cpp

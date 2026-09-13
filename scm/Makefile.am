@@ -46,8 +46,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  look.scm look-custom.scm \
  m17nlib.scm m17nlib-custom.scm \
  zaurus.scm \
- ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
- yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
  google-cgiapi-jp.scm google-cgiapi-jp-custom.scm google-cgiapi-jp-key-custom.scm \
  baidu-olime-jp.scm baidu-olime-jp-custom.scm baidu-olime-jp-key-custom.scm \
  uim-module-manager.scm \
@@ -110,10 +108,7 @@ module_names += "xmload"
 module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"
 # web based IMs
-  module_names += "ajax-ime" "google-cgiapi-jp" "baidu-olime-jp"
-if EXPAT
-  module_names += "yahoo-jp"
-endif
+  module_names += "google-cgiapi-jp" "baidu-olime-jp"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
