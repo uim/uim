@@ -29,7 +29,6 @@ set -x
   --enable-openssl \
   --prefix=/tmp/local \
   --with-canna \
-  --with-curl \
   --with-eb \
   --with-eb-conf=/etc/eb.conf \
   --with-ffi \

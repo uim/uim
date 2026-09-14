@@ -131,14 +131,6 @@ libuim_mana_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_mana_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 
-if CURL
-uimplugin_LTLIBRARIES += libuim-curl.la
-libuim_curl_la_SOURCES = curl.c
-libuim_curl_la_LIBADD = @CURL_LIBS@ libuim.la
-libuim_curl_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-libuim_curl_la_CPPFLAGS = $(AM_CPPFLAGS) @CURL_CFLAGS@
-endif
-
 if EXPAT
 uimplugin_LTLIBRARIES += libuim-expat.la
 libuim_expat_la_SOURCES = expat.c

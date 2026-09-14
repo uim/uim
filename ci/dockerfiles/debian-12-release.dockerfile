@@ -22,7 +22,6 @@ RUN \
     intltool \
     libanthy-dev \
     libcanna1g-dev \
-    libcurl4-gnutls-dev \
     libeb16-dev \
     libedit-dev \
     libexpat1-dev \
