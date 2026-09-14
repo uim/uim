@@ -39,7 +39,6 @@
 
 (define imsw-iconic-label-alist
   '((direct           . "-")
-    (ajax-ime         . "Aj")
     (anthy            . "An")
     (anthy-utf8       . "An")
     (byeoru           . "B")
@@ -66,7 +65,6 @@
     (viqr             . "V")
     (wb86             . "Wb")
     (wnn              . "Wn")
-    (yahoo-jp         . "Yj")
     (google-cgiapi-jp . "Gj")
     (zm               . "Zm")))
 
