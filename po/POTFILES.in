@@ -45,7 +45,6 @@ scm/byeoru-key-custom.scm
 scm/canna-custom.scm
 scm/canna-key-custom.scm
 scm/cannav3-socket.scm
-scm/composer.scm
 scm/custom.scm
 scm/dict-socket.scm
 scm/direct.scm
@@ -74,7 +73,6 @@ scm/m17nlib-custom.scm
 scm/m17nlib.scm
 scm/mana-custom.scm
 scm/mana-key-custom.scm
-scm/ng-action.scm
 scm/predict-custom.scm
 scm/predict-sqlite3.scm
 scm/prime-custom.scm

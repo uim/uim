@@ -942,25 +942,6 @@ uim_set_mode_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr));
 
 /* text acquisition */
-/*
- * Consideration about text update interface
- *
- * In under-development composer framework, a single commit event of a
- * composer instance can commit a text, update the preedit, and delete
- * surrounding texts atomically to reduce text flicker. But because
- * introducing this interface to current uim breaks backward compatibility
- * completely, adding separated surrounding text deletion interface is better
- * solution at now.  -- YamaKen 2006-10-07
- *
- * https://github.com/uim/uim/blob/composer/scm/event.scm
- *
- * (define-event 'commit
- *   upward-event-rec-spec
- *   '((utext           ())   ;; can include cursor position info
- *     (preedit-updated #t)   ;; can also update preedit as atomic event
- *     (former-del-len  0)    ;; for surrounding text operation
- *     (latter-del-len  0)))  ;; for surrounding text operation
- */
 /**
  * Set callback functions for text acquisition and modification.
  *

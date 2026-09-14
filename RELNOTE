@@ -135,10 +135,6 @@ Roadmap
 
     The time for drastic reconstruction. Many user-visible changes.
 
-    The composer framework will be introduced for extensible IM
-    development.
-
-
   - uim 2.0.0
 
     Overall uim API will be revised.
