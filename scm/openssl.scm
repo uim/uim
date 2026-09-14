@@ -36,50 +36,36 @@
        (require-dynlib "openssl"))
 
 (define-record-type openssl-file-internal
-  (make-openssl-file-internal-port ssl-ctx ssl) openssl-file-internal?
-  (ssl-ctx  ssl-ctx?  ssl-ctx!)
-  (ssl      ssl?      ssl!))
+  (make-openssl-file-internal-port ssl) openssl-file-internal?
+  (ssl ssl? ssl!))
 
 (define (ssl-read-internal ssl-port bytes)
   (SSL-read (ssl? ssl-port) bytes))
 (define (ssl-write-internal ssl-port bytes)
   (SSL-write (ssl? ssl-port) bytes))
 
-(define (call-with-open-openssl-file-port fd method thunk)
+;; Wrap the connected socket FD with TLS and call THUNK with the
+;; resulting file port.  HOSTNAME is used for SNI and certificate
+;; verification.  Returns #f without calling THUNK when the TLS
+;; handshake fails.
+(define (call-with-open-openssl-file-port fd hostname thunk)
   (and (not (null? fd))
        (< 0 fd)
-       (let* ((port (open-openssl-file-port fd method))
-              (ctx (context? port))
-              (ret (thunk port)))
-         (SSL-shutdown (ssl? ctx))
-         (SSL-free (ssl? ctx))
-         (SSL-CTX-free (ssl-ctx? ctx))
-         (file-close fd)
-         ret)))
+       (let ((port (open-openssl-file-port fd hostname)))
+         (if port
+             (let* ((ctx (context? port))
+                    (ret (thunk port)))
+               (SSL-shutdown (ssl? ctx))
+               (SSL-free (ssl? ctx))
+               (file-close fd)
+               ret)
+             (begin
+               (file-close fd)
+               #f)))))
 
-(define (open-openssl-file-port fd method)
-  (call/cc
-   (lambda (block)
-     (let ((ssl-ctx (SSL-CTX-new method)))
-       (if (not ssl-ctx)
-           (begin (uim-notify-fatal (format "SSL-CTX-new: ~a" (ERR-error-string (ERR-get-error))))
-                  (block #f)))
-       (let ((ssl (SSL-new ssl-ctx)))
-         (if (not ssl)
-             (begin (uim-notify-fatal (format "SSL-new: ~a" (ERR-error-string (ERR-get-error))))
-                    (SSL-CTX-free ctx)
-                    (block #f)))
-         (if (< (SSL-set-fd ssl fd) 0)
-             (begin (uim-notify-fatal (format "SSL-set-fd: ~a" (ERR-error-string (ERR-get-error))))
-                    (SSL-CTX-free ctx)
-                    (SSL-free ctx)
-                    (block #f)))
-         (if (< (SSL-connect ssl) 0)
-             (begin (uim-notify-fatal (format "SSL-connect: ~a" (ERR-error-string (ERR-get-error))))
-                    (SSL-CTX-free ctx)
-                    (SSL-free ctx)
-                    (block #f)))
-         (make-file-port (make-openssl-file-internal-port ssl-ctx ssl)
+(define (open-openssl-file-port fd hostname)
+  (let ((ssl (openssl-client-connect fd hostname)))
+    (and ssl
+         (make-file-port (make-openssl-file-internal-port ssl)
                          fd
-                         file-bufsiz '() ssl-read-internal ssl-write-internal))))))
-
+                         file-bufsiz '() ssl-read-internal ssl-write-internal))))

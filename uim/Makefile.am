@@ -144,7 +144,7 @@ uimplugin_LTLIBRARIES += libuim-openssl.la
 libuim_openssl_la_SOURCES = openssl.c
 libuim_openssl_la_LIBADD = @OPENSSL_LIBS@ libuim.la
 libuim_openssl_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-libuim_openssl_la_CPPFLAGS = $(AM_CPPFLAGS) @OPENSSL_CPPFLAGS@
+libuim_openssl_la_CPPFLAGS = $(AM_CPPFLAGS) @OPENSSL_CFLAGS@
 endif
 
 if SQLITE3

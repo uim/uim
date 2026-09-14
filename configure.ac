@@ -275,8 +275,8 @@ AC_ARG_ENABLE(openssl,
   [],
   [enable_openssl=no])
 
-if test "x$enable_openssl" != xno; then
-  AM_WITH_OPENSSL
+if test "x$enable_openssl" = xyes; then
+  PKG_CHECK_MODULES(OPENSSL, openssl >= 1.1.0)
 fi
 
 AM_CONDITIONAL(OPENSSL, test "x$enable_openssl" = xyes)

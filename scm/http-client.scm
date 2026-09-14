@@ -163,9 +163,8 @@
        (make-http-proxy http-proxy-hostname http-proxy-port)))
 
 (define-record-type http-ssl
-  (make-http-ssl method port) http-ssl?
-  (method method? method!)
-  (port   port?   port!))
+  (make-http-ssl port) http-ssl?
+  (port http-ssl-port http-ssl-port!))
 
 (define (http:make-proxy-request-string hostname port)
   (string-append
@@ -187,18 +186,17 @@
                         (ssl #f)
                         (request-alist '()))
     (let* ((with-ssl? (and (provided? "openssl")
-                           (http-ssl? ssl)
-                           (method? ssl)))
+                           (http-ssl? ssl)))
            (call-with-open-file-port-function
             (if with-ssl?
                 ;; cut
                 (lambda (file thunk)
-                  (call-with-open-openssl-file-port file (method? ssl) thunk))
+                  (call-with-open-openssl-file-port file hostname thunk))
                 call-with-open-file-port))
            (file (if (http-proxy? proxy)
                      (tcp-connect (hostname? proxy) (port? proxy))
                      (if with-ssl?
-                         (tcp-connect hostname (port? ssl))
+                         (tcp-connect hostname (http-ssl-port ssl))
                          (tcp-connect hostname servname)))))
       (if (not file)
           (uim-notify-fatal (N_ "cannot connect server")))
