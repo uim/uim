@@ -26,7 +26,6 @@ set -x
   --enable-kde-applet \
   --enable-kde4-applet \
   --enable-maintainer-mode \
-  --enable-openssl \
   --prefix=/tmp/local \
   --with-canna \
   --with-eb \

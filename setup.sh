@@ -24,7 +24,6 @@ function setup_with_apt () {
     libcanna1g-dev \
     libeb16-dev \
     libedit-dev \
-    libexpat1-dev \
     libffi-dev \
     libgtk-3-bin \
     libgtk-3-dev \
@@ -37,7 +36,6 @@ function setup_with_apt () {
     libqt5x11extras5-dev \
     librsvg2-bin \
     libsqlite3-dev \
-    libssl-dev \
     libtool \
     libwnn-dev \
     libx11-dev \

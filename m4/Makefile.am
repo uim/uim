@@ -6,9 +6,7 @@ EXTRA_DIST = \
 	ax_path_qmake5.m4 \
 	ax_path_qmake6.m4 \
 	eb4.m4 \
-	expat.m4 \
 	isc-posix.m4 \
-	openssl.m4 \
 	wnn.m4 \
 	xft.m4 \
 	xkb.m4

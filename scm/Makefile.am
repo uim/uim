@@ -18,7 +18,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
  generic-predict.scm predict-custom.scm \
  predict-look.scm predict-look-skk.scm predict-sqlite3.scm \
- predict-google-suggest.scm \
  pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
  xmload.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
@@ -46,17 +45,13 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  look.scm look-custom.scm \
  m17nlib.scm m17nlib-custom.scm \
  zaurus.scm \
- google-cgiapi-jp.scm google-cgiapi-jp-custom.scm google-cgiapi-jp-key-custom.scm \
- baidu-olime-jp.scm baidu-olime-jp-custom.scm baidu-olime-jp-key-custom.scm \
  uim-module-manager.scm \
  fileio.scm socket.scm process.scm \
- openssl.scm \
  sqlite3.scm \
  lolevel.scm \
  input-parse.scm match.scm pregexp.scm \
  packrat.scm \
  json.scm json-parser-expanded.scm \
- http-client.scm http-server.scm \
  sxml-tools.scm sxpathlib.scm \
  annotation.scm annotation-custom.scm annotation-dict.scm annotation-eb.scm \
  annotation-filter.scm annotation-osx-dcs.scm \
@@ -107,8 +102,6 @@ module_names += "xmload"
 # less preferable IMs
 module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"
-# web based IMs
-  module_names += "google-cgiapi-jp" "baidu-olime-jp"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \

@@ -131,22 +131,6 @@ libuim_mana_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_mana_la_CPPFLAGS = $(AM_CPPFLAGS)
 endif
 
-if EXPAT
-uimplugin_LTLIBRARIES += libuim-expat.la
-libuim_expat_la_SOURCES = expat.c
-libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la libuim-scm.la
-libuim_expat_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-libuim_expat_la_CPPFLAGS = $(AM_CPPFLAGS) @EXPAT_CFLAGS@
-endif
-
-if OPENSSL
-uimplugin_LTLIBRARIES += libuim-openssl.la
-libuim_openssl_la_SOURCES = openssl.c
-libuim_openssl_la_LIBADD = @OPENSSL_LIBS@ libuim.la
-libuim_openssl_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-libuim_openssl_la_CPPFLAGS = $(AM_CPPFLAGS) @OPENSSL_CPPFLAGS@
-endif
-
 if SQLITE3
 uimplugin_LTLIBRARIES += libuim-sqlite3.la
 libuim_sqlite3_la_SOURCES = sqlite3.c

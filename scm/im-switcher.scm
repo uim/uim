@@ -42,7 +42,6 @@
     (anthy            . "An")
     (anthy-utf8       . "An")
     (byeoru           . "B")
-    (baidu-olime-jp   . "Bj")
     (canna            . "Ca")
     (chewing          . "Ch")
     (elatin           . "E")
@@ -65,7 +64,6 @@
     (viqr             . "V")
     (wb86             . "Wb")
     (wnn              . "Wn")
-    (google-cgiapi-jp . "Gj")
     (zm               . "Zm")))
 
 (define imsw-default-iconic-label "IM")

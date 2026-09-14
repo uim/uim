@@ -259,28 +259,6 @@ AC_ARG_WITH(skk,
 
 AM_CONDITIONAL(SKK, test "x$with_skk" = xyes)
 
-# ***********************
-# *** Tests for expat ***
-# ***********************
-expat_found=no
-AM_WITH_EXPAT
-AM_CONDITIONAL(EXPAT, test "x$expat_found" = xyes)
-
-# *************************
-# *** Tests for OpenSSL ***
-# *************************
-AC_ARG_ENABLE(openssl,
-  AC_HELP_STRING([--enable-openssl],
-    [enable OpenSSL]),
-  [],
-  [enable_openssl=no])
-
-if test "x$enable_openssl" != xno; then
-  AM_WITH_OPENSSL
-fi
-
-AM_CONDITIONAL(OPENSSL, test "x$enable_openssl" = xyes)
-
 # *************************
 # *** Tests for SQLite3 ***
 # *************************
@@ -2197,8 +2175,6 @@ Configure Result :
    SKK             : ${with_skk}
    Wnn             : ${with_wnn}
    m17n-lib        : ${with_m17nlib}
-   expat           : ${expat_found}
-   OpenSSL         : ${enable_openssl}
    SQLite3         : ${with_sqlite3}
    ffi             : ${with_ffi}
    GTK+3           : ${with_gtk3}
