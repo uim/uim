@@ -12,7 +12,7 @@ RUN \
   apt update -qq && \
   apt install -y \
     gcc \
-    intltool \
+    gettext \
     libedit-dev \
     libgtk-4-bin \
     libgtk-4-dev \

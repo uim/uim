@@ -15,7 +15,7 @@ RUN \
     extra-cmake-modules \
     g++ \
     gcc \
-    intltool \
+    gettext \
     libedit-dev \
     libncurses-dev \
     librsvg2-bin \

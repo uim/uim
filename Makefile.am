@@ -8,8 +8,7 @@ if USE_NLS
 endif
 
 EXTRA_DIST = RELNOTE Rakefile autogen.sh setup.sh \
-	uim.pc.in uim.desktop \
-	intltool-extract.in intltool-merge.in intltool-update.in
+	uim.pc.in uim.desktop
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc
@@ -18,7 +17,9 @@ desktopdir = $(datadir)/applications
 desktop_in_files = uim.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 if USE_NLS
-  @INTLTOOL_DESKTOP_RULE@
+  po_files = $(wildcard $(top_srcdir)/po/*.po)
+  %.desktop: %.desktop.in $(po_files)
+	$(MSGFMT) --desktop --template=$< -d $(top_srcdir)/po -o $@
 else
   %.desktop: %.desktop.in ; cp $< $@
 endif
@@ -29,12 +30,10 @@ RELEASE_TAG     = $(DIST_NAME)
 DIST_SUM_LIST = $(DIST_NAME).sum
 
 DISTCLEANFILES = uim.pc uim.desktop \
-		 intltool-extract intltool-merge intltool-update \
 		 $(DIST_SUM_LIST)
 
 MAINTAINERCLEANFILES = \
-    aclocal.m4 ltmain.sh depcomp missing install-sh \
-    intltool-extract.in intltool-merge.in intltool-update.in
+    aclocal.m4 ltmain.sh depcomp missing install-sh
 
 .PHONY: FORCE sum
 

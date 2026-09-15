@@ -12,7 +12,7 @@ RUN \
   apt update -qq && \
   apt install -y \
     gcc \
-    intltool \
+    gettext \
     libedit-dev \
     libgtk-3-bin \
     libgtk-3-dev \

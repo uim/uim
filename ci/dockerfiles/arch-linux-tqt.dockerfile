@@ -11,7 +11,7 @@ RUN \
   pacman --sync --noconfirm --refresh --sysupgrade && \
   pacman --sync --noconfirm \
     gcc \
-    intltool \
+    gettext \
     libedit \
     librsvg \
     make \

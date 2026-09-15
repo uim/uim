@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-_Name=Input Method
-_Comment=Customize uim input method environment
-_Keywords=input;method;
+Name=Input Method
+Comment=Customize uim input method environment
+Keywords=input;method;
 Exec=uim-pref-@default_toolkit@
 Icon=@uim_pixmapsdir@/uim-icon.png
 Terminal=false

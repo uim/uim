@@ -765,7 +765,7 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[gettext package name])
 
 AM_GNU_GETTEXT([external], [need-ngettext])
-AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT_VERSION([0.19.8])
 AM_CONDITIONAL([USE_NLS], [test "x$USE_NLS" = xyes])
 
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
@@ -1461,15 +1461,6 @@ AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 AM_CONDITIONAL(GCC, test "x$ac_cv_c_compiler_gnu" = xyes)
 AM_CONDITIONAL(GXX, test "x$ac_cv_cxx_compiler_gnu" = xyes)
 
-if test "x$USE_NLS" = xyes; then
-  m4_ifdef([IT_PROG_INTLTOOL],
-           [
-dnl Workaround for intltoolize. It requires ^IT_PROG_INTLTOOL.
-IT_PROG_INTLTOOL([0.36.3],[no-xml])
-],
-           [AC_MSG_ERROR([nls support requires intltool to be installed.])])
-fi
-
 dnl **********************************
 dnl *** test for KDE3 applet.. XXX ***
 dnl **********************************
@@ -1945,7 +1936,7 @@ AC_SUBST(GCROOTS_LIBS)
 AC_SUBST(GCROOTS_CFLAGS)
 
 AC_CONFIG_FILES([Makefile
-                 po/Makefile.in
+                 po/Makefile
                  m4/Makefile
                  doc/Makefile
                  uim/Makefile

@@ -15,7 +15,7 @@ RUN \
     extra-cmake-modules \
     g++ \
     gcc \
-    intltool \
+    gettext \
     libedit-dev \
     libkf5plasma-dev \
     libncurses-dev \

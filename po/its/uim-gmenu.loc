@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<locatingRules>
+  <locatingRule name="uim GMenu" pattern="*.xml">
+    <documentRule localName="section" target="uim-gmenu.its"/>
+  </locatingRule>
+</locatingRules>
