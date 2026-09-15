@@ -36,6 +36,17 @@
 
 (require 'uim)
 
+;; Emacs 24.3 renamed the input method deactivation APIs.
+(defconst uim-leim-deactivate-input-method-function
+  (if (fboundp 'deactivate-input-method)
+      'deactivate-input-method
+    'inactivate-input-method))
+
+(defconst uim-leim-current-input-method-function-variable
+  (if (boundp 'deactivate-current-input-method-function)
+      'deactivate-current-input-method-function
+    'inactivate-current-input-method-function))
+
 ;; alist of LEIM style IM names and its uim style IM names
 ;;  ( japanese-anthy-uim . anthy )
 (defvar uim-leim-inputmethod-alist '())
@@ -51,6 +62,9 @@
   (setq uim-leim-active nil)
   (uim-mode-off))
 
+(defun uim-leim-deactivate-input-method ()
+  (funcall uim-leim-deactivate-input-method-function))
+
 (defadvice toggle-input-method (around uim-toggle-input-method-around activate)
   (if buffer-read-only
       (not (message "uim.el: This buffer is read-only."))
@@ -62,7 +76,7 @@
 
   (let (im)
     ;; register inactivation function
-    (setq inactivate-current-input-method-function 'uim-leim-inactivate)
+    (set uim-leim-current-input-method-function-variable 'uim-leim-inactivate)
 
     ;; get plain IM engine name from LEIM style name
     ;;  ex. "Japanese-anthy-uim" => "anthy"
@@ -80,7 +94,7 @@
 (defun uim-leim-reset ()
   (when uim-leim-active
     (message "uim.el: uim-leim-reset")
-    (inactivate-input-method)))
+    (uim-leim-deactivate-input-method)))
 
 
 (defun uim-leim-make-im-name (im)
@@ -156,12 +170,12 @@
 	    (lambda ()
 	      (when uim-leim-active
 		(message "uim.el: LEIM inactivated"
-			 (inactivate-input-method)))))
+			 (uim-leim-deactivate-input-method)))))
 
   (add-hook 'uim-buffer-init-hook 
 	    (lambda ()
 	      (add-hook 'change-major-mode-hook
-			'inactivate-input-method nil t)))
+			'uim-leim-deactivate-input-method nil t)))
 
   ;; 
   ;;uim-leim-update-label 
