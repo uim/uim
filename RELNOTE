@@ -128,17 +128,3 @@ Notes for Packagers and System Integrators
     build and install of the bundled version of libgcroots
 
 
-Roadmap
--------
-
-  - uim 1.9.0 and later
-
-    The time for drastic reconstruction. Many user-visible changes.
-
-    The composer framework will be introduced for extensible IM
-    development.
-
-
-  - uim 2.0.0
-
-    Overall uim API will be revised.

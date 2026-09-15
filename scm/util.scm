@@ -96,21 +96,6 @@
     (take (drop lst start)
 	  len)))
 
-;;; Merged from composer branch
-;;; TODO: Merge with trunk, write test
-;;;
-;;(define sublist
-;;  (lambda (lst start end)
-;;    (list-tail (list-head lst (+ end 1))
-;;	       start)))
-;;
-;;;; .parameter len Length to get. -1 means end of original lst
-;;(define sublist-rel
-;;  (lambda (lst start len)
-;;    (if (negative? len)
-;;	(list-tail lst start)
-;;	(sublist lst start (+ start len)))))
-
 (define alist-replace
   (lambda (kons alist)
     (let* ((id (car kons))

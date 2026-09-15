@@ -2174,8 +2174,7 @@ msgstr "利用可能なアイテム"
 msgid "Cannot launch '%1'."
 msgstr "'%1' を起動できません。"
 
-#: ../scm/action.scm:502 ../scm/action.scm:503 ../scm/ng-action.scm:222
-#: ../scm/ng-action.scm:223
+#: ../scm/action.scm:502 ../scm/action.scm:503
 msgid "unknown"
 msgstr "不明"
 
@@ -4317,10 +4316,6 @@ msgstr "[Canna] 前予測候補"
 msgid "Initialize failed."
 msgstr "初期化失敗"
 
-#: ../scm/composer.scm:399
-msgid "An internal composer"
-msgstr "内部コンポーザ"
-
 #: ../scm/custom.scm:775
 msgid "-"
 msgstr "-"
@@ -6378,22 +6373,6 @@ msgstr "[Mana] ひらがな/カタカナ入力モードを反転"
 #: ../scm/mana-key-custom.scm:268
 msgid "[Mana] toggle kana/alphanumeric mode"
 msgstr "[Mana] かな/英数入力モードを反転"
-
-#: ../scm/ng-action.scm:73
-msgid "*An internal construct*"
-msgstr "*内部コンストラクタ*"
-
-#: ../scm/ng-action.scm:221
-msgid "?"
-msgstr "?"
-
-#: ../scm/ng-action.scm:229
-msgid "--"
-msgstr "--"
-
-#: ../scm/ng-action.scm:230
-msgid "--------"
-msgstr "--------"
 
 #: ../scm/predict-custom.scm:38
 msgid "Ancillary Prediction"

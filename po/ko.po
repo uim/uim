@@ -2075,8 +2075,7 @@ msgstr ""
 msgid "Cannot launch '%1'."
 msgstr ""
 
-#: ../scm/action.scm:502 ../scm/action.scm:503 ../scm/ng-action.scm:222
-#: ../scm/ng-action.scm:223
+#: ../scm/action.scm:502 ../scm/action.scm:503
 msgid "unknown"
 msgstr "모름"
 
@@ -4205,10 +4204,6 @@ msgstr ""
 msgid "Initialize failed."
 msgstr ""
 
-#: ../scm/composer.scm:399
-msgid "An internal composer"
-msgstr ""
-
 #: ../scm/custom.scm:775
 msgid "-"
 msgstr ""
@@ -6251,22 +6246,6 @@ msgstr ""
 
 #: ../scm/mana-key-custom.scm:268
 msgid "[Mana] toggle kana/alphanumeric mode"
-msgstr ""
-
-#: ../scm/ng-action.scm:73
-msgid "*An internal construct*"
-msgstr ""
-
-#: ../scm/ng-action.scm:221
-msgid "?"
-msgstr ""
-
-#: ../scm/ng-action.scm:229
-msgid "--"
-msgstr ""
-
-#: ../scm/ng-action.scm:230
-msgid "--------"
 msgstr ""
 
 #: ../scm/predict-custom.scm:38
