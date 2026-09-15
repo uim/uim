@@ -14,12 +14,13 @@ RUN \
     asciidoc \
     autoconf \
     autoconf-archive \
+    automake \
     autopoint \
     cmake \
     extra-cmake-modules \
     g++ \
     gcc \
-    intltool \
+    gettext \
     libanthy-dev \
     libcanna1g-dev \
     libeb16-dev \

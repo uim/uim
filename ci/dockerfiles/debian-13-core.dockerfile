@@ -12,7 +12,7 @@ RUN \
   apt update -qq && \
   apt install -y \
     gcc \
-    intltool \
+    gettext \
     libedit-dev \
     libncurses-dev \
     librsvg2-bin \

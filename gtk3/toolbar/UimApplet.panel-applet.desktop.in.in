@@ -1,0 +1,11 @@
+[Applet Factory]
+Id=UimAppletFactory
+InProcess=true
+Location=@APPLET_LOCATION@
+Name=uim Applet Factory
+Description=uim applet factory
+
+[UimApplet]
+Name=Input Method Indicator
+Description=Indicates and controls the state of input method (for uim)
+Icon=@UIM_PIXMAPSDIR@/uim-icon.png

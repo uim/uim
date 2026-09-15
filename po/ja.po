@@ -8859,7 +8859,7 @@ msgstr "補完機能がないSKKサーバ\n"
 #: ../uim/skk.c:3830
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
-msgstr "uim-skk: ポート%sへ接続できませんでした。"
+msgstr "uim-skk: %sのポート%sへ接続できませんでした。"
 
 #: ../uim/uim.c:772
 msgid "builtin"

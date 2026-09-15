@@ -85,7 +85,6 @@ jobs:
             autoconf \
             autoconf-archive \
             autopoint \
-            intltool \
             libtool \
             pkg-config
       - name: Generate configure

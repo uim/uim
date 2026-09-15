@@ -4,8 +4,8 @@ RUN \
   pacman --sync --noconfirm --refresh --sysupgrade && \
   pacman --sync --noconfirm \
     gcc \
+    gettext \
     gtk3 \
-    intltool \
     libedit \
     librsvg \
     make \

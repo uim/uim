@@ -13,11 +13,10 @@
 /config.sub
 /configure
 /configure~
+/config.rpath
+/config.rpath~
 /depcomp
 /install-sh
-/intltool-extract.in
-/intltool-merge.in
-/intltool-update.in
 /libtool
 /ltmain.sh
 /missing
@@ -294,20 +293,19 @@
 
 # /po/
 /po/*.gmo
-/po/.intltool-merge-cache
 /po/Makefile
 /po/Makefile.in
 /po/Makefile.in.in
 /po/Makefile.in.in~
 /po/Makevars.template
-/po/POTFILES
 /po/Rules-quot
 /po/boldquot.sed
 /po/en@boldquot.header
 /po/en@quot.header
+/po/eucjp.pot
 /po/insert-header.sin
 /po/quot.sed
-/po/stamp-it
+/po/remove-potcdate.sin
 /po/uim.pot
 
 # /qt3/

@@ -1,4 +1,4 @@
-EXTRA_DIST = UimApplet.panel-applet.in.in \
+EXTRA_DIST = UimApplet.panel-applet.desktop.in.in \
 	     uim-applet-menu.xml
 
 AM_CPPFLAGS =					\
@@ -34,7 +34,8 @@ APPLET_LOCATION = $(pkglibdir)/libuim-toolbar-applet-gnome3.so
 appletdir = $(LIBPANEL_APPLET_DIR)
 applet_DATA = UimApplet.panel-applet
 applet_in_files = $(applet_DATA:=.in)
-applet_in_in_files = $(applet_in_files:=.in)
+# Named *.desktop.in.in so that xgettext parses it as a key file.
+applet_in_in_files = $(applet_DATA:=.desktop.in.in)
 
 $(applet_in_files): $(applet_in_in_files) Makefile
 	$(SED) s,@APPLET_LOCATION@,$(APPLET_LOCATION),g <$< >$@.tmp
@@ -42,8 +43,9 @@ $(applet_in_files): $(applet_in_in_files) Makefile
 
 if USE_NLS
   po_files = $(wildcard $(top_srcdir)/po/*.po)
-  $(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files) ;\
-    LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@
+  $(applet_DATA): $(applet_in_files) $(po_files)
+	$(MSGFMT) --desktop --keyword=Name --keyword=Description \
+	  --template=$< -d $(top_srcdir)/po -o $@
 else
   $(applet_DATA): $(applet_in_files) ; cp $< $@
 endif

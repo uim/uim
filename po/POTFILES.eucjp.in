@@ -1,0 +1,20 @@
+# Source files that are still encoded in EUC-JP.  They are extracted
+# separately with --from-code=EUC-JP (see the eucjp.pot rule in
+# Makevars) and merged into uim.pot through the po/eucjp.pot entry in
+# POTFILES.in.  Move a file to POTFILES.in once it is converted to UTF-8.
+scm/anthy-custom.scm
+scm/baidu-olime-jp-custom.scm
+scm/canna-custom.scm
+scm/google-cgiapi-jp-custom.scm
+scm/japanese-custom.scm
+scm/mana-custom.scm
+scm/prime-custom.scm
+scm/prime.scm
+scm/sj3-custom.scm
+scm/sj3.scm
+scm/tcode.scm
+scm/trycode.scm
+scm/tutcode-rule-custom.scm
+scm/tutcode.scm
+scm/wnn-custom.scm
+scm/wnn.scm

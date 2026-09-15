@@ -21,13 +21,13 @@ RUN \
     cmake \
     g++ \
     gcc \
-    intltool \
+    gettext \
     libedit-dev \
-    libtqt3-mt-dev \
     libncurses-dev \
+    librsvg2-bin \
+    libtqt3-mt-dev \
     libx11-dev \
     libxft-dev \
-    librsvg2-bin \
     make \
     pkg-config \
     ruby \

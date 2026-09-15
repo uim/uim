@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!-- ITS rules for GMenu XML such as gtk3/toolbar/uim-applet-menu.xml:
+     only elements marked translatable="yes" are extracted. -->
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="2.0">
+  <its:translateRule selector="/*" translate="no"/>
+  <its:translateRule selector="//*[@translatable='yes']" translate="yes"/>
+</its:rules>

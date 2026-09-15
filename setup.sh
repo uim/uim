@@ -19,7 +19,7 @@ function setup_with_apt () {
     extra-cmake-modules \
     g++ \
     gcc \
-    intltool \
+    gettext \
     libanthy-dev \
     libcanna1g-dev \
     libeb16-dev \
