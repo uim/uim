@@ -179,22 +179,22 @@
 	 (N_ "Direct input mode"))
    (list 'action_skk_hiragana
 	 'ja_hiragana
-	 "§¢"
+	 "„ÅÇ"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_skk_katakana
 	 'ja_katakana
-	 "•¢"
+	 "„Ç¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
    (list 'action_skk_hankana
 	 'ja_halfkana
-	 "é±"
+	 "ÔΩ±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
    (list 'action_skk_wide_latin
 	 'ja_fullwidth_alnum
-	 "£¡"
+	 "Ôº°"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
 
@@ -202,25 +202,25 @@
   (list
    (list 'action_skk_roma
 	 'ja_romaji
-	 "£“"
+	 "Ôº≤"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
 
    (list 'action_skk_azik
 	 'ja_azik
-	 "£⁄"
+	 "Ôº∫"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))
 
    (list 'action_skk_act
 	 'ja_act
-	 "£√"
+	 "Ôº£"
 	 (N_ "ACT")
 	 (N_ "ACT extended romaji input mode"))
 
    (list 'action_skk_kzik
 	 'ja_kzik
-	 "£À"
+	 "Ôº´"
 	 (N_ "KZIK")
 	 (N_ "KZIK extended romaji input mode"))))
     
@@ -421,12 +421,37 @@
 	 (lambda ()
 	   skk-use-skkserv?))
 
+(define-custom 'skk-skkserv-encoding 'euc-jp
+  '(skk-dict skkserv)
+  (list 'choice
+	(list 'euc-jp (N_ "EUC-JP")
+	      (N_ "Use EUC-JP when talking to skkserv"))
+	(list 'utf-8 (N_ "UTF-8")
+	      (N_ "Use UTF-8 when talking to skkserv")))
+  (N_ "Character encoding of skkserv")
+  (N_ "Encoding used for skkserv lookup and completion payloads."))
+
+(custom-add-hook 'skk-skkserv-encoding
+	 'custom-activity-hooks
+	 (lambda ()
+	   skk-use-skkserv?))
+
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
   '(skk-dict dict-files)
   '(pathname regular-file)
   (N_ "System dictionary file")
   (N_ "long description will be here."))
+
+(define-custom 'skk-dic-file-encoding 'euc-jp
+  '(skk-dict dict-files)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the system dictionary"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the system dictionary")))
+  (N_ "System dictionary encoding")
+  (N_ "Character encoding of the system dictionary file."))
 
 (define-custom 'skk-personal-dic-filename
   (string-append (or (home-directory (user-name)) "") "/.skk-jisyo")
@@ -435,6 +460,16 @@
   (N_ "Personal dictionary file")
   (N_ "long description will be here."))
 
+(define-custom 'skk-personal-dic-encoding 'euc-jp
+  '(skk-dict dict-files)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the personal dictionary"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the personal dictionary")))
+  (N_ "Personal dictionary encoding")
+  (N_ "Character encoding of the personal dictionary file."))
+
 (define-custom 'skk-uim-personal-dic-filename
   (string-append (or (home-directory (user-name)) "") "/.skk-uim-jisyo")
   '(skk-dict dict-files)
@@ -442,10 +477,25 @@
   (N_ "Personal dictionary file (dedicated to uim)")
   (N_ "long description will be here."))
 
+(define-custom 'skk-uim-personal-dic-encoding 'euc-jp
+  '(skk-dict dict-files)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the uim personal dictionary"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the uim personal dictionary")))
+  (N_ "uim personal dictionary encoding")
+  (N_ "Character encoding of the uim personal dictionary file."))
+
 (custom-add-hook 'skk-dic-file-name
 		 'custom-activity-hooks
 		 (lambda ()
 		   (not skk-use-skkserv?)))
+
+(custom-add-hook 'skk-dic-file-encoding
+                 'custom-activity-hooks
+                 (lambda ()
+                   (not skk-use-skkserv?)))
 
 ;;
 ;; advanced

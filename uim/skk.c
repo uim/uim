@@ -48,6 +48,7 @@
 #include <ctype.h>
 #include <signal.h>
 #include <errno.h>
+#include <assert.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <sys/param.h>
@@ -66,6 +67,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-helper.h"
+#include "uim-util.h"
 #include "dynlib.h"
 #include "uim-notify.h"
 #include "gettext.h"
@@ -81,6 +83,24 @@
 #define USE_SKK_JISYO_S_BUF	1	/* use SKK-JISYO.S as a cache for
 					   word completion */
 #define SKK_JISYO_S	DATADIR "/skk/SKK-JISYO.S"
+enum skk_dictionary_encoding {
+  SKK_DICTIONARY_ENCODING_UTF8,
+  SKK_DICTIONARY_ENCODING_EUC_JP
+};
+
+struct skk_converter_cache {
+  enum skk_dictionary_encoding to_encoding;
+  enum skk_dictionary_encoding from_encoding;
+  void *converter;
+  int initialized;
+};
+
+static struct skk_converter_cache skk_converter_cache[] = {
+  { SKK_DICTIONARY_ENCODING_UTF8, SKK_DICTIONARY_ENCODING_UTF8, NULL, 0 },
+  { SKK_DICTIONARY_ENCODING_UTF8, SKK_DICTIONARY_ENCODING_EUC_JP, NULL, 0 },
+  { SKK_DICTIONARY_ENCODING_EUC_JP, SKK_DICTIONARY_ENCODING_UTF8, NULL, 0 },
+  { SKK_DICTIONARY_ENCODING_EUC_JP, SKK_DICTIONARY_ENCODING_EUC_JP, NULL, 0 }
+};
 
 /*
  * cand : candidate
@@ -137,6 +157,10 @@ typedef struct dic_info_ {
   int border;
   /* size of dictionary file */
   int size;
+  /* encoding of the mmap'ed dictionary file */
+  enum skk_dictionary_encoding encoding;
+  /* encoding used for skkserv communication */
+  enum skk_dictionary_encoding skkserv_encoding;
   /* head of cached skk dictionary line list. LRU ordered */
   struct skk_line head;
   /* timestamp of personal dictionary */
@@ -183,8 +207,26 @@ static void merge_purged_cands(dic_info *skk_dic,
 static void merge_purged_cand_to_dst_array(dic_info *skk_dic,
 		struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, char *purged_cand);
-static void update_personal_dictionary_cache_with_file(dic_info *skk_dic,
+static int update_personal_dictionary_cache_with_file(dic_info *skk_dic,
 		const char *fn, int is_personal);
+static int convert_dictionary_buffer(enum skk_dictionary_encoding to_encoding,
+                                     enum skk_dictionary_encoding from_encoding,
+                                     const char *inbuf, char **outbuf, size_t *outlen);
+static struct skk_converter_cache *get_skk_converter(
+    enum skk_dictionary_encoding to_encoding,
+    enum skk_dictionary_encoding from_encoding);
+static void release_skk_converters(void);
+static void get_configured_encoding(const char *symbol_name,
+                                    enum skk_dictionary_encoding *encoding);
+static void get_personal_dictionary_encoding(const char *fn,
+                                             enum skk_dictionary_encoding *encoding);
+static char *convert_dictionary_line(enum skk_dictionary_encoding encoding, const char *line);
+static const char *skk_encoding_name(enum skk_dictionary_encoding encoding);
+static enum skk_dictionary_encoding get_skkserv_encoding(void);
+static int convert_skkserv_buffer(enum skk_dictionary_encoding to_encoding,
+                                  enum skk_dictionary_encoding from_encoding,
+                                  const char *inbuf,
+                                  char **outbuf);
 static void look_get_comp(struct skk_comp_array *ca, const char *str);
 static uim_lisp look_get_top_word(const char *str);
 static char *quote_word(const char *word, const char *prefix);
@@ -213,6 +255,193 @@ calc_line_len(const char *s)
   int i;
   for (i = 0; s[i] != '\n'; i++);
   return i;
+}
+
+static int
+convert_dictionary_buffer(enum skk_dictionary_encoding to_encoding,
+                          enum skk_dictionary_encoding from_encoding,
+                          const char *inbuf, char **outbuf, size_t *outlen)
+{
+  struct skk_converter_cache *cache;
+  char *converted;
+
+  cache = NULL;
+  assert(inbuf);
+  assert(outbuf);
+  assert(outlen);
+
+  *outbuf = NULL;
+  *outlen = 0;
+
+  cache = get_skk_converter(to_encoding, from_encoding);
+  if (!cache)
+    return 0;
+
+  if (!cache->initialized) {
+    cache->converter = uim_iconv->create(skk_encoding_name(to_encoding),
+                                         skk_encoding_name(from_encoding));
+    cache->initialized = 1;
+  }
+  if (!cache->converter)
+    return 0;
+
+  converted = uim_iconv->convert(cache->converter, inbuf);
+
+  if (!converted || (inbuf[0] != '\0' && converted[0] == '\0')) {
+    free(converted);
+    if (cache) {
+      uim_iconv->release(cache->converter);
+      cache->converter = NULL;
+      cache->initialized = 0;
+    }
+    return 0;
+  }
+
+  *outbuf = converted;
+  *outlen = strlen(converted);
+  return 1;
+}
+
+static struct skk_converter_cache *
+get_skk_converter(enum skk_dictionary_encoding to_encoding,
+                  enum skk_dictionary_encoding from_encoding)
+{
+  size_t i;
+
+  for (i = 0; i < sizeof(skk_converter_cache) / sizeof(skk_converter_cache[0]); i++) {
+    if (skk_converter_cache[i].to_encoding == to_encoding &&
+        skk_converter_cache[i].from_encoding == from_encoding)
+      return &skk_converter_cache[i];
+  }
+  return NULL;
+}
+
+static void
+release_skk_converters(void)
+{
+  size_t i;
+
+  for (i = 0; i < sizeof(skk_converter_cache) / sizeof(skk_converter_cache[0]); i++) {
+    if (skk_converter_cache[i].initialized && skk_converter_cache[i].converter)
+      uim_iconv->release(skk_converter_cache[i].converter);
+    skk_converter_cache[i].converter = NULL;
+    skk_converter_cache[i].initialized = 0;
+  }
+}
+
+static void
+get_configured_encoding(const char *symbol_name,
+                        enum skk_dictionary_encoding *encoding)
+{
+  uim_lisp encoding_;
+  const char *encoding_name = NULL;
+  char *allocated_encoding = NULL;
+
+  assert(symbol_name);
+  assert(encoding);
+
+  *encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
+  encoding_ = uim_scm_symbol_value(symbol_name);
+  if (SYMP(encoding_))
+    encoding_name = C_SYM(encoding_);
+  else if (STRP(encoding_)) {
+    allocated_encoding = uim_strdup(REFER_C_STR(encoding_));
+    encoding_name = allocated_encoding;
+  }
+
+  if (!encoding_name)
+    goto out;
+
+  if (!strcasecmp(encoding_name, "utf-8"))
+    *encoding = SKK_DICTIONARY_ENCODING_UTF8;
+  else if (!strcasecmp(encoding_name, "euc-jp"))
+    *encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
+  else
+    uim_notify_info(N_("uim-skk: unknown encoding for %s: %s"),
+                    symbol_name, encoding_name);
+
+out:
+  free(allocated_encoding);
+}
+
+static void
+get_personal_dictionary_encoding(const char *fn,
+                                 enum skk_dictionary_encoding *encoding)
+{
+  static const char *const settings[][2] = {
+    { "skk-uim-personal-dic-filename", "skk-uim-personal-dic-encoding" },
+    { "skk-personal-dic-filename", "skk-personal-dic-encoding" }
+  };
+  int i;
+
+  assert(fn);
+  assert(encoding);
+
+  *encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
+  for (i = 0; i < (int)(sizeof(settings) / sizeof(settings[0])); i++) {
+    uim_lisp filename_ = uim_scm_symbol_value(settings[i][0]);
+    const char *filename;
+
+    if (!STRP(filename_))
+      continue;
+    filename = REFER_C_STR(filename_);
+    if (filename && strcmp(fn, filename) == 0) {
+      get_configured_encoding(settings[i][1], encoding);
+      return;
+    }
+  }
+}
+
+static char *
+convert_dictionary_line(enum skk_dictionary_encoding encoding, const char *line)
+{
+  char *converted;
+  size_t converted_len;
+
+  if (!convert_dictionary_buffer(SKK_DICTIONARY_ENCODING_UTF8, encoding,
+                                 line, &converted, &converted_len))
+    return NULL;
+
+  return converted;
+}
+
+static const char *
+skk_encoding_name(enum skk_dictionary_encoding encoding)
+{
+  switch (encoding) {
+  case SKK_DICTIONARY_ENCODING_UTF8:
+    return "UTF-8";
+  case SKK_DICTIONARY_ENCODING_EUC_JP:
+  default:
+    return "EUC-JP";
+  }
+}
+
+static enum skk_dictionary_encoding
+get_skkserv_encoding(void)
+{
+  enum skk_dictionary_encoding result;
+
+  get_configured_encoding("skk-skkserv-encoding", &result);
+  return result;
+}
+
+static int
+convert_skkserv_buffer(enum skk_dictionary_encoding to_encoding,
+                       enum skk_dictionary_encoding from_encoding,
+                       const char *inbuf,
+                       char **outbuf)
+{
+  size_t outlen;
+
+  if (!convert_dictionary_buffer(to_encoding, from_encoding, inbuf, outbuf, &outlen)) {
+    uim_notify_info(N_("uim-skk: failed to convert skkserv data from %s to %s"),
+                    skk_encoding_name(from_encoding),
+                    skk_encoding_name(to_encoding));
+    return 0;
+  }
+
+  return 1;
 }
 
 static int
@@ -276,6 +505,7 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
 
   di->skkserv_hostname = NULL;
   if (use_skkserv) {
+    di->skkserv_encoding = get_skkserv_encoding();
     di->skkserv_hostname = uim_strdup(skkserv_hostname);
     di->skkserv_portnum = skkserv_portnum;
     di->skkserv_family = skkserv_family;
@@ -285,6 +515,7 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
     di->skkserv_completion_timeout = uim_scm_symbol_value_int("skk-skkserv-completion-timeout");
   } else {
     di->skkserv_state = 0;
+    get_configured_encoding("skk-dic-file-encoding", &di->encoding);
     fd = open(fn, O_RDONLY);
     if (fd != -1) {
       if (fstat(fd, &st) != -1) {
@@ -795,10 +1026,18 @@ search_line_from_server(dic_info *di, const char *s, char okuri_head)
   struct skk_line *sl;
   int n = 0, ret, len;
   char buf[SKK_SERV_BUFSIZ];
-  char *line, *idx;
+  char *encoded_idx, *line, *idx, *payload;
+  size_t encoded_idx_len;
   ssize_t nr;
+  enum skk_dictionary_encoding server_encoding;
 
+  server_encoding = get_skkserv_encoding();
+  if ((di->skkserv_state & SKK_SERV_CONNECTED) && di->skkserv_encoding != server_encoding) {
+    close_skkserv();
+    skkserv_disconnected(di);
+  }
   if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
+    di->skkserv_encoding = server_encoding;
     if (!((di->skkserv_state |= open_skkserv(di->skkserv_hostname,
 					     di->skkserv_portnum,
 					     di->skkserv_family)) &
@@ -807,8 +1046,14 @@ search_line_from_server(dic_info *di, const char *s, char okuri_head)
   }
 
   uim_asprintf(&idx, "%s%c", s, okuri_head);
+  if (!convert_dictionary_buffer(server_encoding, SKK_DICTIONARY_ENCODING_UTF8,
+                                 idx, &encoded_idx, &encoded_idx_len)) {
+    free(idx);
+    return NULL;
+  }
 
-  fprintf(wserv, "1%s \n", idx);
+  fprintf(wserv, "1%s \n", encoded_idx);
+  free(encoded_idx);
   ret = fflush(wserv);
   if (ret != 0 && errno == EPIPE) {
     free(idx);
@@ -816,48 +1061,58 @@ search_line_from_server(dic_info *di, const char *s, char okuri_head)
     return NULL;
   }
 
-  uim_asprintf(&line, "%s ", idx);
-  free(idx);
-
   if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
     skkserv_disconnected(di);
-    free(line);
+    free(idx);
     return NULL;
   }
 
   if (r == '1') {  /* succeeded */
+    payload = uim_strdup("");
+    buf[0] = '\0';
     while (1) {
       if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
 	skkserv_disconnected(di);
-	free(line);
+	free(payload);
+	free(idx);
 	return NULL;
       }
 
       if (r == '\n') {
-	len = strlen(line) + n;
-	line = uim_realloc(line, len + 1);
-	strlcat(line, buf, len + 1);
+	len = strlen(payload) + n;
+	payload = uim_realloc(payload, len + 1);
+	strlcat(payload, buf, len + 1);
 	break;
       }
 
       buf[n] = r;
       buf[n + 1] = '\0';
       if (n == SKK_SERV_BUFSIZ - 2) {
-	len = strlen(line) + n + 1;
-	line = uim_realloc(line, len + 1);
-	strlcat(line, buf, len + 1);
+	len = strlen(payload) + n + 1;
+	payload = uim_realloc(payload, len + 1);
+	strlcat(payload, buf, len + 1);
 	n = 0;
       } else {
 	n++;
       }
     }
+    if (!convert_skkserv_buffer(SKK_DICTIONARY_ENCODING_UTF8, server_encoding, payload, &line)) {
+      free(payload);
+      free(idx);
+      return NULL;
+    }
+    free(payload);
+    payload = line;
+    uim_asprintf(&line, "%s %s", idx, payload);
+    free(payload);
     sl = compose_line(di, s, okuri_head, line);
     free(line);
+    free(idx);
     return sl;
   } else {
     while ((nr = read(skkservsock, &r, 1)) != -1 && nr != 0 && r != '\n')
       ;
-    free(line);
+    free(idx);
     return NULL;
   }
 }
@@ -868,20 +1123,27 @@ search_line_from_file(dic_info *di, const char *s, char okuri_head)
   int n;
   const char *p;
   int len;
-  char *line, *idx;
+  char *line, *idx, *encoded_idx, *converted_line;
+  size_t encoded_idx_len;
   struct skk_line *sl;
 
   if (!di->addr)
     return NULL;
 
   uim_asprintf(&idx, "%s%c", s, okuri_head);
+  if (!convert_dictionary_buffer(di->encoding, SKK_DICTIONARY_ENCODING_UTF8,
+                                 idx, &encoded_idx, &encoded_idx_len)) {
+    free(idx);
+    return NULL;
+  }
+  free(idx);
 
   if (okuri_head)
-    n = do_search_line(di, idx, di->first, di->border - 1, -1);
+    n = do_search_line(di, encoded_idx, di->first, di->border - 1, -1);
   else
-    n = do_search_line(di, idx, di->border, di->size - 1, 1);
+    n = do_search_line(di, encoded_idx, di->border, di->size - 1, 1);
 
-  free(idx);
+  free(encoded_idx);
 
   if (n == -1)
     return NULL;
@@ -892,8 +1154,16 @@ search_line_from_file(dic_info *di, const char *s, char okuri_head)
   /* strncat is used intentionally because *p is too long string */
   line[0] = '\0';
   strncat(line, p, len);
-  sl = compose_line(di, s, okuri_head, line);
+  converted_line = convert_dictionary_line(di->encoding, line);
   free(line);
+  if (!converted_line) {
+    uim_notify_info(N_("uim-skk: failed to convert system dictionary data from %s to %s"),
+                    skk_encoding_name(di->encoding),
+                    skk_encoding_name(SKK_DICTIONARY_ENCODING_UTF8));
+    return NULL;
+  }
+  sl = compose_line(di, s, okuri_head, converted_line);
+  free(converted_line);
   return sl;
 }
 
@@ -1272,17 +1542,17 @@ skk_store_replaced_numeric_str(uim_lisp head_)
 }
 
 static char *wide_num_list[] =
-  {"£∞", "£±", "£≤", "£≥", "£¥", "£µ", "£∂", "£∑", "£∏", "£π"};
+  {"Ôºê", "Ôºë", "Ôºí", "Ôºì", "Ôºî", "Ôºï", "Ôºñ", "Ôºó", "Ôºò", "Ôºô"};
 static char *kanji_num_list[] =
-  {"°ª", "∞Ï", "∆Û", "ª∞", "ªÕ", "∏ﬁ", "œª", "º∑", "»¨", "∂Â"};
+  {"„Äá", "‰∏Ä", "‰∫å", "‰∏â", "Âõõ", "‰∫î", "ÂÖ≠", "‰∏É", "ÂÖ´", "‰πù"};
 static char *kanji_num_position_list[] =
-  {NULL, "ΩΩ", "…¥", "¿È", "À¸", NULL, NULL, NULL, "≤Ø", NULL,
-   NULL, NULL, "√˚", NULL, NULL, NULL, "µ˛", NULL, NULL, NULL};
+  {NULL, "ÂçÅ", "Áôæ", "ÂçÉ", "‰∏á", NULL, NULL, NULL, "ÂÑÑ", NULL,
+   NULL, NULL, "ÂÖÜ", NULL, NULL, NULL, "‰∫¨", NULL, NULL, NULL};
 static char *kanji_check_num_list[] =
-  {"°ª", "∞Ì", "–±", "ª≤", "ªÕ", "∏‡", "œª", "º∑", "»¨", "∂Â"};
+  {"„Äá", "Â£±", "Âºç", "ÂèÇ", "Âõõ", "‰ºç", "ÂÖ≠", "‰∏É", "ÂÖ´", "‰πù"};
 static char *kanji_check_num_position_list[] =
-  {NULL, "Ω¶", "…¥", "ÔÙ", "Ëﬂ", NULL, NULL, NULL, "≤Ø", NULL,
-   NULL, NULL, "√˚", NULL, NULL, NULL, "µ˛", NULL, NULL, NULL};
+  {NULL, "Êãæ", "Áôæ", "Èò°", "Ëê¨", NULL, NULL, NULL, "ÂÑÑ", NULL,
+   NULL, NULL, "ÂÖÜ", NULL, NULL, NULL, "‰∫¨", NULL, NULL, NULL};
 
 static char *
 numeric_wide_or_kanji_conv(const char *numstr, int method)
@@ -1291,15 +1561,15 @@ numeric_wide_or_kanji_conv(const char *numstr, int method)
   int i, len;
 
   len = strlen(numstr);
-  mbstr = uim_malloc(len * 2 + 1);
+  mbstr = uim_malloc(len * 3 + 1);
 
   for (i = 0; i < len; i++) {
     if (method == 1)
-      strcpy(&mbstr[i * 2], wide_num_list[numstr[i] - '0']);
+      strcpy(&mbstr[i * 3], wide_num_list[numstr[i] - '0']);
     else
-      strcpy(&mbstr[i * 2], kanji_num_list[numstr[i] - '0']);
+      strcpy(&mbstr[i * 3], kanji_num_list[numstr[i] - '0']);
   }
-  mbstr[len * 2] = '\0';
+  mbstr[len * 3] = '\0';
 
   return mbstr;
 }
@@ -1316,19 +1586,19 @@ numeric_kanji_with_position_conv(const char *numstr)
   if (len > 20) /* too big number */
     return uim_strdup(numstr);
 
-  mbstr = uim_malloc(len * 2 + 1);
-  mblen = len * 2;
+  mbstr = uim_malloc(len * 3 + 1);
+  mblen = len * 3;
 
   for (i = 0, j = 0; j < len; i++, j++) {
     position = len - j - 1;
     if (numstr[j] == '0') {
       i--;
-      mblen -= 2;
+      mblen -= 3;
       /* check zero at the head */
       if (j == 0) {
 	head_is_zero = 1;
       } else {
-	/* add À¸, ≤Ø, √˚, µ˛ for zero */
+	/* add ‰∏á, ÂÑÑ, ÂÖÜ, ‰∫¨ for zero */
 	if ((position >= 4) && ((position % 4) == 0) && !head_is_zero) {
 	  int use_position = 0;
 	  if (j >= 3) {
@@ -1344,10 +1614,10 @@ numeric_kanji_with_position_conv(const char *numstr)
 	  }
 	  if (use_position) {
 	    i++;
-	    mblen += 2;
-	    if (mblen > len * 2)
-	      mbstr = uim_realloc(mbstr, mblen + 2);
-	    strcpy(&mbstr[i * 2], kanji_num_position_list[position]);
+	    mblen += 3;
+	    if (mblen > len * 3)
+	      mbstr = uim_realloc(mbstr, mblen + 3);
+	    strcpy(&mbstr[i * 3], kanji_num_position_list[position]);
 	  }
 	}
       }
@@ -1358,8 +1628,8 @@ numeric_kanji_with_position_conv(const char *numstr)
       /* replace numstr[j] with kanji number */
       if (numstr[j] == '1') {
 	/*
-	 * use "∞Ï" only for the one at the place of ∞Ï, À¸, ≤Ø, √˚,
-	 * µ˛ or ∞Ï¿ÈÀ¸
+	 * use "‰∏Ä" only for the one at the place of ‰∏Ä, ‰∏á, ÂÑÑ, ÂÖÜ,
+	 * ‰∫¨ or ‰∏ÄÂçÉ‰∏á
 	 */
 	if (((position % 4) == 0) ||
 	    ((position >= 7) &&
@@ -1367,33 +1637,33 @@ numeric_kanji_with_position_conv(const char *numstr)
 	     (numstr[j + 1] == '0') &&
 	     (numstr[j + 2] == '0') &&
 	     (numstr[j + 3] == '0'))) {
-	  strcpy(&mbstr[i * 2], kanji_num_list[1]);
+	  strcpy(&mbstr[i * 3], kanji_num_list[1]);
 	} else {
 	  i--;
-	  mblen -= 2;
+	  mblen -= 3;
 	}
       } else {
-	strcpy(&mbstr[i * 2], kanji_num_list[numstr[j] - '0']);
+	strcpy(&mbstr[i * 3], kanji_num_list[numstr[j] - '0']);
       }
 
-      /* add ΩΩ, …¥, ¿È for number whose place is exceeded À¸ */
+      /* add ÂçÅ, Áôæ, ÂçÉ for number whose place is exceeded ‰∏á */
       if (position > 4) {
 	if ((position % 4) != 0) {
 	  i++;
-	  mblen += 2;
-	  if (mblen > len * 2)
-	    mbstr = uim_realloc(mbstr, mblen + 2);
-	  strcpy(&mbstr[i * 2], kanji_num_position_list[position % 4]);
+	  mblen += 3;
+	  if (mblen > len * 3)
+	    mbstr = uim_realloc(mbstr, mblen + 3);
+	  strcpy(&mbstr[i * 3], kanji_num_position_list[position % 4]);
 	}
       }
 
       /* add position */
       if (kanji_num_position_list[position]) {
 	i++;
-	mblen += 2;
-	if (mblen > len * 2)
-	  mbstr = uim_realloc(mbstr, mblen + 2);
-	strcpy(&mbstr[i * 2], kanji_num_position_list[position]);
+	mblen += 3;
+	if (mblen > len * 3)
+	  mbstr = uim_realloc(mbstr, mblen + 3);
+	strcpy(&mbstr[i * 3], kanji_num_position_list[position]);
       }
     }
   }
@@ -1401,7 +1671,7 @@ numeric_kanji_with_position_conv(const char *numstr)
   /* in case of zero */
   if (head_is_zero) {
     strcpy(&mbstr[0], kanji_num_list[0]);
-    mblen = 2;
+    mblen = 3;
   }
 
   mbstr[mblen] = '\0';
@@ -1420,19 +1690,19 @@ numeric_kanji_for_check_conv(const char *numstr)
   if (len > 20) /* too big number */
     return uim_strdup(numstr);
 
-  mbstr = uim_malloc(len * 2 + 1);
-  mblen = len * 2;
+  mbstr = uim_malloc(len * 3 + 1);
+  mblen = len * 3;
 
   for (i = 0, j = 0; j < len; i++, j++) {
     position = len - j - 1;
     if (numstr[j] == '0') {
       i--;
-      mblen -= 2;
+      mblen -= 3;
       /* check zero at the head */
       if (j == 0) {
 	head_is_zero = 1;
       } else {
-	/* add Ëﬂ, ≤Ø, √˚, µ˛ for zero */
+	/* add Ëê¨, ÂÑÑ, ÂÖÜ, ‰∫¨ for zero */
 	if ((position >= 4) && ((position % 4) == 0) && !head_is_zero) {
 	  int use_position = 0;
 	  if (j >= 3) {
@@ -1448,10 +1718,10 @@ numeric_kanji_for_check_conv(const char *numstr)
 	  }
 	  if (use_position) {
 	    i++;
-	    mblen += 2;
-	    if (mblen > len * 2)
-	      mbstr = uim_realloc(mbstr, mblen + 2);
-	    strcpy(&mbstr[i * 2], kanji_check_num_position_list[position]);
+	    mblen += 3;
+	    if (mblen > len * 3)
+	      mbstr = uim_realloc(mbstr, mblen + 3);
+	    strcpy(&mbstr[i * 3], kanji_check_num_position_list[position]);
 	  }
 	}
       }
@@ -1460,26 +1730,26 @@ numeric_kanji_for_check_conv(const char *numstr)
 	head_is_zero = 0;
 
       /* replace numstr[j] with kanji number */
-      strcpy(&mbstr[i * 2], kanji_check_num_list[numstr[j] - '0']);
+      strcpy(&mbstr[i * 3], kanji_check_num_list[numstr[j] - '0']);
 
-      /* add Ω¶, …¥, ÔÙ for number whose place is exceeded Ëﬂ */
+      /* add Êãæ, Áôæ, Èò° for number whose place is exceeded Ëê¨ */
       if (position > 4) {
 	if ((position % 4) != 0) {
 	  i++;
-	  mblen += 2;
-	  if (mblen > len * 2)
-	    mbstr = uim_realloc(mbstr, mblen + 2);
-	  strcpy(&mbstr[i * 2], kanji_check_num_position_list[position % 4]);
+	  mblen += 3;
+	  if (mblen > len * 3)
+	    mbstr = uim_realloc(mbstr, mblen + 3);
+	  strcpy(&mbstr[i * 3], kanji_check_num_position_list[position % 4]);
 	}
       }
 
       /* add position */
       if (kanji_check_num_position_list[position]) {
 	i++;
-	mblen += 2;
-	if (mblen > len * 2)
-	  mbstr = uim_realloc(mbstr, mblen + 2);
-	strcpy(&mbstr[i * 2], kanji_check_num_position_list[position]);
+	mblen += 3;
+	if (mblen > len * 3)
+	  mbstr = uim_realloc(mbstr, mblen + 3);
+	strcpy(&mbstr[i * 3], kanji_check_num_position_list[position]);
       }
     }
   }
@@ -1487,7 +1757,7 @@ numeric_kanji_for_check_conv(const char *numstr)
   /* in case of zero */
   if (head_is_zero) {
     strcpy(&mbstr[0], kanji_check_num_list[0]);
-    mblen = 2;
+    mblen = 3;
   }
 
   mbstr[mblen] = '\0';
@@ -1504,10 +1774,10 @@ numeric_shogi_conv(const char *numstr)
   if (len != 2) /* allow two digit number only */
     return uim_strdup(numstr);
 
-  mbstr = uim_malloc(5);
+  mbstr = uim_malloc(7);
   strcpy(&mbstr[0], wide_num_list[numstr[0] - '0']);
-  strcpy(&mbstr[2], kanji_num_list[numstr[1] - '0']);
-  mbstr[4] = '\0';
+  strcpy(&mbstr[3], kanji_num_list[numstr[1] - '0']);
+  mbstr[6] = '\0';
 
   return mbstr;
 }
@@ -1525,17 +1795,17 @@ numeric_convert(const char *numstr, int method)
   case 0:
     ret = uim_strdup(numstr);
     break;
-  case 1: /* ¡¥≥—øÙª˙ */
-  case 2: /* ¥¡øÙª˙ ∞ÃºË§ÍÃµ§∑ */
+  case 1: /* ÂÖ®ËßíÊï∞Â≠ó */
+  case 2: /* Êº¢Êï∞Â≠ó ‰ΩçÂèñ„ÇäÁÑ°„Åó */
     ret = numeric_wide_or_kanji_conv(numstr, method);
     break;
-  case 3: /* ¥¡øÙª˙ ∞ÃºË§ÍÕ≠§Í */
+  case 3: /* Êº¢Êï∞Â≠ó ‰ΩçÂèñ„ÇäÊúâ„Çä */
     ret = numeric_kanji_with_position_conv(numstr);
     break;
-  case 5: /* æÆ¿⁄ºÍ…Ωµ≠ */
+  case 5: /* Â∞èÂàáÊâãË°®Ë®ò */
     ret = numeric_kanji_for_check_conv(numstr);
     break;
-  case 9: /* æ≠¥˝…Ωµ≠ */
+  case 9: /* Â∞ÜÊ£ãË°®Ë®ò */
     ret = numeric_shogi_conv(numstr);
     break;
   default:
@@ -1935,14 +2205,22 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
   int n = 0, ret, len;
   int i;
   char buf[SKK_SERV_BUFSIZ];
-  char *line;
+  char *encoded_s, *line, *payload;
+  size_t encoded_s_len;
   ssize_t nr;
   struct pollfd pfd[1];
+  enum skk_dictionary_encoding server_encoding;
 
   if (!di) {
     return ca;
   }
+  server_encoding = get_skkserv_encoding();
+  if ((di->skkserv_state & SKK_SERV_CONNECTED) && di->skkserv_encoding != server_encoding) {
+    close_skkserv();
+    skkserv_disconnected(di);
+  }
   if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
+    di->skkserv_encoding = server_encoding;
     if (!((di->skkserv_state |= open_skkserv(di->skkserv_hostname,
 					     di->skkserv_portnum,
 					     di->skkserv_family)) &
@@ -1950,7 +2228,12 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
       return ca;
   }
 
-  fprintf(wserv, "4%s \n", s);
+  if (!convert_dictionary_buffer(server_encoding, SKK_DICTIONARY_ENCODING_UTF8,
+                                 s, &encoded_s, &encoded_s_len))
+    return ca;
+
+  fprintf(wserv, "4%s \n", encoded_s);
+  free(encoded_s);
   ret = fflush(wserv);
   if (ret != 0 && errno == EPIPE) {
     skkserv_disconnected(di);
@@ -1978,18 +2261,19 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
 
   if (r == '1') {
     char sep = '\0';
-    uim_asprintf(&line, "%s ", s);
+    payload = uim_strdup("");
+    buf[0] = '\0';
     while (1) {
       if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
         skkserv_disconnected(di);
-        free(line);
+        free(payload);
         return ca;
       }
 
       if (r == '\n') {
-        len = strlen(line) + n;
-        line = uim_realloc(line, len + 1);
-        strlcat(line, buf, len + 1);
+        len = strlen(payload) + n;
+        payload = uim_realloc(payload, len + 1);
+        strlcat(payload, buf, len + 1);
         break;
       }
 
@@ -2005,14 +2289,23 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
       buf[n] = r;
       buf[n + 1] = '\0';
       if (n == SKK_SERV_BUFSIZ - 2) {
-        len = strlen(line) + n + 1;
-        line = uim_realloc(line, len + 1);
-        strlcat(line, buf, len + 1);
+        len = strlen(payload) + n + 1;
+        payload = uim_realloc(payload, len + 1);
+        strlcat(payload, buf, len + 1);
         n = 0;
       } else {
         n++;
       }
     }
+    if (!convert_skkserv_buffer(SKK_DICTIONARY_ENCODING_UTF8, server_encoding, payload, &line)) {
+      free(payload);
+      return ca;
+    }
+    free(payload);
+    payload = line;
+
+    uim_asprintf(&line, "%s %s", s, payload);
+    free(payload);
     sl = compose_line(di, s, '\0', line);
     free(line);
 
@@ -3040,28 +3333,54 @@ parse_dic_line(dic_info *di, char *line, int is_personal)
   free(buf);
 }
 
-static void
-write_out_array(FILE *fp, struct skk_cand_array *ca)
+static int
+write_out_string(FILE *fp, enum skk_dictionary_encoding encoding, const char *str)
+{
+  char *converted;
+  size_t converted_len;
+  int result;
+
+  if (encoding == SKK_DICTIONARY_ENCODING_UTF8)
+    return fputs(str, fp) != EOF;
+
+  if (!convert_dictionary_buffer(encoding, SKK_DICTIONARY_ENCODING_UTF8,
+                                 str, &converted, &converted_len))
+    return 0;
+
+  result = fwrite(converted, 1, converted_len, fp) == converted_len;
+  free(converted);
+  return result;
+}
+
+static int
+write_out_array(FILE *fp, enum skk_dictionary_encoding encoding, struct skk_cand_array *ca)
 {
   int i;
   if (ca->okuri) {
-    fprintf(fp, "[%s/", ca->okuri);
+    fprintf(fp, "[");
+    if (!write_out_string(fp, encoding, ca->okuri))
+      return 0;
+    fprintf(fp, "/");
     for (i = 0; i < ca->nr_real_cands; i++)
-      fprintf(fp, "%s/", ca->cands[i]);
+      if (!write_out_string(fp, encoding, ca->cands[i]) || fputc('/', fp) == EOF)
+        return 0;
     fprintf(fp, "]/");
   } else {
     for (i = 0; i < ca->nr_real_cands; i++)
-      fprintf(fp, "%s/", ca->cands[i]);
+      if (!write_out_string(fp, encoding, ca->cands[i]) || fputc('/', fp) == EOF)
+        return 0;
   }
+  return 1;
 }
 
-static void
-write_out_line(FILE *fp, struct skk_line *sl)
+static int
+write_out_line(FILE *fp, enum skk_dictionary_encoding encoding, struct skk_line *sl)
 {
   struct skk_cand_array *ca;
   int i;
 
-  fprintf(fp, "%s", sl->head);
+  if (!write_out_string(fp, encoding, sl->head))
+    return 0;
   if (sl->okuri_head) {
     fprintf(fp, "%c /", sl->okuri_head);
   } else {
@@ -3069,9 +3388,11 @@ write_out_line(FILE *fp, struct skk_line *sl)
   }
   for (i = 0; i < sl->nr_cand_array; i++) {
     ca = &sl->cands[i];
-    write_out_array(fp, ca);
+    if (!write_out_array(fp, encoding, ca))
+      return 0;
   }
   fprintf(fp, "\n");
+  return 1;
 }
 
 static int
@@ -3122,8 +3443,10 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
   struct stat st;
   FILE *fp;
   char buf[4096]; /* XXX */
+  char *converted_line;
   int err_flag = 0;
   int lock_fd;
+  enum skk_dictionary_encoding encoding;
 
   if (!di)
     return 0;
@@ -3134,6 +3457,8 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
     close_lock(lock_fd);
     return 0;
   }
+
+  get_personal_dictionary_encoding(fn, &encoding);
 
   fp = fopen(fn, "r");
   if (!fp) {
@@ -3149,7 +3474,22 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
       if (err_flag == 0) {
 	if (buf[0] != ';') {
 	  buf[len - 1] = '\0';
-	  parse_dic_line(di, buf, is_personal);
+          converted_line = convert_dictionary_line(encoding, buf);
+          if (!converted_line) {
+            struct skk_line *sl = di->head.next;
+            while (sl) {
+              struct skk_line *next = sl->next;
+              free_skk_line(sl);
+              sl = next;
+            }
+            uim_notify_info(N_("uim-skk: invalid %s dictionary: %s"),
+                            skk_encoding_name(encoding), fn);
+            fclose(fp);
+            close_lock(lock_fd);
+            return 0;
+          }
+          parse_dic_line(di, converted_line, is_personal);
+          free(converted_line);
 	}
       } else {
 	/* erroneous line ends here */
@@ -3169,22 +3509,19 @@ static uim_lisp
 skk_read_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
 {
   const char *fn;
-  struct stat st;
-  uim_lisp ret;
+  int ret;
   dic_info *skk_dic = NULL;
 
   if (PTRP(skk_dic_))
     skk_dic = C_PTR(skk_dic_);
 
   fn = REFER_C_STR(fn_);
-  ret = (stat(fn, &st) != -1) ? uim_scm_t() : uim_scm_f();
-
-  update_personal_dictionary_cache_with_file(skk_dic, fn, 1);
+  ret = update_personal_dictionary_cache_with_file(skk_dic, fn, 1);
 #if USE_SKK_JISYO_S_BUF
   update_personal_dictionary_cache_with_file(skk_dic, SKK_JISYO_S, 0);
 #endif
 
-  return ret;
+  return ret ? uim_scm_t() : uim_scm_f();
 }
 
 static void push_back_candidate_array_to_sl(struct skk_line *sl,
@@ -3335,7 +3672,7 @@ lsort(struct skk_line *p)
   return p;
 }
 
-static void
+static int
 update_personal_dictionary_cache_with_file(dic_info *skk_dic, const char *fn,
 		                           int is_personal)
 {
@@ -3349,7 +3686,7 @@ update_personal_dictionary_cache_with_file(dic_info *skk_dic, const char *fn,
 
   if (!read_dictionary_file(di, fn, is_personal)) {
     free(di);
-    return;
+    return 0;
   }
 
   /* If no cache is available, just use new one. */
@@ -3359,7 +3696,7 @@ update_personal_dictionary_cache_with_file(dic_info *skk_dic, const char *fn,
     skk_dic->cache_modified = di->cache_modified;
     skk_dic->personal_dic_timestamp = di->personal_dic_timestamp;
     free(di);
-    return;
+    return 1;
   }
 
   /* keep original sequence of cache */
@@ -3419,19 +3756,22 @@ update_personal_dictionary_cache_with_file(dic_info *skk_dic, const char *fn,
   }
   free(di);
   free(cache_array);
+  return 1;
 }
 
 static uim_lisp
 skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
 {
-  FILE *fp;
+  FILE *fp = NULL;
   const char *fn = REFER_C_STR(fn_);
   char tmp_fn[MAXPATHLEN];
   struct skk_line *sl;
   struct stat st;
   int lock_fd = -1;
+  int tmp_created = 0;
   mode_t umask_val;
   dic_info *skk_dic = NULL;
+  enum skk_dictionary_encoding encoding = SKK_DICTIONARY_ENCODING_UTF8;
 
   if (PTRP(skk_dic_))
     skk_dic = C_PTR(skk_dic_);
@@ -3440,9 +3780,11 @@ skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
     return uim_scm_f();
 
   if (fn) {
+    get_personal_dictionary_encoding(fn, &encoding);
     if (stat(fn, &st) != -1) {
-      if (st.st_mtime != skk_dic->personal_dic_timestamp)
-	update_personal_dictionary_cache_with_file(skk_dic, fn, 1);
+      if (st.st_mtime != skk_dic->personal_dic_timestamp &&
+          !update_personal_dictionary_cache_with_file(skk_dic, fn, 1))
+        return uim_scm_f();
     }
 
     lock_fd = open_lock(fn, F_WRLCK);
@@ -3453,14 +3795,18 @@ skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
     umask(umask_val);
     if (!fp)
       goto error;
+    tmp_created = 1;
 
   } else {
     fp = stdout;
   }
 
   for (sl = skk_dic->head.next; sl; sl = sl->next) {
-    if (sl->state & SKK_LINE_NEED_SAVE)
-      write_out_line(fp, sl);
+    if ((sl->state & SKK_LINE_NEED_SAVE) && !write_out_line(fp, encoding, sl)) {
+      uim_notify_info(N_("uim-skk: cannot encode personal dictionary as %s"),
+                      skk_encoding_name(encoding));
+      goto error;
+    }
   }
 
   if (fflush(fp) != 0)
@@ -3469,11 +3815,15 @@ skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
   if (fsync(fileno(fp)) != 0)
     goto error;
 
-  if (fclose(fp) != 0)
+  if (fclose(fp) != 0) {
+    fp = NULL;
     goto error;
+  }
+  fp = NULL;
 
   if (rename(tmp_fn, fn) != 0)
     goto error;
+  tmp_created = 0;
 
   if (stat(fn, &st) != -1) {
     skk_dic->personal_dic_timestamp = st.st_mtime;
@@ -3481,6 +3831,10 @@ skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
   }
 
 error:
+  if (fp && fp != stdout)
+    fclose(fp);
+  if (tmp_created)
+    unlink(tmp_fn);
   close_lock(lock_fd);
   return uim_scm_f();
 }
@@ -3787,6 +4141,7 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+  release_skk_converters();
 }
 
 /* skkserv related */

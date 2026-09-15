@@ -230,18 +230,11 @@ uim_iconv_create(const char *tocode, const char *fromcode)
   assert(tocode);
   assert(fromcode);
 
-  do {
-    if (check_encoding_equivalence(tocode, fromcode)) {
-      ic = (iconv_t)0;
-      break;
-    }
-
-    ic = (iconv_t)uim_iconv_open(tocode, fromcode);
-    if (ic == (iconv_t)-1) {
-      /* since iconv_t is not explicit pointer, use 0 instead of NULL */
-      ic = (iconv_t)0;
-    }
-  } while (/* CONSTCOND */ 0);
+  ic = (iconv_t)uim_iconv_open(tocode, fromcode);
+  if (ic == (iconv_t)-1) {
+    /* since iconv_t is not explicit pointer, use 0 instead of NULL */
+    ic = (iconv_t)0;
+  }
 
   UIM_CATCH_ERROR_END();
 

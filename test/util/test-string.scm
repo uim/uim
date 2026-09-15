@@ -179,6 +179,24 @@
                            '(string-to-list "a日b本語c"))
   #f)
 
+(define (test-string-to-list-utf8)
+  (assert-uim-equal-ces '()
+                        '(begin
+                           (require "japanese-utf8.scm")
+                           (string-to-list-utf8 ""))
+                        "utf-8")
+  (assert-uim-equal-ces '("語" "本" "日")
+                        '(begin
+                           (require "japanese-utf8.scm")
+                           (string-to-list-utf8 "日本語"))
+                        "utf-8")
+  (assert-uim-equal-ces '("c" "語" "本" "b" "日" "a")
+                        '(begin
+                           (require "japanese-utf8.scm")
+                           (string-to-list-utf8 "a日b本語c"))
+                        "utf-8")
+  #f)
+
 (define (test-string-contains)
   (assert-uim-equal 0 '(string-contains ""         "" 0))
   (assert-uim-false   '(string-contains ""         "f" 0))
