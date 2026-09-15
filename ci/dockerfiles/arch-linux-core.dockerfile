@@ -9,6 +9,7 @@ RUN \
     librsvg \
     make \
     ncurses \
+    openssl \
     perl \
     pkgconf \
     ruby \
