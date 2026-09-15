@@ -91,7 +91,7 @@
     (and-let* ((uri-string (predict->internal-charset self str)))
       (let* ((proxy (make-http-proxy-from-custom))
              (ssl (and (predict-google-suggest-use-ssl self)
-                       (make-http-ssl (SSLv3-client-method) 443)))
+                       (make-http-ssl 443)))
              (result (http:get google-suggest-server
                                (format "/complete/search?output=toolbar&q=~a~a"
                                        uri-string

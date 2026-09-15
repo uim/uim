@@ -33,64 +33,87 @@
 
 #include <config.h>
 #include <string.h>
-#include <openssl/crypto.h>
 #include <openssl/ssl.h>
-#include <openssl/rand.h>
 #include <openssl/err.h>
+#include <openssl/x509.h>
 
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
-#include "uim-posix.h"
 #include "uim-notify.h"
 #include "gettext.h"
 #include "dynlib.h"
 
-#ifdef USE_OPENSSL_ENGINE
-# include <openssl/engine.h>
-#endif
-
-static uim_lisp
-c_ERR_get_error(void)
+static const char *
+openssl_error_string(void)
 {
-  return MAKE_INT(ERR_get_error());
+  static char buf[256];
+
+  ERR_error_string_n(ERR_get_error(), buf, sizeof(buf));
+  return buf;
 }
 
+/*
+ * (openssl-client-connect fd hostname) => ssl or #f
+ *
+ * Wraps the already connected socket FD with TLS as a client.  The
+ * peer certificate is verified against the system certificate store
+ * and HOSTNAME.  HOSTNAME is also sent as SNI.
+ *
+ * The returned SSL object owns its SSL_CTX; SSL-free releases both.
+ */
 static uim_lisp
-c_ERR_error_string(uim_lisp e_)
+c_openssl_client_connect(uim_lisp fd_, uim_lisp hostname_)
 {
-  char buf[BUFSIZ];
+  const char *hostname = REFER_C_STR(hostname_);
+  int fd = C_INT(fd_);
+  SSL_CTX *ctx;
+  SSL *ssl;
+  long verify_result;
 
-  /* XXX: long->int */
-  ERR_error_string_n(C_INT(e_), buf, sizeof(buf));
-  return MAKE_STR(buf);
-}
-
-static uim_lisp
-c_SSL_CTX_new(uim_lisp meth_)
-{
-  SSL_CTX *ctx = SSL_CTX_new(C_PTR(meth_));
-
-  if (!ctx)
+  ctx = SSL_CTX_new(TLS_client_method());
+  if (!ctx) {
+    uim_notify_fatal(N_("uim-openssl: SSL_CTX_new: %s"), openssl_error_string());
     return uim_scm_f();
-  return MAKE_PTR(ctx);
-}
+  }
 
-static uim_lisp
-c_SSL_CTX_free(uim_lisp ctx_)
-{
-  SSL_CTX_free(C_PTR(ctx_));
-  return uim_scm_t();
-}
-
-
-static uim_lisp
-c_SSL_new(uim_lisp ctx_)
-{
-  SSL *ssl = SSL_new(C_PTR(ctx_));
-
-  if (!ssl)
+  SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION);
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+  if (!SSL_CTX_set_default_verify_paths(ctx)) {
+    uim_notify_fatal(N_("uim-openssl: SSL_CTX_set_default_verify_paths: %s"),
+                     openssl_error_string());
+    SSL_CTX_free(ctx);
     return uim_scm_f();
+  }
+
+  ssl = SSL_new(ctx);
+  /* SSL_new() took its own reference; the SSL object now owns the context. */
+  SSL_CTX_free(ctx);
+  if (!ssl) {
+    uim_notify_fatal(N_("uim-openssl: SSL_new: %s"), openssl_error_string());
+    return uim_scm_f();
+  }
+
+  if (!SSL_set_tlsext_host_name(ssl, hostname)
+      || !X509_VERIFY_PARAM_set1_host(SSL_get0_param(ssl), hostname, 0)
+      || !SSL_set_fd(ssl, fd)) {
+    uim_notify_fatal(N_("uim-openssl: cannot set up connection to %s: %s"),
+                     hostname, openssl_error_string());
+    SSL_free(ssl);
+    return uim_scm_f();
+  }
+
+  if (SSL_connect(ssl) != 1) {
+    verify_result = SSL_get_verify_result(ssl);
+    if (verify_result != X509_V_OK)
+      uim_notify_fatal(N_("uim-openssl: certificate verification failed for %s: %s"),
+                       hostname, X509_verify_cert_error_string(verify_result));
+    else
+      uim_notify_fatal(N_("uim-openssl: SSL_connect to %s: %s"),
+                       hostname, openssl_error_string());
+    SSL_free(ssl);
+    return uim_scm_f();
+  }
 
   return MAKE_PTR(ssl);
 }
@@ -108,39 +131,16 @@ c_SSL_get_version(uim_lisp s_)
   return MAKE_STR(SSL_get_version(C_PTR(s_)));
 }
 
-
 static uim_lisp
 c_SSL_get_cipher(uim_lisp s_)
 {
   return MAKE_STR(SSL_get_cipher(C_PTR(s_)));
 }
 
-
 static uim_lisp
 c_SSL_shutdown(uim_lisp s_)
 {
   return MAKE_INT(SSL_shutdown(C_PTR(s_)));
-}
-
-static uim_lisp
-c_SSL_set_fd(uim_lisp s_, uim_lisp fd_)
-{
-  return MAKE_INT(SSL_set_fd(C_PTR(s_), C_INT(fd_)));
-}
-
-static uim_lisp
-c_SSL_connect(uim_lisp s_)
-{
-
-  RAND_poll();
-  srand(time(NULL));
-
-  while (RAND_status() == 0) {
-    unsigned short seed = (unsigned short)rand();
-
-    RAND_seed(&seed, sizeof(seed));
-  }
-  return MAKE_INT(SSL_connect(C_PTR(s_)));
 }
 
 struct c_SSL_read_args {
@@ -172,10 +172,11 @@ c_SSL_read(uim_lisp s_, uim_lisp nbytes_)
   struct c_SSL_read_args args;
 
   buf = uim_malloc(nbytes);
-  if ((nr = SSL_read(C_PTR(s_), buf, nbytes)) == 0)
-    return uim_scm_eof();
-  if (nr < 0)
-    return uim_scm_f();
+  nr = SSL_read(C_PTR(s_), buf, nbytes);
+  if (nr <= 0) {
+    free(buf);
+    return (nr == 0) ? uim_scm_eof() : uim_scm_f();
+  }
 
   args.buf = buf;
   args.nr = nr;
@@ -204,184 +205,20 @@ c_SSL_write(uim_lisp s_, uim_lisp buf_)
   return ret_;
 }
 
-/* SSLv2 */
-static uim_lisp
-c_SSLv2_method(void)
-{
-#ifndef OPENSSL_NO_SSL2
-  return MAKE_PTR(SSLv2_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: SSLv2_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-static uim_lisp
-c_SSLv2_server_method(void)
-{
-#ifndef OPENSSL_NO_SSL2
-  return MAKE_PTR(SSLv2_server_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: SSLv2_server_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-static uim_lisp
-c_SSLv2_client_method(void)
-{
-#ifndef OPENSSL_NO_SSL2
-  return MAKE_PTR(SSLv2_client_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: SSLv2_client_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-
-/* SSLv3 */
-static uim_lisp
-c_SSLv3_method(void)
-{
-#ifndef OPENSSL_NO_SSL3
-  return MAKE_PTR(SSLv3_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: SSLv3_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-static uim_lisp
-c_SSLv3_server_method(void)
-{
-#ifndef OPENSSL_NO_SSL3
-  return MAKE_PTR(SSLv3_server_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: SSLv3_server_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-static uim_lisp
-c_SSLv3_client_method(void)
-{
-#ifndef OPENSSL_NO_SSL3
-  return MAKE_PTR(SSLv3_client_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: SSLv3_client_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-
-/* SSLv3 but can rollback to v2 */
-static uim_lisp
-c_SSLv23_method(void)
-{
-  return MAKE_PTR(SSLv23_method());
-}
-static uim_lisp
-c_SSLv23_server_method(void)
-{
-  return MAKE_PTR(SSLv23_server_method());
-}
-static uim_lisp
-c_SSLv23_client_method(void)
-{
-  return MAKE_PTR(SSLv23_client_method());
-}
-
-/* TLSv1.0 */
-static uim_lisp
-c_TLSv1_method(void)
-{
-  return MAKE_PTR(TLSv1_method());
-}
-static uim_lisp
-c_TLSv1_server_method(void)
-{
-  return MAKE_PTR(TLSv1_server_method());
-}
-static uim_lisp
-c_TLSv1_client_method(void)
-{
-  return MAKE_PTR(TLSv1_client_method());
-}
-
-/* DTLSv1.0 */
-static uim_lisp
-c_DTLSv1_method(void)
-{
-#ifdef HAVE_OPENSSL_DTLSv1
-  return MAKE_PTR(DTLSv1_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: DTLSv1_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-static uim_lisp
-c_DTLSv1_server_method(void)
-{
-#ifdef HAVE_OPENSSL_DTLSv1
-  return MAKE_PTR(DTLSv1_server_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: DTLSv1_server_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-static uim_lisp
-c_DTLSv1_client_method(void)
-{
-#ifdef HAVE_OPENSSL_DTLSv1
-  return MAKE_PTR(DTLSv1_client_method());
-#else
-  uim_notify_fatal(N_("uim-openssl: DTLSv1_client_method() is not supported on this system"));
-  return uim_scm_f();
-#endif
-}
-
-
 void
 uim_plugin_instance_init(void)
 {
-  /* too old? */
-  if (!SSLeay_add_ssl_algorithms())
-    return;
-  if (!SSL_library_init())
-    return;
-#ifdef  USE_OPENSSL_ENGINE
-  ENGINE_load_builtin_engines();
-  ENGINE_register_all_complete();
-#endif
-
-  SSL_load_error_strings();
-
-  uim_scm_init_proc0("ERR-get-error", c_ERR_get_error);
-  uim_scm_init_proc1("ERR-error-string", c_ERR_error_string);
-  uim_scm_init_proc1("SSL-CTX-new", c_SSL_CTX_new);
-  uim_scm_init_proc1("SSL-CTX-free", c_SSL_CTX_free);
-  uim_scm_init_proc1("SSL-new", c_SSL_new);
+  /* OpenSSL >= 1.1.0 initializes itself on first use. */
+  uim_scm_init_proc2("openssl-client-connect", c_openssl_client_connect);
   uim_scm_init_proc1("SSL-free", c_SSL_free);
   uim_scm_init_proc1("SSL-get-version", c_SSL_get_version);
   uim_scm_init_proc1("SSL-get-cipher", c_SSL_get_cipher);
   uim_scm_init_proc1("SSL-shutdown", c_SSL_shutdown);
-  uim_scm_init_proc2("SSL-set-fd", c_SSL_set_fd);
-  uim_scm_init_proc1("SSL-connect", c_SSL_connect);
   uim_scm_init_proc2("SSL-read", c_SSL_read);
   uim_scm_init_proc2("SSL-write", c_SSL_write);
-  uim_scm_init_proc0("SSLv2-method", c_SSLv2_method);
-  uim_scm_init_proc0("SSLv2-server-method", c_SSLv2_server_method);
-  uim_scm_init_proc0("SSLv2-client-method", c_SSLv2_client_method);
-  uim_scm_init_proc0("SSLv3-method", c_SSLv3_method);
-  uim_scm_init_proc0("SSLv3-server-method", c_SSLv3_server_method);
-  uim_scm_init_proc0("SSLv3-client-method", c_SSLv3_client_method);
-  uim_scm_init_proc0("SSLv23-method", c_SSLv23_method);
-  uim_scm_init_proc0("SSLv23-server-method", c_SSLv23_server_method);
-  uim_scm_init_proc0("SSLv23-client-method", c_SSLv23_client_method);
-  uim_scm_init_proc0("TLSv1-method", c_TLSv1_method);
-  uim_scm_init_proc0("TLSv1-server-method", c_TLSv1_server_method);
-  uim_scm_init_proc0("TLSv1-client-method", c_TLSv1_client_method);
-  uim_scm_init_proc0("DTLSv1-method", c_DTLSv1_method);
-  uim_scm_init_proc0("DTLSv1-server-metho", c_DTLSv1_server_method);
-  uim_scm_init_proc0("DTLSv1-client-method", c_DTLSv1_client_method);
 }
 
 void
 uim_plugin_instance_quit(void)
 {
-  ERR_free_strings();
 }

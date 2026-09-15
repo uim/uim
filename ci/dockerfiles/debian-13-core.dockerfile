@@ -16,6 +16,7 @@ RUN \
     libedit-dev \
     libncurses-dev \
     librsvg2-bin \
+    libssl-dev \
     make \
     pkg-config \
     ruby \

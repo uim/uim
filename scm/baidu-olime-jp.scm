@@ -77,7 +77,7 @@
       (cons (map toconv cars)
             (map (lambda (x) (map toconv x)) cdrs))))
   (let* ((proxy (make-http-proxy-from-custom))
-         (ssl (make-http-ssl (SSLv3-client-method) 443))
+         (ssl (make-http-ssl 443))
          (ret (http:get baidu-olime-jp-server (make-query) 80 proxy ssl)))
     (parse ret)))
 

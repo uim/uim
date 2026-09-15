@@ -79,7 +79,7 @@
             (map (lambda (x) (map toconv x)) cdrs))))
   (let* ((proxy (make-http-proxy-from-custom))
          (ssl (and google-cgiapi-jp-use-ssl?
-                   (make-http-ssl (SSLv3-client-method) 443)))
+                   (make-http-ssl 443)))
          (ret (http:get google-cgiapi-jp-server (make-query) 80 proxy ssl)))
     (parse ret)))
 
