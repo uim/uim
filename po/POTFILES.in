@@ -59,7 +59,6 @@ scm/google-cgiapi-jp-custom.scm
 scm/google-cgiapi-jp-key-custom.scm
 scm/hangul.scm
 scm/http-client.scm
-scm/http-server.scm
 scm/im.scm
 scm/im-custom.scm
 scm/ipa-x-sampa.scm
