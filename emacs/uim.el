@@ -1227,6 +1227,9 @@
       (when helpermsg
 	(uim-helper-send-message helpermsg))
 
+      (when imlist
+	(uim-update-imlist imlist))
+
       (when (and default (not (uim-get-default-engine)))
 	(uim-update-default-engine default))
 
@@ -1235,9 +1238,6 @@
 
       (when label
 	(uim-update-label label))
-
-      (when imlist
-	(uim-update-imlist imlist))
 
 
       (if commit
