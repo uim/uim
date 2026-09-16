@@ -204,50 +204,6 @@ fi
 
 AM_CONDITIONAL(WNN, test "x$with_wnn" = xyes)
 
-# ***********************
-# *** Tests for Mana ***
-# ***********************
-AC_ARG_WITH(mana,
-  AS_HELP_STRING([--without-mana],
-    [do not build a plugin for Mana]),
-  [],
-  [with_mana=yes])
-
-if test "x$with_mana" != xno; then
-  AC_CHECK_PROG(MANA, mana, mana)
-  if test -z "$MANA"; then
-    with_mana=no
-  fi
-fi
-
-AM_CONDITIONAL(MANA, test "x$with_mana" = xyes)
-
-# ***********************
-# *** Tests for PRIME ***
-# ***********************
-AC_ARG_WITH(prime,
-  AS_HELP_STRING([--without-prime],
-    [do not build a plugin for PRIME]),
-  [],
-  [with_prime=yes])
-
-if test "x$with_prime" != xno; then
-  PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, with_prime=yes, with_prime=no)
-fi
-
-AM_CONDITIONAL(PRIME, test "x$with_prime" = xyes)
-
-# *********************
-# *** Tests for SJ3 ***
-# *********************
-AC_ARG_WITH(sj3,
-  AS_HELP_STRING([--with-sj3],
-    [use SJ3]),
-  [],
-  [with_sj3=no])
-
-AM_CONDITIONAL(SJ3, test "x$with_sj3" = xyes)
-
 # *********************
 # *** Tests for SKK ***
 # *********************
@@ -2182,9 +2138,6 @@ Configure Result :
    Anthy           : ${with_anthy}
    Anthy (UTF-8)   : ${with_anthy_utf8}
    Canna           : ${with_canna}
-   Mana            : ${with_mana}
-   PRIME           : ${with_prime}
-   SJ3             : ${with_sj3}
    SKK             : ${with_skk}
    Wnn             : ${with_wnn}
    m17n-lib        : ${with_m17nlib}

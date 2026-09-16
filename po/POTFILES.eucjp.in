@@ -7,11 +7,6 @@ scm/baidu-olime-jp-custom.scm
 scm/canna-custom.scm
 scm/google-cgiapi-jp-custom.scm
 scm/japanese-custom.scm
-scm/mana-custom.scm
-scm/prime-custom.scm
-scm/prime.scm
-scm/sj3-custom.scm
-scm/sj3.scm
 scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-rule-custom.scm
