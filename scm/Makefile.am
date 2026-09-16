@@ -46,7 +46,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  elatin.scm elatin-rules.scm elatin-custom.scm \
  look.scm look-custom.scm \
  m17nlib.scm m17nlib-custom.scm \
- zaurus.scm \
  google-cgiapi-jp.scm google-cgiapi-jp-custom.scm google-cgiapi-jp-key-custom.scm \
  baidu-olime-jp.scm baidu-olime-jp-custom.scm baidu-olime-jp-key-custom.scm \
  uim-module-manager.scm \

@@ -56,7 +56,7 @@ Customization guide
 
  1. Collect predefined key-bindings
 
-   $ fgrep -h '(define-key' /usr/share/uim/*.scm | grep -v zaurus >> ~/.uim
+   $ fgrep -h '(define-key' /usr/share/uim/*.scm >> ~/.uim
 
    * '/usr/share/uim' is varied by your installation settings
 
