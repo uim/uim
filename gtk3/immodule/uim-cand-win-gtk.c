@@ -65,6 +65,7 @@ static void	uim_cand_win_gtk_real_set_index		(UIMCandWinGtk *cwin,
 static void	uim_cand_win_gtk_real_set_page		(UIMCandWinGtk *cwin,
 							 gint page);
 static void	uim_cand_win_gtk_real_create_sub_window(UIMCandWinGtk *cwin);
+static void	uim_cand_win_gtk_sync_sub_window_transient_for(UIMCandWinGtk *cwin);
 static void	uim_cand_win_gtk_real_layout_sub_window	(UIMCandWinGtk *cwin);
 
 static void	pagebutton_clicked(GtkButton *button, gpointer data);
@@ -178,6 +179,12 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->sub_window.scrolled_window = NULL;
   cwin->sub_window.text_view       = NULL;
   cwin->sub_window.active          = FALSE;
+
+  /* The sub window is a popup too, so it needs the same transient parent
+   * as the candidate window to be positioned on Wayland. */
+  g_signal_connect(cwin, "notify::transient-for",
+		   G_CALLBACK(uim_cand_win_gtk_sync_sub_window_transient_for),
+		   NULL);
 
   /* build window */
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -772,6 +779,23 @@ void
 uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
 {
   UIM_CAND_WIN_GTK_GET_CLASS (cwin)->create_sub_window(cwin);
+  uim_cand_win_gtk_sync_sub_window_transient_for(cwin);
+}
+
+static void
+uim_cand_win_gtk_sync_sub_window_transient_for(UIMCandWinGtk *cwin)
+{
+  GtkWindow *sub_window, *parent;
+
+  if (!cwin->sub_window.window)
+    return;
+
+  sub_window = GTK_WINDOW(cwin->sub_window.window);
+  parent = gtk_window_get_transient_for(GTK_WINDOW(cwin));
+  if (gtk_window_get_transient_for(sub_window) == parent)
+    return;
+
+  gtk_window_set_transient_for(sub_window, parent);
 }
 
 #define UIM_ANNOTATION_WIN_WIDTH 200
