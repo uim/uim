@@ -135,23 +135,31 @@
                           state
                           (cons (cons field-name field-value) rest))))))))))
 
+;; Returns the header lines, or #f when reading from PORT failed.
 (define (http:read-header port)
   (let loop ((str (file-read-line port))
              (rest '()))
-    (if (or (eof-object? str)
-            (null? str)
-            (string=? "\r" str))
-        (reverse rest)
-        (loop (file-read-line port) (cons str rest)))))
+    (cond ((not str)
+           #f)
+          ((or (eof-object? str)
+               (string=? "" str)
+               (string=? "\r" str))
+           (reverse rest))
+          (else
+           (loop (file-read-line port) (cons str rest))))))
+
+(define (http:read-parsed-header port)
+  (and-let* ((lines (http:read-header port)))
+    (http:parse-header lines)))
 
 (define (http:make-request-string request-alist)
   (string-append
    (apply
     string-append
     (map (lambda (ent)
-           (string-append (car ent) ": " (cdr ent) "\n"))
-         (append request-alist)))
-   "\n"))
+           (string-append (car ent) ": " (cdr ent) "\r\n"))
+         request-alist))
+   "\r\n"))
 
 (define-record-type http-proxy
   (make-http-proxy hostname port) http-proxy?
@@ -166,56 +174,117 @@
   (make-http-ssl port) http-ssl?
   (port http-ssl-port http-ssl-port!))
 
-(define (http:make-proxy-request-string hostname port)
-  (string-append
-   (format "CONNECT ~a:~d HTTP/1.1\n\n" hostname port)))
+;; Ask a proxy to open a tunnel to HOSTNAME:PORT (RFC 7231 4.3.6).
+(define (http:make-connect-request-string hostname port)
+  (format "CONNECT ~a:~a HTTP/1.1\r\nHost: ~a:~a\r\n\r\n"
+          hostname port hostname port))
 
+;; When PROXY is true the request is sent to a proxy as is, so the
+;; request-target must be the absolute URI (RFC 7230 5.3.2).
 (define (http:make-get-request-string hostname path servname proxy request-alist)
   (string-append
-   (if proxy
-       (http:make-proxy-request-string hostname servname)
-       "")
-   (format "GET ~a HTTP/1.1\n" path)
-   (format "Host: ~a\n" hostname)
-   (format "User-Agent: uim/~a\n" (uim-version))
+   (format "GET ~a HTTP/1.1\r\n"
+           (if proxy
+               (format "http://~a:~a~a" hostname servname path)
+               path))
+   (format "Host: ~a\r\n" hostname)
+   (format "User-Agent: uim/~a\r\n" (uim-version))
    (http:make-request-string request-alist)))
+
+(define (http:status-line parsed-header)
+  (assq-cdr 'header parsed-header))
+
+;; Any 2xx response to CONNECT establishes the tunnel (RFC 7231 4.3.6).
+(define (http:tunnel-established? status-code)
+  (and (string? status-code)
+       (= (string-length status-code) 3)
+       (char=? (string-ref status-code 0) #\2)))
+
+;; Send a CONNECT request for HOSTNAME:PORT over the plain socket FD
+;; and wait for the proxy's response.  Returns #t once the tunnel is
+;; established; otherwise closes FD and returns #f.
+(define (http:open-tunnel fd hostname port)
+  (guard (err
+          (else
+           (file-close fd)
+           (raise err)))
+    (let* ((plain-port (open-file-port fd))
+           (status-line
+            (and-let* ((request (http:make-connect-request-string hostname port))
+                       (nr (file-display request plain-port))
+                       (ready? (file-ready? (list fd) http-timeout))
+                       (parsed-header (http:read-parsed-header plain-port)))
+              (http:status-line parsed-header)))
+           (status-code (and status-line
+                             (assq-cdr 'status-code status-line))))
+      (if (http:tunnel-established? status-code)
+          #t
+          (begin
+            (cond ((string? status-code)
+                   (uim-notify-fatal
+                    (format (_ "proxy refused the tunnel to ~a:~a: ~a ~a")
+                            hostname port
+                            status-code
+                            (assq-cdr 'reason-phrase status-line))))
+                  (status-line
+                   (uim-notify-fatal
+                    (format (_ "invalid proxy response to CONNECT ~a:~a")
+                            hostname port))))
+            (file-close fd)
+            #f)))))
+
+(define (http:read-response port)
+  (and-let* ((ready? (file-ready? (list (fd? port)) http-timeout))
+             (parsed-header (http:read-parsed-header port)))
+    (let ((content-length (http:content-length? parsed-header)))
+      (cond (content-length
+             (file-read-buffer port content-length))
+            ((http:chunked? parsed-header)
+             (http:read-chunk port))
+            (else
+             (file-get-buffer port))))))
 
 (define (http:get hostname path . args)
   (let-optionals* args ((servname 80)
                         (proxy #f)
                         (ssl #f)
                         (request-alist '()))
-    (let* ((with-ssl? (and (provided? "openssl")
-                           (http-ssl? ssl)))
-           (call-with-open-file-port-function
-            (if with-ssl?
-                ;; cut
-                (lambda (file thunk)
-                  (call-with-open-openssl-file-port file hostname thunk))
-                call-with-open-file-port))
-           (file (if (http-proxy? proxy)
-                     (tcp-connect (hostname? proxy) (port? proxy))
-                     (if with-ssl?
-                         (tcp-connect hostname (http-ssl-port ssl))
-                         (tcp-connect hostname servname)))))
-      (if (not file)
-          (uim-notify-fatal (N_ "cannot connect server")))
-      (call-with-open-file-port-function
-       file
-       (lambda (port)
-         (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
-                    (nr (file-display request port))
-                    (ready? (file-ready? (list (fd? port)) http-timeout))
-                    (proxy-header (if proxy
-                                      (http:read-header port)
-                                      '()))
-                    (header (http:read-header port))
-                    (parsed-header (http:parse-header header)))
-             (let ((content-length (http:content-length? parsed-header)))
-               (cond (content-length
-                      (file-read-buffer port content-length))
-                     ((http:chunked? parsed-header)
-                      (http:read-chunk port))
-                     (else
-                      (file-get-buffer port))))))))))
-
+    (let ((with-ssl? (http-ssl? ssl))
+          (with-proxy? (http-proxy? proxy)))
+      (if (and with-ssl?
+               (not (provided? "openssl")))
+          ;; Never downgrade a TLS request to plain HTTP: the request
+          ;; carries the user's input.
+          (begin
+            (uim-notify-fatal
+             (format (_ "cannot connect to ~a: uim is built without OpenSSL support")
+                     hostname))
+            #f)
+          (let* ((port-number (if with-ssl?
+                                  (http-ssl-port ssl)
+                                  servname))
+                 (fd (if with-proxy?
+                         (tcp-connect (hostname? proxy) (port? proxy))
+                         (tcp-connect hostname port-number)))
+                 ;; A TLS connection through a proxy is tunneled with
+                 ;; CONNECT, so the GET itself is sent to the origin
+                 ;; server.
+                 (request (http:make-get-request-string
+                           hostname path servname
+                           (and with-proxy? (not with-ssl?))
+                           request-alist))
+                 (send-request (lambda (port)
+                                 (and (file-display request port)
+                                      (http:read-response port)))))
+            (cond ((not fd)
+                   (uim-notify-fatal (N_ "cannot connect server"))
+                   #f)
+                  (with-ssl?
+                   ;; CONNECT is exchanged in plain text with the
+                   ;; proxy; TLS starts only after the tunnel is
+                   ;; established.
+                   (and (or (not with-proxy?)
+                            (http:open-tunnel fd hostname port-number))
+                        (call-with-open-openssl-file-port fd hostname send-request)))
+                  (else
+                   (call-with-open-file-port fd send-request))))))))
