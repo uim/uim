@@ -67,14 +67,10 @@ scm/look-custom.scm
 scm/look.scm
 scm/m17nlib-custom.scm
 scm/m17nlib.scm
-scm/mana-key-custom.scm
 scm/predict-custom.scm
 scm/predict-sqlite3.scm
-scm/prime-key-custom.scm
 scm/process.scm
 scm/pyload.scm
-scm/sj3-key-custom.scm
-scm/sj3v2-socket.scm
 scm/skk-custom.scm
 scm/skk-key-custom.scm
 scm/tutcode-custom.scm
@@ -91,7 +87,6 @@ tqt/switcher/qt.cpp
 tqt/toolbar/common-quimhelpertoolbar.cpp
 uim.desktop.in.in
 uim/m17nlib.c
-uim/mana.c
 uim/dynlib.c
 uim/openssl.c
 uim/skk.c

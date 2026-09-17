@@ -22,7 +22,6 @@ SVGS += direct_input.svg on.svg off.svg \
         ja_direct.svg ja_hiragana.svg ja_katakana.svg \
         ja_halfkana.svg \
         ja_halfwidth_alnum.svg ja_fullwidth_alnum.svg \
-        prime_mode_application.svg \
         ko_direct.svg ko_hangulchar.svg ko_hangulword.svg
 # dark background
 SVGS += direct_input_dark_background.svg \
@@ -34,7 +33,6 @@ SVGS += direct_input_dark_background.svg \
         ja_halfkana_dark_background.svg \
         ja_halfwidth_alnum_dark_background.svg \
         ja_fullwidth_alnum_dark_background.svg \
-        prime_mode_application_dark_background.svg \
         ko_direct_dark_background.svg \
         ko_hangulchar_dark_background.svg \
         ko_hangulword_dark_background.svg
@@ -54,19 +52,17 @@ SVGS += im_switcher.svg uim-dict.svg
 
 # input method substitutions
 IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
-                mana.svg \
                 hangul2.svg hangul3.svg romaja.svg \
                 viqr.svg ipa-x-sampa.svg latin.svg elatin.svg \
-                look.svg scim.svg sj3.svg wnn.svg \
+                look.svg scim.svg wnn.svg \
                 google-cgiapi-jp.svg baidu-olime-jp.svg
 GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg trycode_dark_background.svg
 SVGS += im_subst.svg $(GENERATED_SVGS)
 
 IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
-                mana.png \
                 hangul2.png hangul3.png romaja.png \
                 viqr.png ipa-x-sampa.png latin.png elatin.png \
-                look.png scim.png sj3.png wnn.png \
+                look.png scim.png wnn.png \
                 google-cgiapi-jp.png baidu-olime-jp.png
 
 SVG_PNGS = unknown.png \
@@ -75,7 +71,6 @@ SVG_PNGS = unknown.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
            ja_halfkana.png \
            ja_halfwidth_alnum.png ja_fullwidth_alnum.png \
-           prime_mode_application.png \
            ko_direct.png ko_hangulchar.png ko_hangulword.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_act.png ja_kzik.png \
            ja_nicola.png \
@@ -99,7 +94,6 @@ SVG_PNGS = unknown.png \
            ja_halfkana_dark_background.png \
            ja_halfwidth_alnum_dark_background.png \
            ja_fullwidth_alnum_dark_background.png \
-           prime_mode_application_dark_background.png \
            ko_direct_dark_background.png \
            ko_hangulchar_dark_background.png \
            ko_hangulword_dark_background.png \
@@ -111,9 +105,9 @@ SVG_PNGS = unknown.png \
 
 NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png
 
-SCIM_PNGS = scim-anthy.png scim-canna.png scim-prime.png \
+SCIM_PNGS = scim-anthy.png scim-canna.png \
 	    scim-skk.png scim-wnn.png
-SCIM_ORIGINATED_PNGS = anthy.png canna.png prime.png
+SCIM_ORIGINATED_PNGS = anthy.png canna.png
 if ANTHY_UTF8
 SCIM_ORIGINATED_PNGS += anthy-utf8.png
 endif
@@ -135,9 +129,6 @@ anthy-utf8.png: scim-anthy.png
 	cp $< $@
 canna.png: scim-canna.png
 	cp $< $@
-prime.png: scim-prime.png
-	cp $< $@
-
 uim-icon.png: uim-icon48.png
 	cp $< $@
 

@@ -29,7 +29,6 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   + ko_direct
   + ko_hangulchar
   + ko_hangulword
-  + prime_mode_application
 
 * input methods
   py
@@ -37,8 +36,6 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   pinyin-big5
   + anthy
   + canna
-  mana
-  + prime
   + skk
   + tcode
   + trycode

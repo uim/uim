@@ -123,14 +123,6 @@ else
 endif
 endif
 
-if MANA
-uimplugin_LTLIBRARIES += libuim-mana.la
-libuim_mana_la_SOURCES = mana.c
-libuim_mana_la_LIBADD = libuim-scm.la libuim.la
-libuim_mana_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-libuim_mana_la_CPPFLAGS = $(AM_CPPFLAGS)
-endif
-
 if EXPAT
 uimplugin_LTLIBRARIES += libuim-expat.la
 libuim_expat_la_SOURCES = expat.c
