@@ -26,6 +26,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  japanese-act-utf8.scm japanese-kzik-utf8.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
+ mozc.scm mozc-custom.scm mozc-key-custom.scm \
  canna.scm cannav3-socket.scm canna-custom.scm canna-key-custom.scm \
  wnn.scm wnn-custom.scm wnn-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
@@ -85,6 +86,9 @@ if WNN
 endif
 if SKK
   module_names += "skk"
+endif
+if MOZC
+  module_names += "mozc"
 endif
 #module_names += "tcode" "trycode"
 module_names += "tutcode" "byeoru" "latin" "elatin"

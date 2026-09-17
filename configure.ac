@@ -215,6 +215,32 @@ AC_ARG_WITH(skk,
 
 AM_CONDITIONAL(SKK, test "x$with_skk" = xyes)
 
+# Mozc (uim-mozc-helper)
+AC_ARG_WITH([mozc],
+  AS_HELP_STRING([--with-mozc],
+                 [build uim-mozc-helper for Mozc support [default=auto]]),
+  [with_mozc=$withval],
+  [with_mozc=auto])
+if test "x$with_mozc" != xno; then
+  PKG_CHECK_MODULES([PROTOBUF], [protobuf >= 3.0.0],
+                    [protobuf_found=yes], [protobuf_found=no])
+  AC_PATH_PROG([PROTOC], [protoc], [])
+  if test "x$protobuf_found" = xyes -a -n "$PROTOC"; then
+    with_mozc=yes
+  else
+    if test "x$with_mozc" = xyes; then
+      AC_MSG_ERROR([--with-mozc requires protobuf and protoc])
+    fi
+    with_mozc=no
+  fi
+fi
+if test "x$with_mozc" = xyes; then
+  # Generated protobuf code is noisy with -Wconversion
+  MOZC_CXXFLAGS="-std=c++17 -Wno-conversion"
+  AC_SUBST(MOZC_CXXFLAGS)
+fi
+AM_CONDITIONAL(MOZC, test "x$with_mozc" = xyes)
+
 # ***********************
 # *** Tests for expat ***
 # ***********************
@@ -1898,6 +1924,7 @@ AC_CONFIG_FILES([Makefile
                  uim/Makefile
                  uim/version.h
                  scm/Makefile
+                 mozc/Makefile
                  gtk3/Makefile
                  gtk3/candwin/Makefile
                  gtk3/dict/Makefile
@@ -2139,6 +2166,7 @@ Configure Result :
    Anthy (UTF-8)   : ${with_anthy_utf8}
    Canna           : ${with_canna}
    SKK             : ${with_skk}
+   Mozc            : ${with_mozc}
    Wnn             : ${with_wnn}
    m17n-lib        : ${with_m17nlib}
    expat           : ${expat_found}
