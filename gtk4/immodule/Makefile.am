@@ -23,5 +23,6 @@ libim_uim_la_LIBADD += -lm
 
 LIBIM_UIM_SOURCES = \
 	gtk-im-uim.c \
+	uim-candidates-view.c uim-candidates-view.h \
 	uim-im-context.c uim-im-context.h
 endif

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2003-2025 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -32,11 +32,13 @@
 #include <config.h>
 
 #include "uim-im-context.h"
+#include "uim-candidates-view.h"
 
 #include <gdk/gdkkeysyms.h>
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <locale.h>
 
@@ -70,9 +72,14 @@ struct _UIMIMContext
 
   uim_context uc;
 
+  GtkIMContext *slave; /* GtkIMContextSimple for keys uim doesn't consume */
+
   GtkWidget *client_widget;
   GdkRectangle cursor_location;
   gboolean use_preedit;
+
+  UIMCandidatesView *candidates_view;
+  gboolean candidates_active;
 
   GArray *preedit_segments;
   size_t prev_preedit_len;
@@ -96,6 +103,35 @@ commit_cb(void *ptr, const char *str)
   UIMIMContext *uic = ptr;
   g_return_if_fail(str);
   g_signal_emit_by_name(uic, "commit", str);
+}
+
+/* callback functions for the slave GtkIMContextSimple */
+static void
+slave_commit_cb(GtkIMContext *slave, const gchar *str, gpointer data)
+{
+  UIMIMContext *uic = data;
+  g_signal_emit_by_name(uic, "commit", str);
+}
+
+static void
+slave_preedit_start_cb(GtkIMContext *slave, gpointer data)
+{
+  UIMIMContext *uic = data;
+  g_signal_emit_by_name(uic, "preedit-start");
+}
+
+static void
+slave_preedit_changed_cb(GtkIMContext *slave, gpointer data)
+{
+  UIMIMContext *uic = data;
+  g_signal_emit_by_name(uic, "preedit-changed");
+}
+
+static void
+slave_preedit_end_cb(GtkIMContext *slave, gpointer data)
+{
+  UIMIMContext *uic = data;
+  g_signal_emit_by_name(uic, "preedit-end");
 }
 
 static void
@@ -351,14 +387,220 @@ uim_im_context_commit_string_from_other_process(UIMIMContext *uic,
   g_strfreev(lines);
 }
 
+/* candidate window */
+
 static void
 uim_im_context_update_candwin_pos_type(UIMIMContext *uic)
 {
+  UIMCandidatesViewPosition position = UIM_CANDIDATES_VIEW_POSITION_CARET;
+  char *value = uim_scm_symbol_value_str("candidate-window-position");
+  if (value && g_str_equal(value, "left"))
+    position = UIM_CANDIDATES_VIEW_POSITION_LEFT;
+  else if (value && g_str_equal(value, "right"))
+    position = UIM_CANDIDATES_VIEW_POSITION_RIGHT;
+  free(value);
+  uim_candidates_view_set_position(uic->candidates_view, position);
 }
 
 static void
 uim_im_context_update_candwin_style(UIMIMContext *uic)
 {
+  /* TODO: Only the vertical style is implemented. */
+}
+
+static gboolean
+uim_im_context_can_show_candidates(UIMIMContext *uic)
+{
+  if (!uic->candidates_active)
+    return FALSE;
+  if (!uic->client_widget)
+    return FALSE;
+  if (!gtk_widget_get_mapped(uic->client_widget))
+    return FALSE;
+
+  GtkNative *native = gtk_widget_get_native(uic->client_widget);
+  if (!native)
+    return FALSE;
+  GdkSurface *surface = gtk_native_get_surface(native);
+  if (!surface || !gdk_surface_get_mapped(surface))
+    return FALSE;
+
+  return TRUE;
+}
+
+static void
+uim_im_context_show_candidates(UIMIMContext *uic)
+{
+  GtkWidget *view = GTK_WIDGET(uic->candidates_view);
+
+  if (!uim_im_context_can_show_candidates(uic))
+    return;
+
+  /* GtkPopover needs a parent widget. The client widget is the best
+   * one because gtk_im_context_set_cursor_location() reports the
+   * cursor location in the client widget's coordinates. */
+  GtkWidget *parent = gtk_widget_get_parent(view);
+  if (parent != uic->client_widget) {
+    if (parent)
+      gtk_widget_unparent(view);
+    gtk_widget_set_parent(view, uic->client_widget);
+  }
+
+  uim_candidates_view_set_cursor_location(uic->candidates_view,
+                                          &uic->cursor_location);
+  gtk_popover_popup(GTK_POPOVER(view));
+}
+
+static void
+uim_im_context_hide_candidates(UIMIMContext *uic)
+{
+  GtkWidget *view = GTK_WIDGET(uic->candidates_view);
+  if (gtk_widget_get_visible(view))
+    gtk_popover_popdown(GTK_POPOVER(view));
+}
+
+static void
+uim_im_context_detach_candidates_view(UIMIMContext *uic)
+{
+  GtkWidget *view = GTK_WIDGET(uic->candidates_view);
+  uim_im_context_hide_candidates(uic);
+  if (gtk_widget_get_parent(view))
+    gtk_widget_unparent(view);
+}
+
+static GSList *
+uim_im_context_get_page_candidates(UIMIMContext *uic,
+                                   guint page,
+                                   guint n_candidates,
+                                   guint display_limit)
+{
+  guint start = page * display_limit;
+  guint n_page_candidates;
+  if (start >= n_candidates)
+    return NULL;
+  if (display_limit > 0 && (n_candidates - start) > display_limit)
+    n_page_candidates = display_limit;
+  else
+    n_page_candidates = n_candidates - start;
+
+  GSList *list = NULL;
+  for (guint i = start; i < start + n_page_candidates; i++) {
+    int accel_enumeration_hint = display_limit > 0 ? (i % display_limit) : i;
+    uim_candidate candidate =
+      uim_get_candidate(uic->uc, i, accel_enumeration_hint);
+    list = g_slist_prepend(list, candidate);
+  }
+  return g_slist_reverse(list);
+}
+
+static void
+uim_im_context_free_candidates(GSList *candidates)
+{
+  g_slist_free_full(candidates, (GDestroyNotify)uim_candidate_free);
+}
+
+static void
+uim_im_context_ensure_page_candidates(UIMIMContext *uic, guint page)
+{
+  UIMCandidatesView *view = uic->candidates_view;
+
+  if (uim_candidates_view_has_page_candidates(view, page))
+    return;
+
+  guint n_candidates = uim_candidates_view_get_n_candidates(view);
+  guint display_limit = uim_candidates_view_get_display_limit(view);
+  GSList *candidates =
+    uim_im_context_get_page_candidates(uic, page, n_candidates, display_limit);
+  uim_candidates_view_set_page_candidates(view, page, candidates);
+  uim_im_context_free_candidates(candidates);
+}
+
+/* A user selected a candidate or a page on the candidates view. */
+static void
+candidates_view_index_changed_cb(UIMCandidatesView *view, gpointer data)
+{
+  UIMIMContext *uic = data;
+
+  gint index = uim_candidates_view_get_index(view);
+  uim_set_candidate_index(uic->uc, index);
+
+  guint new_page =
+    uim_candidates_view_query_new_page_by_cand_select(view, index);
+  uim_im_context_ensure_page_candidates(uic, new_page);
+}
+
+static void
+cand_activate_cb(void *ptr, int n_candidates, int display_limit)
+{
+  UIMIMContext *uic = ptr;
+  UIMCandidatesView *view = uic->candidates_view;
+
+  uic->candidates_active = TRUE;
+
+  uim_candidates_view_set_n_candidates(view, n_candidates, display_limit);
+  uim_im_context_ensure_page_candidates(uic, 0);
+
+  uim_im_context_show_candidates(uic);
+}
+
+static void
+cand_select_cb(void *ptr, int index)
+{
+  UIMIMContext *uic = ptr;
+  UIMCandidatesView *view = uic->candidates_view;
+
+  guint new_page =
+    uim_candidates_view_query_new_page_by_cand_select(view, index);
+  uim_im_context_ensure_page_candidates(uic, new_page);
+
+  g_signal_handlers_block_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+  uim_candidates_view_set_index(view, index);
+  g_signal_handlers_unblock_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+
+  uim_im_context_show_candidates(uic);
+}
+
+static void
+cand_shift_page_cb(void *ptr, int direction)
+{
+  UIMIMContext *uic = ptr;
+  UIMCandidatesView *view = uic->candidates_view;
+  gboolean forward = direction != 0;
+
+  guint new_page =
+    uim_candidates_view_query_new_page_by_shift_page(view, forward);
+  uim_im_context_ensure_page_candidates(uic, new_page);
+
+  g_signal_handlers_block_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+  uim_candidates_view_shift_page(view, forward);
+  gint index = uim_candidates_view_get_index(view);
+  if (index != -1)
+    uim_set_candidate_index(uic->uc, index);
+  g_signal_handlers_unblock_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+
+  uim_im_context_show_candidates(uic);
+}
+
+static void
+cand_deactivate_cb(void *ptr)
+{
+  UIMIMContext *uic = ptr;
+
+  uic->candidates_active = FALSE;
+  uim_im_context_hide_candidates(uic);
+  uim_candidates_view_clear_candidates(uic->candidates_view);
 }
 
 static void
@@ -625,23 +867,6 @@ convert_key_event(guint keyval, GdkModifierType mod, int *ukey, int *umod)
 }
 
 static gboolean
-is_control_gdk_keyval(guint keyval)
-{
-  switch (keyval) {
-  case GDK_KEY_BackSpace:
-  case GDK_KEY_Tab:
-  case GDK_KEY_Linefeed:
-  case GDK_KEY_Clear:
-  case GDK_KEY_Return:
-  case GDK_KEY_Escape:
-  case GDK_KEY_Delete:
-    return TRUE;
-  default:
-    return FALSE;
-  }
-}
-
-static gboolean
 uim_im_context_filter_keypress(GtkIMContext *context, GdkEvent *event)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(context);
@@ -659,19 +884,13 @@ uim_im_context_filter_keypress(GtkIMContext *context, GdkEvent *event)
   else
     pass_through = uim_press_key(uic->uc, ukey, umod);
 
-  if (pass_through && !is_release && !is_control_gdk_keyval(keyval) &&
-      modifier_type == 0) {
-    const gunichar code_point = gdk_keyval_to_unicode(keyval);
-    if (code_point > 0) {
-      gchar utf8_character[7];
-      int length = g_unichar_to_utf8(code_point, utf8_character);
-      utf8_character[length] = '\0';
-      commit_cb(uic, utf8_character);
-    }
-  }
+  if (!pass_through)
+    return TRUE;
 
-  const bool consumed = !pass_through;
-  return consumed;
+  /* The slave commits plain characters and Compose/dead key results.
+   * Don't commit here too: the client widget inserts the character
+   * by itself when this returns FALSE. */
+  return gtk_im_context_filter_keypress(uic->slave, event);
 }
 
 static gboolean
@@ -776,6 +995,12 @@ uim_im_context_get_preedit_string(GtkIMContext *ic,
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
 
+  if (uic->preedit_segments->len == 0) {
+    /* Ctrl+Shift+U Unicode input of the slave. */
+    gtk_im_context_get_preedit_string(uic->slave, str, attrs, cursor_pos);
+    return;
+  }
+
   if (attrs)
     *attrs = pango_attr_list_new();
 
@@ -810,7 +1035,10 @@ uim_im_context_focus_in(GtkIMContext *ic)
   uim_helper_client_focus_in(uic->uc);
   uim_prop_list_update(uic->uc);
 
+  uim_im_context_show_candidates(uic);
+
   uim_focus_in_context(uic->uc);
+  gtk_im_context_focus_in(uic->slave);
 }
 
 static void
@@ -818,10 +1046,13 @@ uim_im_context_focus_out(GtkIMContext *ic)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
 
+  gtk_im_context_focus_out(uic->slave);
   uim_focus_out_context(uic->uc);
 
   uim_im_context_check_helper_connection(uic);
   uim_helper_client_focus_out(uic->uc);
+
+  uim_im_context_hide_candidates(uic);
 
   have_focus = FALSE;
 }
@@ -833,13 +1064,48 @@ uim_im_context_reset(GtkIMContext *ic)
   uim_reset_context(uic->uc);
   preedit_clear_cb(uic);
   preedit_update_cb(uic);
+  gtk_im_context_reset(uic->slave);
+}
+
+static void
+client_widget_destroy_cb(GtkWidget *widget, gpointer data)
+{
+  UIMIMContext *uic = data;
+  gtk_im_context_set_client_widget(GTK_IM_CONTEXT(uic), NULL);
 }
 
 static void
 uim_im_context_set_client_widget(GtkIMContext *ic, GtkWidget *widget)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
+
+  if (uic->client_widget == widget)
+    return;
+
+  if (uic->client_widget) {
+    /* The candidates view must not be a child of the old client
+     * widget. Otherwise, the old client widget complains about a
+     * remaining child on finalize. */
+    uim_im_context_detach_candidates_view(uic);
+    g_signal_handlers_disconnect_by_func(
+      uic->client_widget,
+      (gpointer)(uintptr_t)client_widget_destroy_cb,
+      uic);
+    g_object_remove_weak_pointer(G_OBJECT(uic->client_widget),
+                                 (gpointer *)&uic->client_widget);
+  }
+
   uic->client_widget = widget;
+  gtk_im_context_set_client_widget(uic->slave, widget);
+
+  if (uic->client_widget) {
+    g_object_add_weak_pointer(G_OBJECT(uic->client_widget),
+                              (gpointer *)&uic->client_widget);
+    g_signal_connect(uic->client_widget,
+                     "destroy",
+                     G_CALLBACK(client_widget_destroy_cb),
+                     uic);
+  }
 }
 
 static void
@@ -847,6 +1113,8 @@ uim_im_context_set_cursor_location(GtkIMContext *ic, GdkRectangle *area)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
   uic->cursor_location = *area;
+  if (gtk_widget_get_visible(GTK_WIDGET(uic->candidates_view)))
+    uim_candidates_view_set_cursor_location(uic->candidates_view, area);
 }
 
 static void
@@ -854,6 +1122,7 @@ uim_im_context_set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
   uic->use_preedit = use_preedit;
+  gtk_im_context_set_use_preedit(uic->slave, use_preedit);
 }
 
 static void
@@ -868,8 +1137,30 @@ uim_im_context_init(UIMIMContext *uic)
     g_error("uim: failed to create uim context.");
   }
 
+  uic->slave = gtk_im_context_simple_new();
+  g_signal_connect(uic->slave, "commit", G_CALLBACK(slave_commit_cb), uic);
+  g_signal_connect(uic->slave,
+                   "preedit-start",
+                   G_CALLBACK(slave_preedit_start_cb),
+                   uic);
+  g_signal_connect(uic->slave,
+                   "preedit-changed",
+                   G_CALLBACK(slave_preedit_changed_cb),
+                   uic);
+  g_signal_connect(uic->slave,
+                   "preedit-end",
+                   G_CALLBACK(slave_preedit_end_cb),
+                   uic);
+
   uic->client_widget = NULL;
   uic->use_preedit = TRUE;
+  uic->candidates_view = g_object_ref_sink(uim_candidates_view_new());
+  uic->candidates_active = FALSE;
+  g_signal_connect(uic->candidates_view,
+                   "index-changed",
+                   G_CALLBACK(candidates_view_index_changed_cb),
+                   uic);
+  uim_im_context_update_candwin_pos_type(uic);
   uic->preedit_segments = g_array_new(FALSE, TRUE, sizeof(preedit_segment));
   g_array_set_clear_func(uic->preedit_segments, preedit_segment_clear);
   uic->prev_preedit_len = 0;
@@ -884,6 +1175,11 @@ uim_im_context_init(UIMIMContext *uic)
                      preedit_pushback_cb,
                      preedit_update_cb);
   uim_set_prop_list_update_cb(uic->uc, prop_list_update_cb);
+  uim_set_candidate_selector_cb(uic->uc,
+                                cand_activate_cb,
+                                cand_select_cb,
+                                cand_shift_page_cb,
+                                cand_deactivate_cb);
   uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);
   uim_set_im_switch_request_cb(uic->uc,
                                switch_app_global_im_cb,
@@ -900,8 +1196,17 @@ uim_im_context_dispose(GObject *obj)
   if (uic->client_widget) {
     uim_im_context_set_client_widget(GTK_IM_CONTEXT(uic), NULL);
   }
+  if (uic->candidates_view) {
+    uim_im_context_detach_candidates_view(uic);
+    g_clear_object(&uic->candidates_view);
+  }
 
   uim_im_context_dispose_helper(uic);
+
+  if (uic->slave) {
+    g_signal_handlers_disconnect_by_data(uic->slave, uic);
+    g_clear_object(&uic->slave);
+  }
 
   G_OBJECT_CLASS(uim_im_context_parent_class)->dispose(obj);
 }
@@ -946,5 +1251,6 @@ uim_im_context_class_finalize(UIMIMContextClass *klass)
 void
 uim_im_context_load(GTypeModule *module)
 {
+  uim_candidates_view_load(module);
   uim_im_context_register_type(module);
 }
