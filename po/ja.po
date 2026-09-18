@@ -7246,12 +7246,12 @@ msgstr "m17nライブラリが提供する入力方式"
 #: uim/dynlib.c:149
 #, c-format
 msgid "dynlib: %s: Load failed."
-msgstr "%s動的ライブラリ: ロード失敗。"
+msgstr "dynlib: %s: ロードに失敗しました。"
 
 #: uim/dynlib.c:158
 #, c-format
 msgid "dynlib: %s: Initialization failed."
-msgstr "%s動的ライブラリ:初期化失敗"
+msgstr "dynlib: %s: 初期化に失敗しました。"
 
 #: uim/openssl.c:76
 #, c-format
@@ -7313,7 +7313,7 @@ msgstr "補完機能がないSKKサーバ\n"
 #: uim/skk.c:3485
 #, c-format
 msgid "uim-skk: invalid %s dictionary: %s"
-msgstr "uim-skk: %s辞書が不正です: %s"
+msgstr "uim-skk: 辞書ファイル %s が不正です: %s"
 
 #: uim/skk.c:3806
 #, c-format
