@@ -98,11 +98,12 @@
                                        lang-query)
                                80
                                proxy
-                               ssl))
-             (parsed (predict-google-suggest-parse self (string->lang result))))
-        (map (lambda (s)
-               (predict->external-charset self s))
-             parsed)))))
+                               ssl)))
+        (if (string? result)
+            (map (lambda (s)
+                   (predict->external-charset self s))
+                 (predict-google-suggest-parse self (string->lang result)))
+            '())))))
 
 (class-set-method! predict-google-suggest search
   (lambda (self str)
