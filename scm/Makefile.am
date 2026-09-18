@@ -53,8 +53,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  input-parse.scm match.scm pregexp.scm \
  packrat.scm \
  json.scm json-parser-expanded.scm \
- http-client.scm http-server.scm \
- sxml-tools.scm sxpathlib.scm \
+ http-client.scm \
  annotation.scm annotation-custom.scm annotation-dict.scm annotation-eb.scm \
  annotation-filter.scm annotation-osx-dcs.scm \
  xkb.scm \
