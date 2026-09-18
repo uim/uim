@@ -4662,17 +4662,17 @@ msgstr "ヘッダが不正です。"
 #: scm/http-client.scm:225
 #, scheme-format
 msgid "proxy refused the tunnel to ~a:~a: ~a ~a"
-msgstr ""
+msgstr "プロキシが~a:~aへのトンネルを拒否しました: ~a ~a"
 
 #: scm/http-client.scm:231
 #, scheme-format
 msgid "invalid proxy response to CONNECT ~a:~a"
-msgstr ""
+msgstr "CONNECT ~a:~aに対するプロキシの応答が不正です"
 
 #: scm/http-client.scm:260
 #, scheme-format
 msgid "cannot connect to ~a: uim is built without OpenSSL support"
-msgstr ""
+msgstr "~aに接続できません: uimはOpenSSLサポートなしでビルドされています"
 
 #: scm/http-client.scm:280
 msgid "cannot connect server"
@@ -7256,17 +7256,17 @@ msgstr "dynlib: %s: 初期化に失敗しました。"
 #: uim/openssl.c:76
 #, c-format
 msgid "uim-openssl: SSL_CTX_new: %s"
-msgstr ""
+msgstr "uim-openssl: SSL_CTX_new: %s"
 
 #: uim/openssl.c:83
 #, c-format
 msgid "uim-openssl: SSL_CTX_set_default_verify_paths: %s"
-msgstr ""
+msgstr "uim-openssl: SSL_CTX_set_default_verify_paths: %s"
 
 #: uim/openssl.c:93
 #, c-format
 msgid "uim-openssl: SSL_new: %s"
-msgstr ""
+msgstr "uim-openssl: SSL_new: %s"
 
 #: uim/openssl.c:100
 #, c-format
@@ -7276,7 +7276,7 @@ msgstr "uim-openssl: %sへの接続を確立できません: %s"
 #: uim/openssl.c:109
 #, c-format
 msgid "uim-openssl: certificate verification failed for %s: %s"
-msgstr ""
+msgstr "uim-openssl: %sの証明書検証に失敗しました: %s"
 
 #: uim/openssl.c:112
 #, c-format
