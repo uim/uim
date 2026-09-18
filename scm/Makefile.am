@@ -50,7 +50,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  openssl.scm \
  sqlite3.scm \
  lolevel.scm \
- input-parse.scm match.scm pregexp.scm \
+ input-parse.scm \
  packrat.scm \
  json.scm json-parser-expanded.scm \
  http-client.scm \
