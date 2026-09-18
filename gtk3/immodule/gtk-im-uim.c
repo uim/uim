@@ -432,6 +432,57 @@ widget_for_window(GdkWindow *window)
   return NULL;
 }
 
+static GtkWindow *
+gtk_window_for_window(GdkWindow *window)
+{
+  while (window) {
+    gpointer user_data;
+    gdk_window_get_user_data(window, &user_data);
+    if (user_data && GTK_IS_WINDOW(user_data))
+      return GTK_WINDOW(user_data);
+
+    window = gdk_window_get_parent(window);
+  }
+
+  return NULL;
+}
+
+static void
+set_transient_for_if_changed(GtkWidget *widget, GtkWindow *parent)
+{
+  GtkWindow *window;
+
+  if (!widget)
+    return;
+
+  window = GTK_WINDOW(widget);
+  /* On Wayland, GDK tears down and recreates the subsurface every time
+   * the transient parent is set, so avoid setting it needlessly. */
+  if (gtk_window_get_transient_for(window) == parent)
+    return;
+
+  gtk_window_set_transient_for(window, parent);
+}
+
+/* Popup windows must have a transient parent before they are shown.
+ * On Wayland, a GTK_WINDOW_POPUP without a transient parent is mapped
+ * as an independent toplevel window that can't be positioned. */
+static void
+update_transient_for(IMUIMContext *uic)
+{
+  GtkWindow *parent = gtk_window_for_window(uic->win);
+
+  /* Keep the last known parent when none can be resolved now (e.g. no
+   * client window yet): clearing it would turn the popups into
+   * unpositionable independent toplevels on Wayland. */
+  if (!parent)
+    return;
+
+  set_transient_for_if_changed(GTK_WIDGET(uic->cwin), parent);
+  set_transient_for_if_changed(uic->caret_state_indicator, parent);
+  set_transient_for_if_changed(uic->preedit_window, parent);
+}
+
 static void
 update_client_widget(IMUIMContext *uic)
 {
@@ -514,22 +565,7 @@ layout_candwin(IMUIMContext *uic)
   if (uic->win && uic->cwin) {
     gdk_window_get_geometry(uic->win, &x, &y, &width, &height);
     gdk_window_get_origin(uic->win, &x, &y);
-    {
-      GtkWindow *window = NULL;
-      GdkWindow *gdk_window = uic->win;
-      while (gdk_window) {
-        gpointer user_data;
-        gdk_window_get_user_data(gdk_window, &user_data);
-        if (user_data && GTK_IS_WINDOW(user_data)) {
-          window = user_data;
-          break;
-        }
-        gdk_window = gdk_window_get_parent(gdk_window);
-      }
-      if (window) {
-        gtk_window_set_transient_for(GTK_WINDOW(uic->cwin), window);
-      }
-    }
+    update_transient_for(uic);
     uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   }
 }
@@ -1421,8 +1457,10 @@ im_uim_focus_in(GtkIMContext *ic)
       gtk_widget_hide(GTK_WIDGET(cc->cwin));
   }
 
-  if (uic->cwin && uic->cwin_is_active)
+  if (uic->cwin && uic->cwin_is_active && uic->win) {
+    layout_candwin(uic);
     gtk_widget_show(GTK_WIDGET(uic->cwin));
+  }
 
   uim_focus_in_context(uic->uc);
 }
@@ -1488,6 +1526,7 @@ im_uim_set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
       preedit_label = gtk_label_new("");
       gtk_container_add(GTK_CONTAINER(uic->preedit_window), preedit_label);
       gtk_widget_show(preedit_label);
+      update_transient_for(uic);
     }
     uic->preedit_handler_id =
       g_signal_connect(G_OBJECT(ic), "preedit-changed",
@@ -1515,6 +1554,7 @@ im_uim_set_client_window(GtkIMContext *ic, GdkWindow *w)
     uic->win = NULL;
   }
   update_client_widget(uic);
+  update_transient_for(uic);
 }
 
 static UIMCandWinGtk *
