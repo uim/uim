@@ -141,7 +141,7 @@ msgstr "品詞欄を表示"
 #: gtk3/dict/word-list-view-gtk.c:156 gtk3/dict/word-list-view-gtk.c:163
 #: gtk3/dict/word-list-view-gtk.c:164
 msgid "to be written"
-msgstr ""
+msgstr "未記載"
 
 #: gtk3/dict/word-list-view-gtk.c:139
 msgid "Show freq column"
@@ -265,7 +265,6 @@ msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
 #: gtk3/dict/word-list-win-gtk.c:501
-#, fuzzy
 msgid "Word deletion succeeded."
 msgstr "単語の削除に成功しました。"
 
@@ -283,6 +282,9 @@ msgid ""
 "Copyright (C) 2004-2013 uim Project\n"
 "All rights reserved."
 msgstr ""
+"Copyright (C) 2003-2004 Masahito Omote\n"
+"Copyright (C) 2004-2013 uim Project\n"
+"All rights reserved."
 
 #: gtk3/dict/word-win-gtk.c:53
 msgid "Substantive"
@@ -305,12 +307,10 @@ msgid "Etc"
 msgstr "その他"
 
 #: gtk3/dict/word-win-gtk.c:147
-#, fuzzy
 msgid "Necessary information"
 msgstr "必須項目"
 
 #: gtk3/dict/word-win-gtk.c:167
-#, fuzzy
 msgid "Additional information"
 msgstr "追加項目"
 
@@ -371,7 +371,6 @@ msgid "Word registration failed."
 msgstr "単語の登録に失敗しました。"
 
 #: gtk3/dict/word-win-gtk.c:521
-#, fuzzy
 msgid "Word registration succeeded."
 msgstr "単語の登録に成功しました。"
 
@@ -3448,11 +3447,11 @@ msgstr "[Baidu-OnlineIME-Jp] かな/カナ反転確定"
 
 #: scm/baidu-olime-jp-key-custom.scm:116
 msgid "[Baidu-OnlineIME-Jp] on"
-msgstr ""
+msgstr "[Baidu-OnlineIME-Jp] オン"
 
 #: scm/baidu-olime-jp-key-custom.scm:123
 msgid "[Baidu-OnlineIME-Jp] off"
-msgstr ""
+msgstr "[Baidu-OnlineIME-Jp] オフ"
 
 #: scm/baidu-olime-jp-key-custom.scm:129
 msgid "[Baidu-OnlineIME-Jp] begin conversion"
@@ -3652,9 +3651,8 @@ msgid "Byeoru dictionaries"
 msgstr "Byeoru 辞書"
 
 #: scm/byeoru-custom.scm:95
-#, fuzzy
 msgid "X Keyboard Extension"
-msgstr "ヴェーダ文字拡張"
+msgstr "X Keyboard Extension"
 
 #: scm/byeoru-custom.scm:99
 msgid "Workarounds"
@@ -3718,7 +3716,7 @@ msgstr "システム辞書ファイル"
 
 #: scm/byeoru-custom.scm:203
 msgid "Refresh keyboard map at each switch into Hangul mode"
-msgstr ""
+msgstr "ハングルモードに切り替えるたびにキーボードマップを更新"
 
 #: scm/byeoru-custom.scm:215
 msgid "Represent incomplete syllables using compatibility jamos"
@@ -4354,7 +4352,7 @@ msgstr "ELatin変換 オン"
 
 #: scm/fileio.scm:74 scm/fileio.scm:84 scm/fileio.scm:92
 msgid "unexpected terminate string."
-msgstr ""
+msgstr "予期しない文字列終端です。"
 
 #: scm/fileio.scm:240
 msgid "poll error"
@@ -4702,7 +4700,7 @@ msgstr "XIM"
 
 #: scm/im-custom.scm:64
 msgid "Xkb"
-msgstr ""
+msgstr "Xkb"
 
 #: scm/im-custom.scm:68
 msgid "Notify"
@@ -4758,7 +4756,7 @@ msgstr "XIMの編集領域"
 
 #: scm/im-custom.scm:137
 msgid "Settings of X Keyboard Extension"
-msgstr ""
+msgstr "X Keyboard Extensionの設定"
 
 #: scm/im-custom.scm:147
 msgid "Icon"
@@ -5007,33 +5005,28 @@ msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
 
 #: scm/im-custom.scm:656
-#, fuzzy
 msgid "Fontset for preedit area (ja)"
-msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
+msgstr "編集領域のフォントセット (ja)"
 
 #: scm/im-custom.scm:666
-#, fuzzy
 msgid "Fontset for preedit area (ko)"
-msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
+msgstr "編集領域のフォントセット (ko)"
 
 #: scm/im-custom.scm:676
-#, fuzzy
 msgid "Fontset for preedit area (zh_CN)"
-msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
+msgstr "編集領域のフォントセット (zh_CN)"
 
 #: scm/im-custom.scm:686
-#, fuzzy
 msgid "Fontset for preedit area (zh_TW)"
-msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
+msgstr "編集領域のフォントセット (zh_TW)"
 
 #: scm/im-custom.scm:696
 msgid "Save keyboard map to load in Xkb-less environments"
-msgstr ""
+msgstr "Xkbなしの環境で読み込めるようキーボードマップを保存"
 
 #: scm/im-custom.scm:719
-#, fuzzy
 msgid "Location of keyboard map file"
-msgstr "ラトビア語キーボード"
+msgstr "キーボードマップファイルの場所"
 
 #: scm/im-custom.scm:735
 msgid "Notify agent name"
@@ -5792,9 +5785,8 @@ msgid "Ancillary Prediction"
 msgstr "補助予測入力"
 
 #: scm/predict-custom.scm:45
-#, fuzzy
 msgid "Enable ancillary prediction (for Canna, TUT-Code, Wnn)"
-msgstr "Ajax-IME, Canna, SJ3, TUT-Code, Wnn用予測入力を有効にする"
+msgstr "Canna、TUT-Code、Wnn用の補助予測入力を有効にする"
 
 #: scm/predict-custom.scm:53 scm/predict-custom.scm:75
 msgid "Look prediction"
@@ -6008,68 +6000,60 @@ msgstr "SKKサーバのアドレスファミリ"
 #: scm/skk-custom.scm:427 scm/skk-custom.scm:449 scm/skk-custom.scm:466
 #: scm/skk-custom.scm:483
 msgid "EUC-JP"
-msgstr ""
+msgstr "EUC-JP"
 
 #: scm/skk-custom.scm:428
 msgid "Use EUC-JP when talking to skkserv"
-msgstr ""
+msgstr "skkservとの通信にEUC-JPを使用"
 
 #: scm/skk-custom.scm:429 scm/skk-custom.scm:451 scm/skk-custom.scm:468
 #: scm/skk-custom.scm:485
 msgid "UTF-8"
-msgstr ""
+msgstr "UTF-8"
 
 #: scm/skk-custom.scm:430
 msgid "Use UTF-8 when talking to skkserv"
-msgstr ""
+msgstr "skkservとの通信にUTF-8を使用"
 
 #: scm/skk-custom.scm:431
 msgid "Character encoding of skkserv"
-msgstr ""
+msgstr "skkservの文字コード"
 
 #: scm/skk-custom.scm:432
 msgid "Encoding used for skkserv lookup and completion payloads."
-msgstr ""
+msgstr "skkservの検索および補完データに使用する文字コード。"
 
 #: scm/skk-custom.scm:450
-#, fuzzy
 msgid "Use EUC-JP for the system dictionary"
-msgstr "これ以上辞書に登録できません。"
+msgstr "システム辞書にEUC-JPを使用"
 
 #: scm/skk-custom.scm:452
-#, fuzzy
 msgid "Use UTF-8 for the system dictionary"
-msgstr "これ以上辞書に登録できません。"
+msgstr "システム辞書にUTF-8を使用"
 
 #: scm/skk-custom.scm:453
-#, fuzzy
 msgid "System dictionary encoding"
-msgstr "システム辞書ファイル"
+msgstr "システム辞書の文字コード"
 
 #: scm/skk-custom.scm:454
-#, fuzzy
 msgid "Character encoding of the system dictionary file."
-msgstr "個人辞書のファイルを作成できません。"
+msgstr "システム辞書ファイルの文字コード。"
 
 #: scm/skk-custom.scm:467
-#, fuzzy
 msgid "Use EUC-JP for the personal dictionary"
-msgstr "個人辞書ファイル"
+msgstr "個人辞書にEUC-JPを使用"
 
 #: scm/skk-custom.scm:469
-#, fuzzy
 msgid "Use UTF-8 for the personal dictionary"
-msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
+msgstr "個人辞書にUTF-8を使用"
 
 #: scm/skk-custom.scm:470
-#, fuzzy
 msgid "Personal dictionary encoding"
-msgstr "個人辞書ファイル"
+msgstr "個人辞書の文字コード"
 
 #: scm/skk-custom.scm:471
-#, fuzzy
 msgid "Character encoding of the personal dictionary file."
-msgstr "メイン辞書のファイルを開くことができません。"
+msgstr "個人辞書ファイルの文字コード。"
 
 #: scm/skk-custom.scm:477
 msgid "Personal dictionary file (dedicated to uim)"
@@ -6077,21 +6061,19 @@ msgstr "個人辞書ファイル (uim専用)"
 
 #: scm/skk-custom.scm:484
 msgid "Use EUC-JP for the uim personal dictionary"
-msgstr ""
+msgstr "uim個人辞書にEUC-JPを使用"
 
 #: scm/skk-custom.scm:486
 msgid "Use UTF-8 for the uim personal dictionary"
-msgstr ""
+msgstr "uim個人辞書にUTF-8を使用"
 
 #: scm/skk-custom.scm:487
-#, fuzzy
 msgid "uim personal dictionary encoding"
-msgstr "個人辞書ファイル"
+msgstr "uim個人辞書の文字コード"
 
 #: scm/skk-custom.scm:488
-#, fuzzy
 msgid "Character encoding of the uim personal dictionary file."
-msgstr "メイン辞書のファイルを開くことができません。"
+msgstr "uim個人辞書ファイルの文字コード。"
 
 #: scm/skk-custom.scm:507
 msgid "ddskk"
@@ -6198,9 +6180,8 @@ msgid "[SKK] cancel"
 msgstr "[SKK] キャンセル"
 
 #: scm/skk-key-custom.scm:152
-#, fuzzy
 msgid "[SKK] sticky"
-msgstr "[SKK] オン"
+msgstr "[SKK] スティッキー"
 
 #: scm/skk-key-custom.scm:162
 msgid "[SKK] return"
@@ -6862,9 +6843,8 @@ msgid "[TUT-Code] postfix katakana conversion"
 msgstr "[TUT-Code] 後置型カタカナ変換"
 
 #: scm/tutcode-key-custom.scm:441
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion while hiragana continues"
-msgstr "[TUT-Code] 後置型カタカナ変換 (2文字)"
+msgstr "[TUT-Code] ひらがなが続く間の後置型カタカナ変換"
 
 #: scm/tutcode-key-custom.scm:447
 msgid "[TUT-Code] postfix katakana conversion of 1 character"
@@ -6903,94 +6883,76 @@ msgid "[TUT-Code] postfix katakana conversion of 9 characters"
 msgstr "[TUT-Code] 後置型カタカナ変換 (9文字)"
 
 #: scm/tutcode-key-custom.scm:501
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion excluding 1 character"
-msgstr "[TUT-Code] 後置型カタカナ変換 (1文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (1文字を除外)"
 
 #: scm/tutcode-key-custom.scm:507
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion excluding 2 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (2文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (2文字を除外)"
 
 #: scm/tutcode-key-custom.scm:513
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion excluding 3 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (3文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (3文字を除外)"
 
 #: scm/tutcode-key-custom.scm:519
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion excluding 4 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (4文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (4文字を除外)"
 
 #: scm/tutcode-key-custom.scm:525
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion excluding 5 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (5文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (5文字を除外)"
 
 #: scm/tutcode-key-custom.scm:531
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion excluding 6 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (6文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (6文字を除外)"
 
 #: scm/tutcode-key-custom.scm:537
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion shrink 1 character"
-msgstr "[TUT-Code] 後置型カタカナ変換 (1文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (1文字短縮)"
 
 #: scm/tutcode-key-custom.scm:538
-#, fuzzy
 msgid "shrink last postfix katakana conversion by 1 character"
-msgstr "[TUT-Code] 後置型カタカナ変換 (1文字)"
+msgstr "直前の後置型カタカナ変換を1文字短縮"
 
 #: scm/tutcode-key-custom.scm:543
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion shrink 2 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (2文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (2文字短縮)"
 
 #: scm/tutcode-key-custom.scm:544
-#, fuzzy
 msgid "shrink last postfix katakana conversion by 2 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (2文字)"
+msgstr "直前の後置型カタカナ変換を2文字短縮"
 
 #: scm/tutcode-key-custom.scm:549
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion shrink 3 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (3文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (3文字短縮)"
 
 #: scm/tutcode-key-custom.scm:550
-#, fuzzy
 msgid "shrink last postfix katakana conversion by 3 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (3文字)"
+msgstr "直前の後置型カタカナ変換を3文字短縮"
 
 #: scm/tutcode-key-custom.scm:555
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion shrink 4 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (4文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (4文字短縮)"
 
 #: scm/tutcode-key-custom.scm:556
-#, fuzzy
 msgid "shrink last postfix katakana conversion by 4 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (4文字)"
+msgstr "直前の後置型カタカナ変換を4文字短縮"
 
 #: scm/tutcode-key-custom.scm:561
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion shrink 5 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (5文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (5文字短縮)"
 
 #: scm/tutcode-key-custom.scm:562
-#, fuzzy
 msgid "shrink last postfix katakana conversion by 5 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (5文字)"
+msgstr "直前の後置型カタカナ変換を5文字短縮"
 
 #: scm/tutcode-key-custom.scm:567
-#, fuzzy
 msgid "[TUT-Code] postfix katakana conversion shrink 6 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (6文字)"
+msgstr "[TUT-Code] 後置型カタカナ変換 (6文字短縮)"
 
 #: scm/tutcode-key-custom.scm:568
-#, fuzzy
 msgid "shrink last postfix katakana conversion by 6 characters"
-msgstr "[TUT-Code] 後置型カタカナ変換 (6文字)"
+msgstr "直前の後置型カタカナ変換を6文字短縮"
 
 #: scm/tutcode-key-custom.scm:573
 msgid "[TUT-Code] postfix kanji to sequence conversion"
@@ -7270,9 +7232,8 @@ msgid "Customize uim input method environment"
 msgstr "入力メソッド環境 (uim) を設定します"
 
 #: uim.desktop.in.in:5
-#, fuzzy
 msgid "input;method;"
-msgstr "かな入力方式"
+msgstr "入力;入力方式;"
 
 #: uim/m17nlib.c:482
 msgid "m17n library IM open error"
@@ -7310,7 +7271,7 @@ msgstr ""
 #: uim/openssl.c:100
 #, c-format
 msgid "uim-openssl: cannot set up connection to %s: %s"
-msgstr ""
+msgstr "uim-openssl: %sへの接続を確立できません: %s"
 
 #: uim/openssl.c:109
 #, c-format
@@ -7318,24 +7279,24 @@ msgid "uim-openssl: certificate verification failed for %s: %s"
 msgstr ""
 
 #: uim/openssl.c:112
-#, fuzzy, c-format
+#, c-format
 msgid "uim-openssl: SSL_connect to %s: %s"
-msgstr "uim-skk: %sのポート%sへ接続できませんでした。"
+msgstr "uim-openssl: %sへのSSL_connectに失敗しました: %s"
 
 #: uim/skk.c:360
 #, c-format
 msgid "uim-skk: unknown encoding for %s: %s"
-msgstr ""
+msgstr "uim-skk: %sの文字コード%sは不明です"
 
 #: uim/skk.c:438
 #, c-format
 msgid "uim-skk: failed to convert skkserv data from %s to %s"
-msgstr ""
+msgstr "uim-skk: skkservのデータを%sから%sへ変換できませんでした"
 
 #: uim/skk.c:1160
-#, fuzzy, c-format
+#, c-format
 msgid "uim-skk: failed to convert system dictionary data from %s to %s"
-msgstr "uim-canna: 辞書ファイル %s のマウントに失敗しました。"
+msgstr "uim-skk: システム辞書データを%sから%sへ変換できませんでした"
 
 #: uim/skk.c:1324
 msgid "uim-skk: error in expand_str"
@@ -7350,14 +7311,14 @@ msgid "SKK server without completion capability\n"
 msgstr "補完機能がないSKKサーバ\n"
 
 #: uim/skk.c:3485
-#, fuzzy, c-format
+#, c-format
 msgid "uim-skk: invalid %s dictionary: %s"
-msgstr "uim-canna: 辞書ファイル %s のマウントに失敗しました。"
+msgstr "uim-skk: %s辞書が不正です: %s"
 
 #: uim/skk.c:3806
-#, fuzzy, c-format
+#, c-format
 msgid "uim-skk: cannot encode personal dictionary as %s"
-msgstr "uim-canna: 辞書ファイル %s のマウントに失敗しました。"
+msgstr "uim-skk: 個人辞書を%sとしてエンコードできません"
 
 #: uim/skk.c:4186
 #, c-format
@@ -7412,7 +7373,7 @@ msgstr ""
 
 #: scm/baidu-olime-jp-custom.scm:35
 msgid "Baidu-OnlineIME-Jp"
-msgstr ""
+msgstr "Baidu-OnlineIME-Jp"
 
 #: scm/baidu-olime-jp-custom.scm:43
 msgid "Baidu-OnlineIME-Jp server"
