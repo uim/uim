@@ -1,5 +1,155 @@
 # NEWS
 
+## 1.9.7 - 2026-09-20
+
+### Improvements
+
+  * Qt3: Removed `KSeparator`
+    * [GH-252](https://github.com/uim/uim/issues/252)
+    * Patch by OBATA Akio
+
+  * TQt: Added support for TDE (Trinity Desktop Environment) and TQt.
+    * [GH-255](https://github.com/uim/uim/issues/255)
+    * Patch by OBATA Akio
+
+  * Anthy: Added support for debian/anthy as UTF-8 supported Anthy.
+    * [GH-259](https://github.com/uim/uim/issues/259)
+
+  * GTK 4: Added support for GTK 4 IM module.
+    * [GH-173](https://github.com/uim/uim/issues/173)
+    * [GH-263](https://github.com/uim/uim/issues/263)
+    * [GH-321](https://github.com/uim/uim/issues/321)
+
+  * fep: Improved ncurses detection.
+    * [GH-274](https://github.com/uim/uim/issues/274)
+    * Patch by Nicolas PARLANT
+
+  * KDE5: Added `--disable-kde5-applet`.
+    * [GH-274](https://github.com/uim/uim/issues/274)
+    * Patch by Nicolas PARLANT
+
+  * sigscheme: Updated bundled sigscheme to 0.9.5.
+    * [GH-281](https://github.com/uim/uim/issues/281)
+
+  * fep: Improved.
+    * [GH-282](https://github.com/uim/uim/issues/282)
+    * [GH-285](https://github.com/uim/uim/issues/285)
+    * [GH-286](https://github.com/uim/uim/issues/286)
+    * [GH-287](https://github.com/uim/uim/issues/287)
+    * [GH-288](https://github.com/uim/uim/issues/288)
+    * [GH-290](https://github.com/uim/uim/issues/290)
+    * [GH-291](https://github.com/uim/uim/issues/291)
+    * [GH-299](https://github.com/uim/uim/issues/299)
+    * [GH-300](https://github.com/uim/uim/issues/300)
+    * [GH-301](https://github.com/uim/uim/issues/301)
+    * [GH-324](https://github.com/uim/uim/issues/324)
+    * [GH-325](https://github.com/uim/uim/issues/325)
+    * Patch by yamam
+
+  * GTK+ 2: Removed again.
+    * [GH-294](https://github.com/uim/uim/issues/294)
+    * Patch by dai
+
+  * SKK: Improved.
+    * [GH-296](https://github.com/uim/uim/issues/296)
+    * [GH-298](https://github.com/uim/uim/issues/298)
+    * Patch by yamam
+
+  * SKK: Added support for UTF-8.
+    * [GH-302](https://github.com/uim/uim/issues/302)
+    * See the following documents for how to use UTF-8:
+      * https://github.com/uim/uim/blob/master/doc/skk-utf8-migration-guide.md
+      * https://github.com/uim/uim/blob/master/doc/skk-utf8-migration-guide-ja.md
+    * Patch by tattsan
+    * Patch by yamam
+
+  * Removed unused components.
+    * Ajax IME: [GH-306](https://github.com/uim/uim/issues/306)
+    * Yahoo! JAPAN web API: [GH-306](https://github.com/uim/uim/issues/306)
+    * curl plugin: [GH-305](https://github.com/uim/uim/issues/305)
+    * Composer framework: [GH-308](https://github.com/uim/uim/issues/308)
+    * Zaurus: [GH-316](https://github.com/uim/uim/issues/316)
+    * PRIME: [GH-314](https://github.com/uim/uim/issues/314)
+    * Mana: [GH-314](https://github.com/uim/uim/issues/314)
+    * SJ3: [GH-314](https://github.com/uim/uim/issues/314)
+    * Scheme debugger: [GH-315](https://github.com/uim/uim/issues/315)
+    * Browser preferences UI: [GH-312](https://github.com/uim/uim/issues/312)
+    * Patch by dai
+
+  * Emacs: Suppressed leim related warnings.
+    * [GH-304](https://github.com/uim/uim/issues/304)
+    * Patch by yamam
+
+  * OpenSSL: Added support for recent OpenSSL.
+    * [GH-311](https://github.com/uim/uim/issues/311)
+
+  * gettext: Added support for gettext 0.23 or later.
+    * [GH-221](https://github.com/uim/uim/issues/221)
+    * [GH-313](https://github.com/uim/uim/issues/313)
+    * Reported by NOKUBI Takatsugu
+
+  * Mozc: Imported Mozc support from MacUIM.
+    * [GH-226](https://github.com/uim/uim/issues/226)
+    * [GH-318](https://github.com/uim/uim/issues/318)
+    * [GH-330](https://github.com/uim/uim/issues/330)
+    * Patch by yamam
+
+  * icon: Added `uim-icon.svg`.
+    * [GH-128](https://github.com/uim/uim/issues/128)
+    * [GH-328](https://github.com/uim/uim/issues/328)
+
+### Fixes
+
+  * Qt3: Fixed missing include path.
+    * [GH-251](https://github.com/uim/uim/issues/251)
+    * Patch by OBATA Akio
+
+  * Qt: Fixed `bushu.t` install failure.
+    * [GH-254](https://github.com/uim/uim/issues/254)
+    * Patch by OBATA Akio
+
+  * notify: Added missing include path.
+    * [GH-274](https://github.com/uim/uim/issues/274)
+    * Patch by Nicolas PARLANT
+
+  * SKK: Made SKK really optional.
+    * [GH-274](https://github.com/uim/uim/issues/274)
+    * Patch by Nicolas PARLANT
+
+  * XKB: Avoided building XKB without X detection.
+    * [GH-274](https://github.com/uim/uim/issues/274)
+    * Patch by Nicolas PARLANT
+
+  * SKK: Fixed socket leak.
+    * [GH-279](https://github.com/uim/uim/issues/279)
+    * Patch by Takahiro Yoshizawa
+
+  * fep: Fixed OOB write.
+    * [GH-293](https://github.com/uim/uim/issues/293)
+    * Patch by mox
+
+  * Emacs: Suppressed false-positive "invalid IM engine" error.
+    * [GH-310](https://github.com/uim/uim/issues/310)
+    * Patch by yamam
+
+  * GTK+ 3: Fixed candidate window staying visible on Wayland.
+    * [GH-320](https://github.com/uim/uim/issues/320)
+
+  * Emacs: Fixed a resource leak.
+    * [GH-331](https://github.com/uim/uim/issues/331)
+    * Patch by yamam
+
+### Thanks
+
+  * OBATA Akio
+  * Nicolas PARLANT
+  * Takahiro Yoshizawa
+  * yamam
+  * dai
+  * mox
+  * tattsan
+  * NOKUBI Takatsugu
+
 ## 1.9.6 - 2025-05-16
 
 ### Improvements
