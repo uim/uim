@@ -7281,7 +7281,7 @@ msgstr "uim-openssl: %sの証明書検証に失敗しました: %s"
 #: uim/openssl.c:112
 #, c-format
 msgid "uim-openssl: SSL_connect to %s: %s"
-msgstr "uim-openssl: %sへのSSL_connectに失敗しました: %s"
+msgstr "uim-openssl: %sへのSSL_connect: %s"
 
 #: uim/skk.c:360
 #, c-format
