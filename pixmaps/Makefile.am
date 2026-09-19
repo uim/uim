@@ -50,6 +50,9 @@ SVGS += ja_romaji_dark_background.svg \
 # Tools
 SVGS += im_switcher.svg uim-dict.svg
 
+# uim itself
+SVGS += uim-icon.svg
+
 # input method substitutions
 IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 hangul2.svg hangul3.svg romaja.svg \
