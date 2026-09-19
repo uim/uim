@@ -44,6 +44,7 @@ const char *usersockname(const char *file);
 void init_sendsocket(const char *sock_path);
 void sendline(const char *buf);
 void init_recvsocket(const char *sock_path);
+void unlink_recvsocket(const char *sock_path);
 int recvline(char *buf, int n);
 void close_socket(void);
 uim_bool get_ud_path(char *, int);

@@ -41,6 +41,12 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -53,6 +59,28 @@
 
 static void usage(void);
 static void version(void);
+static volatile sig_atomic_t terminate_requested;
+
+static void
+terminate_handler(int sig)
+{
+  terminate_requested = sig;
+}
+
+static void
+init_signal_handlers(void)
+{
+  struct sigaction action;
+
+  memset(&action, 0, sizeof(action));
+  sigemptyset(&action.sa_mask);
+  action.sa_handler = terminate_handler;
+  sigaction(SIGHUP, &action, NULL);
+  sigaction(SIGINT, &action, NULL);
+  sigaction(SIGQUIT, &action, NULL);
+  sigaction(SIGTERM, &action, NULL);
+}
+
 int main(int argc, char **argv)
 {
   char buf[BUFSIZE + 1];
@@ -90,12 +118,28 @@ int main(int argc, char **argv)
   sendline(buf);
   close_socket();
 
+  init_signal_handlers();
+
   init_recvsocket(sock_path);
+
+  if (terminate_requested) {
+    unlink_recvsocket(sock_path);
+    return EXIT_FAILURE;
+  }
+
+  prev_buf[0] = '\0';
 
   while (TRUE) {
     int len = recvline(buf, BUFSIZE);
     if (len == 1 && buf[0] == EOT) {
       return EXIT_SUCCESS;
+    }
+    if (len < 0) {
+      if (errno == EINTR && !terminate_requested) {
+        continue;
+      }
+      unlink_recvsocket(sock_path);
+      return EXIT_FAILURE;
     }
     buf[len] = '\0';
     if (strcmp(buf, prev_buf) != 0) {
