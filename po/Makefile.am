@@ -59,6 +59,9 @@ update-po: $(DOMAIN).pot
 	  echo "$(MSGMERGE) --update --backup=none $(srcdir)/$$lang.po $(DOMAIN).pot"; \
 	  $(MSGMERGE) --update --backup=none $(srcdir)/$$lang.po $(DOMAIN).pot \
 	    || exit 1; \
+	  echo "$(MSGATTRIB) --no-obsolete --output-file=$(srcdir)/$$lang.po $(srcdir)/$$lang.po"; \
+	  $(MSGATTRIB) --no-obsolete --output-file=$(srcdir)/$$lang.po $(srcdir)/$$lang.po \
+	    || exit 1; \
 	done
 .PHONY: update-po
 

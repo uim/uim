@@ -749,6 +749,7 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[gettext package name])
 
 AM_GNU_GETTEXT([external], [need-ngettext])
 AM_GNU_GETTEXT_VERSION([0.19.8])
+AC_PATH_PROG([MSGATTRIB], [msgattrib])
 AM_CONDITIONAL([USE_NLS], [test "x$USE_NLS" = xyes])
 
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
