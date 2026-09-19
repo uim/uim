@@ -60,8 +60,10 @@ static char *s_unget_buf = NULL;
 static int s_buf_size = 0;
 
 
+#ifndef HAVE_PSELECT
 static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
             const struct timespec *timeout, const sigset_t *sigmask);
+#endif
 
 /*
  * select
@@ -89,7 +91,11 @@ int my_pselect(int n, fd_set *readfds, const struct timespec *timeout,
     FD_SET(g_win_in, readfds);
     return 1;
   }
+#ifdef HAVE_PSELECT
+  return pselect(n, readfds, NULL, NULL, timeout, sigmask);
+#else
   return pselect_(n, readfds, NULL, NULL, timeout, sigmask);
+#endif
 }
 
 /*
@@ -128,6 +134,7 @@ void unget_stdin(const char *str, int count)
   s_buf_size += count;
 }
 
+#ifndef HAVE_PSELECT
 static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
             const struct timespec *timeout, const sigset_t *sigmask)
 {
@@ -168,3 +175,4 @@ static int pselect_(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
   sigprocmask(SIG_SETMASK, &orig_sigmask, NULL);
   return ret;
 }
+#endif
