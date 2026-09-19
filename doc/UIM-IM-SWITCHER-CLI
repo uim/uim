@@ -1,0 +1,26 @@
+uim-im-switcher-cli
+===================
+
+`uim-im-switcher-cli` switches the input method of all running uim contexts
+through the uim helper message bus.
+
+
+Usage
+-----
+
+----------------------------------------------------------------
+ uim-im-switcher-cli [-s|--scope SCOPE] <input-method-name>
+----------------------------------------------------------------
+
+For example:
+
+----------------------------------------------------------------
+ $ uim-im-switcher-cli elatin
+ $ uim-im-switcher-cli -s application direct
+ $ uim-im-switcher-cli --scope application direct
+ $ uim-im-switcher-cli --scope text-area skk
+----------------------------------------------------------------
+
+The default scope is the whole desktop. The `application` scope changes
+input contexts in the focused application, and the `text-area` scope
+changes the focused text area.

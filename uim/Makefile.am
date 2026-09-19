@@ -286,7 +286,7 @@ libuim_x_util_la_LIBADD = @X11_LIBS@
 endif
 
 
-bin_PROGRAMS = uim-sh uim-module-manager uim-help
+bin_PROGRAMS = uim-sh uim-module-manager uim-help uim-im-switcher-cli
 libexec_PROGRAMS = uim-helper-server
 
 uim_helper_server_LIBS =
@@ -308,6 +308,12 @@ uim_help_CPPFLAGS = $(uim_defs) $(AM_CPPFLAGS)
 uim_help_CFLAGS =
 uim_help_LDADD = libuim-scm.la libuim.la
 uim_help_SOURCES = uim-help.c
+
+uim_im_switcher_cli_LIBS =
+uim_im_switcher_cli_CPPFLAGS = $(uim_defs) $(AM_CPPFLAGS)
+uim_im_switcher_cli_CFLAGS =
+uim_im_switcher_cli_LDADD = libuim.la
+uim_im_switcher_cli_SOURCES = uim-im-switcher-cli.c
 
 if LIBEDIT
   uimplugin_LTLIBRARIES += libuim-editline.la
