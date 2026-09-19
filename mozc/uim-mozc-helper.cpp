@@ -683,8 +683,8 @@ class ServerKeeper {
       return false;
     }
     /*
-     * CreateSession forces the Mozc client in mozc_emacs_helper to
-     * connect to mozc_server, launching it if necessary.
+     * CreateSession creates a session in mozc_emacs_helper.  The client
+     * connection is initialized by the SendKey request below.
      */
     std::string response;
     if (!Request("CreateSession", &response)) {
@@ -704,10 +704,25 @@ class ServerKeeper {
     bool found = false;
     /* mozc_emacs_helper's own response really uses "emacs-session-id". */
     ValuePtr session_id = AlistGet(value, "emacs-session-id", &found);
-    if (found && session_id && session_id->kind == Value::INT) {
-      std::string ignored;
-      Request("DeleteSession " + std::to_string(session_id->i), &ignored);
+    if (!found || !session_id || session_id->kind != Value::INT) {
+      Warn("missing session ID in response from " + command_);
+      return false;
     }
+
+    /*
+     * Current mozc_emacs_helper creates its client lazily, so CreateSession
+     * alone does not connect to or launch mozc_server.  undefinedkey is a
+     * harmless request that forces the client to initialize without
+     * changing the user's input state.
+     */
+    if (!Request("SendKey " + std::to_string(session_id->i) +
+                 " undefinedkey", &response)) {
+      Stop();
+      return false;
+    }
+
+    std::string ignored;
+    Request("DeleteSession " + std::to_string(session_id->i), &ignored);
     return true;
   }
 
