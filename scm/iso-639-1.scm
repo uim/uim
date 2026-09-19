@@ -31,7 +31,7 @@
 ;;;;
 
 ;; See following page for original code definitions
-;;   http://www.loc.gov/standards/iso639-2/englangn.html
+;;   https://www.loc.gov/standards/iso639-2/englangn.html
 
 (define iso-639-1-alist
   `(("ab"    . ,(N_ "Abkhazian"))

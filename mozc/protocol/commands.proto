@@ -508,7 +508,7 @@ message Context {
 
   // Input field type.
   // The types are based on the input types defined in HTML5.
-  // http://dev.w3.org/html5/spec/Overview.html#attr-input-type
+  // https://dev.w3.org/html5/spec/Overview.html#attr-input-type
   // Other types are to be added later.
   enum InputFieldType {
     // No restrictions nor special functions. The IME operates as usual.

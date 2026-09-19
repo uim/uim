@@ -5425,7 +5425,7 @@ msgstr "Http通信のタイムアウト時間 (msec)"
 msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr "国際音声記号 (拡張SAM音声記号)"
 
-# FIXME: http://ja.wikipedia.org/wiki/ISO_639 の表で使われている表記に同期
+# FIXME: https://ja.wikipedia.org/wiki/ISO_639 の表で使われている表記に同期
 # する。Wikipedia側が不適切と思われる場合はそちらも修正する
 #: ../scm/iso-639-1.scm:37
 msgid "Abkhazian"

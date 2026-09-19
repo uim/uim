@@ -318,7 +318,7 @@ message Config {
   // Note: Some characters can be either of text and emoji.  It would be ideal
   // to use the variation sequence to specify emoji presentation [U+FE0E],
   // although it is not implemented yet.
-  // See: http://unicode.org/reports/tr51/#Presentation_Style
+  // See: https://unicode.org/reports/tr51/#Presentation_Style
   optional bool use_emoji_conversion = 89 [default = false];
 
   message InformationListConfig {
