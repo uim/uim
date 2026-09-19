@@ -7300,7 +7300,7 @@ msgstr "uim-skk: システム辞書データを%sから%sへ変換できませ�
 
 #: uim/skk.c:1324
 msgid "uim-skk: error in expand_str"
-msgstr "uim-skk: expand_strでエラー。"
+msgstr "uim-skk: expand_strでエラー"
 
 #: uim/skk.c:1339
 msgid "uim-skk: too long word"
