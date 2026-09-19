@@ -7323,7 +7323,7 @@ msgstr "uim-skk: 個人辞書を%sとしてエンコードできません"
 #: uim/skk.c:4186
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
-msgstr "uim-skk: %sのポート%sへ接続できませんでした。"
+msgstr "uim-skk: %sのポート%sへ接続できませんでした"
 
 #: uim/uim.c:772
 msgid "builtin"
