@@ -32,9 +32,9 @@
 ;; David Oftedal in 2005. See the threads below for further
 ;; information.
 ;;
-;; http://lists.freedesktop.org/archives/uim/2005-June/001112.html
-;; http://lists.freedesktop.org/archives/uim/2005-June/001114.html
-;; http://lists.freedesktop.org/archives/uim/2005-July/001251.html
+;; https://lists.freedesktop.org/archives/uim/2005-June/001112.html
+;; https://lists.freedesktop.org/archives/uim/2005-June/001114.html
+;; https://lists.freedesktop.org/archives/uim/2005-July/001251.html
 
 (define romaja-rule
 '(

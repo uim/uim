@@ -30,7 +30,7 @@
  *  SUCH DAMAGE.
  *
  * This code is based on canna's code. For more information about canna,
- * visit http://canna.sourceforge.jp/ . Canna license is as follows,
+ * visit https://canna-input.github.io/ . Canna license is as follows,
  *
  * Copyright (c) 2002 Canna Project. All rights reserved.
  *

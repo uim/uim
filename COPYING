@@ -48,7 +48,7 @@ Supplementary explanation (only for help and not legal):
 
   * scm/input-parse.scm is public domain. 'Unless specified otherwise,
     all the code and the documentation on this site is in public domain.'
-    http://okmij.org/ftp/
+    https://okmij.org/ftp/
 
   * helper/eggtrayicon.[ch] are come from libegg, so you can use,
     modify, distribute and sell uim-toolbar-gtk-systray under the

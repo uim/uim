@@ -1,6 +1,6 @@
 ;; -*- scheme -*-
 ;; JSON implementation for Scheme
-;; See http://www.json.org/ or http://www.crockford.com/JSON/index.html
+;; See https://www.json.org/ or https://www.crockford.com/JSON/index.html
 ;;
 ;; Copyright (c) 2005 Tony Garnock-Jones <tonyg@kcbbs.gen.nz>
 ;; Copyright (c) 2005 LShift Ltd. <query@lshift.net>

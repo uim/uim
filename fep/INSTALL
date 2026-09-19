@@ -14,19 +14,14 @@ o コンパイル方法
 
 * anthyのインストール
   anthyを使うためにはanthyをインストールする必要があります。
-  http://sourceforge.jp/projects/anthy/
-
-
-* primeのインストール
-  primeを使うためにはprimeをインストールする必要があります。
-  http://taiyaki.org/prime/
+  https://wiki.debian.org/Teams/DebianAnthy
 
 
 * skkのインストール
   skkを使うためにはSKK-JISYO.Lを/usr/share/skkに置く必要があります。
-  http://openlab.ring.gr.jp/skk/dic-ja.html
+  https://github.com/skk-dev/dict
 
 
 * cannaのインストール
   cannaを使うためにはcannaをインストールしてcannaserverを起動する必要があります。
-  http://canna.sourceforge.jp/
+  https://canna-input.github.io/

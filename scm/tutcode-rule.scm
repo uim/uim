@@ -2680,7 +2680,7 @@
 ;;; 新常用漢字対応のための追加52文字と、
 ;;; 新聞協会、共同通信、朝日新聞、NHKなどが独自に使用を決めた漢字
 ;;; 対応のための追加11文字「哨疹胚炒捧鵜肛挽絆扮杭」
-;;; http://www.geocities.jp/ken1noguchi/TUT-CODE/kankyo/download.htm
+;;; https://ken1noguchi.sakura.ne.jp/TUT-CODE/kankyo/download.htm
 (define tutcode-rule-shin-joyo-kanji-plus
   '(
     ((("d" "g" "g"))("拉"))

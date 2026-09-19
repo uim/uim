@@ -1,4 +1,4 @@
-# For reference: http://doc.qt.io/qt-5/qtqml-modules-qmldir.html
+# For reference: https://doc.qt.io/qt-5/qtqml-modules-qmldir.html
 
 # Module name.
 # Make sure module name coincides with module import path.
