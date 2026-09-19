@@ -1,4 +1,6 @@
-scim-anthy.png, scim-canna.png, uim-icon64.png, uim-icon48.png:
+# uim-icon.svg is traced from uim-icon64.png with potrace because the
+# original vector data was lost.
+scim-anthy.png, scim-canna.png, uim-icon64.png, uim-icon48.png, uim-icon.svg:
   SHIMODA Hiroshi <piro@p.club.ne.jp>
 
 scim-skk.png:

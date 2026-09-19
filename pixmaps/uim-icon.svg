@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  uim icon. Traced with potrace from uim-icon64.png by SHIMODA Hiroshi
+  (the original vector data was lost; see https://github.com/uim/uim/issues/128).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <path fill="#1f6daf" transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)" d="M183 615 c-61 -31 -127 -99 -156 -163 -31 -67 -30 -188 0 -255 33 -72 113 -157 147 -157 6 0 24 36 39 80 26 74 27 81 13 102 -24 34 -20 62 26 195 l42 122 -19 47 c-11 26 -25 49 -30 51 -6 2 -34 -8 -62 -22z"/>
+  <path fill="#1e489c" transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)" d="M528 499 c-48 -25 -59 -42 -102 -161 -46 -128 -50 -135 -90 -149 -31 -11 -38 -21 -64 -93 -35 -97 -32 -101 67 -94 118 9 219 78 270 187 37 80 37 192 -1 274 -15 31 -31 57 -35 57 -4 -1 -25 -10 -45 -21z"/>
+</svg>
