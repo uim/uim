@@ -8,9 +8,10 @@ talks to `mozc_server` directly over Mozc's Unix domain socket IPC
 using the protocol buffer definitions in `protocol/` and `ipc/`.
 
 `mozc_emacs_helper` is used only as the "server keeper": it knows the
-path of `mozc_server`, launches it when needed and handles version
-mismatches. Once the server is running, every command goes through
-the direct IPC connection.
+path of `mozc_server` and handles version mismatches. `uim-mozc-helper`
+sends it a harmless `undefinedkey` request during initialization so
+that its lazy client starts `mozc_server` when needed. Once the server
+is running, every command goes through the direct IPC connection.
 
 ## Protocol buffer definitions
 
