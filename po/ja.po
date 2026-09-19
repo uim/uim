@@ -7313,7 +7313,7 @@ msgstr "補完機能がないSKKサーバ\n"
 #: uim/skk.c:3485
 #, c-format
 msgid "uim-skk: invalid %s dictionary: %s"
-msgstr "uim-skk: 辞書ファイル %s が不正です: %s"
+msgstr "uim-skk: 不正な%sの辞書です: %s"
 
 #: uim/skk.c:3806
 #, c-format
