@@ -3980,7 +3980,7 @@ msgstr ""
 
 #: scm/dict-socket.scm:61
 msgid "dict: Invalid message"
-msgstr "dict: メッセージが不正です。"
+msgstr "dict: メッセージが不正です"
 
 #: scm/dict-socket.scm:77 scm/dict-socket.scm:86
 msgid "Error Response"
@@ -3988,11 +3988,11 @@ msgstr "エラー応答"
 
 #: scm/dict-socket.scm:94
 msgid "dict: Protocol error"
-msgstr "dict: プロトコルエラーです。"
+msgstr "dict: プロトコルエラーです"
 
 #: scm/dict-socket.scm:104
 msgid "dict: cannot connect server"
-msgstr "dict: サーバに接続できません。"
+msgstr "dict: サーバに接続できません"
 
 #: scm/direct.scm:53
 msgid "direct"
@@ -4657,7 +4657,7 @@ msgstr "ローマ字入力式ハングル入力方式"
 #: scm/http-client.scm:116 scm/http-client.scm:119 scm/http-client.scm:121
 #: scm/http-client.scm:131 scm/http-client.scm:133
 msgid "Invalid header"
-msgstr "ヘッダが不正です。"
+msgstr "ヘッダが不正です"
 
 #: scm/http-client.scm:225
 #, scheme-format
@@ -4676,7 +4676,7 @@ msgstr "~aに接続できません: uimはOpenSSLサポートなしでビルド�
 
 #: scm/http-client.scm:280
 msgid "cannot connect server"
-msgstr "サーバに接続できません。"
+msgstr "サーバに接続できません"
 
 #: scm/im.scm:140
 msgid "invalid IM name"
@@ -5854,24 +5854,24 @@ msgstr "Googleサジェストとの通信にSSLを利用する"
 
 #: scm/predict-sqlite3.scm:86
 msgid "cannot create dictionary directory"
-msgstr "辞書ディレクトリを作成できません。"
+msgstr "辞書ディレクトリを作成できません"
 
 #: scm/process.scm:62 scm/process.scm:109
 msgid "cannot fork"
-msgstr "フォークできませんでした。"
+msgstr "フォークできませんでした"
 
 #: scm/process.scm:73
 msgid "cannot duplicate stdin"
-msgstr "標準入力を複製できませんでした。"
+msgstr "標準入力を複製できませんでした"
 
 #: scm/process.scm:80
 msgid "cannot duplicate stdout"
-msgstr "標準出力を複製できませんでした。"
+msgstr "標準出力を複製できませんでした"
 
 #: scm/process.scm:85 scm/process.scm:114
 #, scheme-format
 msgid "cannot execute ~a"
-msgstr "~a を実行できませんでした。"
+msgstr "~a を実行できませんでした"
 
 #: scm/pyload.scm:42
 msgid "New Pinyin (Simplified)"
