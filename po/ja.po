@@ -7304,7 +7304,7 @@ msgstr "uim-skk: expand_strでエラー。"
 
 #: uim/skk.c:1339
 msgid "uim-skk: too long word"
-msgstr "uim-skk: 語が長すぎます。"
+msgstr "uim-skk: 語が長すぎます"
 
 #: uim/skk.c:2251
 msgid "SKK server without completion capability\n"
