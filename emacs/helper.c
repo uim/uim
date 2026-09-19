@@ -210,6 +210,7 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 			char *comstr;
 			void *cd = uim_iconv->create(ua->encoding, encoding);
 			comstr = uim_iconv->convert(cd, str);
+			uim_iconv->release(cd);
 
 		  debug_printf(DEBUG_NOTE, 
 						 " commit_string \"%s\"\n", comstr);
