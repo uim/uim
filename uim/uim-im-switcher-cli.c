@@ -36,10 +36,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/select.h>
 
 #include "uim.h"
+#include "uim-im-switcher.h"
 #include "uim-helper.h"
 
 static void
@@ -91,114 +90,47 @@ scope_message(enum switch_scope scope)
 }
 
 static void
-print_im_list(const char *message)
+print_im_list(uim_context uc)
 {
-  const char *line = message;
-  int line_number = 0;
-  int nr_im = 0;
+  const char *current_im_name;
+  char *current_im_name_copy;
+  int nr_im;
+  int i;
+  int nr_printed = 0;
 
   printf("Available input methods:\n");
 
-  while (line && *line) {
-    const char *end = strchr(line, '\n');
-    size_t length = end ? (size_t)(end - line) : strlen(line);
-    char *entry;
-    char *field;
-    char *tab;
-    int field_number;
-    int selected = 0;
+  current_im_name = uim_get_current_im_name(uc);
+  current_im_name_copy = current_im_name ? uim_strdup(current_im_name) : NULL;
+  nr_im = uim_get_nr_im(uc);
+  for (i = 0; i < nr_im; i++) {
+    const char *name = uim_get_im_name(uc, i);
 
-    if (line_number >= 2 && length > 0) {
-      entry = uim_malloc(length + 1);
-      memcpy(entry, line, length);
-      entry[length] = '\0';
-
-      field = entry;
-      for (field_number = 0; field_number < 3; field_number++) {
-        tab = strchr(field, '\t');
-        if (!tab)
-          break;
-        field = tab + 1;
-      }
-      if (field_number == 3 && strcmp(field, "selected") == 0)
-        selected = 1;
-
-      tab = strchr(entry, '\t');
-      if (tab)
-        *tab = '\0';
-      printf("  %s %s\n", selected ? "*" : " ", entry);
-      nr_im++;
-      free(entry);
-    }
-
-    if (!end)
-      break;
-    line = end + 1;
-    line_number++;
+    if (!name)
+      continue;
+    printf("  %s %s\n",
+           current_im_name_copy && strcmp(name, current_im_name_copy) == 0 ? "*" : " ",
+           name);
+    nr_printed++;
   }
 
-  if (nr_im == 0)
+  free(current_im_name_copy);
+
+  if (nr_printed == 0)
     printf("  (none)\n");
 }
 
-static char *
-get_im_list(int fd)
-{
-  uim_helper_send_message(fd, "im_list_get\n");
-
-  for (;;) {
-    fd_set readfds;
-    struct timeval timeout;
-    int result;
-    char *message;
-
-    FD_ZERO(&readfds);
-    FD_SET(fd, &readfds);
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 0;
-
-    result = select(fd + 1, &readfds, NULL, NULL, &timeout);
-    if (result < 0) {
-      if (errno == EINTR)
-        continue;
-      return NULL;
-    }
-    if (result == 0)
-      return NULL;
-
-    uim_helper_read_proc(fd);
-    while ((message = uim_helper_get_message()) != NULL) {
-      if (strncmp(message, "im_list\n", 8) == 0) {
-        return message;
-      }
-      free(message);
-    }
-  }
-}
-
 static int
-im_list_contains(const char *message, const char *im_name)
+im_list_contains(uim_context uc, const char *im_name)
 {
-  const char *line = message;
-  int line_number = 0;
+  int nr_im = uim_get_nr_im(uc);
+  int i;
 
-  while (line && *line) {
-    const char *end = strchr(line, '\n');
-    size_t length = end ? (size_t)(end - line) : strlen(line);
-    const char *tab;
-    size_t name_length;
+  for (i = 0; i < nr_im; i++) {
+    const char *name = uim_get_im_name(uc, i);
 
-    if (line_number >= 2 && length > 0) {
-      tab = memchr(line, '\t', length);
-      name_length = tab ? (size_t)(tab - line) : length;
-      if (strlen(im_name) == name_length && strncmp(line, im_name, name_length) == 0)
-        return 1;
-    }
-
-    if (!end)
-      break;
-    line = end + 1;
-    line_number++;
+    if (name && strcmp(name, im_name) == 0)
+      return 1;
   }
 
   return 0;
@@ -211,31 +143,30 @@ main(int argc, char **argv)
   const char *scope_name;
   const char *message_header;
   char *message;
-  char *im_list;
+  uim_context uc;
   enum switch_scope scope = SWITCH_SCOPE_DESKTOP;
   int argument_index = 1;
   int fd;
+
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim-im-switcher-cli: failed to initialize libuim\n");
+    return EXIT_FAILURE;
+  }
+
+  uc = uim_create_context(NULL, "UTF-8", NULL, NULL, NULL, NULL);
+  if (!uc) {
+    fprintf(stderr, "uim-im-switcher-cli: failed to create uim context\n");
+    uim_quit();
+    return EXIT_FAILURE;
+  }
 
   if (argc == 1 ||
       (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))) {
     usage(stdout);
     putchar('\n');
-
-    fd = uim_helper_init_client_fd(NULL);
-    if (fd < 0) {
-      fprintf(stderr, "uim-im-switcher-cli: cannot connect to uim-helper-server\n");
-      return EXIT_FAILURE;
-    }
-
-    im_list = get_im_list(fd);
-    if (!im_list) {
-      fprintf(stderr, "uim-im-switcher-cli: timed out waiting for input method list\n");
-      uim_helper_close_client_fd(fd);
-      return EXIT_FAILURE;
-    }
-    print_im_list(im_list);
-    free(im_list);
-    uim_helper_close_client_fd(fd);
+    print_im_list(uc);
+    uim_release_context(uc);
+    uim_quit();
     return EXIT_SUCCESS;
   }
 
@@ -244,6 +175,8 @@ main(int argc, char **argv)
        strcmp(argv[argument_index], "-s") == 0)) {
     if (argument_index + 1 >= argc) {
       usage(stderr);
+      uim_release_context(uc);
+      uim_quit();
       return EXIT_FAILURE;
     }
     scope_name = argv[argument_index + 1];
@@ -258,46 +191,49 @@ main(int argc, char **argv)
 
   if (scope_name && parse_scope(scope_name, &scope) < 0) {
     fprintf(stderr, "uim-im-switcher-cli: invalid scope: %s\n", scope_name);
+    uim_release_context(uc);
+    uim_quit();
     return EXIT_FAILURE;
   }
 
   if (argument_index != argc - 1) {
     usage(stderr);
+    uim_release_context(uc);
+    uim_quit();
     return EXIT_FAILURE;
   }
 
   im_name = argv[argument_index];
   if (im_name[0] == '\0' || strpbrk(im_name, "\t\r\n") != NULL) {
     fprintf(stderr, "uim-im-switcher-cli: invalid input method name\n");
+    uim_release_context(uc);
+    uim_quit();
+    return EXIT_FAILURE;
+  }
+
+  if (!im_list_contains(uc, im_name)) {
+    print_im_list(uc);
+    fprintf(stderr, "uim-im-switcher-cli: unknown input method: %s\n", im_name);
+    uim_release_context(uc);
+    uim_quit();
     return EXIT_FAILURE;
   }
 
   fd = uim_helper_init_client_fd(NULL);
   if (fd < 0) {
     fprintf(stderr, "uim-im-switcher-cli: cannot connect to uim-helper-server\n");
+    uim_release_context(uc);
+    uim_quit();
     return EXIT_FAILURE;
   }
-
-  im_list = get_im_list(fd);
-  if (!im_list) {
-    fprintf(stderr, "uim-im-switcher-cli: timed out waiting for input method list\n");
-    uim_helper_close_client_fd(fd);
-    return EXIT_FAILURE;
-  }
-  if (!im_list_contains(im_list, im_name)) {
-    print_im_list(im_list);
-    fprintf(stderr, "uim-im-switcher-cli: unknown input method: %s\n", im_name);
-    free(im_list);
-    uim_helper_close_client_fd(fd);
-    return EXIT_FAILURE;
-  }
-  free(im_list);
 
   message_header = scope_message(scope);
   uim_asprintf(&message, "%s%s\n", message_header, im_name);
   uim_helper_send_message(fd, message);
   free(message);
   uim_helper_close_client_fd(fd);
+  uim_release_context(uc);
+  uim_quit();
 
   return EXIT_SUCCESS;
 }
