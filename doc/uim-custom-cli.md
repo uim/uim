@@ -30,12 +30,12 @@ For boolean custom values, `t` and `true` are accepted as `#t`, and `f` and
 quoted for the shell, while the following forms can be written directly:
 
 ```bash
-$ uim-custom-cli custom-activate-default-im-name? true
-$ uim-custom-cli custom-activate-default-im-name? t
-$ uim-custom-cli custom-activate-default-im-name? '#t'
-$ uim-custom-cli custom-activate-default-im-name? false
-$ uim-custom-cli custom-activate-default-im-name? f
-$ uim-custom-cli custom-activate-default-im-name? '#f'
+$ uim-custom-cli 'custom-activate-default-im-name?' true
+$ uim-custom-cli 'custom-activate-default-im-name?' t
+$ uim-custom-cli 'custom-activate-default-im-name?' '#t'
+$ uim-custom-cli 'custom-activate-default-im-name?' false
+$ uim-custom-cli 'custom-activate-default-im-name?' f
+$ uim-custom-cli 'custom-activate-default-im-name?' '#f'
 ```
 
 ### Integer values
