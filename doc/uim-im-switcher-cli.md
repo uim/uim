@@ -32,7 +32,7 @@ The `-s`/`--scope` option accepts the following values:
 
 ### Examples
 
-```
+```console
 $ uim-im-switcher-cli elatin
 $ uim-im-switcher-cli -s application direct
 $ uim-im-switcher-cli --scope application direct
