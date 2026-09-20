@@ -12,4 +12,5 @@ RELEASING              Release procedure
 UIM-SCM                Usage of uim-scm API for developers
 UIM-SH                 How to use uim-sh to debug interactively
 UNIT-TEST              usage of the unit testing framework for uim for developers
+uim-custom-cli.md      Set or list custom values from the command line
 uim-im-switcher-cli.md Switch the input method from a shell
