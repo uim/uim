@@ -1,15 +1,15 @@
-00INDEX (This file) contain the index.
-COMPATIBILITY       Tracks API/ABI compatibility change
-CUSTOM              Usage of uim-custom API for developers
-DOT-UIM             Usage of the user customization file
-ENV                 Environment variables
-HELPER-CANDWIN      Protocol between candidatewindow apps and uim-xim
-HELPER-PROTOCOL     Description of the helper message protocol 
-KEY                 KEY customizationg guide
-PACKAGING           Notes for packagers and system integrators
-PLUGIN              Description of the plugin
-RELEASING           Release procedure
-UIM-IM-SWITCHER-CLI Switch the input method from a shell
-UIM-SCM             Usage of uim-scm API for developers
-UIM-SH              How to use uim-sh to debug interactively
-UNIT-TEST           usage of the unit testing framework for uim for developers
+00INDEX (This file)    contain the index.
+COMPATIBILITY          Tracks API/ABI compatibility change
+CUSTOM                 Usage of uim-custom API for developers
+DOT-UIM                Usage of the user customization file
+ENV                    Environment variables
+HELPER-CANDWIN         Protocol between candidatewindow apps and uim-xim
+HELPER-PROTOCOL        Description of the helper message protocol 
+KEY                    KEY customizationg guide
+PACKAGING              Notes for packagers and system integrators
+PLUGIN                 Description of the plugin
+RELEASING              Release procedure
+UIM-SCM                Usage of uim-scm API for developers
+UIM-SH                 How to use uim-sh to debug interactively
+UNIT-TEST              usage of the unit testing framework for uim for developers
+uim-im-switcher-cli.md Switch the input method from a shell
