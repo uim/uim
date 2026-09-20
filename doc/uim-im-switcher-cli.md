@@ -6,7 +6,7 @@ through the uim helper message bus.
 
 ## Usage
 
-```
+```bash
 uim-im-switcher-cli [-s|--scope SCOPE] <input-method-name>
 uim-im-switcher-cli [-h|--help]
 uim-im-switcher-cli [-l|--list]
