@@ -46,7 +46,8 @@ usage(FILE *stream)
 {
   fprintf(stream,
           "Usage: uim-im-switcher-cli [-s|--scope SCOPE] INPUT_METHOD\n"
-          "       uim-im-switcher-cli --help\n"
+          "       uim-im-switcher-cli [-h|--help]\n"
+          "       uim-im-switcher-cli [-l|--list]\n"
           "\n"
           "SCOPE is one of:\n"
           "  desktop      change all running uim contexts (default)\n"
@@ -163,7 +164,13 @@ main(int argc, char **argv)
   if (argc == 1 ||
       (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))) {
     usage(stdout);
-    putchar('\n');
+    uim_release_context(uc);
+    uim_quit();
+    return EXIT_SUCCESS;
+  }
+
+  if (argc == 2 &&
+      (strcmp(argv[1], "--list") == 0 || strcmp(argv[1], "-l") == 0)) {
     print_im_list(uc);
     uim_release_context(uc);
     uim_quit();
