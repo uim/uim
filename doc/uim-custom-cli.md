@@ -111,9 +111,9 @@ $ uim-custom-cli --list
 $ uim-custom-cli -l
 ```
 
-The `-l`/`--list` option includes each variable's type, active status, current
-value, label, description, and type-specific ranges, candidates, items, or
-columns, including pathname file types.
+The `-l`/`--list` option includes each variable's primary group, subgroups,
+type, active status, current value, label, description, and type-specific
+ranges, candidates, items, or columns, including pathname file types.
 
 ## Important notes
 

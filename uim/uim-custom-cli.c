@@ -85,6 +85,202 @@ custom_type_name(int type)
   }
 }
 
+struct custom_category_subgroup {
+  struct uim_custom_group *group;
+  char **custom_symbols;
+};
+
+struct custom_category {
+  struct uim_custom_group *group;
+  char **custom_symbols;
+  struct custom_category_subgroup *subgroups;
+  size_t nr_subgroups;
+};
+
+struct custom_categories {
+  struct custom_category *items;
+  size_t nr_items;
+};
+
+static void
+custom_categories_free(struct custom_categories *categories)
+{
+  size_t i;
+  size_t j;
+
+  if (!categories)
+    return;
+
+  for (i = 0; i < categories->nr_items; i++) {
+    struct custom_category *category = &categories->items[i];
+
+    uim_custom_group_free(category->group);
+    uim_custom_symbol_list_free(category->custom_symbols);
+    for (j = 0; j < category->nr_subgroups; j++) {
+      uim_custom_group_free(category->subgroups[j].group);
+      uim_custom_symbol_list_free(category->subgroups[j].custom_symbols);
+    }
+    free(category->subgroups);
+  }
+  free(categories->items);
+  categories->items = NULL;
+  categories->nr_items = 0;
+}
+
+static int
+collect_custom_categories(struct custom_categories *categories)
+{
+  char **primary_groups = NULL;
+  size_t i;
+
+  if (!categories)
+    return 0;
+
+  categories->items = NULL;
+  categories->nr_items = 0;
+
+  primary_groups = uim_custom_primary_groups();
+  if (!primary_groups) {
+    fprintf(stderr, "uim-custom-cli: cannot collect primary groups\n");
+    return 0;
+  }
+
+  for (i = 0; primary_groups[i]; i++)
+    ;
+  categories->nr_items = i;
+  if (categories->nr_items > 0) {
+    categories->items = calloc(categories->nr_items,
+                               sizeof(*categories->items));
+    if (!categories->items) {
+      fprintf(stderr, "uim-custom-cli: cannot allocate categories\n");
+      uim_custom_symbol_list_free(primary_groups);
+      categories->nr_items = 0;
+      return 0;
+    }
+  }
+
+  for (i = 0; i < categories->nr_items; i++) {
+    struct custom_category *category = &categories->items[i];
+    char **subgroup_symbols;
+    size_t nr_subgroups;
+    size_t j;
+
+    category->group = uim_custom_group_get(primary_groups[i]);
+    category->custom_symbols = uim_custom_collect_by_group(primary_groups[i]);
+    subgroup_symbols = uim_custom_group_subgroups(primary_groups[i]);
+    if (!category->group || !category->custom_symbols || !subgroup_symbols) {
+      fprintf(stderr, "uim-custom-cli: cannot collect category: %s\n",
+              primary_groups[i]);
+      uim_custom_symbol_list_free(subgroup_symbols);
+      uim_custom_symbol_list_free(primary_groups);
+      custom_categories_free(categories);
+      return 0;
+    }
+
+    for (j = 0; subgroup_symbols[j]; j++)
+      ;
+    nr_subgroups = j;
+    if (nr_subgroups > 0) {
+      category->subgroups = calloc(nr_subgroups, sizeof(*category->subgroups));
+      if (!category->subgroups) {
+        fprintf(stderr, "uim-custom-cli: cannot allocate subgroups: %s\n",
+                primary_groups[i]);
+        uim_custom_symbol_list_free(subgroup_symbols);
+        uim_custom_symbol_list_free(primary_groups);
+        custom_categories_free(categories);
+        return 0;
+      }
+    }
+    category->nr_subgroups = nr_subgroups;
+
+    for (j = 0; j < category->nr_subgroups; j++) {
+      category->subgroups[j].group = uim_custom_group_get(subgroup_symbols[j]);
+      category->subgroups[j].custom_symbols =
+        uim_custom_collect_by_group(subgroup_symbols[j]);
+      if (!category->subgroups[j].group ||
+          !category->subgroups[j].custom_symbols) {
+        fprintf(stderr, "uim-custom-cli: cannot collect subgroup: %s\n",
+                subgroup_symbols[j]);
+        uim_custom_symbol_list_free(subgroup_symbols);
+        uim_custom_symbol_list_free(primary_groups);
+        custom_categories_free(categories);
+        return 0;
+      }
+    }
+    uim_custom_symbol_list_free(subgroup_symbols);
+  }
+
+  uim_custom_symbol_list_free(primary_groups);
+  return 1;
+}
+
+static int
+custom_category_subgroup_contains(
+    const struct custom_category_subgroup *subgroup,
+    const char *custom_sym)
+{
+  char **symbol;
+
+  for (symbol = subgroup->custom_symbols; symbol && *symbol; symbol++) {
+    if (strcmp(*symbol, custom_sym) == 0)
+      return 1;
+  }
+  return 0;
+}
+
+static const struct custom_category *
+find_custom_category(const struct custom_categories *categories,
+                     const char *custom_sym)
+{
+  size_t i;
+  char **symbol;
+
+  for (i = 0; i < categories->nr_items; i++) {
+    for (symbol = categories->items[i].custom_symbols;
+         symbol && *symbol;
+         symbol++) {
+      if (strcmp(*symbol, custom_sym) == 0)
+        return &categories->items[i];
+    }
+  }
+  return NULL;
+}
+
+static void
+print_custom_category(const struct custom_category *category,
+                      const char *custom_sym)
+{
+  size_t i;
+  int printed_subgroup = 0;
+
+  printf("primary-group: %s", category->group->symbol);
+  if (category->group->label && category->group->label[0] != '\0')
+    printf(" (%s)", category->group->label);
+  printf("\n");
+
+  for (i = 0; i < category->nr_subgroups; i++) {
+    const struct custom_category_subgroup *subgroup =
+      &category->subgroups[i];
+
+    /* "main" is implicit when no explicit subgroup was specified. */
+    if (strcmp(subgroup->group->symbol, "main") == 0 ||
+        !custom_category_subgroup_contains(subgroup, custom_sym))
+      continue;
+
+    if (!printed_subgroup)
+      printf("subgroups:     ");
+    else
+      printf("               ");
+    printf("%s", subgroup->group->symbol);
+    if (subgroup->group->label && subgroup->group->label[0] != '\0')
+      printf(" (%s)", subgroup->group->label);
+    printf("\n");
+    printed_subgroup = 1;
+  }
+  if (!printed_subgroup)
+    printf("subgroups:     (none)\n");
+}
+
 static void
 print_choices(const struct uim_custom_choice *const *choices,
               const char *description)
@@ -101,7 +297,8 @@ print_choices(const struct uim_custom_choice *const *choices,
 }
 
 static int
-print_custom(const char *custom_sym)
+print_custom(const char *custom_sym,
+             const struct custom_category *category)
 {
   struct uim_custom *custom;
   char *value;
@@ -120,13 +317,15 @@ print_custom(const char *custom_sym)
     return 0;
   }
 
-  printf("symbol:      %s\n"
-         "type:        %s\n"
-         "active?:     %s\n"
-         "value:       %s\n"
-         "label:       %s\n"
-         "description: %s\n",
-         custom->symbol,
+  printf("symbol:        %s\n",
+         custom->symbol);
+  print_custom_category(category, custom_sym);
+
+  printf("type:          %s\n"
+         "active?:       %s\n"
+         "value:         %s\n"
+         "label:         %s\n"
+         "description:   %s\n",
          custom_type_name(custom->type),
          custom->is_active ? "true" : "false",
          value,
@@ -135,38 +334,37 @@ print_custom(const char *custom_sym)
 
   switch (custom->type) {
   case UCustom_Int:
-    printf("range:       %d - %d\n",
+    printf("range:         %d - %d\n",
            custom->range->as_int.min,
            custom->range->as_int.max);
     break;
   case UCustom_Str:
-    printf("regex:       %s\n", custom->range->as_str.regex);
+    printf("regex:         %s\n", custom->range->as_str.regex);
     break;
   case UCustom_Pathname:
-    printf("path type:   %s\n",
+    printf("path type:     %s\n",
            custom->value->as_pathname->type == UCustomPathnameType_Directory
            ? "directory" : "regular-file");
     break;
   case UCustom_Choice:
     print_choices((const struct uim_custom_choice *const *)
                   custom->range->as_choice.valid_items,
-                  "candidates: ");
+                  "candidates:   ");
     break;
   case UCustom_OrderedList:
     print_choices((const struct uim_custom_choice *const *)
                   custom->range->as_olist.valid_items,
-                  "items:      ");
+                  "items:        ");
     break;
   case UCustom_Table:
     print_choices((const struct uim_custom_choice *const *)
                   custom->range->as_table_header.valid_items,
-                  "columns:    ");
+                  "columns:      ");
     break;
   default:
     break;
   }
 
-  putchar('\n');
   free(value);
   uim_custom_free(custom);
   return 1;
@@ -175,6 +373,7 @@ print_custom(const char *custom_sym)
 static int
 list_customs(void)
 {
+  struct custom_categories categories;
   char **custom_syms;
   char **custom_sym;
   int succeeded;
@@ -190,18 +389,43 @@ list_customs(void)
     return 0;
   }
 
-  custom_syms = uim_custom_collect_by_group(NULL);
-  if (!custom_syms) {
-    fprintf(stderr, "uim-custom-cli: cannot collect custom variables\n");
+  if (!collect_custom_categories(&categories)) {
     uim_quit();
     return 0;
   }
 
+  custom_syms = uim_custom_collect_by_group(NULL);
+  if (!custom_syms) {
+    fprintf(stderr, "uim-custom-cli: cannot collect custom variables\n");
+    custom_categories_free(&categories);
+    uim_quit();
+    return 0;
+  }
+
+  /* Report an error if a custom does not belong to a category. */
+  for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
+    if (!find_custom_category(&categories, *custom_sym)) {
+      fprintf(stderr, "uim-custom-cli: custom has no primary group: %s\n",
+              *custom_sym);
+      uim_custom_symbol_list_free(custom_syms);
+      custom_categories_free(&categories);
+      uim_quit();
+      return 0;
+    }
+  }
+
   succeeded = 1;
-  for (custom_sym = custom_syms; *custom_sym; custom_sym++)
-    succeeded = print_custom(*custom_sym) && succeeded;
+  for (custom_sym = custom_syms; *custom_sym; custom_sym++) {
+    const struct custom_category *category;
+
+    category = find_custom_category(&categories, *custom_sym);
+    succeeded = print_custom(*custom_sym, category) && succeeded;
+    if (custom_sym[1])
+      printf("\n");
+  }
 
   uim_custom_symbol_list_free(custom_syms);
+  custom_categories_free(&categories);
   uim_quit();
   return succeeded;
 }
