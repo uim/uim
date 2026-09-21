@@ -73,6 +73,34 @@ get_server_command(void)
   return UIM_LIBEXECDIR "/uim-helper-server";
 }
 
+static int
+create_client_socket(void)
+{
+  int fd;
+
+#ifdef SOCK_CLOEXEC
+  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
+  fd = socket(PF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  if (fd == -1 && errno == EINVAL)
+    /* fallback to plain SOCK_TYPE on older kernel */
+#endif
+  fd = socket(PF_UNIX, SOCK_STREAM, 0);
+  if (fd < 0)
+    return -1;
+
+  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
+
+#if !defined(HAVE_GETPEEREID) && defined(LOCAL_CREDS)
+  /* Set the socket to receive credentials on the next message */
+  {
+    int on = 1;
+    setsockopt(fd, 0, LOCAL_CREDS, &on, sizeof(on));
+  }
+#endif
+
+  return fd;
+}
+
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
   struct sockaddr_un server;
@@ -89,27 +117,11 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
-#ifdef SOCK_CLOEXEC
-  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
-  fd = socket(PF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
-  if (fd == -1 && errno == EINVAL)
-    /* fallback to plain SOCK_TYPE on older kernel */
-#endif
-  fd = socket(PF_UNIX, SOCK_STREAM, 0);
+  fd = create_client_socket();
   if (fd < 0) {
     perror("fail to create socket");
     goto error;
   }
-  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
-  
-#if !defined(HAVE_GETPEEREID) && defined(LOCAL_CREDS)
-  /* Set the socket to receive credentials on the next message */
-  {
-    int on = 1;
-    setsockopt(fd, 0, LOCAL_CREDS, &on, sizeof(on));
-  }
-#endif
-
 
   if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
     pid_t serv_pid = 0;
@@ -125,7 +137,22 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
       if (strcmp( buf, "\n" ) == 0)
 	break;
     }
-    
+
+    close(fd);
+    fd = -1;
+    if (serv_r) {
+      fclose(serv_r);
+      serv_r = NULL;
+    }
+    if (serv_w) {
+      fclose(serv_w);
+      serv_w = NULL;
+    }
+
+    fd = create_client_socket();
+    if (fd < 0)
+      goto error;
+
     if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0)
       goto error;
   }
