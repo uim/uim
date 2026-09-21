@@ -101,13 +101,59 @@ create_client_socket(void)
   return fd;
 }
 
+static int
+acquire_server_start_lock(const char *socket_path)
+{
+  char lock_path[MAXPATHLEN];
+  struct flock lock;
+  int lock_fd;
+  int result;
+
+  if (strlcpy(lock_path, socket_path, sizeof(lock_path)) >= sizeof(lock_path) ||
+      strlcat(lock_path, ".lock", sizeof(lock_path)) >= sizeof(lock_path)) {
+    errno = ENAMETOOLONG;
+    return -1;
+  }
+
+  lock_fd = open(lock_path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+  if (lock_fd < 0)
+    return -1;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_WRLCK;
+  lock.l_whence = SEEK_SET;
+  result = fcntl(lock_fd, F_SETLKW, &lock);
+  if (result < 0) {
+    close(lock_fd);
+    return -1;
+  }
+
+  return lock_fd;
+}
+
+static void
+release_server_start_lock(int lock_fd)
+{
+  struct flock lock;
+
+  if (lock_fd < 0)
+    return;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_UNLCK;
+  lock.l_whence = SEEK_SET;
+  fcntl(lock_fd, F_SETLK, &lock);
+  close(lock_fd);
+}
+
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
   struct sockaddr_un server;
   char path[MAXPATHLEN];
   FILE *serv_r = NULL, *serv_w = NULL;
   int fd = -1;
-  
+  int server_start_lock_fd = -1;
+
   uim_fd = -1;
 
   if (!uim_helper_get_pathname(path, sizeof(path)))
@@ -126,7 +172,31 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
     pid_t serv_pid = 0;
     char buf[128];
-    
+
+    close(fd);
+    fd = -1;
+
+    server_start_lock_fd = acquire_server_start_lock(path);
+    if (server_start_lock_fd < 0) {
+      perror("uim-helper: cannot acquire server start lock");
+      goto error;
+    }
+
+    fd = create_client_socket();
+    if (fd < 0) {
+      perror("fail to create socket");
+      goto error;
+    }
+
+    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == 0) {
+      release_server_start_lock(server_start_lock_fd);
+      server_start_lock_fd = -1;
+      goto connected;
+    }
+
+    close(fd);
+    fd = -1;
+
     serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w,
 				    get_server_command());
 
@@ -138,8 +208,6 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 	break;
     }
 
-    close(fd);
-    fd = -1;
     if (serv_r) {
       fclose(serv_r);
       serv_r = NULL;
@@ -155,8 +223,12 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 
     if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0)
       goto error;
+
+    release_server_start_lock(server_start_lock_fd);
+    server_start_lock_fd = -1;
   }
 
+connected:
   if (uim_helper_check_connection_fd(fd))
     goto error;
 
@@ -168,6 +240,8 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   return fd;
 
 error:
+  release_server_start_lock(server_start_lock_fd);
+
   if (fd != -1)
     close(fd);
 
