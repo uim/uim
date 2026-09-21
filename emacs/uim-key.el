@@ -617,15 +617,15 @@
 	      (setq translated (lookup-key input-decode-map
 					   input-vector-main)))
 	  
-	  (if (or (not translated)
-		  (integerp translated))
-	      (setq translated (lookup-key function-key-map
-					   input-vector-main)))
-
 	  (if (and (or (not translated)
 		       (integerp translated))
 		   (boundp 'local-function-key-map))
 	      (setq translated (lookup-key local-function-key-map 
+					   input-vector-main)))
+
+	  (if (or (not translated)
+		  (integerp translated))
+	      (setq translated (lookup-key function-key-map
 					   input-vector-main)))
 
 	  (if (and (symbolp translated) (commandp translated))
