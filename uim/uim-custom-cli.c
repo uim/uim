@@ -869,7 +869,12 @@ main(int argc, char **argv)
 
   fd = uim_helper_init_client_fd(NULL);
   if (fd < 0) {
-    fprintf(stderr, "uim-custom-cli: cannot connect to uim-helper-server\n");
+    if (save)
+      fprintf(stderr,
+              "uim-custom-cli: value saved, but cannot notify running "
+              "uim processes\n");
+    else
+      fprintf(stderr, "uim-custom-cli: cannot connect to uim-helper-server\n");
     free(normalized_value);
     return EXIT_FAILURE;
   }

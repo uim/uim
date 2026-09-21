@@ -125,4 +125,5 @@ later invocation of `uim-custom-cli -l`.
 The value is sent to running uim processes connected to the helper server.
 Changes are not saved for future processes unless `-s`/`--save` is specified.
 With `-s`/`--save`, the value is saved to the corresponding custom configuration
-file, then the same value is sent to running uim processes.
+file, then the same value is sent to running uim processes. If the helper cannot
+be reached, the value remains saved but the command reports an error.
