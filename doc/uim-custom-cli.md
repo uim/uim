@@ -8,6 +8,8 @@ uim helper message bus.
 ```bash
 uim-custom-cli CUSTOM_NAME CUSTOM_VALUE
 uim-custom-cli CUSTOM_NAME VALUE [VALUE ...]
+uim-custom-cli [-s|--save] CUSTOM_NAME CUSTOM_VALUE
+uim-custom-cli [-s|--save] CUSTOM_NAME VALUE [VALUE ...]
 uim-custom-cli [-l|--list]
 uim-custom-cli [-h|--help]
 ```
@@ -15,6 +17,8 @@ uim-custom-cli [-h|--help]
 ## Options
 
 - `-l`, `--list`: List custom variables and their current values.
+- `-s`, `--save`: Save the value for future uim processes in addition to
+  updating running uim processes.
 - `-h`, `--help`: Display usage information.
 
 ## Custom values
@@ -119,5 +123,6 @@ changing a value with one invocation of `uim-custom-cli` is not reflected in a
 later invocation of `uim-custom-cli -l`.
 
 The value is sent to running uim processes connected to the helper server.
-Changes are not saved for future processes. Use `~/.uim` or `uim-pref-gtk3` for
-persistent configuration.
+Changes are not saved for future processes unless `-s`/`--save` is specified.
+With `-s`/`--save`, the value is saved to the corresponding custom configuration
+file, then the same value is sent to running uim processes.

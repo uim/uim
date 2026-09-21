@@ -49,12 +49,15 @@ usage(FILE *stream)
   fprintf(stream,
           "Usage: uim-custom-cli CUSTOM_NAME CUSTOM_VALUE\n"
           "       uim-custom-cli CUSTOM_NAME VALUE [VALUE ...]\n"
+          "       uim-custom-cli [-s|--save] CUSTOM_NAME CUSTOM_VALUE\n"
+          "       uim-custom-cli [-s|--save] CUSTOM_NAME VALUE [VALUE ...]\n"
           "       uim-custom-cli [-l|--list]\n"
           "       uim-custom-cli [-h|--help]\n"
           "\n"
           "CUSTOM_NAME is a custom variable name.\n"
           "CUSTOM_VALUE is a valid Scheme expression.\n"
-          "Multiple values are supported for ordered-list customs.\n");
+          "Multiple values are supported for ordered-list customs.\n"
+          "--save also saves the value for future uim processes.\n");
 }
 
 static const char *
@@ -391,21 +394,9 @@ normalize_custom_value(const char *custom_sym, const char *value,
   char *end;
   long integer_value;
 
-  if (uim_init() < 0) {
-    fprintf(stderr, "uim-custom-cli: uim_init() failed\n");
-    return 0;
-  }
-
-  if (!uim_custom_enable()) {
-    fprintf(stderr, "uim-custom-cli: uim_custom_enable() failed\n");
-    uim_quit();
-    return 0;
-  }
-
   custom_syms = uim_custom_collect_by_group(NULL);
   if (!custom_syms) {
     fprintf(stderr, "uim-custom-cli: cannot collect custom variables\n");
-    uim_quit();
     return 0;
   }
 
@@ -420,7 +411,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
 
   if (!custom) {
     fprintf(stderr, "uim-custom-cli: unknown custom: %s\n", custom_sym);
-    uim_quit();
     return 0;
   }
 
@@ -430,7 +420,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
             "ordered-list customs: %s\n",
             custom_sym);
     uim_custom_free(custom);
-    uim_quit();
     return 0;
   }
 
@@ -448,7 +437,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
       fprintf(stderr, "uim-custom-cli: invalid boolean value for %s: %s\n",
               custom_sym, value);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     break;
@@ -462,7 +450,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
       fprintf(stderr, "uim-custom-cli: invalid integer value for %s: %s\n",
               custom_sym, value);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     *normalized_value = strdup(value);
@@ -473,7 +460,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
       fprintf(stderr, "uim-custom-cli: invalid Scheme string for %s\n",
               custom_sym);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     break;
@@ -487,14 +473,12 @@ normalize_custom_value(const char *custom_sym, const char *value,
       fprintf(stderr, "uim-custom-cli: invalid choice value for %s: %s\n",
               custom_sym, value);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     if (!custom->range) {
       fprintf(stderr, "uim-custom-cli: custom has no choice range: %s\n",
               custom_sym);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     /* Check whether the value is one of the valid choices. */
@@ -511,7 +495,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
                     custom->range->as_choice.valid_items,
                     "available choices:");
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     if (value[0] == '\'')
@@ -524,7 +507,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
       fprintf(stderr, "uim-custom-cli: custom has no ordered-list items: %s\n",
               custom_sym);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     if (!normalize_ordered_list_value(
@@ -533,7 +515,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
             custom->range->as_olist.valid_items,
             normalized_value)) {
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     break;
@@ -544,7 +525,6 @@ normalize_custom_value(const char *custom_sym, const char *value,
       fprintf(stderr, "uim-custom-cli: expected a Scheme list for %s\n",
               custom_sym);
       uim_custom_free(custom);
-      uim_quit();
       return 0;
     }
     *normalized_value = strdup(value);
@@ -553,19 +533,16 @@ normalize_custom_value(const char *custom_sym, const char *value,
     fprintf(stderr, "uim-custom-cli: unsupported custom type for %s\n",
             custom_sym);
     uim_custom_free(custom);
-    uim_quit();
     return 0;
   }
 
   if (!*normalized_value) {
     fprintf(stderr, "uim-custom-cli: cannot allocate custom value\n");
     uim_custom_free(custom);
-    uim_quit();
     return 0;
   }
 
   uim_custom_free(custom);
-  uim_quit();
   return 1;
 }
 
@@ -577,6 +554,8 @@ main(int argc, char **argv)
   char *owned_value = NULL;
   char *normalized_value = NULL;
   int multiple_values;
+  int save = 0;
+  int argument_offset = 1;
   int i;
   int fd;
 
@@ -590,12 +569,18 @@ main(int argc, char **argv)
       (strcmp(argv[1], "--list") == 0 || strcmp(argv[1], "-l") == 0))
     return list_customs() ? EXIT_SUCCESS : EXIT_FAILURE;
 
-  if (argc < 3) {
+  if (argc > 1 &&
+      (strcmp(argv[1], "--save") == 0 || strcmp(argv[1], "-s") == 0)) {
+    save = 1;
+    argument_offset++;
+  }
+
+  if (argc - argument_offset < 2) {
     usage(stderr);
     return EXIT_FAILURE;
   }
 
-  for (i = 2; i < argc; i++) {
+  for (i = argument_offset + 1; i < argc; i++) {
     if (contains_line_break(argv[i])) {
       fprintf(stderr,
               "uim-custom-cli: custom value must not contain a line break\n");
@@ -603,24 +588,60 @@ main(int argc, char **argv)
     }
   }
 
-  multiple_values = argc > 3;
+  multiple_values = argc > argument_offset + 2;
   if (multiple_values) {
     /* Extra arguments are the CLI shorthand for an ordered-list value. */
-    if (!make_ordered_list_value(argc - 2, &argv[2], &owned_value)) {
+    if (!make_ordered_list_value(argc - argument_offset - 1,
+                                 &argv[argument_offset + 1],
+                                 &owned_value)) {
       fprintf(stderr, "uim-custom-cli: cannot allocate custom value\n");
       return EXIT_FAILURE;
     }
     value = owned_value;
   } else {
-    value = argv[2];
+    value = argv[argument_offset + 1];
   }
 
-  if (!normalize_custom_value(argv[1], value, multiple_values,
-                              &normalized_value)) {
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim-custom-cli: uim_init() failed\n");
     free(owned_value);
     return EXIT_FAILURE;
   }
+  if (!uim_custom_enable()) {
+    fprintf(stderr, "uim-custom-cli: uim_custom_enable() failed\n");
+    free(owned_value);
+    uim_quit();
+    return EXIT_FAILURE;
+  }
+
+  if (!normalize_custom_value(argv[argument_offset], value, multiple_values,
+                              &normalized_value)) {
+    free(owned_value);
+    uim_quit();
+    return EXIT_FAILURE;
+  }
   free(owned_value);
+
+  if (!uim_custom_set_value_as_literal(argv[argument_offset],
+                                       normalized_value)) {
+    fprintf(stderr, "uim-custom-cli: cannot set custom value: %s\n",
+            argv[argument_offset]);
+    free(normalized_value);
+    uim_quit();
+    return EXIT_FAILURE;
+  }
+
+  if (save) {
+    if (!uim_custom_save_custom(argv[argument_offset])) {
+      fprintf(stderr, "uim-custom-cli: cannot save custom value: %s\n",
+              argv[argument_offset]);
+      free(normalized_value);
+      uim_quit();
+      return EXIT_FAILURE;
+    }
+  }
+
+  uim_quit();
 
   fd = uim_helper_init_client_fd(NULL);
   if (fd < 0) {
@@ -630,7 +651,7 @@ main(int argc, char **argv)
   }
 
   uim_asprintf(&message, "prop_update_custom\n%s\n%s\n",
-               argv[1], normalized_value);
+               argv[argument_offset], normalized_value);
   uim_helper_send_message(fd, message);
   free(message);
   free(normalized_value);
