@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=uim
+Comment=uim input method for Wayland (zwp_input_method_v1)
+Exec=@bindir@/uim-wayland
+Icon=@uim_pixmapsdir@/uim-icon.svg
+NoDisplay=true
+X-KDE-Wayland-VirtualKeyboard=true

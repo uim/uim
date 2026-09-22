@@ -16,3 +16,4 @@ skk-utf8-migration-guide.md     SKK UTF-8 migration guide
 skk-utf8-migration-guide-ja.md  SKK UTF-8 migration guide in Japanese
 uim-custom-cli.md      Set or list custom values from the command line
 uim-im-switcher-cli.md Switch the input method from a shell
+uim-wayland.md         Input method for Wayland compositors (zwp_input_method_v1)

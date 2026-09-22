@@ -853,6 +853,37 @@ if test "x$with_gtk4" = xyes; then
   AC_SUBST(GTK4_LIBDIR)
 fi
 
+dnl ***********************************************
+dnl *** Check for Wayland input method frontend ***
+dnl ***********************************************
+AC_ARG_WITH(wayland,
+  AC_HELP_STRING([--without-wayland],
+    [do not build uim-wayland (zwp_input_method_v1 frontend)]),
+  [],
+  [with_wayland=yes])
+
+if test "x$with_wayland" != xno; then
+  PKG_CHECK_MODULES(WAYLAND,
+                    [wayland-client >= 1.15 wayland-protocols >= 1.5 xkbcommon],
+                    with_wayland=yes, with_wayland=no)
+fi
+
+if test "x$with_wayland" = xyes; then
+  WAYLAND_PROTOCOLS_DIR=`$PKG_CONFIG wayland-protocols --variable=pkgdatadir`
+  WAYLAND_SCANNER=`$PKG_CONFIG wayland-scanner --variable=wayland_scanner 2>/dev/null`
+  if test -z "$WAYLAND_SCANNER"; then
+    AC_PATH_PROG([WAYLAND_SCANNER], [wayland-scanner])
+  fi
+  if test -z "$WAYLAND_PROTOCOLS_DIR" || test -z "$WAYLAND_SCANNER"; then
+    AC_MSG_WARN([wayland-protocols or wayland-scanner not found, uim-wayland disabled])
+    with_wayland=no
+  fi
+fi
+
+AM_CONDITIONAL(WAYLAND, test "x$with_wayland" = xyes)
+AC_SUBST(WAYLAND_PROTOCOLS_DIR)
+AC_SUBST(WAYLAND_SCANNER)
+
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
     [enable debugging]),
@@ -2005,6 +2036,7 @@ AC_CONFIG_FILES([Makefile
                  qt6/toolbar/uim-toolbar-qt6.pro
                  qt6/toolbar/Makefile
                  xim/Makefile
+                 wayland/Makefile
                  fep/Makefile
                  emacs/Makefile
                  emacs/uim-version.el
@@ -2178,6 +2210,7 @@ Configure Result :
    GTK+3           : ${with_gtk3}
    GNOME3 Applet   : ${enable_gnome3_applet}
    GTK4            : ${with_gtk4}
+   Wayland IM      : ${with_wayland}
    Qt3             : ${with_qt}
    Qt3 immodule    : ${with_qt_immodule}
    TQt             : ${with_tqt}
