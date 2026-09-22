@@ -693,3 +693,12 @@
 /mozc/ipc/*.o
 /mozc/ipc/.deps/
 /mozc/ipc/.dirstamp
+/wayland/.deps/
+/wayland/.libs/
+/wayland/Makefile.in
+/wayland/Makefile
+/wayland/*.o
+/wayland/input-method-unstable-v1-client-protocol.h
+/wayland/input-method-unstable-v1-protocol.c
+/wayland/uim-wayland
+/wayland/uim-wayland.desktop
