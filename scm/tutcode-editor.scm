@@ -82,7 +82,7 @@
 (define tutcode-editor-commit
   (lambda (ec str)
     (tutcode-editor-commit-char-list
-     ec (reverse (string-to-list str)))))
+     ec (reverse (string-to-list-utf8 str)))))
 
 (define tutcode-editor-commit-raw
   (lambda (ec key key-state)

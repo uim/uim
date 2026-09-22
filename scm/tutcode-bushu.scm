@@ -127,7 +127,7 @@
 
 ;;; 文字のリストとして返す。
 (define (tutcode-bushu-parse-entry str)
-  (reverse! (string-to-list str)))
+  (reverse! (string-to-list-utf8 str)))
 
 ;;; STR で始まる行のうち、最初のものを見つける。
 ;;; @param str 検索文字列
@@ -141,7 +141,7 @@
 ;;; CHARを構成する部首のリストを返す。
 (define (tutcode-bushu-for-char char)
   (let*
-    ((i (tutcode-euc-jp-string->ichar char))
+    ((i (tutcode-utf8-string->ichar char))
      (cache
       (and i (hash-table-ref/default tutcode-bushu-for-char-hash-table i #f))))
     (if cache
