@@ -68,18 +68,26 @@
               ((= 0 pid) ;; child
                (setsid)
                (file-close pin-out)
-               (if (< (duplicate-fileno pin-in 0) 0)
+               ;; When the calling process has stdin closed, pipe(2)
+               ;; hands out fd 0 itself, dup2(0, 0) does nothing and
+               ;; closing the original would leave the child without
+               ;; stdin.  The same goes for stdout and fd 1.
+               (if (not (= pin-in 0))
                  (begin
-                   (uim-notify-fatal (N_ "cannot duplicate stdin"))
-                   (set! ret (bitwise-ior ret process-dup2-failed))))
-               (file-close pin-in)
+                   (if (< (duplicate-fileno pin-in 0) 0)
+                     (begin
+                       (uim-notify-fatal (N_ "cannot duplicate stdin"))
+                       (set! ret (bitwise-ior ret process-dup2-failed))))
+                   (file-close pin-in)))
 
                (file-close pout-in)
-               (if (< (duplicate-fileno pout-out 1) 0)
+               (if (not (= pout-out 1))
                  (begin
-                   (uim-notify-fatal (N_ "cannot duplicate stdout"))
-                   (set! ret (bitwise-ior ret process-dup2-failed))))
-               (file-close pout-out)
+                   (if (< (duplicate-fileno pout-out 1) 0)
+                     (begin
+                       (uim-notify-fatal (N_ "cannot duplicate stdout"))
+                       (set! ret (bitwise-ior ret process-dup2-failed))))
+                   (file-close pout-out)))
 
                (if (= (process-execute file argv) -1)
                  (uim-notify-fatal (format (_ "cannot execute ~a") file)))
