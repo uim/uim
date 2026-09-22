@@ -1569,6 +1569,27 @@ uim_custom_set(const struct uim_custom *custom)
 }
 
 /**
+ * Updates a custom variable from a Scheme value literal. The literal is
+ * parsed and validated by the same handler used for helper messages.
+ *
+ * @param custom_sym custom variable name
+ * @param literal Scheme literal representing the new value
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
+uim_bool
+uim_custom_set_value_as_literal(const char *custom_sym, const char *literal)
+{
+  if (!custom_sym || !literal)
+    return UIM_FALSE;
+
+  return uim_scm_c_bool(
+    uim_scm_callf_with_guard(uim_scm_f(),
+                             "custom-prop-update-custom-handler", "oys",
+                             uim_scm_f(), custom_sym, literal));
+}
+
+/**
  * Frees pre-allocated C representation of a custom variable. All C
  * representation of a custom variable allocated by uim_custom_get() must be
  * freed by this function.

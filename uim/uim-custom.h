@@ -149,6 +149,8 @@ uim_bool uim_custom_broadcast_reload_request(void);
 /* custom variable */
 struct uim_custom *uim_custom_get(const char *custom_sym);
 uim_bool uim_custom_set(const struct uim_custom *custom);
+uim_bool uim_custom_set_value_as_literal(const char *custom_sym,
+                                         const char *literal);
 void uim_custom_free(struct uim_custom *custom);
 
 /* callback function */
