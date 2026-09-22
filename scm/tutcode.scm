@@ -5662,7 +5662,9 @@
 (define (tutcode-bushu-help-lookup c)
   (and (not (string=? tutcode-bushu-help-filename "")) ; デフォルトは""
     (let*
-      ((looked (tutcode-bushu-search c tutcode-bushu-help-filename))
+      ((looked (tutcode-bushu-search
+                 c tutcode-bushu-help-filename
+                 tutcode-bushu-help-encoding))
        (lst (and looked (tutcode-bushu-parse-entry looked))))
       (and lst
         (>= (length lst) 2)

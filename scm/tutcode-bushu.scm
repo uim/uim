@@ -102,6 +102,30 @@
 (require "util.scm")
 (require-dynlib "look")
 
+(define (tutcode-encoding-name encoding)
+  (if (eq? encoding 'utf-8)
+    "UTF-8"
+    "EUC-JP"))
+
+;;; Convert between Tutcode's UTF-8 strings and external T-Code dictionaries.
+(define (tutcode-utf8-string->encoded s encoding)
+  (let ((encoded-str
+          (if (eq? encoding 'utf-8)
+            s
+            (iconv-convert (tutcode-encoding-name encoding) "UTF-8" s))))
+    (with-char-codec "ISO-8859-1"
+      (lambda ()
+        (%%string-reconstruct! (string-copy encoded-str))))))
+
+(define (tutcode-encoded-string->utf8 s encoding)
+  (let ((utf8-str
+          (if (eq? encoding 'utf-8)
+            s
+            (iconv-convert "UTF-8" (tutcode-encoding-name encoding) s))))
+    (with-char-codec "ISO-8859-1"
+      (lambda ()
+        (%%string-reconstruct! (string-copy utf8-str))))))
+
 ;;; #tの場合、部首の並べ方によって合成される文字の優先度が変わる
 (define tutcode-bushu-sequence-sensitive? #t)
 
@@ -132,11 +156,12 @@
 ;;; STR で始まる行のうち、最初のものを見つける。
 ;;; @param str 検索文字列
 ;;; @param file 対象ファイル名
+;;; @param encoding 対象ファイルの文字コード
 ;;; @return 見つけた文字列(strは含まない)。見つからなかった場合は#f
-(define (tutcode-bushu-search str file)
-  (let ((looked (look-lib-look #f #f 1 file str)))
+(define (tutcode-bushu-search str file encoding)
+  (let ((looked (look-lib-look #f #f 1 file (tutcode-utf8-string->encoded str encoding))))
     (and (pair? looked)
-         (car looked)))) ; 1行ぶんの文字列だけ取得
+         (tutcode-encoded-string->utf8 (car looked) encoding)))) ; 1行ぶんの文字列だけ取得
 
 ;;; CHARを構成する部首のリストを返す。
 (define (tutcode-bushu-for-char char)
@@ -147,7 +172,8 @@
     (if cache
       (list-copy cache)
       (let*
-        ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename))
+        ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename
+                   tutcode-bushu-expand-encoding))
          (res
           (if looked
             (tutcode-bushu-parse-entry looked)
@@ -159,7 +185,7 @@
 (define (tutcode-bushu-lookup-index2-entry-internal str)
   (let
     ((looked (tutcode-bushu-search (string-append str " ")
-              tutcode-bushu-index2-filename)))
+                tutcode-bushu-index2-filename tutcode-bushu-index2-encoding)))
     (if looked
       (tutcode-bushu-parse-entry looked)
       ())))
@@ -690,7 +716,10 @@
                   (eof-object? line))
               rules
               (loop (read-line port)
-                    (append! rules (parse line)))))))))
+                    (append! rules
+                      (parse
+                        (tutcode-encoded-string->utf8
+                          line tutcode-bushu-help-encoding))))))))))
 
 
 ;;; bushu.helpファイルに基づく部首合成を行う
