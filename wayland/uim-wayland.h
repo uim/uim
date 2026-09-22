@@ -67,6 +67,8 @@ enum uim_wayland_preedit_style {
   UIM_WAYLAND_PREEDIT_STYLE_INCORRECT = 7
 };
 
+struct uim_wayland_candwin;
+
 struct uim_wayland_preedit_segment {
   int attr;
   char *str;
@@ -79,7 +81,10 @@ struct uim_wayland_preedit_segment {
 struct uim_wayland {
   struct wl_display *display;
   struct wl_registry *registry;
+  struct wl_compositor *compositor;
+  struct wl_shm *shm;
   struct zwp_input_method_v1 *input_method;
+  struct zwp_input_panel_v1 *input_panel;
 
   /* The active context. NULL while no text field is focused. */
   struct zwp_input_method_context_v1 *context;
@@ -98,6 +103,8 @@ struct uim_wayland {
   size_t segments_capacity;
   bool preedit_shown;
 
+  struct uim_wayland_candwin *candwin;
+
   uint8_t forwarded_keys[UIM_WAYLAND_MAX_KEYCODE / 8];
 
   bool running;
@@ -108,3 +115,14 @@ void uim_wayland_convert_key(xkb_keysym_t sym,
                              struct xkb_state *state,
                              int *ukey,
                              int *umod);
+
+/* candwin.c */
+struct uim_wayland_candwin *uim_wayland_candwin_new(struct uim_wayland *uw);
+void uim_wayland_candwin_free(struct uim_wayland_candwin *cw);
+void uim_wayland_candwin_activate(struct uim_wayland_candwin *cw,
+                                  int nr,
+                                  int display_limit);
+void uim_wayland_candwin_select(struct uim_wayland_candwin *cw, int index);
+void uim_wayland_candwin_shift_page(struct uim_wayland_candwin *cw,
+                                    bool forward);
+void uim_wayland_candwin_deactivate(struct uim_wayland_candwin *cw);
