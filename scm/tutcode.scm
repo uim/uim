@@ -937,7 +937,9 @@
         (set! tutcode-use-recursive-learning? #f)
         (set! tutcode-enable-mazegaki-learning? #f))
       (begin
-        (set! tutcode-dic (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified))
+        (set! tutcode-dic
+          (skk-lib-dic-open-with-encoding
+            tutcode-dic-filename 'tutcode-dic-file-encoding))
         (if tutcode-use-recursive-learning?
           (require "tutcode-editor.scm"))
         (tutcode-read-personal-dictionary))))

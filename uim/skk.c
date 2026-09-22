@@ -215,6 +215,9 @@ static struct skk_converter_cache *get_skk_converter(
     enum skk_dictionary_encoding to_encoding,
     enum skk_dictionary_encoding from_encoding);
 static void release_skk_converters(void);
+static void get_encoding_value(uim_lisp encoding_,
+                               const char *symbol_name,
+                               enum skk_dictionary_encoding *encoding);
 static void get_configured_encoding(const char *symbol_name,
                                     enum skk_dictionary_encoding *encoding);
 static void get_personal_dictionary_encoding(const char *fn,
@@ -327,10 +330,10 @@ release_skk_converters(void)
 }
 
 static void
-get_configured_encoding(const char *symbol_name,
-                        enum skk_dictionary_encoding *encoding)
+get_encoding_value(uim_lisp encoding_,
+                   const char *symbol_name,
+                   enum skk_dictionary_encoding *encoding)
 {
-  uim_lisp encoding_;
   const char *encoding_name = NULL;
   char *allocated_encoding = NULL;
 
@@ -338,7 +341,6 @@ get_configured_encoding(const char *symbol_name,
   assert(encoding);
 
   *encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
-  encoding_ = uim_scm_symbol_value(symbol_name);
   if (SYMP(encoding_))
     encoding_name = C_SYM(encoding_);
   else if (STRP(encoding_)) {
@@ -362,10 +364,19 @@ out:
 }
 
 static void
+get_configured_encoding(const char *symbol_name,
+                        enum skk_dictionary_encoding *encoding)
+{
+  assert(symbol_name);
+  get_encoding_value(uim_scm_symbol_value(symbol_name), symbol_name, encoding);
+}
+
+static void
 get_personal_dictionary_encoding(const char *fn,
                                  enum skk_dictionary_encoding *encoding)
 {
   static const char *const settings[][2] = {
+    { "tutcode-personal-dic-filename", "tutcode-personal-dic-encoding" },
     { "skk-uim-personal-dic-filename", "skk-uim-personal-dic-encoding" },
     { "skk-personal-dic-filename", "skk-personal-dic-encoding" }
   };
@@ -489,51 +500,72 @@ find_border(dic_info *di)
 }
 
 static dic_info *
-open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
-	 int skkserv_portnum, int skkserv_family)
+alloc_dic_info(void)
+{
+  dic_info *di;
+
+  di = (dic_info *)uim_malloc(sizeof(dic_info));
+
+  di->addr = NULL;
+  di->first = 0;
+  di->border = 0;
+  di->size = 0;
+  di->encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
+  di->skkserv_encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
+  di->head.next = NULL;
+  di->personal_dic_timestamp = 0;
+  di->cache_modified = 0;
+  di->cache_len = 0;
+  di->skkserv_state = 0;
+  di->skkserv_hostname = NULL;
+  di->skkserv_portnum = 0;
+  di->skkserv_family = AF_UNSPEC;
+  di->skkserv_completion_timeout = 0;
+
+  return di;
+}
+
+static dic_info *
+open_file_dic(const char *fn, enum skk_dictionary_encoding encoding)
 {
   dic_info *di;
   struct stat st;
   int fd;
   void *addr = NULL;
-  int mmap_done = 0;
 
-  di = (dic_info *)uim_malloc(sizeof(dic_info));
+  di = alloc_dic_info();
 
-  di->skkserv_hostname = NULL;
-  if (use_skkserv) {
-    di->skkserv_encoding = get_skkserv_encoding();
-    di->skkserv_hostname = uim_strdup(skkserv_hostname);
-    di->skkserv_portnum = skkserv_portnum;
-    di->skkserv_family = skkserv_family;
-    di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_hostname,
-						    skkserv_portnum,
-						    skkserv_family);
-    di->skkserv_completion_timeout = uim_scm_symbol_value_int("skk-skkserv-completion-timeout");
-  } else {
-    di->skkserv_state = 0;
-    get_configured_encoding("skk-dic-file-encoding", &di->encoding);
-    fd = open(fn, O_RDONLY);
-    if (fd != -1) {
-      if (fstat(fd, &st) != -1) {
-	addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	if (addr != MAP_FAILED) {
-	  mmap_done = 1;
-	}
+  di->encoding = encoding;
+  fd = open(fn, O_RDONLY);
+  if (fd != -1) {
+    if (fstat(fd, &st) != -1) {
+      addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+      if (addr != MAP_FAILED) {
+        di->addr = addr;
+        di->size = st.st_size;
+        di->first = find_first_line(di);
+        di->border = find_border(di);
       }
-      close(fd);
     }
+    close(fd);
   }
 
-  di->addr = mmap_done ? addr : NULL;
-  di->size = mmap_done ? st.st_size : 0;
-  di->first = mmap_done ? find_first_line(di) : 0;
-  di->border = mmap_done ? find_border(di) : 0;
+  return di;
+}
 
-  di->head.next = NULL;
-  di->personal_dic_timestamp = 0;
-  di->cache_modified = 0;
-  di->cache_len = 0;
+static dic_info *
+open_skkserv_dic(const char *hostname, int portnum, int family)
+{
+  dic_info *di;
+
+  di = alloc_dic_info();
+  di->skkserv_encoding = get_skkserv_encoding();
+  di->skkserv_hostname = uim_strdup(hostname);
+  di->skkserv_portnum = portnum;
+  di->skkserv_family = family;
+  di->skkserv_state = SKK_SERV_USE | open_skkserv(hostname, portnum, family);
+  di->skkserv_completion_timeout =
+    uim_scm_symbol_value_int("skk-skkserv-completion-timeout");
 
   return di;
 }
@@ -736,8 +768,6 @@ skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
   skkserv_portnum = C_INT(skkserv_portnum_);
   skkserv_family_str = REFER_C_STR(skkserv_family_);
 
-  signal(SIGPIPE, SIG_IGN);
-
   skkserv_family = AF_UNSPEC;
   if (skkserv_family_str) {
     if (!strcmp(skkserv_family_str, "inet"))
@@ -746,10 +776,27 @@ skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
       skkserv_family = AF_INET6;
   }
 
-  skk_dic = open_dic(fn, use_skkserv, skkserv_hostname, skkserv_portnum,
-		     skkserv_family);
+  if (use_skkserv) {
+    signal(SIGPIPE, SIG_IGN);
+    skk_dic = open_skkserv_dic(skkserv_hostname, skkserv_portnum, skkserv_family);
+  } else {
+    enum skk_dictionary_encoding file_encoding;
+
+    get_configured_encoding("skk-dic-file-encoding", &file_encoding);
+    skk_dic = open_file_dic(fn, file_encoding);
+  }
 
   return MAKE_PTR(skk_dic);
+}
+
+static uim_lisp
+skk_dic_open_with_encoding(uim_lisp fn_, uim_lisp encoding_setting_)
+{
+  enum skk_dictionary_encoding file_encoding;
+
+  get_configured_encoding(C_SYM(encoding_setting_), &file_encoding);
+
+  return MAKE_PTR(open_file_dic(REFER_C_STR(fn_), file_encoding));
 }
 
 static uim_lisp
@@ -4109,6 +4156,7 @@ void
 uim_plugin_instance_init(void)
 {
   uim_scm_init_proc5("skk-lib-dic-open", skk_dic_open);
+  uim_scm_init_proc2("skk-lib-dic-open-with-encoding", skk_dic_open_with_encoding);
   uim_scm_init_proc1("skk-lib-free-dic", skk_free_dic);
   uim_scm_init_proc2("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
   uim_scm_init_proc2("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
