@@ -32,9 +32,9 @@
 (require "i18n.scm")
 
 
-;;; tutcode.scm¤Ç¤Ï¡¢tutcode-rule.scm°Ê³°(tcode.scmÅù)¤ò»È¤¦²ÄÇ½À­¤¬¤¢¤ë¤Î¤Ç¡¢
-;;; tutcode-rule.scm¸ÇÍ­¤ÎÀßÄê¤Ïtutcode-rule-custom.scm¤Ç¹Ô¤¦¡£
-;;; (tutcode-custom.scm¤Ç¤Ï¤Ê¤¯)
+;;; tutcode.scmã§ã¯ã€tutcode-rule.scmä»¥å¤–(tcode.scmç­‰)ã‚’ä½¿ã†å¯èƒ½æ€§ãŒã‚ã‚‹ã®ã§ã€
+;;; tutcode-rule.scmå›ºæœ‰ã®è¨­å®šã¯tutcode-rule-custom.scmã§è¡Œã†ã€‚
+;;; (tutcode-custom.scmã§ã¯ãªã)
 (define-custom-group 'tutcode-rule
                      (N_ "tutcode-rule")
                      (N_ "Settings for tutcode-rule.scm"))

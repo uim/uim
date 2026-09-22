@@ -28,8 +28,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; SKK��Ʊ���Ƶ��ؽ��򥤥�饤��ǹԤ�����δʰץƥ����ȥ��ǥ�����
-;; skk-editor.scm���饳�ԡ�����tutcode.scm�Ѥ��ѹ���
+;; SKKと同じ再帰学習をインラインで行うための簡易テキストエディタ。
+;; skk-editor.scmからコピーしてtutcode.scm用に変更。
 
 (define-record 'tutcode-editor
   '((context      ())
