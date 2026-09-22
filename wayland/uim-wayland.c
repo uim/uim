@@ -664,6 +664,15 @@ main(int argc, char **argv)
   const char *im_name;
   int status;
 
+  /* libuim talks to input method helper processes over pipes and
+   * doesn't guard those writes: uim_helper_send_message() only ignores
+   * SIGPIPE around its own write, and the Scheme side doesn't at all.
+   * A helper that dies would take this process down with it. The
+   * stdout and stderr the compositor gave us can go away too. The
+   * Wayland socket is safe on its own, libwayland sends with
+   * MSG_NOSIGNAL. */
+  signal(SIGPIPE, SIG_IGN);
+
   if (argc >= 2) {
     if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
       usage(stdout);
@@ -733,7 +742,6 @@ main(int argc, char **argv)
   sigaction(SIGINT, &action, NULL);
   sigaction(SIGTERM, &action, NULL);
   sigaction(SIGHUP, &action, NULL);
-  signal(SIGPIPE, SIG_IGN);
 
   status = run(uw);
 
