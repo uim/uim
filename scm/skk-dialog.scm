@@ -84,7 +84,7 @@
 (define skk-dialog-commit
   (lambda (dc str)
     (skk-dialog-commit-char-list
-     dc (reverse (string-to-list str)))))
+     dc (reverse (string-to-list-utf8 str)))))
 				 
 (define skk-dialog-commit-raw
   (lambda (dc key key-state)

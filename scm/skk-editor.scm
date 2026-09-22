@@ -28,7 +28,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; SKK¤ÎºÆµ¢³Ø½¬¤ò¥¤¥ó¥é¥¤¥ó¤Ç¹Ô¤¦¤¿¤á¤Î´Ê°×¥Æ¥­¥¹¥È¥¨¥Ç¥£¥¿
+;; SKKã®å†å¸°å­¦ç¿’ã‚’ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ã§è¡Œã†ãŸã‚ã®ç°¡æ˜“ãƒ†ã‚­ã‚¹ãƒˆã‚¨ãƒ‡ã‚£ã‚¿
 ;;
 
 (define-record 'skk-editor
@@ -82,7 +82,7 @@
 (define skk-editor-commit
   (lambda (ec str)
     (skk-editor-commit-char-list
-     ec (reverse (string-to-list str)))))
+     ec (reverse (string-to-list-utf8 str)))))
 				 
 (define skk-editor-commit-raw
   (lambda (ec key key-state)
