@@ -46,6 +46,7 @@
 
 #include "uim-wayland.h"
 
+#include <uim/uim-helper.h>
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-util.h>
 
@@ -99,14 +100,19 @@ was_forwarded(struct uim_wayland *uw, uint32_t key)
 
 /* text output */
 
+void
+uim_wayland_commit_string(struct uim_wayland *uw, const char *str)
+{
+  if (!uw->context || !str || str[0] == '\0')
+    return;
+  zwp_input_method_context_v1_commit_string(uw->context, uw->serial, str);
+}
+
 static void
 commit_cb(void *ptr, const char *str)
 {
   struct uim_wayland *uw = ptr;
-
-  if (!uw->context || !str || str[0] == '\0')
-    return;
-  zwp_input_method_context_v1_commit_string(uw->context, uw->serial, str);
+  uim_wayland_commit_string(uw, str);
 }
 
 static void
@@ -245,6 +251,68 @@ cand_deactivate_cb(void *ptr)
 {
   struct uim_wayland *uw = ptr;
   uim_wayland_candwin_deactivate(uw->candwin);
+}
+
+/* properties and IM switching */
+
+static void
+prop_list_update_cb(void *ptr, const char *str)
+{
+  struct uim_wayland *uw = ptr;
+  char *message;
+
+  uim_asprintf(&message, "prop_list_update\ncharset=UTF-8\n%s", str);
+  uim_wayland_helper_send(uw, message);
+  free(message);
+}
+
+static void
+configuration_changed_cb(void *ptr)
+{
+  struct uim_wayland *uw = ptr;
+
+  /* The list tells the toolbar which input method is in use, so only
+   * publish it while we own the input. */
+  if (!uw->focused)
+    return;
+  uim_wayland_helper_send_im_list(uw);
+}
+
+static void
+update_default_im(struct uim_wayland *uw, const char *name)
+{
+  char *sym;
+  uim_asprintf(&sym, "'%s", name);
+  uim_prop_update_custom(uw->uc, "custom-preserved-default-im-name", sym);
+  free(sym);
+}
+
+static void
+switch_app_global_im_cb(void *ptr, const char *name)
+{
+  struct uim_wayland *uw = ptr;
+
+  if (!uw->focused)
+    return;
+  /* There is a single context in this process, so there is nothing
+   * else to switch and nothing to tell the other processes: an
+   * im_change_this_application_only would switch whichever of them
+   * believes it is focused. */
+  update_default_im(uw, name);
+}
+
+static void
+switch_system_global_im_cb(void *ptr, const char *name)
+{
+  struct uim_wayland *uw = ptr;
+  char *message;
+
+  update_default_im(uw, name);
+  /* Other processes switch on this message; the helper server does
+   * not reflect it back to us. */
+  uim_asprintf(&message, "im_change_whole_desktop\n%s\n", name);
+  uim_wayland_helper_send(uw, message);
+  free(message);
 }
 
 /* grabbed keyboard */
@@ -525,6 +593,7 @@ deactivate(struct uim_wayland *uw)
    * to a context that is going away. The client resets its own
    * preedit on deactivation. */
   uw->context = NULL;
+  uw->focused = false;
   uim_wayland_candwin_deactivate(uw->candwin);
   uim_focus_out_context(uw->uc);
   /* We can't tell the client anything after deactivation, and clients
@@ -532,6 +601,7 @@ deactivate(struct uim_wayland *uw)
    * it, others drop it). Drop it on our side too, so it doesn't show
    * up again in the next text field. */
   uim_reset_context(uw->uc);
+  uim_wayland_helper_focus_out(uw);
   clear_segments(uw);
   uw->preedit_shown = false;
 
@@ -551,6 +621,7 @@ input_method_activate(void *data,
 
   uw->context = context;
   uw->serial = 0;
+  uw->focused = true;
   uw->preedit_shown = false;
   memset(uw->forwarded_keys, 0, sizeof(uw->forwarded_keys));
   zwp_input_method_context_v1_add_listener(context, &context_listener, uw);
@@ -558,7 +629,9 @@ input_method_activate(void *data,
   uw->keyboard = zwp_input_method_context_v1_grab_keyboard(context);
   wl_keyboard_add_listener(uw->keyboard, &keyboard_listener, uw);
 
+  uim_wayland_helper_focus_in(uw);
   uim_focus_in_context(uw->uc);
+  uim_prop_list_update(uw->uc);
   debug("activated, input method: %s", uim_get_current_im_name(uw->uc));
 }
 
@@ -632,7 +705,8 @@ run(struct uim_wayland *uw)
 
   uw->running = true;
   while (uw->running && !terminate_requested) {
-    struct pollfd fds[1];
+    struct pollfd fds[2];
+    int nfds = 1;
     short flush_events;
     int ret;
 
@@ -657,7 +731,13 @@ run(struct uim_wayland *uw)
     fds[0].fd = display_fd;
     fds[0].events = flush_events;
     fds[0].revents = 0;
-    ret = poll(fds, 1, -1);
+    if (uw->helper_fd >= 0) {
+      fds[1].fd = uw->helper_fd;
+      fds[1].events = POLLIN;
+      fds[1].revents = 0;
+      nfds = 2;
+    }
+    ret = poll(fds, nfds, -1);
     if (ret < 0) {
       wl_display_cancel_read(uw->display);
       if (errno == EINTR)
@@ -675,6 +755,13 @@ run(struct uim_wayland *uw)
     }
     if (wl_display_dispatch_pending(uw->display) < 0)
       break;
+
+    if (nfds == 2 && fds[1].revents) {
+      if (fds[1].revents & (POLLERR | POLLNVAL))
+        uim_wayland_helper_disconnect(uw);
+      else
+        uim_wayland_helper_dispatch(uw);
+    }
   }
 
   if (wl_display_get_error(uw->display) != 0) {
@@ -732,6 +819,7 @@ main(int argc, char **argv)
 
   uw = uim_malloc(sizeof(*uw));
   memset(uw, 0, sizeof(*uw));
+  uw->helper_fd = -1;
 
   /* uim must be ready before the first roundtrip: the compositor may
    * activate us as soon as we bind zwp_input_method_v1. */
@@ -753,6 +841,11 @@ main(int argc, char **argv)
                      preedit_update_cb);
   uim_set_candidate_selector_cb(uw->uc, cand_activate_cb, cand_select_cb,
                                 cand_shift_page_cb, cand_deactivate_cb);
+  uim_set_prop_list_update_cb(uw->uc, prop_list_update_cb);
+  uim_set_configuration_changed_cb(uw->uc, configuration_changed_cb);
+  uim_set_im_switch_request_cb(uw->uc, switch_app_global_im_cb,
+                               switch_system_global_im_cb);
+  uim_wayland_helper_connect(uw);
 
   uw->xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
   if (!uw->xkb_context) {
@@ -799,6 +892,7 @@ main(int argc, char **argv)
   status = run(uw);
 
   deactivate(uw);
+  uim_wayland_helper_disconnect(uw);
   /* Release the uim context first: a Scheme release handler can still
    * reach the candidate window callbacks. */
   uim_release_context(uw->uc);

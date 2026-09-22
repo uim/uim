@@ -97,6 +97,7 @@ struct uim_wayland {
   struct xkb_state *xkb_state;
 
   uim_context uc;
+  bool focused;
 
   struct uim_wayland_preedit_segment *segments;
   size_t n_segments;
@@ -107,8 +108,12 @@ struct uim_wayland {
 
   uint8_t forwarded_keys[UIM_WAYLAND_MAX_KEYCODE / 8];
 
+  int helper_fd;
   bool running;
 };
+
+/* uim-wayland.c */
+void uim_wayland_commit_string(struct uim_wayland *uw, const char *str);
 
 /* key.c */
 void uim_wayland_convert_key(xkb_keysym_t sym,
@@ -126,3 +131,12 @@ void uim_wayland_candwin_select(struct uim_wayland_candwin *cw, int index);
 void uim_wayland_candwin_shift_page(struct uim_wayland_candwin *cw,
                                     bool forward);
 void uim_wayland_candwin_deactivate(struct uim_wayland_candwin *cw);
+
+/* helper.c */
+void uim_wayland_helper_connect(struct uim_wayland *uw);
+void uim_wayland_helper_disconnect(struct uim_wayland *uw);
+void uim_wayland_helper_dispatch(struct uim_wayland *uw);
+void uim_wayland_helper_send(struct uim_wayland *uw, const char *message);
+void uim_wayland_helper_send_im_list(struct uim_wayland *uw);
+void uim_wayland_helper_focus_in(struct uim_wayland *uw);
+void uim_wayland_helper_focus_out(struct uim_wayland *uw);
