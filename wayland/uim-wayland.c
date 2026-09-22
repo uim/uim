@@ -214,6 +214,39 @@ preedit_update_cb(void *ptr)
   free(text);
 }
 
+/* candidate window */
+
+static void
+cand_activate_cb(void *ptr, int nr, int display_limit)
+{
+  struct uim_wayland *uw = ptr;
+  if (uw->context)
+    uim_wayland_candwin_activate(uw->candwin, nr, display_limit);
+}
+
+static void
+cand_select_cb(void *ptr, int index)
+{
+  struct uim_wayland *uw = ptr;
+  if (uw->context)
+    uim_wayland_candwin_select(uw->candwin, index);
+}
+
+static void
+cand_shift_page_cb(void *ptr, int direction)
+{
+  struct uim_wayland *uw = ptr;
+  if (uw->context)
+    uim_wayland_candwin_shift_page(uw->candwin, direction != 0);
+}
+
+static void
+cand_deactivate_cb(void *ptr)
+{
+  struct uim_wayland *uw = ptr;
+  uim_wayland_candwin_deactivate(uw->candwin);
+}
+
 /* grabbed keyboard */
 
 static void
@@ -492,6 +525,7 @@ deactivate(struct uim_wayland *uw)
    * to a context that is going away. The client resets its own
    * preedit on deactivation. */
   uw->context = NULL;
+  uim_wayland_candwin_deactivate(uw->candwin);
   uim_focus_out_context(uw->uc);
   /* We can't tell the client anything after deactivation, and clients
    * differ in what they do with a pending preedit (Chromium commits
@@ -559,13 +593,20 @@ registry_global(void *data,
 {
   struct uim_wayland *uw = data;
 
-  (void)version;
-
-  if (strcmp(interface, zwp_input_method_v1_interface.name) == 0) {
+  if (strcmp(interface, wl_compositor_interface.name) == 0) {
+    uw->compositor = wl_registry_bind(registry, name,
+                                      &wl_compositor_interface,
+                                      version < 4 ? version : 4);
+  } else if (strcmp(interface, wl_shm_interface.name) == 0) {
+    uw->shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
+  } else if (strcmp(interface, zwp_input_method_v1_interface.name) == 0) {
     uw->input_method = wl_registry_bind(registry, name,
                                         &zwp_input_method_v1_interface, 1);
     zwp_input_method_v1_add_listener(uw->input_method,
                                      &input_method_listener, uw);
+  } else if (strcmp(interface, zwp_input_panel_v1_interface.name) == 0) {
+    uw->input_panel = wl_registry_bind(registry, name,
+                                       &zwp_input_panel_v1_interface, 1);
   }
 }
 
@@ -701,6 +742,8 @@ main(int argc, char **argv)
   }
   uim_set_preedit_cb(uw->uc, preedit_clear_cb, preedit_pushback_cb,
                      preedit_update_cb);
+  uim_set_candidate_selector_cb(uw->uc, cand_activate_cb, cand_select_cb,
+                                cand_shift_page_cb, cand_deactivate_cb);
 
   uw->xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
   if (!uw->xkb_context) {
@@ -727,6 +770,16 @@ main(int argc, char **argv)
             UIM_WAYLAND_PROGRAM_NAME, UIM_WAYLAND_PROGRAM_NAME);
     return EXIT_FAILURE;
   }
+  if (!uw->compositor || !uw->shm || !uw->input_panel) {
+    /* Everything but the candidate window still works. */
+    fprintf(stderr,
+            "%s: warning: no %s, candidates won't be shown\n",
+            UIM_WAYLAND_PROGRAM_NAME,
+            !uw->input_panel ? "zwp_input_panel_v1" : "wl_compositor/wl_shm");
+  }
+
+  uw->candwin = uim_wayland_candwin_new(uw);
+
   memset(&action, 0, sizeof(action));
   sigemptyset(&action.sa_mask);
   action.sa_handler = terminate_handler;
@@ -738,10 +791,20 @@ main(int argc, char **argv)
   status = run(uw);
 
   deactivate(uw);
+  /* Release the uim context first: a Scheme release handler can still
+   * reach the candidate window callbacks. */
   uim_release_context(uw->uc);
+  uim_wayland_candwin_free(uw->candwin);
+  uw->candwin = NULL;
   uim_quit();
   free(uw->segments);
+  if (uw->input_panel)
+    zwp_input_panel_v1_destroy(uw->input_panel);
   zwp_input_method_v1_destroy(uw->input_method);
+  if (uw->shm)
+    wl_shm_destroy(uw->shm);
+  if (uw->compositor)
+    wl_compositor_destroy(uw->compositor);
   wl_registry_destroy(uw->registry);
   xkb_context_unref(uw->xkb_context);
   wl_display_disconnect(uw->display);

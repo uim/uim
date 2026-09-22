@@ -864,7 +864,7 @@ AC_ARG_WITH(wayland,
 
 if test "x$with_wayland" != xno; then
   PKG_CHECK_MODULES(WAYLAND,
-                    [wayland-client >= 1.15 wayland-protocols >= 1.5 xkbcommon],
+                    [wayland-client >= 1.15 wayland-protocols >= 1.5 xkbcommon cairo pangocairo],
                     with_wayland=yes, with_wayland=no)
 fi
 

@@ -10,7 +10,9 @@ With `zwp_input_method_v1` the compositor starts the input method
 process itself and hands it a context whenever a text field gets
 focus. Key events arrive through a keyboard grab, go through libuim,
 and the results are sent back as preedit and committed text. Keys uim
-doesn't consume are forwarded to the focused application.
+doesn't consume are forwarded to the focused application. Candidates
+are drawn on a `zwp_input_panel_v1` overlay panel, which the
+compositor places next to the text cursor.
 
 GNOME's Mutter doesn't implement the input-method side of the
 protocol, so `uim-wayland` can't be used there.
@@ -18,7 +20,7 @@ protocol, so `uim-wayland` can't be used there.
 ## Build
 
 `uim-wayland` is built when `wayland-client`, `wayland-protocols`,
-`wayland-scanner` and `xkbcommon` are found.
+`wayland-scanner`, `xkbcommon`, `cairo` and `pangocairo` are found.
 Pass `--without-wayland` to `configure` to disable it.
 
 ## KWin
@@ -96,8 +98,9 @@ If the input method doesn't start, look there first.
   application relies on compositor-side repeat, and asks the input
   method to do the repeating otherwise, in which case keys don't
   repeat.
-- No candidate window, so input methods that need one to pick between
-  candidates can only be used for what they show in the preedit.
+- The candidate window has no pointer support; candidates are chosen
+  from the keyboard. It is drawn at scale 1, so it looks blurry on a
+  scaled output.
 - Surrounding text from the application isn't passed to uim yet.
 - uim-helper-server isn't used, so the toolbar and switching the input
   method from another process have no effect.
