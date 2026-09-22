@@ -6386,7 +6386,7 @@
 (register-im
  'tutcode
  "ja"
- "EUC-JP"
+ "UTF-8"
  tutcode-im-name-label
  tutcode-im-short-desc
  #f
