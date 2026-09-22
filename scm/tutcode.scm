@@ -1811,6 +1811,7 @@
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-candidate-window?
+           (> tutcode-candidate-op-count 0)
            (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
     (let ((state (tutcode-context-state pc)))
       (tutcode-activate-candidate-window pc

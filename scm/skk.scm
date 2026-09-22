@@ -1668,6 +1668,7 @@
     (if (and
 	 (not (skk-context-candidate-window sc))
 	 skk-use-candidate-window?
+	 (> skk-candidate-op-count 0)
 	 (> (skk-context-nth sc) (- skk-candidate-op-count 2)))
 	(begin
 	  (skk-context-set-candidate-window! sc #t)
@@ -1732,9 +1733,11 @@
 (define skk-incr-candidate-index
   (lambda (sc)
     (cond
-     ((eq? skk-candidate-selection-style 'uim)
+     ((or (eq? skk-candidate-selection-style 'uim)
+          (= skk-candidate-op-count 0))
       (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))
-     ((eq? skk-candidate-selection-style 'ddskk-like)
+     ((and (eq? skk-candidate-selection-style 'ddskk-like)
+           (> skk-candidate-op-count 0))
       (if (> (+ (skk-context-nth sc) 1) (- skk-candidate-op-count 1))
           (let ((old-nth (skk-context-nth sc)))
             ;; Shift to the next page and detect wrapping at the end.
@@ -1768,23 +1771,31 @@
 		   (- (skk-context-nr-candidates sc) 1))
 		  #t)))))
      ((eq? skk-candidate-selection-style 'ddskk-like)
-      (if (> (skk-context-nth sc)
-	     (+ skk-nr-candidate-max (- skk-candidate-op-count 2)))
-	  (begin
-	    (im-shift-page-candidate sc #f)
-	    #t)
-	  (if (= (skk-context-nth sc) 0)
-	      (begin
-		(skk-back-to-kanji-state sc)
-		#f)
-	      (begin
-		(if (= (skk-context-nth sc) (- skk-candidate-op-count 1))
-		    (begin
-		      (skk-reset-candidate-window sc)
-		      (skk-context-set-nth! sc
-					    (- skk-candidate-op-count 1))))
-		(skk-context-set-nth! sc (- (skk-context-nth sc) 1))
-		#t)))))))
+      (if (= skk-candidate-op-count 0)
+          (if (> (skk-context-nth sc) 0)
+              (begin
+                (skk-context-set-nth! sc (- (skk-context-nth sc) 1))
+                #t)
+              (begin
+                (skk-back-to-kanji-state sc)
+                #f))
+          (if (> (skk-context-nth sc)
+                 (+ skk-nr-candidate-max (- skk-candidate-op-count 2)))
+              (begin
+                (im-shift-page-candidate sc #f)
+                #t)
+              (if (= (skk-context-nth sc) 0)
+                  (begin
+                    (skk-back-to-kanji-state sc)
+                    #f)
+                  (begin
+                    (if (= (skk-context-nth sc) (- skk-candidate-op-count 1))
+                        (begin
+                          (skk-reset-candidate-window sc)
+                          (skk-context-set-nth! sc
+                           (- skk-candidate-op-count 1))))
+                    (skk-context-set-nth! sc (- (skk-context-nth sc) 1))
+                    #t))))))))
 
 (define skk-change-candidate-index
   (lambda (sc incr)
