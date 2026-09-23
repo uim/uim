@@ -131,10 +131,8 @@ list_im_engine(void)
 	free(language);
 	free(shortd);
 
-	if ((encoding = uim_get_im_encoding(context, i)) == NULL)
-	  a_printf(" %s ) ", encoding);
-	else
-	  a_printf(" UTF-8 ) "); /* or nil? */
+	encoding = uim_get_im_encoding(context, i);
+	a_printf(" %s ) ", encoding ? encoding : "UTF-8");
   }
 
   a_printf(" ) ");
