@@ -310,6 +310,7 @@ module Keyboard
   KEY_A = 30
   KEY_J = 36
   KEY_K = 37
+  KEY_L = 38
 
   RELEASED = 0
   PRESSED = 1
@@ -333,6 +334,7 @@ class Compositor
         <AC01> = #{KEY_A + 8};
         <AC07> = #{KEY_J + 8};
         <AC08> = #{KEY_K + 8};
+        <AC09> = #{KEY_L + 8};
       };
       xkb_types "uim-test" {
         type "ONE_LEVEL" {
@@ -355,6 +357,7 @@ class Compositor
         key <AC01> { type = "ALPHABETIC", [ a, A ] };
         key <AC07> { type = "ALPHABETIC", [ j, J ] };
         key <AC08> { type = "ALPHABETIC", [ k, K ] };
+        key <AC09> { type = "ALPHABETIC", [ l, L ] };
         modifier_map Control { Control_L };
       };
     };
@@ -372,8 +375,10 @@ class Compositor
   TIMEOUT = 15
 
   attr_reader :forwarded_keys, :commits, :preedits, :overlay_panels
+  attr_reader :deleted
 
-  def initialize
+  def initialize(default_im_name)
+    @default_im_name = default_im_name
     @connection = nil
     @process_id = nil
     @scm_file = nil
@@ -386,6 +391,7 @@ class Compositor
     @forwarded_keys = []
     @commits = []
     @preedits = []
+    @deleted = []
     @overlay_panels = 0
   end
 
@@ -455,6 +461,11 @@ class Compositor
     release(key)
   end
 
+  # The application reports what is around its cursor, in bytes.
+  def send_surrounding_text(text, cursor, anchor = cursor)
+    @connection.send_event(@context, "surrounding_text", text, cursor, anchor)
+  end
+
   # SKK leaves the keyboard alone until Ctrl-j puts it into hiragana.
   def switch_to_hiragana
     send_modifiers(MOD_CONTROL)
@@ -472,11 +483,19 @@ class Compositor
     [core, ENV["INPUT_METHOD_XML"]]
   end
 
-  # uim reads the default input method from this file, and it has to
-  # be SKK for the keys the test presses to mean anything.
+  # Scheme wants only the quote and the backslash escaped, and it wants
+  # the bytes of a path as they are. Ruby's inspect and dump both turn
+  # anything outside ASCII into \u escapes when the locale isn't UTF-8.
+  def scheme_string(value)
+    "\"#{value.gsub(/["\\]/) {|character| "\\#{character}"}}\""
+  end
+
+  # uim reads its configuration from this file: the input method the
+  # test asks for, plus the one the test ships.
   def user_scm_file
     file = Tempfile.new("uim-wayland-test")
-    file.puts("(define default-im-name 'skk)")
+    file.puts("(load #{scheme_string(File.join(__dir__, "surrounding-text.scm"))})")
+    file.puts("(define default-im-name '#{@default_im_name})")
     file.flush
     file
   end
@@ -516,6 +535,8 @@ class Compositor
       @preedits << arguments[1]
     when "zwp_input_method_context_v1.key"
       @forwarded_keys << [arguments[2], arguments[3]]
+    when "zwp_input_method_context_v1.delete_surrounding_text"
+      @deleted << [arguments[0], arguments[1]]
     end
 
     @connection.delete_id(id) if message.destructor
@@ -568,8 +589,12 @@ class UimWaylandTest < Test::Unit::TestCase
   # can't read a source that isn't ASCII.
   KA = "\u304B"
 
+  def default_im_name
+    "skk"
+  end
+
   def setup
-    @compositor = Compositor.new
+    @compositor = Compositor.new(default_im_name)
     begin
       @compositor.start
       yield
@@ -611,5 +636,56 @@ class UimWaylandTest < Test::Unit::TestCase
   def test_candidate_window_is_an_overlay_panel
     @compositor.wait_for {@compositor.overlay_panels == 1}
     assert_equal(1, @compositor.overlay_panels)
+  end
+
+  # The input method commits what it can see, so the commit says what
+  # the bridge handed to uim.
+  sub_test_case("surrounding text") do
+    def default_im_name
+      "surrounding-text"
+    end
+
+    def test_whole_text
+      @compositor.send_surrounding_text("hello world", 5)
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.commits == ["[hello| world]"]}
+      assert_equal(["[hello| world]"], @compositor.commits)
+    end
+
+    def test_line_before_the_cursor
+      @compositor.send_surrounding_text("one\ntwo", 7)
+      @compositor.type(KEY_J)
+      @compositor.wait_for {@compositor.commits == ["[two|]"]}
+      assert_equal(["[two|]"], @compositor.commits)
+    end
+
+    def test_selection
+      @compositor.send_surrounding_text("hello world", 5, 0)
+      @compositor.type(KEY_K)
+      @compositor.wait_for {@compositor.commits == ["[|hello]"]}
+      assert_equal(["[|hello]"], @compositor.commits)
+    end
+
+    def test_nothing_reported
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.commits == ["[]"]}
+      assert_equal(["[]"], @compositor.commits)
+    end
+
+    def test_delete
+      @compositor.send_surrounding_text("hello", 5)
+      @compositor.type(KEY_L)
+      @compositor.wait_for {@compositor.deleted == [[-1, 1]]}
+      assert_equal([[-1, 1]], @compositor.deleted)
+    end
+
+    # A deletion takes effect with the commit that follows it, so the
+    # bridge sends an empty one of its own before uim commits.
+    def test_delete_is_applied_by_a_commit
+      @compositor.send_surrounding_text("hello", 5)
+      @compositor.type(KEY_L)
+      @compositor.wait_for {@compositor.commits == ["", "[deleted]"]}
+      assert_equal(["", "[deleted]"], @compositor.commits)
+    end
   end
 end

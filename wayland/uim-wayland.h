@@ -99,6 +99,12 @@ struct uim_wayland {
   uim_context uc;
   bool focused;
 
+  /* The text around the cursor as the application last reported it,
+   * with byte offsets into it. NULL when it has told us nothing. */
+  char *surrounding_text;
+  size_t surrounding_cursor;
+  size_t surrounding_anchor;
+
   struct uim_wayland_preedit_segment *segments;
   size_t n_segments;
   size_t segments_capacity;
@@ -131,6 +137,25 @@ void uim_wayland_candwin_select(struct uim_wayland_candwin *cw, int index);
 void uim_wayland_candwin_shift_page(struct uim_wayland_candwin *cw,
                                     bool forward);
 void uim_wayland_candwin_deactivate(struct uim_wayland_candwin *cw);
+
+/* text.c */
+void uim_wayland_text_set_surrounding(struct uim_wayland *uw,
+                                      const char *text,
+                                      uint32_t cursor,
+                                      uint32_t anchor);
+void uim_wayland_text_forget_surrounding(struct uim_wayland *uw);
+int uim_wayland_text_acquire(void *ptr,
+                             enum UTextArea text_id,
+                             enum UTextOrigin origin,
+                             int former_length,
+                             int latter_length,
+                             char **former,
+                             char **latter);
+int uim_wayland_text_delete(void *ptr,
+                            enum UTextArea text_id,
+                            enum UTextOrigin origin,
+                            int former_length,
+                            int latter_length);
 
 /* helper.c */
 void uim_wayland_helper_connect(struct uim_wayland *uw);
