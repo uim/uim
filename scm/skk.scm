@@ -843,33 +843,40 @@
 	     (not (null? csc))
 	     (= (skk-context-child-type sc) skk-child-type-dialog))))
 	  (begin
-	    (if (or
-		 (eq? skk-candidate-selection-style 'uim)
-		 (and
-		  (eq? skk-candidate-selection-style 'ddskk-like)
-		  (not (skk-context-candidate-window sc))))
-		(im-pushback-preedit
-		 sc
-		 (bitwise-ior skk-preedit-attr-conv-body
-			      (if skk-show-cursor-on-preedit?
-				  preedit-cursor
-				  preedit-none))
-		 (if skk-show-annotation-in-preedit?
-		     (skk-lib-eval-candidate (skk-get-current-candidate sc))
-		     (skk-lib-eval-candidate
-		      (skk-lib-remove-annotation
-		       (skk-get-current-candidate sc)))))
-		(im-pushback-preedit
-		 sc
-		 (bitwise-ior skk-preedit-attr-conv-body
-			      (if skk-show-cursor-on-preedit?
-				  preedit-cursor
-				  preedit-none))
-		 ""))
-	    (im-pushback-preedit
-	     sc skk-preedit-attr-conv-okuri
-	     (skk-make-string (skk-context-okuri sc)
-			      (skk-context-kana-mode sc)))
+            (let* ((show-candidate? (or
+                                     (eq? skk-candidate-selection-style 'uim)
+                                     (and
+                                      (eq? skk-candidate-selection-style 'ddskk-like)
+                                      (not (skk-context-candidate-window sc)))))
+                   (show-annotation? (and skk-show-annotation-in-preedit?
+                                          show-candidate?))
+                   (candidate (if show-candidate?
+                                  (if show-annotation?
+                                      (skk-lib-eval-candidate
+                                       (skk-get-current-candidate sc))
+                                      (skk-lib-eval-candidate
+                                       (skk-lib-remove-annotation
+                                        (skk-get-current-candidate sc))))
+                                  ""))
+                   (annotation-pos (and show-annotation?
+                                        (string-contains candidate ";" 0)))
+                   (body (if annotation-pos
+                             (substring candidate 0 annotation-pos)
+                             candidate))
+                   (body-attr (bitwise-ior skk-preedit-attr-conv-body
+                                           (if skk-show-cursor-on-preedit?
+                                               preedit-cursor
+                                               preedit-none))))
+              (im-pushback-preedit sc body-attr body)
+              (im-pushback-preedit
+               sc skk-preedit-attr-conv-okuri
+               (skk-make-string (skk-context-okuri sc)
+                                (skk-context-kana-mode sc)))
+              (if annotation-pos
+                  (im-pushback-preedit
+                   sc skk-preedit-attr-conv-body
+                   (substring candidate annotation-pos
+                              (string-length candidate)))))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-appendix
 	     (skk-make-string (skk-context-appendix sc)
