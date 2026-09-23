@@ -76,3 +76,10 @@ services:
       dockerfile: debian-13-tqt.dockerfile
     volumes:
       - .:/source:delegated
+  debian-13-wayland:
+    image: uim/uim-debian-13-wayland
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-13-wayland.dockerfile
+    volumes:
+      - .:/source:delegated
