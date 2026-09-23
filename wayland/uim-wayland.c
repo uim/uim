@@ -489,12 +489,10 @@ context_surrounding_text(void *data,
                          uint32_t cursor,
                          uint32_t anchor)
 {
-  (void)data;
+  struct uim_wayland *uw = data;
   (void)context;
-  (void)text;
-  (void)cursor;
-  (void)anchor;
-  /* TODO: feed this to uim's text acquisition API. */
+
+  uim_wayland_text_set_surrounding(uw, text, cursor, anchor);
 }
 
 static void
@@ -504,6 +502,7 @@ context_reset(void *data, struct zwp_input_method_context_v1 *context)
   (void)context;
 
   uim_reset_context(uw->uc);
+  uim_wayland_text_forget_surrounding(uw);
   clear_segments(uw);
   preedit_update_cb(uw);
 }
@@ -602,6 +601,8 @@ deactivate(struct uim_wayland *uw)
    * up again in the next text field. */
   uim_reset_context(uw->uc);
   uim_wayland_helper_focus_out(uw);
+  /* The text belonged to the field we are leaving. */
+  uim_wayland_text_forget_surrounding(uw);
   clear_segments(uw);
   uw->preedit_shown = false;
 
@@ -842,6 +843,8 @@ main(int argc, char **argv)
   uim_set_candidate_selector_cb(uw->uc, cand_activate_cb, cand_select_cb,
                                 cand_shift_page_cb, cand_deactivate_cb);
   uim_set_prop_list_update_cb(uw->uc, prop_list_update_cb);
+  uim_set_text_acquisition_cb(uw->uc, uim_wayland_text_acquire,
+                              uim_wayland_text_delete);
   uim_set_configuration_changed_cb(uw->uc, configuration_changed_cb);
   uim_set_im_switch_request_cb(uw->uc, switch_app_global_im_cb,
                                switch_system_global_im_cb);
@@ -900,6 +903,7 @@ main(int argc, char **argv)
   uw->candwin = NULL;
   uim_quit();
   free(uw->segments);
+  free(uw->surrounding_text);
   if (uw->input_panel)
     zwp_input_panel_v1_destroy(uw->input_panel);
   zwp_input_method_v1_destroy(uw->input_method);

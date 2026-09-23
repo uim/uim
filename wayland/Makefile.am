@@ -1,5 +1,6 @@
 EXTRA_DIST =				\
 	test/run.rb			\
+	test/surrounding-text.scm	\
 	test/test-uim-wayland.rb	\
 	uim-wayland.desktop.in
 
@@ -17,7 +18,8 @@ uim_wayland_SOURCES = \
 	uim-wayland.c uim-wayland.h \
 	key.c \
 	candwin.c \
-	helper.c
+	helper.c \
+	text.c
 nodist_uim_wayland_SOURCES = $(PROTOCOL_SOURCES)
 uim_wayland_CPPFLAGS = $(AM_CPPFLAGS)
 uim_wayland_CFLAGS = @WAYLAND_CFLAGS@ -Wall
