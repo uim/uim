@@ -209,22 +209,25 @@ static void
 uim_im_context_send_im_list(UIMIMContext *uic)
 {
   int n = uim_get_nr_im(uic->uc);
-  const char *current_im_name = uim_get_current_im_name(uic->uc);
+  /* libuim's strings are only valid until its next call. */
+  gchar *current_im_name = g_strdup(uim_get_current_im_name(uic->uc));
   GString *message = g_string_new("im_list\n"
                                   "charset=UTF-8\n");
   for (int i = 0; i < n; i++) {
+    gchar *name = g_strdup(uim_get_im_name(uic->uc, i));
+    gchar *langcode = g_strdup(uim_get_im_language(uic->uc, i));
     /*
      * Return value of uim_get_im_language() is an ISO 639-1
      * compatible language code such as "ja". Since it is unfriendly
      * for human reading, we convert it into friendly one by
      * uim_get_language_name_from_locale() here.
      */
-    const char *name = uim_get_im_name(uic->uc, i);
-    const char *langcode = uim_get_im_language(uic->uc, i);
-    const char *lang = uim_get_language_name_from_locale(langcode);
-    const char *short_desc = uim_get_im_short_desc(uic->uc, i);
+    gchar *lang =
+      langcode ? g_strdup(uim_get_language_name_from_locale(langcode)) : NULL;
+    gchar *short_desc = g_strdup(uim_get_im_short_desc(uic->uc, i));
 
-    g_string_append(message, name);
+    if (name)
+      g_string_append(message, name);
     g_string_append(message, "\t");
     if (lang)
       g_string_append(message, lang);
@@ -232,12 +235,18 @@ uim_im_context_send_im_list(UIMIMContext *uic)
     if (short_desc)
       g_string_append(message, short_desc);
     g_string_append(message, "\t");
-    if (strcmp(name, current_im_name) == 0)
+    if (name && current_im_name && strcmp(name, current_im_name) == 0)
       g_string_append(message, "selected");
     g_string_append(message, "\n");
+
+    g_free(name);
+    g_free(langcode);
+    g_free(lang);
+    g_free(short_desc);
   }
   uim_helper_send_message(uim_get_uim_fd(uic->uc), message->str);
   g_string_free(message, TRUE);
+  g_free(current_im_name);
 }
 
 static void
@@ -1128,9 +1137,12 @@ uim_im_context_set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
 static void
 uim_im_context_init(UIMIMContext *uic)
 {
-  const char *im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));
+  /* uim_create_context() calls libuim before it reads the name. */
+  gchar *im_name = g_strdup(uim_get_default_im_name(setlocale(LC_CTYPE, NULL)));
+
   uic->uc =
     uim_create_context(uic, "UTF-8", NULL, im_name, uim_iconv, commit_cb);
+  g_free(im_name);
   if (!uic->uc) {
     /* We can't notify any error information on initialization with
      * the current GtkIMContext API. So, we abort here. :< */

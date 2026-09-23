@@ -225,13 +225,14 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
     {
         for ( int i = 0; i < nr; i++ )
         {
-            const char *name = uim_get_im_name( tmp_uc, i );
-            const char *lang = uim_get_im_language( tmp_uc, i );
+            // libuim's strings are only valid until its next call.
+            const QString name = QString::fromUtf8( uim_get_im_name( tmp_uc, i ) );
+            const QString lang = QString::fromUtf8( uim_get_im_language( tmp_uc, i ) );
 
             if ( key == QString( "uim-" ) + name )
             {
                 // ":" separated languages for future extension
-                QStringList langs = QString( lang ).split( ':' );
+                QStringList langs = lang.split( ':' );
                 return langs;
             }
         }

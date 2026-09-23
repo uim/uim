@@ -672,9 +672,10 @@ void QUimInputContext::savePreedit()
     visibleHash.insert( focusedWidget, proxy->isVisible() );
     proxy->hide();
 
-    const char *imname = uim_get_current_im_name( m_uc );
-    if ( imname )
-        m_uc = createUimContext( imname );
+    // createUimContext() calls libuim before it reads the name.
+    const QByteArray imname( uim_get_current_im_name( m_uc ) );
+    if ( !imname.isEmpty() )
+        m_uc = createUimContext( imname.constData() );
     psegs.clear();
     createCandidateWindow();
 }

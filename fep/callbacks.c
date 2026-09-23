@@ -67,7 +67,7 @@ static char *s_index_str;
 static struct preedit_tag *s_preedit;
 static int s_mode;
 static char *s_label_str;
-static const char *s_im_str;
+static char *s_im_str;
 static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
 
@@ -340,7 +340,7 @@ char *get_mode_str(void)
 
   assert(!s_start_callbacks);
 
-  uim_asprintf(&str, "%s[%s]", s_im_str, s_label_str);
+  uim_asprintf(&str, "%s[%s]", s_im_str ? s_im_str : "", s_label_str);
   strhead(str, s_max_width);
 
   return str;
@@ -348,8 +348,12 @@ char *get_mode_str(void)
 
 static void update_current_im_name(void)
 {
-  s_im_str = uim_get_current_im_name(g_context);
-  s_im_str = s_im_str != NULL ? s_im_str : "";
+  /* libuim's string is only valid until its next call, and this is
+   * kept until the name changes. */
+  const char *im_name = uim_get_current_im_name(g_context);
+
+  free(s_im_str);
+  s_im_str = uim_strdup(im_name ? im_name : "");
 }
 
 static void configuration_changed_cb(void *ptr)

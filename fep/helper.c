@@ -186,35 +186,45 @@ static void helper_handler_change_im(const char *str)
   }
 }
 
+/* NULL becomes "" so that the callers don't have to test for it. */
+static char *dup_im_string(const char *str)
+{
+  return uim_strdup(str ? str : "");
+}
+
 static void send_im_list(void)
 {
   int i;
   int nr_im = uim_get_nr_im(g_context);
-  const char *current_im_name = uim_get_current_im_name(g_context);
+  /* libuim's strings are only valid until its next call. */
+  char *current_im_name = dup_im_string(uim_get_current_im_name(g_context));
   const char *enc = get_enc();
   char *message;
   char *oldmessage;
 
   uim_asprintf(&message, "im_list\ncharset=%s\n", enc);
   for (i = 0; i < nr_im; i++) {
-    const char *name = uim_get_im_name(g_context, i);
-    const char *langcode = uim_get_im_language(g_context, i);
-    const char *lang = uim_get_language_name_from_locale(langcode);
-    const char *short_desc = uim_get_im_short_desc(g_context, i);
+    char *name = dup_im_string(uim_get_im_name(g_context, i));
+    char *langcode = dup_im_string(uim_get_im_language(g_context, i));
+    char *lang = dup_im_string(uim_get_language_name_from_locale(langcode));
+    char *short_desc = dup_im_string(uim_get_im_short_desc(g_context, i));
     char *im_str;
 
-    uim_asprintf(&im_str, "%s\t%s\t%s\t%s\n", name,
-        (lang != NULL ? lang : ""),
-        (short_desc != NULL ? short_desc : ""),
+    uim_asprintf(&im_str, "%s\t%s\t%s\t%s\n", name, lang, short_desc,
         (strcmp(name, current_im_name) == 0 ? "selected" : ""));
 
     oldmessage = message;
     uim_asprintf(&message, "%s%s", oldmessage, im_str);
     free(oldmessage);
     free(im_str);
+    free(name);
+    free(langcode);
+    free(lang);
+    free(short_desc);
   }
   uim_helper_send_message(g_helper_fd, message);
   free(message);
+  free(current_im_name);
 }
 
 void focus_in(void)

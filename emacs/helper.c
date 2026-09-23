@@ -42,7 +42,7 @@ helper_send_im_list(void)
   int nim, i;
   int buflen;
   char *buf;
-  const char *current_im_name;
+  char *current_im_name;
   uim_agent_context *ua;
   int dummy_agent_context = 0;
 
@@ -58,8 +58,8 @@ helper_send_im_list(void)
 
   nim = uim_get_nr_im(ua->context);
 
-  uim_get_current_im_name(ua->context);
-  current_im_name = uim_get_current_im_name(ua->context);
+  /* libuim's strings are only valid until its next call. */
+  current_im_name = dup_im_string(uim_get_current_im_name(ua->context));
 
 #define HEADER_FORMAT "im_list\ncharset=%s\n"
 
@@ -68,25 +68,28 @@ helper_send_im_list(void)
 #undef HEADER_FORMAT
 
   for (i = 0 ; i < nim; i++) {
-	const char *name, *lang, *shortd;
+	char *name, *lang, *shortd;
 	char *tmpbuf;
+	int failed;
 
-	name = uim_get_im_name(ua->context, i);
-	lang = uim_get_im_language(ua->context, i);
-	shortd = uim_get_im_short_desc(ua->context, i);
+	name = dup_im_string(uim_get_im_name(ua->context, i));
+	lang = dup_im_string(uim_get_im_language(ua->context, i));
+	shortd = dup_im_string(uim_get_im_short_desc(ua->context, i));
 
 	debug_printf(DEBUG_NOTE, " [%d] = %s %s %s\n", i, name, lang, shortd);
-	if (uim_asprintf(&tmpbuf, "%s\t%s\t%s\t%s\n",
-					   name ? name : "" ,
-					   lang ? lang : "" ,
-					   shortd ? shortd : "" ,
-					   strcmp(name,
-							  (current_im_name == NULL ? "" : current_im_name))
-					    == 0 ? "selected" : "") < 0 || tmpbuf == NULL)
+	failed = (uim_asprintf(&tmpbuf, "%s\t%s\t%s\t%s\n",
+						   name, lang, shortd,
+						   strcmp(name, current_im_name) == 0 ?
+						   "selected" : "") < 0 || tmpbuf == NULL);
+	if (!failed) {
+		strlcat(buf, tmpbuf, buflen);
+		free(tmpbuf);
+	}
+	free(name);
+	free(lang);
+	free(shortd);
+	if (failed)
 		break;
-
-	strlcat(buf, tmpbuf, buflen);
-	free(tmpbuf);
   }
 
   helper_send_message(buf);
@@ -94,6 +97,7 @@ helper_send_im_list(void)
   debug_printf(DEBUG_NOTE, " im_list = \"%s\"\n", buf);
 
   free(buf);
+  free(current_im_name);
 
   if (dummy_agent_context)
 	release_uim_agent_context(1);

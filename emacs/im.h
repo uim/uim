@@ -51,6 +51,9 @@
 extern int default_engine_updated;
 extern char *default_engine_name;
 
+/* Copies a string libuim handed out. NULL becomes "". */
+char *dup_im_string(const char *str);
+
 void output_default_im_engine(void);
 
 int show_im(const char *im);
