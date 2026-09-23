@@ -12,7 +12,9 @@ focus. Key events arrive through a keyboard grab, go through libuim,
 and the results are sent back as preedit and committed text. Keys uim
 doesn't consume are forwarded to the focused application. Candidates
 are drawn on a `zwp_input_panel_v1` overlay panel, which the
-compositor places next to the text cursor.
+compositor places next to the text cursor. uim-helper-server is used
+as in the other bridges, so the toolbar, `uim-im-switcher-cli` and
+input method changes made by other uim processes all work.
 
 GNOME's Mutter doesn't implement the input-method side of the
 protocol, so `uim-wayland` can't be used there.
@@ -102,8 +104,6 @@ If the input method doesn't start, look there first.
   from the keyboard. It is drawn at scale 1, so it looks blurry on a
   scaled output.
 - Surrounding text from the application isn't passed to uim yet.
-- uim-helper-server isn't used, so the toolbar and switching the input
-  method from another process have no effect.
 - `text-input-v3` has no preedit styling, so applications using it,
   Chromium among them, show the preedit without underlines. KWin does
   turn the highlighted segment into a selection range, so the segment

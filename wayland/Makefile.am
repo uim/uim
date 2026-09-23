@@ -13,7 +13,8 @@ bin_PROGRAMS = uim-wayland
 uim_wayland_SOURCES = \
 	uim-wayland.c uim-wayland.h \
 	key.c \
-	candwin.c
+	candwin.c \
+	helper.c
 nodist_uim_wayland_SOURCES = $(PROTOCOL_SOURCES)
 uim_wayland_CPPFLAGS = $(AM_CPPFLAGS)
 uim_wayland_CFLAGS = @WAYLAND_CFLAGS@ -Wall
