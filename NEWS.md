@@ -1,5 +1,58 @@
 # NEWS
 
+## 1.9.8 - 2026-09-23
+
+### Improvements
+
+  * `uim-im-switcher-cli`: Added.
+    * [GH-170](https://github.com/uim/uim/issues/170)
+    * [GH-333](https://github.com/uim/uim/issues/333)
+    * Reported by vas
+    * Patch by yamam
+
+  * `uim-custom-cli`: Added.
+    * [GH-127](https://github.com/uim/uim/issues/127)
+    * [GH-335](https://github.com/uim/uim/issues/335)
+    * Reported by KimBomm
+    * Patch by yamam
+
+  * Wayland: Added support for the input method v1 protocol.
+    * [GH-339](https://github.com/uim/uim/issues/339)
+    * [GH-341](https://github.com/uim/uim/issues/341)
+    * [GH-343](https://github.com/uim/uim/issues/343)
+    * [GH-345](https://github.com/uim/uim/issues/345)
+    * [GH-349](https://github.com/uim/uim/issues/349)
+
+  * `process`: Added support for environments where standard I/O is
+    closed.
+    * [GH-340](https://github.com/uim/uim/issues/340)
+
+### Fixes
+
+  * Emacs: Fixed Delete key being processed as Backspace.
+    * [GH-52](https://github.com/uim/uim/issues/52)
+    * [GH-336](https://github.com/uim/uim/issues/336)
+    * Patch by yamam
+
+  * SKK: Fixed a bug in UTF-8 dictionary registration.
+    * [GH-337](https://github.com/uim/uim/issues/337)
+    * Patch by yamam
+
+  * Source archive: Added missing `sigscheme/libgcroots/autogen.sh`.
+    * [GH-342](https://github.com/uim/uim/issues/342)
+    * [GH-344](https://github.com/uim/uim/issues/344)
+    * Reported by NOKUBI Takatsugu
+
+  * Fixed use of temporary strings after they become invalid.
+    * [GH-346](https://github.com/uim/uim/issues/346)
+
+### Thanks
+
+  * vas
+  * yamam
+  * KimBomm
+  * NOKUBI Takatsugu
+
 ## 1.9.7 - 2026-09-20
 
 ### Improvements
