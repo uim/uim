@@ -316,6 +316,16 @@ module Keyboard
   PRESSED = 1
 end
 
+# What zwp_text_input_v1 tells the input method about a field. Only
+# the values the test sends are listed.
+module ContentType
+  PURPOSE_NORMAL = 0
+  PURPOSE_PASSWORD = 8
+
+  HINT_NONE = 0
+  HINT_HIDDEN_TEXT = 0x40
+end
+
 class Compositor
   include Keyboard
 
@@ -456,9 +466,23 @@ class Compositor
     end
   end
 
+  def press(key)
+    send_key(key, PRESSED)
+  end
+
+  def release(key)
+    send_key(key, RELEASED)
+  end
+
   def type(key)
     press(key)
     release(key)
+  end
+
+  # The application says what the field takes. The values are the
+  # content_hint and content_purpose enums of zwp_text_input_v1.
+  def send_content_type(hint, purpose)
+    @connection.send_event(@context, "content_type", hint, purpose)
   end
 
   # The application reports what is around its cursor, in bytes.
@@ -561,14 +585,6 @@ class Compositor
                            descriptor: @keymap.to_io)
   end
 
-  def press(key)
-    send_key(key, PRESSED)
-  end
-
-  def release(key)
-    send_key(key, RELEASED)
-  end
-
   def send_key(key, state)
     @time += 1
     @connection.send_event(@keyboard, "key", @connection.next_serial, @time,
@@ -582,6 +598,7 @@ class Compositor
 end
 
 class UimWaylandTest < Test::Unit::TestCase
+  include ContentType
   include Keyboard
 
   # Hiragana ka. It is an escape because power_assert re-reads this
@@ -636,6 +653,68 @@ class UimWaylandTest < Test::Unit::TestCase
   def test_candidate_window_is_an_overlay_panel
     @compositor.wait_for {@compositor.overlay_panels == 1}
     assert_equal(1, @compositor.overlay_panels)
+  end
+
+  # A field that takes no composed text gets the keys as they are.
+  sub_test_case("content type") do
+    def test_password_purpose_is_left_alone
+      @compositor.send_content_type(HINT_NONE, PURPOSE_PASSWORD)
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
+      assert_equal([], @compositor.preedits)
+    end
+
+    def test_hidden_text_hint_is_left_alone
+      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
+      assert_equal([], @compositor.preedits)
+    end
+
+    def test_normal_purpose_still_composes
+      @compositor.send_content_type(HINT_NONE, PURPOSE_NORMAL)
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.wait_for {@compositor.preedits == ["k"]}
+      assert_equal(["k"], @compositor.preedits)
+    end
+
+    def test_preedit_is_dropped_when_field_turns_hidden
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.wait_for {@compositor.preedits == ["k"]}
+      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+      @compositor.type(KEY_L)
+      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, PRESSED])}
+      assert_equal(["k", ""], @compositor.preedits)
+    end
+
+    # The key went to the application, so its release does too.
+    def test_key_held_while_field_turns_normal
+      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+      @compositor.press(KEY_K)
+      @compositor.send_content_type(HINT_NONE, PURPOSE_NORMAL)
+      @compositor.release(KEY_K)
+      forwarded_keys = [[KEY_K, PRESSED], [KEY_K, RELEASED]]
+      @compositor.wait_for {@compositor.forwarded_keys == forwarded_keys}
+      assert_equal(forwarded_keys, @compositor.forwarded_keys)
+    end
+
+    # The key went to the input method, so the application never sees
+    # its release.
+    def test_key_held_while_field_turns_hidden
+      @compositor.switch_to_hiragana
+      @compositor.press(KEY_K)
+      @compositor.wait_for {@compositor.preedits == ["k"]}
+      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+      @compositor.release(KEY_K)
+      @compositor.type(KEY_L)
+      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, RELEASED])}
+      assert_equal([],
+                   @compositor.forwarded_keys.select {|key, _| key == KEY_K})
+    end
   end
 
   # The input method commits what it can see, so the commit says what

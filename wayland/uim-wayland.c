@@ -77,25 +77,49 @@ terminate_handler(int sig)
   terminate_requested = sig;
 }
 
-/* forwarded key bookkeeping */
+/* pressed key bookkeeping */
+
+static void
+set_key_bit(uint8_t *bits, uint32_t key, bool on)
+{
+  if (key >= UIM_WAYLAND_MAX_KEYCODE)
+    return;
+  if (on)
+    bits[key / 8] |= 1 << (key % 8);
+  else
+    bits[key / 8] &= ~(1 << (key % 8));
+}
+
+static bool
+key_bit(const uint8_t *bits, uint32_t key, bool fallback)
+{
+  if (key >= UIM_WAYLAND_MAX_KEYCODE)
+    return fallback;
+  return (bits[key / 8] & (1 << (key % 8))) != 0;
+}
 
 static void
 set_forwarded(struct uim_wayland *uw, uint32_t key, bool forwarded)
 {
-  if (key >= UIM_WAYLAND_MAX_KEYCODE)
-    return;
-  if (forwarded)
-    uw->forwarded_keys[key / 8] |= 1 << (key % 8);
-  else
-    uw->forwarded_keys[key / 8] &= ~(1 << (key % 8));
+  set_key_bit(uw->forwarded_keys, key, forwarded);
 }
 
 static bool
 was_forwarded(struct uim_wayland *uw, uint32_t key)
 {
-  if (key >= UIM_WAYLAND_MAX_KEYCODE)
-    return true;
-  return (uw->forwarded_keys[key / 8] & (1 << (key % 8))) != 0;
+  return key_bit(uw->forwarded_keys, key, true);
+}
+
+static void
+set_bypassed(struct uim_wayland *uw, uint32_t key, bool bypassed)
+{
+  set_key_bit(uw->bypassed_keys, key, bypassed);
+}
+
+static bool
+was_bypassed(struct uim_wayland *uw, uint32_t key)
+{
+  return key_bit(uw->bypassed_keys, key, uw->bypassed);
 }
 
 /* text output */
@@ -413,13 +437,22 @@ keyboard_key(void *data,
     sym = xkb_state_key_get_one_sym(uw->xkb_state, code);
   uim_wayland_convert_key(sym, uw->xkb_state, &ukey, &umod);
 
+  /* The field may change what it takes while a key is held, so both
+   * the client and uim get a release only when they got its press. */
   if (pressed) {
-    pass_through = uim_press_key(uw->uc, ukey, umod);
-    forward = pass_through != 0;
+    set_bypassed(uw, key, uw->bypassed);
+    if (uw->bypassed) {
+      forward = true;
+    } else {
+      pass_through = uim_press_key(uw->uc, ukey, umod);
+      forward = pass_through != 0;
+    }
     set_forwarded(uw, key, forward);
   } else {
-    pass_through = uim_release_key(uw->uc, ukey, umod);
-    (void)pass_through;
+    if (!was_bypassed(uw, key)) {
+      pass_through = uim_release_key(uw->uc, ukey, umod);
+      (void)pass_through;
+    }
     /* A release goes wherever its press went, so the client never
      * sees an unbalanced key. */
     forward = was_forwarded(uw, key);
@@ -507,16 +540,56 @@ context_reset(void *data, struct zwp_input_method_context_v1 *context)
   preedit_update_cb(uw);
 }
 
+/* Composing into a field that hides what is typed, or that takes only
+ * digits, gives the user nothing and leaks the text into the preedit
+ * of an input method that has no business seeing it. */
+static bool
+takes_composed_text(uint32_t hint, uint32_t purpose)
+{
+  if (hint & (UIM_WAYLAND_CONTENT_HINT_HIDDEN_TEXT |
+              UIM_WAYLAND_CONTENT_HINT_SENSITIVE_DATA))
+    return false;
+
+  switch (purpose) {
+  case UIM_WAYLAND_CONTENT_PURPOSE_DIGITS:
+  case UIM_WAYLAND_CONTENT_PURPOSE_NUMBER:
+  case UIM_WAYLAND_CONTENT_PURPOSE_PHONE:
+  case UIM_WAYLAND_CONTENT_PURPOSE_PASSWORD:
+  case UIM_WAYLAND_CONTENT_PURPOSE_DATE:
+  case UIM_WAYLAND_CONTENT_PURPOSE_TIME:
+  case UIM_WAYLAND_CONTENT_PURPOSE_DATETIME:
+    return false;
+  default:
+    return true;
+  }
+}
+
 static void
 context_content_type(void *data,
                      struct zwp_input_method_context_v1 *context,
                      uint32_t hint,
                      uint32_t purpose)
 {
-  (void)data;
+  struct uim_wayland *uw = data;
+  bool bypassed = !takes_composed_text(hint, purpose);
   (void)context;
-  (void)hint;
-  (void)purpose;
+
+  debug("content type: hint %#x purpose %u, input method %s",
+        hint, purpose, bypassed ? "off" : "on");
+  if (bypassed == uw->bypassed)
+    return;
+  uw->bypassed = bypassed;
+  if (!bypassed)
+    return;
+
+  /* Whatever is being composed would end up in a field that doesn't
+   * take it, so it is dropped. The field may have been composed into
+   * before it said what it takes, or it may have changed what it takes
+   * while focused, when a password is hidden again for instance. */
+  uim_wayland_candwin_deactivate(uw->candwin);
+  uim_reset_context(uw->uc);
+  clear_segments(uw);
+  preedit_update_cb(uw);
 }
 
 static void
@@ -623,8 +696,11 @@ input_method_activate(void *data,
   uw->context = context;
   uw->serial = 0;
   uw->focused = true;
+  /* A field says what it takes only after it is activated. */
+  uw->bypassed = false;
   uw->preedit_shown = false;
   memset(uw->forwarded_keys, 0, sizeof(uw->forwarded_keys));
+  memset(uw->bypassed_keys, 0, sizeof(uw->bypassed_keys));
   zwp_input_method_context_v1_add_listener(context, &context_listener, uw);
 
   uw->keyboard = zwp_input_method_context_v1_grab_keyboard(context);

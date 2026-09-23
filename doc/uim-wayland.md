@@ -16,6 +16,12 @@ compositor places next to the text cursor. uim-helper-server is used
 as in the other bridges, so the toolbar, `uim-im-switcher-cli` and
 input method changes made by other uim processes all work.
 
+The text around the cursor is passed to uim, so input methods that
+look at what has already been typed work. Fields that take no composed
+text get the keys as they are: a password field, one that hides what
+is typed or marks it as sensitive, and one that takes only digits, a
+phone number, a date or a time.
+
 GNOME's Mutter doesn't implement the input-method side of the
 protocol, so `uim-wayland` can't be used there.
 
@@ -103,7 +109,6 @@ If the input method doesn't start, look there first.
 - The candidate window has no pointer support; candidates are chosen
   from the keyboard. It is drawn at scale 1, so it looks blurry on a
   scaled output.
-- Surrounding text from the application isn't passed to uim yet.
 - `text-input-v3` has no preedit styling, so applications using it,
   Chromium among them, show the preedit without underlines. KWin does
   turn the highlighted segment into a selection range, so the segment
