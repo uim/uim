@@ -36,6 +36,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
+#include <wchar.h>
 
 #include "uim-internal.h"
 #include "uim-scm.h"
@@ -123,6 +125,49 @@ string_prefix_cip(uim_lisp prefix_, uim_lisp str_)
   return string_prefixp_internal(prefix_, str_, strncasecmp);
 }
 
+static int
+unicode_char_display_width(long codepoint)
+{
+#if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
+  if (codepoint <= WCHAR_MAX) {
+    wchar_t wc = (wchar_t)codepoint;
+    int width = wcswidth(&wc, 1);
+
+    if (width >= 0)
+      return width;
+    if (codepoint < 0x80)
+      return -1;
+  }
+#endif
+
+  if (codepoint < 0x20 || (codepoint >= 0x7f && codepoint < 0xa0))
+    return -1;
+  /* Fallback: ASCII and halfwidth forms are one column; all others are two. */
+  if (codepoint < 0x80 || (codepoint >= 0xff61 && codepoint <= 0xff9f))
+    return 1;
+  return 2;
+}
+
+static uim_lisp
+uim_char_display_width(uim_lisp char_)
+{
+  long codepoint;
+  int width;
+
+  if (!CHARP(char_))
+    ERROR("uim-char-display-width: character required");
+
+  codepoint = C_CHAR(char_);
+  if (codepoint < 0 || codepoint > 0x10ffff)
+    ERROR("uim-char-display-width: invalid Unicode code point");
+
+  width = unicode_char_display_width(codepoint);
+  if (width < 0)
+    ERROR("uim-char-display-width: character has no display width");
+
+  return MAKE_INT(width);
+}
+
 /* Limited version of SRFI-43 vector-copy. Only accepts 1st arg. */
 static uim_lisp
 vector_copy(uim_lisp src)
@@ -203,6 +248,7 @@ uim_init_util_subrs(void)
   uim_scm_init_proc3("string-contains", string_contains);
   uim_scm_init_proc2("string-prefix?", string_prefixp);
   uim_scm_init_proc2("string-prefix-ci?", string_prefix_cip);
+  uim_scm_init_proc1("uim-char-display-width", uim_char_display_width);
 
   /* SRFI-43 */
   uim_scm_init_proc1("vector-copy", vector_copy);

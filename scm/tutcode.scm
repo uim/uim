@@ -2115,7 +2115,9 @@
                     maxwidth
                     (let*
                       ((elem (vector-ref vec k))
-                       (width (if (string? elem) (string-length elem) -1)))
+                       (width (if (string? elem)
+                                (tutcode-utf8-string-display-width elem)
+                                -1)))
                       (rowloop
                         (+ k 13)
                         (if (> width maxwidth)
@@ -2168,7 +2170,9 @@
                       (append
                         (let*
                           ((elem (list-ref line col))
-                           (elemlen (if (string? elem) (string-length elem) 0))
+                           (elemlen (if (string? elem)
+                                      (tutcode-utf8-string-display-width elem)
+                                      0))
                            (width (list-ref width-list col))
                            (strlist
                             (if (zero? elemlen)
@@ -2202,6 +2206,11 @@
               (drop table 13)
               (+ k 13)
               (cons candlabel res))))))))
+
+(define (tutcode-utf8-string-display-width s)
+  (with-char-codec "UTF-8"
+    (lambda ()
+      (apply + (map uim-char-display-width (string->list s))))))
 
 ;;; 仮想鍵盤の表示を行うかどうかの設定を一時的に切り替える(トグル)。
 ;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。)
