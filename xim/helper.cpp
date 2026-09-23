@@ -39,6 +39,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <unistd.h>
 #include <sys/types.h>
 
@@ -78,8 +79,9 @@ send_im_list(void)
     char *buf = NULL, *tmp = NULL;
     int len;
     InputContext *focusedContext = InputContext::focusedContext();
-    const char *current_im_name =
-	    uim_get_current_im_name(focusedContext->getUC());
+    // libuim's string is only valid until its next call.
+    const char *im_name = uim_get_current_im_name(focusedContext->getUC());
+    const std::string current_im_name(im_name ? im_name : "");
     const char *encoding = focusedContext->get_ic()->get_encoding();
     const char *client_locale = NULL;
     
@@ -117,7 +119,7 @@ send_im_list(void)
 	strcat(buf, tmp);
 	free(tmp);
 
-	if (!strcmp(it->name, current_im_name)) {
+	if (current_im_name == it->name) {
 	    if (asprintf(&tmp, "selected\n") == -1) {
                 free(tmp);
                 return;

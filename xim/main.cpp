@@ -546,7 +546,9 @@ static void check_default_engine(const char *locale)
     }
 
     if (found == false)
-	default_engine = uim_get_default_im_name(locale);
+	// libuim's string is only valid until its next call, and this
+	// is kept for the rest of the run.
+	default_engine = strdup(uim_get_default_im_name(locale));
 }
 
 static void

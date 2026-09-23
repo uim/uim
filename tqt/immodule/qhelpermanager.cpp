@@ -224,7 +224,9 @@ void QUimHelperManager::sendImList()
         return ;
 
     TQString msg = "im_list\ncharset=UTF-8\n";
-    const char* current_im_name = uim_get_current_im_name( focusedInputContext->uimContext() );
+    // libuim's string is only valid until its next call.
+    const TQString current_im_name = TQString::fromUtf8(
+        uim_get_current_im_name( focusedInputContext->uimContext() ) );
 
     QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
     TQValueList<uimInfo> info = infoManager->getUimInfo();

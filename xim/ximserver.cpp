@@ -415,8 +415,10 @@ InputContext::createUimContext(const char *engine)
       mEngineName = strdup(real_im);
     }
 
+    // real_im can be libuim's own string, and uim_create_context()
+    // calls libuim before it reads the name.
     uim_context uc = uim_create_context((void *) this, "UTF-8",
-					NULL, real_im, NULL,
+					NULL, mEngineName, NULL,
 					InputContext::commit_cb);
 
     if (uc) {

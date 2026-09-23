@@ -1113,28 +1113,31 @@ send_im_list(void)
 {
   int nr, i;
   GString *msg;
-  const char *current_im_name;
+  gchar *current_im_name;
 
   if (!focused_context)
     return;
 
   nr = uim_get_nr_im(focused_context->uc);
-  current_im_name = uim_get_current_im_name(focused_context->uc);
+  /* libuim's strings are only valid until its next call. */
+  current_im_name = g_strdup(uim_get_current_im_name(focused_context->uc));
 
   msg = g_string_new("im_list\ncharset=UTF-8\n");
   for (i = 0; i < nr; i++) {
+    gchar *name = g_strdup(uim_get_im_name(focused_context->uc, i));
+    gchar *langcode = g_strdup(uim_get_im_language(focused_context->uc, i));
     /*
      * Return value of uim_get_im_language() is an ISO 639-1
      * compatible language code such as "ja". Since it is unfriendly
      * for human reading, we convert it into friendly one by
      * uim_get_language_name_from_locale() here.
      */
-    const char *name = uim_get_im_name(focused_context->uc, i);
-    const char *langcode = uim_get_im_language(focused_context->uc, i);
-    const char *lang = uim_get_language_name_from_locale(langcode);
-    const char *short_desc = uim_get_im_short_desc(focused_context->uc, i);
+    gchar *lang = langcode ?
+      g_strdup(uim_get_language_name_from_locale(langcode)) : NULL;
+    gchar *short_desc = g_strdup(uim_get_im_short_desc(focused_context->uc, i));
 
-    g_string_append(msg, name);
+    if (name)
+      g_string_append(msg, name);
     g_string_append(msg, "\t");
     if (lang)
       g_string_append(msg, lang);
@@ -1142,12 +1145,18 @@ send_im_list(void)
     if (short_desc)
       g_string_append(msg, short_desc);
     g_string_append(msg, "\t");
-    if (strcmp(name, current_im_name) == 0)
+    if (name && current_im_name && strcmp(name, current_im_name) == 0)
       g_string_append(msg, "selected");
     g_string_append(msg, "\n");
+
+    g_free(name);
+    g_free(langcode);
+    g_free(lang);
+    g_free(short_desc);
   }
   uim_helper_send_message(im_uim_fd, msg->str);
   g_string_free(msg, TRUE);
+  g_free(current_im_name);
 }
 
 /* Copied from helper-common-gtk.c. Maybe we need common GTK+ utility file. */
@@ -1711,7 +1720,7 @@ im_module_create(const gchar *context_id)
 {
   GObject *obj;
   IMUIMContext *uic;
-  const char *im_name;
+  gchar *im_name;
 
   g_return_val_if_fail(context_id, NULL);
   g_return_val_if_fail(!strcmp(context_id, "uim"), NULL);
@@ -1722,11 +1731,13 @@ im_module_create(const gchar *context_id)
   if (!uic)
     return NULL;
 
-  im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));
+  /* uim_create_context() calls libuim before it reads the name. */
+  im_name = g_strdup(uim_get_default_im_name(setlocale(LC_CTYPE, NULL)));
   uic->uc = uim_create_context(uic, "UTF-8",
 			       NULL, im_name,
 			       uim_iconv,
 			       im_uim_commit_string);
+  g_free(im_name);
   if (uic->uc == NULL) {
     parent_class->finalize(obj);
     return NULL;

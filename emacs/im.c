@@ -62,6 +62,13 @@ output_default_im_engine(void)
 }
 
 
+char *
+dup_im_string(const char *str)
+{
+  return uim_strdup(str ? str : "");
+}
+
+
 int
 check_im_name(const char *imname)
 {
@@ -107,23 +114,22 @@ list_im_engine(void)
   a_printf(" ( L ");
 
   for (i = 0 ; i < uim_get_nr_im(context); i++) {
-	char dummy_str[] = "";
-	const char *name, *lang, *language, *shortd, *encoding;
+	char *name, *lang, *language, *shortd;
+	const char *encoding;
 
-	if ((name = uim_get_im_name(context, i)) == NULL)
-	  name = dummy_str;
+	/* libuim's strings are only valid until its next call. */
+	name = dup_im_string(uim_get_im_name(context, i));
+	lang = dup_im_string(uim_get_im_language(context, i));
+	language = dup_im_string(uim_get_language_name_from_locale(lang));
+	shortd = dup_im_string(uim_get_im_short_desc(context, i));
 
-	if ((lang = uim_get_im_language(context, i)) == NULL)
-	  lang = dummy_str;
-
-	if ((language = uim_get_language_name_from_locale(lang)) == NULL)
-	  language = dummy_str;
-
-	if ((shortd = uim_get_im_short_desc(context, i)) == NULL)
-	  shortd = dummy_str;
-	
 	a_printf(" ( \"%s\" \"%s\" \"%s\" \"%s\" ",
 			 name, lang, language, shortd);
+
+	free(name);
+	free(lang);
+	free(language);
+	free(shortd);
 
 	if ((encoding = uim_get_im_encoding(context, i)) == NULL)
 	  a_printf(" %s ) ", encoding);
