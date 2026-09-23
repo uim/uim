@@ -2,4 +2,12 @@
 
 UIM_SH="@abs_top_builddir@/uim/uim-sh"
 
-$UIM_SH @abs_builddir@/$1
+# automake gives a path relative to the build directory, and an
+# absolute one when the sources are in a separate directory. uim-sh
+# loads absolute paths only.
+case $1 in
+  /*) test_file=$1 ;;
+  *) test_file=@abs_builddir@/$1 ;;
+esac
+
+$UIM_SH "$test_file"
