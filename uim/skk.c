@@ -66,7 +66,6 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
-#include "uim-helper.h"
 #include "uim-util.h"
 #include "dynlib.h"
 #include "uim-notify.h"
@@ -246,8 +245,6 @@ static void skkserv_disconnected(dic_info *di);
 
 static int use_look = 0;
 static uim_look_ctx *skk_look_ctx = NULL;
-
-static uim_bool is_setugid;
 
 static int
 calc_line_len(const char *s)
@@ -739,7 +736,6 @@ skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
   skkserv_portnum = C_INT(skkserv_portnum_);
   skkserv_family_str = REFER_C_STR(skkserv_family_);
 
-  is_setugid = uim_helper_is_setugid();
   signal(SIGPIPE, SIG_IGN);
 
   skkserv_family = AF_UNSPEC;
