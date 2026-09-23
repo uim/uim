@@ -857,32 +857,59 @@ dnl ***********************************************
 dnl *** Check for Wayland input method frontend ***
 dnl ***********************************************
 AC_ARG_WITH(wayland,
-  AC_HELP_STRING([--without-wayland],
-    [do not build uim-wayland (zwp_input_method_v1 frontend)]),
+  AC_HELP_STRING([--with-wayland],
+    [build uim-wayland (zwp_input_method_v1 frontend) [default=auto]]),
   [],
-  [with_wayland=yes])
+  [with_wayland=auto])
 
 if test "x$with_wayland" != xno; then
   PKG_CHECK_MODULES(WAYLAND,
                     [wayland-client >= 1.15 wayland-protocols >= 1.5 xkbcommon cairo pangocairo],
-                    with_wayland=yes, with_wayland=no)
+                    [have_wayland=yes],
+                    [have_wayland=no
+                     wayland_missing="$WAYLAND_PKG_ERRORS"])
+
+  if test "x$have_wayland" = xyes; then
+    WAYLAND_PROTOCOLS_DIR=`$PKG_CONFIG wayland-protocols --variable=pkgdatadir`
+    WAYLAND_SCANNER=`$PKG_CONFIG wayland-scanner --variable=wayland_scanner 2>/dev/null`
+    if test -z "$WAYLAND_SCANNER"; then
+      AC_PATH_PROG([WAYLAND_SCANNER], [wayland-scanner])
+    fi
+    if test -z "$WAYLAND_PROTOCOLS_DIR" || test -z "$WAYLAND_SCANNER"; then
+      have_wayland=no
+      wayland_missing="wayland-protocols or wayland-scanner not found"
+    fi
+  fi
+
+  dnl Asking for it and not getting it is an error. Finding out on our
+  dnl own that it isn't available is not.
+  if test "x$have_wayland" = xno; then
+    if test "x$with_wayland" = xyes; then
+      AC_MSG_ERROR([$wayland_missing])
+    fi
+    AC_MSG_WARN([$wayland_missing])
+    AC_MSG_WARN([uim-wayland disabled])
+  fi
+  with_wayland=$have_wayland
 fi
 
+# The test speaks the protocol itself, so it only needs Ruby and the
+# description of the core protocol.
+WAYLAND_CORE_XML=
 if test "x$with_wayland" = xyes; then
-  WAYLAND_PROTOCOLS_DIR=`$PKG_CONFIG wayland-protocols --variable=pkgdatadir`
-  WAYLAND_SCANNER=`$PKG_CONFIG wayland-scanner --variable=wayland_scanner 2>/dev/null`
-  if test -z "$WAYLAND_SCANNER"; then
-    AC_PATH_PROG([WAYLAND_SCANNER], [wayland-scanner])
-  fi
-  if test -z "$WAYLAND_PROTOCOLS_DIR" || test -z "$WAYLAND_SCANNER"; then
-    AC_MSG_WARN([wayland-protocols or wayland-scanner not found, uim-wayland disabled])
-    with_wayland=no
+  AC_CHECK_PROGS([RUBY], [ruby])
+  wayland_dir=`$PKG_CONFIG wayland-scanner --variable=pkgdatadir`
+  if test -n "$wayland_dir" && test -f "$wayland_dir/wayland.xml"; then
+    WAYLAND_CORE_XML="$wayland_dir/wayland.xml"
   fi
 fi
 
 AM_CONDITIONAL(WAYLAND, test "x$with_wayland" = xyes)
+AM_CONDITIONAL(WAYLAND_TEST,
+               test -n "$RUBY" && test -n "$WAYLAND_CORE_XML")
 AC_SUBST(WAYLAND_PROTOCOLS_DIR)
 AC_SUBST(WAYLAND_SCANNER)
+AC_SUBST(WAYLAND_CORE_XML)
 
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
