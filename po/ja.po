@@ -5840,9 +5840,8 @@ msgid "EUC-JP"
 msgstr "EUC-JP"
 
 #: scm/predict-custom.scm:123
-#, fuzzy
 msgid "Use EUC-JP for the SKK-JISYO dictionary"
-msgstr "システム辞書にEUC-JPを使用"
+msgstr "SKK-JISYOにEUC-JPを使用"
 
 #: scm/predict-custom.scm:124 scm/skk-custom.scm:429 scm/skk-custom.scm:451
 #: scm/skk-custom.scm:468 scm/skk-custom.scm:485 scm/tutcode-custom.scm:74
@@ -5852,20 +5851,20 @@ msgid "UTF-8"
 msgstr "UTF-8"
 
 #: scm/predict-custom.scm:125
-#, fuzzy
 msgid "Use UTF-8 for the SKK-JISYO dictionary"
-msgstr "システム辞書にUTF-8を使用"
+msgstr "SKK-JISYOにUTF-8を使用"
 
 #: scm/predict-custom.scm:126
-#, fuzzy
 msgid "SKK-JISYO dictionary encoding"
-msgstr "システム辞書の文字コード"
+msgstr "SKK-JISYOの文字コード"
 
 #: scm/predict-custom.scm:127
 msgid ""
 "Character encoding of the SKK-JISYO dictionary file; the dictionary must be "
 "sorted in this encoding."
 msgstr ""
+"SKK-JISYO辞書ファイルの文字コード。この文字コードのバイト順にソートされている"
+"必要があります。"
 
 #: scm/predict-custom.scm:132
 msgid "Max words of candidates for look-skk"
@@ -6333,48 +6332,40 @@ msgid "Mazegaki dictionary file"
 msgstr "交ぜ書き変換辞書ファイル"
 
 #: scm/tutcode-custom.scm:73
-#, fuzzy
 msgid "Use EUC-JP for the mazegaki dictionary"
-msgstr "個人辞書にEUC-JPを使用"
+msgstr "交ぜ書き辞書にEUC-JPを使用"
 
 #: scm/tutcode-custom.scm:75
-#, fuzzy
 msgid "Use UTF-8 for the mazegaki dictionary"
-msgstr "個人辞書にUTF-8を使用"
+msgstr "交ぜ書き辞書にUTF-8を使用"
 
 #: scm/tutcode-custom.scm:76
-#, fuzzy
 msgid "Mazegaki dictionary encoding"
-msgstr "交ぜ書き変換辞書ファイル"
+msgstr "交ぜ書き辞書の文字コード"
 
 #: scm/tutcode-custom.scm:77
-#, fuzzy
 msgid "Character encoding of the mazegaki dictionary file."
-msgstr "個人辞書ファイルの文字コード。"
+msgstr "交ぜ書き辞書ファイルの文字コード。"
 
 #: scm/tutcode-custom.scm:83
 msgid "Personal mazegaki dictionary file"
 msgstr "交ぜ書き変換個人用辞書ファイル"
 
 #: scm/tutcode-custom.scm:90
-#, fuzzy
 msgid "Use EUC-JP for the personal mazegaki dictionary"
-msgstr "個人辞書にEUC-JPを使用"
+msgstr "個人交ぜ書き辞書にEUC-JPを使用"
 
 #: scm/tutcode-custom.scm:92
-#, fuzzy
 msgid "Use UTF-8 for the personal mazegaki dictionary"
-msgstr "個人辞書にUTF-8を使用"
+msgstr "個人交ぜ書き辞書にUTF-8を使用"
 
 #: scm/tutcode-custom.scm:93
-#, fuzzy
 msgid "Personal mazegaki dictionary encoding"
-msgstr "個人辞書の文字コード"
+msgstr "個人交ぜ書き辞書の文字コード"
 
 #: scm/tutcode-custom.scm:94
-#, fuzzy
 msgid "Character encoding of the personal mazegaki dictionary file."
-msgstr "個人辞書ファイルの文字コード。"
+msgstr "個人交ぜ書き辞書ファイルの文字コード。"
 
 #: scm/tutcode-custom.scm:100
 msgid "Code table file"
@@ -6461,72 +6452,60 @@ msgid "bushu.index2 file"
 msgstr "bushu.index2ファイル"
 
 #: scm/tutcode-custom.scm:215
-#, fuzzy
 msgid "Use EUC-JP for the bushu.index2 file"
-msgstr "bushu.index2ファイル"
+msgstr "bushu.index2ファイルにEUC-JPを使用"
 
 #: scm/tutcode-custom.scm:217
-#, fuzzy
 msgid "Use UTF-8 for the bushu.index2 file"
-msgstr "bushu.index2ファイル"
+msgstr "bushu.index2ファイルにUTF-8を使用"
 
 #: scm/tutcode-custom.scm:218
-#, fuzzy
 msgid "bushu.index2 file encoding"
-msgstr "bushu.index2ファイル"
+msgstr "bushu.index2ファイルの文字コード"
 
 #: scm/tutcode-custom.scm:219
-#, fuzzy
 msgid "Character encoding of the bushu.index2 file."
-msgstr "システム辞書ファイルの文字コード。"
+msgstr "bushu.index2ファイルの文字コード。"
 
 #: scm/tutcode-custom.scm:225
 msgid "bushu.expand file"
 msgstr "bushu.expandファイル"
 
 #: scm/tutcode-custom.scm:232
-#, fuzzy
 msgid "Use EUC-JP for the bushu.expand file"
-msgstr "bushu.expandファイル"
+msgstr "bushu.expandファイルにEUC-JPを使用"
 
 #: scm/tutcode-custom.scm:234
-#, fuzzy
 msgid "Use UTF-8 for the bushu.expand file"
-msgstr "bushu.expandファイル"
+msgstr "bushu.expandファイルにUTF-8を使用"
 
 #: scm/tutcode-custom.scm:235
-#, fuzzy
 msgid "bushu.expand file encoding"
-msgstr "bushu.expandファイル"
+msgstr "bushu.expandファイルの文字コード"
 
 #: scm/tutcode-custom.scm:236
-#, fuzzy
 msgid "Character encoding of the bushu.expand file."
-msgstr "システム辞書ファイルの文字コード。"
+msgstr "bushu.expandファイルの文字コード。"
 
 #: scm/tutcode-custom.scm:241
 msgid "bushu.help file"
 msgstr "bushu.helpファイル"
 
 #: scm/tutcode-custom.scm:248
-#, fuzzy
 msgid "Use EUC-JP for the bushu.help file"
-msgstr "システム辞書にEUC-JPを使用"
+msgstr "bushu.helpファイルにEUC-JPを使用"
 
 #: scm/tutcode-custom.scm:250
-#, fuzzy
 msgid "Use UTF-8 for the bushu.help file"
-msgstr "システム辞書にUTF-8を使用"
+msgstr "bushu.helpファイルにUTF-8を使用"
 
 #: scm/tutcode-custom.scm:251
-#, fuzzy
 msgid "bushu.help file encoding"
-msgstr "bushu.helpファイル"
+msgstr "bushu.helpファイルの文字コード"
 
 #: scm/tutcode-custom.scm:252
-#, fuzzy
 msgid "Character encoding of the bushu.help file."
-msgstr "システム辞書ファイルの文字コード。"
+msgstr "bushu.helpファイルの文字コード。"
 
 #: scm/tutcode-custom.scm:267
 msgid "Use pseudo table style layout"
@@ -7437,9 +7416,9 @@ msgid "uim-openssl: SSL_connect to %s: %s"
 msgstr "uim-openssl: %sへのSSL_connect: %s"
 
 #: uim/skk.c:359
-#, fuzzy, c-format
+#, c-format
 msgid "unknown encoding for %s: %s"
-msgstr "uim-skk: %sの文字コード%sは不明です"
+msgstr "%sの文字コード%sは不明です"
 
 #: uim/skk.c:446
 #, c-format
@@ -7447,33 +7426,31 @@ msgid "uim-skk: failed to convert skkserv data from %s to %s"
 msgstr "uim-skk: skkservのデータを%sから%sへ変換できませんでした"
 
 #: uim/skk.c:1203
-#, fuzzy, c-format
+#, c-format
 msgid "failed to convert system dictionary data from %s to %s"
-msgstr "uim-skk: システム辞書データを%sから%sへ変換できませんでした"
+msgstr "システム辞書データを%sから%sへ変換できませんでした"
 
 #: uim/skk.c:1367
-#, fuzzy
 msgid "error in expand_str"
-msgstr "uim-skk: expand_strでエラー"
+msgstr "expand_strでエラー"
 
 #: uim/skk.c:1382
-#, fuzzy
 msgid "too long word"
-msgstr "uim-skk: 語が長すぎます"
+msgstr "語が長すぎます"
 
 #: uim/skk.c:2294
 msgid "SKK server without completion capability\n"
 msgstr "補完機能がないSKKサーバ\n"
 
 #: uim/skk.c:3528
-#, fuzzy, c-format
+#, c-format
 msgid "invalid %s dictionary: %s"
-msgstr "uim-skk: 不正な%sの辞書です: %s"
+msgstr "不正な%sの辞書です: %s"
 
 #: uim/skk.c:3849
-#, fuzzy, c-format
+#, c-format
 msgid "cannot encode personal dictionary as %s"
-msgstr "uim-skk: 個人辞書を%sとしてエンコードできません"
+msgstr "個人辞書を%sとしてエンコードできません"
 
 #: uim/skk.c:4230
 #, c-format
