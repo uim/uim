@@ -356,7 +356,7 @@ get_encoding_value(uim_lisp encoding_,
   else if (!strcasecmp(encoding_name, "euc-jp"))
     *encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
   else
-    uim_notify_info(N_("uim-skk: unknown encoding for %s: %s"),
+    uim_notify_info(N_("unknown encoding for %s: %s"),
                     symbol_name, encoding_name);
 
 out:
@@ -1200,7 +1200,7 @@ search_line_from_file(dic_info *di, const char *s, char okuri_head)
   converted_line = convert_dictionary_line(di->encoding, line);
   free(line);
   if (!converted_line) {
-    uim_notify_info(N_("uim-skk: failed to convert system dictionary data from %s to %s"),
+    uim_notify_info(N_("failed to convert system dictionary data from %s to %s"),
                     skk_encoding_name(di->encoding),
                     skk_encoding_name(SKK_DICTIONARY_ENCODING_UTF8));
     return NULL;
@@ -1364,7 +1364,7 @@ expand_str(const char *p)
     	  p++;
     	  c = *p;
     	  if (*p == '\0') {
-	    uim_notify_fatal(N_("uim-skk: error in expand_str"));
+	    uim_notify_fatal(N_("error in expand_str"));
 	    return NULL;
 	  }
 	  if (c >= '0' && c <= '7') {
@@ -1379,7 +1379,7 @@ expand_str(const char *p)
       }
     }
     if ((i + 1) >= BUFSIZ) {
-      uim_notify_fatal(N_("uim-skk: too long word"));
+      uim_notify_fatal(N_("too long word"));
       return NULL;
     }
     buf[i] = c;
@@ -3525,7 +3525,7 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
               free_skk_line(sl);
               sl = next;
             }
-            uim_notify_info(N_("uim-skk: invalid %s dictionary: %s"),
+            uim_notify_info(N_("invalid %s dictionary: %s"),
                             skk_encoding_name(encoding), fn);
             fclose(fp);
             close_lock(lock_fd);
@@ -3846,7 +3846,7 @@ skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
 
   for (sl = skk_dic->head.next; sl; sl = sl->next) {
     if ((sl->state & SKK_LINE_NEED_SAVE) && !write_out_line(fp, encoding, sl)) {
-      uim_notify_info(N_("uim-skk: cannot encode personal dictionary as %s"),
+      uim_notify_info(N_("cannot encode personal dictionary as %s"),
                       skk_encoding_name(encoding));
       goto error;
     }
