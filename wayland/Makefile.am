@@ -1,4 +1,5 @@
 EXTRA_DIST =				\
+	test/candidates.scm		\
 	test/run.rb			\
 	test/surrounding-text.scm	\
 	test/test-uim-wayland.rb	\

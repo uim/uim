@@ -12,9 +12,11 @@ focus. Key events arrive through a keyboard grab, go through libuim,
 and the results are sent back as preedit and committed text. Keys uim
 doesn't consume are forwarded to the focused application. Candidates
 are drawn on a `zwp_input_panel_v1` overlay panel, which the
-compositor places next to the text cursor. uim-helper-server is used
-as in the other bridges, so the toolbar, `uim-im-switcher-cli` and
-input method changes made by other uim processes all work.
+compositor places next to the text cursor. A click on a candidate
+selects it, as the arrow keys would, and the wheel turns the page.
+uim-helper-server is used as in the other bridges, so the toolbar,
+`uim-im-switcher-cli` and input method changes made by other uim
+processes all work.
 
 The text around the cursor is passed to uim, so input methods that
 look at what has already been typed work. Fields that take no composed
@@ -106,9 +108,9 @@ If the input method doesn't start, look there first.
   application relies on compositor-side repeat, and asks the input
   method to do the repeating otherwise, in which case keys don't
   repeat.
-- The candidate window has no pointer support; candidates are chosen
-  from the keyboard. It is drawn at scale 1, so it looks blurry on a
-  scaled output.
+- The candidate window is drawn at scale 1, so it looks blurry on a
+  scaled output. It doesn't set a cursor image either, so what the
+  pointer looks like over it is up to the compositor.
 - `text-input-v3` has no preedit styling, so applications using it,
   Chromium among them, show the preedit without underlines. KWin does
   turn the highlighted segment into a selection range, so the segment

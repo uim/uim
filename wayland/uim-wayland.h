@@ -104,6 +104,9 @@ struct uim_wayland {
   struct wl_shm *shm;
   struct zwp_input_method_v1 *input_method;
   struct zwp_input_panel_v1 *input_panel;
+  /* For the pointer on the candidate window. */
+  struct wl_seat *seat;
+  struct wl_pointer *pointer;
 
   /* The active context. NULL while no text field is focused. */
   struct zwp_input_method_context_v1 *context;
@@ -161,6 +164,8 @@ void uim_wayland_candwin_select(struct uim_wayland_candwin *cw, int index);
 void uim_wayland_candwin_shift_page(struct uim_wayland_candwin *cw,
                                     bool forward);
 void uim_wayland_candwin_deactivate(struct uim_wayland_candwin *cw);
+/* Its user data is the struct uim_wayland. */
+extern const struct wl_pointer_listener uim_wayland_candwin_pointer_listener;
 
 /* text.c */
 void uim_wayland_text_set_surrounding(struct uim_wayland *uw,

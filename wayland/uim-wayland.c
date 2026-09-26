@@ -732,6 +732,48 @@ static const struct zwp_input_method_v1_listener input_method_listener = {
   input_method_deactivate
 };
 
+/* seat */
+
+static void
+release_pointer(struct uim_wayland *uw)
+{
+  if (!uw->pointer)
+    return;
+  if (wl_pointer_get_version(uw->pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
+    wl_pointer_release(uw->pointer);
+  else
+    wl_pointer_destroy(uw->pointer);
+  uw->pointer = NULL;
+}
+
+static void
+seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
+{
+  struct uim_wayland *uw = data;
+  bool has_pointer = (capabilities & WL_SEAT_CAPABILITY_POINTER) != 0;
+
+  if (has_pointer && !uw->pointer) {
+    uw->pointer = wl_seat_get_pointer(seat);
+    wl_pointer_add_listener(uw->pointer,
+                            &uim_wayland_candwin_pointer_listener, uw);
+  } else if (!has_pointer) {
+    release_pointer(uw);
+  }
+}
+
+static void
+seat_name(void *data, struct wl_seat *seat, const char *name)
+{
+  (void)data;
+  (void)seat;
+  (void)name;
+}
+
+static const struct wl_seat_listener seat_listener = {
+  seat_capabilities,
+  seat_name
+};
+
 /* registry */
 
 static void
@@ -757,6 +799,11 @@ registry_global(void *data,
   } else if (strcmp(interface, zwp_input_panel_v1_interface.name) == 0) {
     uw->input_panel = wl_registry_bind(registry, name,
                                        &zwp_input_panel_v1_interface, 1);
+  } else if (strcmp(interface, wl_seat_interface.name) == 0 && !uw->seat) {
+    /* Only the first seat. */
+    uw->seat = wl_registry_bind(registry, name, &wl_seat_interface,
+                                version < 5 ? version : 5);
+    wl_seat_add_listener(uw->seat, &seat_listener, uw);
   }
 }
 
@@ -980,6 +1027,13 @@ main(int argc, char **argv)
   uim_quit();
   free(uw->segments);
   free(uw->surrounding_text);
+  release_pointer(uw);
+  if (uw->seat) {
+    if (wl_seat_get_version(uw->seat) >= WL_SEAT_RELEASE_SINCE_VERSION)
+      wl_seat_release(uw->seat);
+    else
+      wl_seat_destroy(uw->seat);
+  }
   if (uw->input_panel)
     zwp_input_panel_v1_destroy(uw->input_panel);
   zwp_input_method_v1_destroy(uw->input_method);
