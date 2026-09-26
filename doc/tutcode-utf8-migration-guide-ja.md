@@ -7,7 +7,7 @@
 
 ## 辞書の文字コード設定
 
-以下の設定で、交ぜ書き辞書と部首辞書の文字コードを指定できます。
+以下の設定で、交ぜ書き辞書、部首辞書、補助予測入力で使用するSKK-JISYOの文字コードを指定できます。
 デフォルトはEUC-JPなので、EUC-JPの辞書を使用する場合は変更不要です。
 UTF-8で使用する場合は、各辞書に対応する設定を変更してください。
 
@@ -18,6 +18,7 @@ UTF-8で使用する場合は、各辞書に対応する設定を変更してく
 | `tutcode-bushu-index2-encoding` | `bushu.index2` | `euc-jp` |
 | `tutcode-bushu-expand-encoding` | `bushu.expand` | `euc-jp` |
 | `tutcode-bushu-help-encoding` | `bushu.help` | `euc-jp` |
+| `predict-custom-look-skk-jisyo-encoding` | Look-SKK予測用SKK-JISYO | `euc-jp` |
 
 ### EUC-JPの個人辞書をUTF-8へ変換する
 

@@ -8,7 +8,8 @@ required migration steps.
 
 ## Dictionary encoding settings
 
-The following settings specify the encoding of mazegaki and Bushu dictionary files.
+The following settings specify the encoding of mazegaki, Bushu, and SKK-JISYO
+dictionaries used for ancillary prediction.
 The default is EUC-JP, so no setting changes are required when using EUC-JP.
 Change the settings when using UTF-8.
 
@@ -19,6 +20,7 @@ Change the settings when using UTF-8.
 | `tutcode-bushu-index2-encoding` | `bushu.index2` | `euc-jp` |
 | `tutcode-bushu-expand-encoding` | `bushu.expand` | `euc-jp` |
 | `tutcode-bushu-help-encoding` | `bushu.help` | `euc-jp` |
+| `predict-custom-look-skk-jisyo-encoding` | SKK-JISYO for Look-SKK prediction | `euc-jp` |
 
 ### Converting the personal EUC-JP dictionary to UTF-8
 
