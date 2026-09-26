@@ -28,8 +28,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; SKK¤ÈÆ±¤¸ºÆµ¢³Ø½¬¤ò¥¤¥ó¥é¥¤¥ó¤Ç¹Ô¤¦¤¿¤á¤Î´Ê°×¥Æ¥­¥¹¥È¥¨¥Ç¥£¥¿¡£
-;; skk-editor.scm¤«¤é¥³¥Ô¡¼¤·¤Ætutcode.scmÍÑ¤ËÊÑ¹¹¡£
+;; SKKã¨åŒã˜å†å¸°å­¦ç¿’ã‚’ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ã§è¡Œã†ãŸã‚ã®ç°¡æ˜“ãƒ†ã‚­ã‚¹ãƒˆã‚¨ãƒ‡ã‚£ã‚¿ã€‚
+;; skk-editor.scmã‹ã‚‰ã‚³ãƒ”ãƒ¼ã—ã¦tutcode.scmç”¨ã«å¤‰æ›´ã€‚
 
 (define-record 'tutcode-editor
   '((context      ())
@@ -82,7 +82,7 @@
 (define tutcode-editor-commit
   (lambda (ec str)
     (tutcode-editor-commit-char-list
-     ec (reverse (string-to-list str)))))
+     ec (reverse (string-to-list-utf8 str)))))
 
 (define tutcode-editor-commit-raw
   (lambda (ec key key-state)

@@ -116,6 +116,16 @@
                (N_ "Sorted SKK-JISYO dictionary file")
                (N_ "long description will be here"))
 
+(define-custom 'predict-custom-look-skk-jisyo-encoding 'euc-jp
+               '(predict predict-look-skk)
+               (list 'choice
+                     (list 'euc-jp (N_ "EUC-JP")
+                           (N_ "Use EUC-JP for the SKK-JISYO dictionary"))
+                     (list 'utf-8 (N_ "UTF-8")
+                           (N_ "Use UTF-8 for the SKK-JISYO dictionary")))
+               (N_ "SKK-JISYO dictionary encoding")
+               (N_ "Character encoding of the SKK-JISYO dictionary file; the dictionary must be sorted in this encoding."))
+
 (define-custom 'predict-custom-look-skk-candidates-max 10
                '(predict predict-look-skk)
                '(integer 1 99)
@@ -123,6 +133,14 @@
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-look-skk-jisyo
+                 'custom-activity-hooks
+                 (lambda ()
+                   (and predict-custom-enable?
+                        (find (lambda (item)
+                                (eq? 'look-skk item))
+                              predict-custom-methods))))
+
+(custom-add-hook 'predict-custom-look-skk-jisyo-encoding
                  'custom-activity-hooks
                  (lambda ()
                    (and predict-custom-enable?

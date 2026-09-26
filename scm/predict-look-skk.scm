@@ -42,10 +42,11 @@
 
 (class-set-method! predict-look-skk search
   (lambda (self str)
-    (let* ((looked (look-lib-look #f #f
+    (let* ((internal-str (predict->internal-charset self str))
+           (looked (look-lib-look #f #f
                                   (predict-look-skk-limit self)
                                   (predict-look-skk-jisyo self)
-                                  str))
+                                  internal-str))
            (ret (map (lambda (x)
                        (string-split x " "))
                      (if looked
@@ -56,7 +57,7 @@
                    (map (lambda (x)
                           (map (lambda (l)
                                  (cons
-                                  (string-append str (car x))
+                                  (string-append internal-str (car x))
                                   (let ((s (string-split l ";")))
                                     (if (= 2 (length s))
                                             s
@@ -65,22 +66,27 @@
                                          (not (string=? "" s)))
                                        (string-split (cadr x) "/"))))
                         ret)))
-           (yomi     (map (lambda (x) (list-ref x 0)) yomi/kanji/appendix))
-           (kanji    (map (lambda (x) (list-ref x 1)) yomi/kanji/appendix))
-           (appendix (map (lambda (x) (list-ref x 2)) yomi/kanji/appendix)))
-      (make-predict-result
-       (if (< (length yomi/kanji/appendix) (predict-look-skk-limit self))
-           yomi
-           (take yomi (predict-look-skk-limit self)))
-       (if (< (length yomi/kanji/appendix) (predict-look-skk-limit self))
-           kanji
-           (take kanji (predict-look-skk-limit self)))
-       (if (< (length yomi/kanji/appendix) (predict-look-skk-limit self))
-           appendix
-           (take appendix (predict-look-skk-limit self)))))))
+           (limited-yomi/kanji/appendix
+            (if (< (length yomi/kanji/appendix)
+                   (predict-look-skk-limit self))
+                yomi/kanji/appendix
+                (take yomi/kanji/appendix (predict-look-skk-limit self))))
+           (yomi     (map (lambda (x) (predict->external-charset self (list-ref x 0)))
+                          limited-yomi/kanji/appendix))
+           (kanji    (map (lambda (x) (predict->external-charset self (list-ref x 1)))
+                          limited-yomi/kanji/appendix))
+           (appendix (map (lambda (x) (predict->external-charset self (list-ref x 2)))
+                          limited-yomi/kanji/appendix)))
+      (make-predict-result yomi kanji appendix))))
 
 (define (make-predict-look-skk-with-custom)
   (let ((obj (make-predict-look-skk)))
+    (predict-set-internal-charset!
+     obj
+     (case predict-custom-look-skk-jisyo-encoding
+       ((euc-jp) "EUC-JP")
+       ((utf-8) "UTF-8")
+       (else (error "invalid SKK-JISYO encoding"))))
     (predict-look-skk-set-jisyo! obj predict-custom-look-skk-jisyo)
     (predict-look-skk-set-limit! obj predict-custom-look-skk-candidates-max)
     obj))
