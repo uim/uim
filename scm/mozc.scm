@@ -339,6 +339,54 @@
           (if (>= (+ offset length) 0)
               (im-delete-text mc 'primary 'cursor (- offset) (+ offset length)))))))
 
+;; mozc's output holds only the page it shows now, while uim asks for
+;; any candidate by its index in the whole list.
+
+(define (mozc-find-candidate mc idx)
+  (find (lambda (candidate)
+          (eqv? (mozc-alist-ref 'index candidate) idx))
+        (mozc-context-candidates mc)))
+
+(define (mozc-first-index mc)
+  (let ((candidates (mozc-context-candidates mc)))
+    (and (pair? candidates)
+         (mozc-alist-ref 'index (car candidates)))))
+
+;; Turns mozc's page one step toward IDX. Returns #f when it did not
+;; move. No mozc-update here: a frontend calls this from inside the
+;; selector callbacks.
+(define (mozc-turn-page mc idx)
+  (let* ((first (mozc-first-index mc))
+         (output (and first
+                      (mozc-context-send-command
+                       mc `((type . ,(if (< idx first)
+                                         'convert-prev-page
+                                         'convert-next-page))))))
+         (cw (and output (mozc-alist-ref 'candidate-window output))))
+    (and cw
+         (begin
+           (mozc-context-set-candidates! mc (or (mozc-alist-ref 'candidate cw)
+                                                '()))
+           ;; mozc wraps around at both ends
+           (not (eqv? first (mozc-first-index mc)))))))
+
+(define (mozc-candidate-at mc idx)
+  (and (< idx (mozc-context-cand-nr mc))
+       (let loop ((rest (mozc-context-cand-nr mc))) ; loop cap
+         (or (mozc-find-candidate mc idx)
+             (and (> rest 0)
+                  (mozc-turn-page mc idx)
+                  (loop (- rest 1)))))))
+
+;; uim reports every move of the highlight here, so SELECT_CANDIDATE
+;; is wrong: it closes the candidate window.
+(define (mozc-highlight-candidate mc idx)
+  (let* ((candidate (mozc-candidate-at mc idx))
+         (id (and candidate (mozc-alist-ref 'id candidate))))
+    (and id
+         (mozc-context-send-command mc `((type . highlight-candidate)
+                                         (id . ,id))))))
+
 (define (mozc-update-candidates mc output)
   (let ((cw (mozc-alist-ref 'candidate-window output)))
     (cond
@@ -356,6 +404,8 @@
                               (not focused))))
         (mozc-context-set-candidates! mc (or (mozc-alist-ref 'candidate cw)
                                              '()))
+        ;; the callbacks below reach mozc-candidate-at
+        (mozc-context-set-cand-nr! mc size)
         (if (or first-time?
                 (and (mozc-context-cand-reactivate mc)
                      (not (= page (mozc-context-cand-page mc)))))
@@ -365,7 +415,9 @@
         (mozc-context-set-cand-page! mc page)
         (if focused
             (im-select-candidate mc focused))
-        (mozc-context-set-cand-nr! mc size))))))
+        ;; a frontend draws page 0 first, which can move mozc off it
+        (if (and focused (not (mozc-find-candidate mc focused)))
+            (mozc-highlight-candidate mc focused)))))))
 
 (define (mozc-update-mode mc output)
   ;; mozc-context-mode holds the composition mode to restore when the IME
@@ -655,18 +707,11 @@
                   #t))))))
 
 (define (mozc-select-candidate mc idx)
-  (let ((candidate (find (lambda (candidate)
-                           (eqv? (mozc-alist-ref 'index candidate) idx))
-                         (mozc-context-candidates mc))))
-    (and candidate
-         (mozc-alist-ref 'id candidate)
-         (let ((output (mozc-context-send-command
-                        mc `((type . select-candidate)
-                             (id . ,(mozc-alist-ref 'id candidate))))))
-           (and output
-                (begin
-                  (mozc-update mc output)
-                  #t))))))
+  (let ((output (mozc-highlight-candidate mc idx)))
+    (and output
+         (begin
+           (mozc-update mc output)
+           #t))))
 
 (define (mozc-reconvert mc)
   (and (mozc-context-session-ready? mc)
@@ -967,9 +1012,7 @@
 
 (define mozc-get-candidate-handler
   (lambda (mc idx accel-enum-hint)
-    (let ((candidate (find (lambda (candidate)
-                             (eqv? (mozc-alist-ref 'index candidate) idx))
-                           (mozc-context-candidates mc))))
+    (let ((candidate (mozc-candidate-at mc idx)))
       (if candidate
           (let ((annotation (or (mozc-alist-ref 'annotation candidate) '())))
             (list (string-append (or (mozc-alist-ref 'prefix annotation) "")
