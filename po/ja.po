@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-09-19 07:43+0900\n"
+"POT-Creation-Date: 2026-09-26 16:17+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -559,7 +559,7 @@ msgid "InputMethodName"
 msgstr "入力方式名"
 
 #: gtk3/switcher/gtk.c:319 qt3/switcher/qt.cpp:113 qt4/switcher/qt4.cpp:135
-#: scm/predict-custom.scm:188 tqt/switcher/qt.cpp:113
+#: scm/predict-custom.scm:206 tqt/switcher/qt.cpp:113
 msgid "Language"
 msgstr "言語名"
 
@@ -2487,9 +2487,9 @@ msgstr "註釈を有効にする"
 #: scm/m17nlib-custom.scm:92 scm/m17nlib-custom.scm:136
 #: scm/predict-custom.scm:39 scm/predict-custom.scm:46
 #: scm/predict-custom.scm:64 scm/predict-custom.scm:76
-#: scm/predict-custom.scm:111 scm/predict-custom.scm:146
-#: scm/predict-custom.scm:167 scm/predict-custom.scm:189
-#: scm/predict-custom.scm:203 scm/skk-custom.scm:53 scm/skk-custom.scm:58
+#: scm/predict-custom.scm:111 scm/predict-custom.scm:164
+#: scm/predict-custom.scm:185 scm/predict-custom.scm:207
+#: scm/predict-custom.scm:221 scm/skk-custom.scm:53 scm/skk-custom.scm:58
 #: scm/skk-custom.scm:69 scm/skk-custom.scm:75 scm/skk-custom.scm:83
 #: scm/skk-custom.scm:89 scm/skk-custom.scm:95 scm/skk-custom.scm:101
 #: scm/skk-custom.scm:240 scm/skk-custom.scm:259 scm/skk-custom.scm:268
@@ -2505,33 +2505,35 @@ msgstr "註釈を有効にする"
 #: scm/skk-key-custom.scm:73 scm/skk-key-custom.scm:78
 #: scm/skk-key-custom.scm:82 scm/skk-key-custom.scm:86
 #: scm/tutcode-custom.scm:56 scm/tutcode-custom.scm:67
-#: scm/tutcode-custom.scm:74 scm/tutcode-custom.scm:87
-#: scm/tutcode-custom.scm:93 scm/tutcode-custom.scm:99
-#: scm/tutcode-custom.scm:105 scm/tutcode-custom.scm:111
-#: scm/tutcode-custom.scm:117 scm/tutcode-custom.scm:123
-#: scm/tutcode-custom.scm:129 scm/tutcode-custom.scm:135
-#: scm/tutcode-custom.scm:141 scm/tutcode-custom.scm:147
-#: scm/tutcode-custom.scm:153 scm/tutcode-custom.scm:159
-#: scm/tutcode-custom.scm:165 scm/tutcode-custom.scm:176
-#: scm/tutcode-custom.scm:182 scm/tutcode-custom.scm:189
-#: scm/tutcode-custom.scm:196 scm/tutcode-custom.scm:202
-#: scm/tutcode-custom.scm:212 scm/tutcode-custom.scm:218
-#: scm/tutcode-custom.scm:227 scm/tutcode-custom.scm:239
-#: scm/tutcode-custom.scm:245 scm/tutcode-custom.scm:251
-#: scm/tutcode-custom.scm:257 scm/tutcode-custom.scm:263
-#: scm/tutcode-custom.scm:269 scm/tutcode-custom.scm:275
-#: scm/tutcode-custom.scm:281 scm/tutcode-custom.scm:287
-#: scm/tutcode-custom.scm:293 scm/tutcode-custom.scm:299
-#: scm/tutcode-custom.scm:305 scm/tutcode-custom.scm:311
-#: scm/tutcode-custom.scm:317 scm/tutcode-custom.scm:323
-#: scm/tutcode-custom.scm:329 scm/tutcode-custom.scm:335
-#: scm/tutcode-custom.scm:341 scm/tutcode-custom.scm:347
-#: scm/tutcode-custom.scm:354 scm/tutcode-custom.scm:360
-#: scm/tutcode-custom.scm:366 scm/tutcode-custom.scm:372
-#: scm/tutcode-custom.scm:378 scm/tutcode-custom.scm:384
-#: scm/tutcode-custom.scm:393 scm/tutcode-custom.scm:399
+#: scm/tutcode-custom.scm:84 scm/tutcode-custom.scm:107
+#: scm/tutcode-custom.scm:113 scm/tutcode-custom.scm:119
+#: scm/tutcode-custom.scm:125 scm/tutcode-custom.scm:131
+#: scm/tutcode-custom.scm:137 scm/tutcode-custom.scm:143
+#: scm/tutcode-custom.scm:149 scm/tutcode-custom.scm:155
+#: scm/tutcode-custom.scm:161 scm/tutcode-custom.scm:167
+#: scm/tutcode-custom.scm:173 scm/tutcode-custom.scm:179
+#: scm/tutcode-custom.scm:185 scm/tutcode-custom.scm:196
+#: scm/tutcode-custom.scm:202 scm/tutcode-custom.scm:209
+#: scm/tutcode-custom.scm:226 scm/tutcode-custom.scm:242
+#: scm/tutcode-custom.scm:262 scm/tutcode-custom.scm:268
+#: scm/tutcode-custom.scm:277 scm/tutcode-custom.scm:289
+#: scm/tutcode-custom.scm:295 scm/tutcode-custom.scm:301
+#: scm/tutcode-custom.scm:307 scm/tutcode-custom.scm:313
+#: scm/tutcode-custom.scm:319 scm/tutcode-custom.scm:325
+#: scm/tutcode-custom.scm:331 scm/tutcode-custom.scm:337
+#: scm/tutcode-custom.scm:343 scm/tutcode-custom.scm:349
+#: scm/tutcode-custom.scm:355 scm/tutcode-custom.scm:361
+#: scm/tutcode-custom.scm:367 scm/tutcode-custom.scm:373
+#: scm/tutcode-custom.scm:379 scm/tutcode-custom.scm:385
+#: scm/tutcode-custom.scm:391 scm/tutcode-custom.scm:397
+#: scm/tutcode-custom.scm:404 scm/tutcode-custom.scm:410
+#: scm/tutcode-custom.scm:416 scm/tutcode-custom.scm:422
+#: scm/tutcode-custom.scm:428 scm/tutcode-custom.scm:434
+#: scm/tutcode-custom.scm:443 scm/tutcode-custom.scm:449
 #: scm/tutcode-key-custom.scm:38 scm/tutcode-key-custom.scm:42
-#: scm/tutcode-key-custom.scm:46 scm/wnn-key-custom.scm:36
+#: scm/tutcode-key-custom.scm:46 scm/tutcode-rule-custom.scm:46
+#: scm/tutcode-rule-custom.scm:52 scm/tutcode-rule-custom.scm:58
+#: scm/tutcode-rule-custom.scm:64 scm/wnn-key-custom.scm:36
 #: scm/wnn-key-custom.scm:40 scm/wnn-key-custom.scm:44
 #: scm/wnn-key-custom.scm:48 scm/anthy-custom.scm:48 scm/anthy-custom.scm:58
 #: scm/anthy-custom.scm:64 scm/anthy-custom.scm:79 scm/anthy-custom.scm:85
@@ -2575,8 +2577,6 @@ msgstr "註釈を有効にする"
 #: scm/google-cgiapi-jp-custom.scm:393 scm/japanese-custom.scm:467
 #: scm/japanese-custom.scm:471 scm/japanese-custom.scm:479
 #: scm/japanese-custom.scm:489 scm/japanese-custom.scm:495
-#: scm/tutcode-rule-custom.scm:46 scm/tutcode-rule-custom.scm:52
-#: scm/tutcode-rule-custom.scm:58 scm/tutcode-rule-custom.scm:64
 #: scm/wnn-custom.scm:44 scm/wnn-custom.scm:48 scm/wnn-custom.scm:52
 #: scm/wnn-custom.scm:62 scm/wnn-custom.scm:68 scm/wnn-custom.scm:83
 #: scm/wnn-custom.scm:89 scm/wnn-custom.scm:95 scm/wnn-custom.scm:101
@@ -2833,8 +2833,8 @@ msgstr "[Anthy] 次文節"
 #: scm/look-custom.scm:119 scm/look-custom.scm:125 scm/look-custom.scm:131
 #: scm/look-custom.scm:137 scm/look-custom.scm:143 scm/look-custom.scm:149
 #: scm/look-custom.scm:155 scm/predict-custom.scm:82 scm/predict-custom.scm:88
-#: scm/predict-custom.scm:117 scm/predict-custom.scm:123
-#: scm/predict-custom.scm:152 scm/predict-custom.scm:173
+#: scm/predict-custom.scm:117 scm/predict-custom.scm:133
+#: scm/predict-custom.scm:170 scm/predict-custom.scm:191
 #: scm/skk-key-custom.scm:93 scm/skk-key-custom.scm:99
 #: scm/skk-key-custom.scm:105 scm/skk-key-custom.scm:111
 #: scm/skk-key-custom.scm:117 scm/skk-key-custom.scm:123
@@ -3110,7 +3110,7 @@ msgid "Segment separator"
 msgstr "文節区切り"
 
 #: scm/anthy-utf8-custom.scm:85 scm/generic-custom.scm:42
-#: scm/m17nlib-custom.scm:135 scm/skk-custom.scm:68 scm/tutcode-custom.scm:211
+#: scm/m17nlib-custom.scm:135 scm/skk-custom.scm:68 scm/tutcode-custom.scm:261
 #: scm/anthy-custom.scm:78 scm/baidu-olime-jp-custom.scm:82
 #: scm/canna-custom.scm:82 scm/google-cgiapi-jp-custom.scm:82
 #: scm/wnn-custom.scm:82
@@ -3118,14 +3118,14 @@ msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
 #: scm/anthy-utf8-custom.scm:91 scm/generic-custom.scm:48 scm/skk-custom.scm:94
-#: scm/tutcode-custom.scm:244 scm/anthy-custom.scm:84
+#: scm/tutcode-custom.scm:294 scm/anthy-custom.scm:84
 #: scm/baidu-olime-jp-custom.scm:88 scm/canna-custom.scm:88
 #: scm/google-cgiapi-jp-custom.scm:88 scm/wnn-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
 
 #: scm/anthy-utf8-custom.scm:97 scm/generic-custom.scm:54
-#: scm/skk-custom.scm:100 scm/tutcode-custom.scm:250 scm/anthy-custom.scm:90
+#: scm/skk-custom.scm:100 scm/tutcode-custom.scm:300 scm/anthy-custom.scm:90
 #: scm/baidu-olime-jp-custom.scm:94 scm/canna-custom.scm:94
 #: scm/google-cgiapi-jp-custom.scm:94 scm/wnn-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
@@ -3363,7 +3363,7 @@ msgstr "数字キーで予測候補を選択する"
 msgid "Show selected prediction candidate in preedit area"
 msgstr "編集領域内に選んだ予測候補を表示する"
 
-#: scm/anthy-utf8-custom.scm:336 scm/tutcode-custom.scm:377
+#: scm/anthy-utf8-custom.scm:336 scm/tutcode-custom.scm:427
 #: scm/anthy-custom.scm:329 scm/baidu-olime-jp-custom.scm:394
 #: scm/canna-custom.scm:444 scm/google-cgiapi-jp-custom.scm:392
 #: scm/wnn-custom.scm:382
@@ -3371,7 +3371,7 @@ msgid "Character count to start input prediction"
 msgstr "予測入力が有効になる文字数"
 
 #: scm/anthy-utf8-custom.scm:368 scm/skk-custom.scm:593
-#: scm/tutcode-custom.scm:104 scm/anthy-custom.scm:361
+#: scm/tutcode-custom.scm:124 scm/anthy-custom.scm:361
 #: scm/baidu-olime-jp-custom.scm:340 scm/canna-custom.scm:401
 #: scm/google-cgiapi-jp-custom.scm:338 scm/wnn-custom.scm:345
 msgid "Enable vi-cooperative mode"
@@ -4874,7 +4874,7 @@ msgstr "常時"
 msgid "Based on mode"
 msgstr "モード依存"
 
-#: scm/im-custom.scm:472 scm/tutcode-custom.scm:237
+#: scm/im-custom.scm:472 scm/tutcode-custom.scm:287
 msgid "Never"
 msgstr "なし"
 
@@ -5207,7 +5207,7 @@ msgstr "デンマーク語"
 msgid "Dhivehi"
 msgstr "ディヴェヒ語"
 
-#: scm/iso-639-1.scm:72 scm/predict-custom.scm:186
+#: scm/iso-639-1.scm:72 scm/predict-custom.scm:204
 msgid "English"
 msgstr "英語"
 
@@ -5327,7 +5327,7 @@ msgstr "アイルランド語"
 msgid "Italian"
 msgstr "イタリア語"
 
-#: scm/iso-639-1.scm:103 scm/predict-custom.scm:187
+#: scm/iso-639-1.scm:103 scm/predict-custom.scm:205
 msgid "Japanese"
 msgstr "日本語"
 
@@ -5804,7 +5804,7 @@ msgstr "Look-SKK予測"
 msgid "Sqlite3"
 msgstr "Sqlite3"
 
-#: scm/predict-custom.scm:59 scm/predict-custom.scm:145
+#: scm/predict-custom.scm:59 scm/predict-custom.scm:163
 msgid "Sqlite3 prediction"
 msgstr "Sqlite3予測"
 
@@ -5832,23 +5832,58 @@ msgstr "Look予測の最大候補数"
 msgid "Sorted SKK-JISYO dictionary file"
 msgstr "SKK-JISYOファイル"
 
-#: scm/predict-custom.scm:122
+#: scm/predict-custom.scm:122 scm/skk-custom.scm:427 scm/skk-custom.scm:449
+#: scm/skk-custom.scm:466 scm/skk-custom.scm:483 scm/tutcode-custom.scm:72
+#: scm/tutcode-custom.scm:89 scm/tutcode-custom.scm:214
+#: scm/tutcode-custom.scm:231 scm/tutcode-custom.scm:247
+msgid "EUC-JP"
+msgstr "EUC-JP"
+
+#: scm/predict-custom.scm:123
+#, fuzzy
+msgid "Use EUC-JP for the SKK-JISYO dictionary"
+msgstr "システム辞書にEUC-JPを使用"
+
+#: scm/predict-custom.scm:124 scm/skk-custom.scm:429 scm/skk-custom.scm:451
+#: scm/skk-custom.scm:468 scm/skk-custom.scm:485 scm/tutcode-custom.scm:74
+#: scm/tutcode-custom.scm:91 scm/tutcode-custom.scm:216
+#: scm/tutcode-custom.scm:233 scm/tutcode-custom.scm:249
+msgid "UTF-8"
+msgstr "UTF-8"
+
+#: scm/predict-custom.scm:125
+#, fuzzy
+msgid "Use UTF-8 for the SKK-JISYO dictionary"
+msgstr "システム辞書にUTF-8を使用"
+
+#: scm/predict-custom.scm:126
+#, fuzzy
+msgid "SKK-JISYO dictionary encoding"
+msgstr "システム辞書の文字コード"
+
+#: scm/predict-custom.scm:127
+msgid ""
+"Character encoding of the SKK-JISYO dictionary file; the dictionary must be "
+"sorted in this encoding."
+msgstr ""
+
+#: scm/predict-custom.scm:132
 msgid "Max words of candidates for look-skk"
 msgstr "Look-SKK予測の最大候補数"
 
-#: scm/predict-custom.scm:151
+#: scm/predict-custom.scm:169
 msgid "Max words of candidates for sqlite3"
 msgstr "Sqlite3予測の最大候補数"
 
-#: scm/predict-custom.scm:166
+#: scm/predict-custom.scm:184
 msgid "Google suggest prediction"
 msgstr "Googleサジェスト予測"
 
-#: scm/predict-custom.scm:172
+#: scm/predict-custom.scm:190
 msgid "Max words of candidates for google suggest"
 msgstr "Googleサジェスト予測の最大候補数"
 
-#: scm/predict-custom.scm:202
+#: scm/predict-custom.scm:220
 msgid "Enable SSL with Google Suggest"
 msgstr "Googleサジェストとの通信にSSLを利用する"
 
@@ -5856,19 +5891,19 @@ msgstr "Googleサジェストとの通信にSSLを利用する"
 msgid "cannot create dictionary directory"
 msgstr "辞書ディレクトリを作成できません"
 
-#: scm/process.scm:62 scm/process.scm:109
+#: scm/process.scm:62 scm/process.scm:117
 msgid "cannot fork"
 msgstr "フォークできませんでした"
 
-#: scm/process.scm:73
+#: scm/process.scm:79
 msgid "cannot duplicate stdin"
 msgstr "標準入力を複製できませんでした"
 
-#: scm/process.scm:80
+#: scm/process.scm:88
 msgid "cannot duplicate stdout"
 msgstr "標準出力を複製できませんでした"
 
-#: scm/process.scm:85 scm/process.scm:114
+#: scm/process.scm:93 scm/process.scm:122
 #, scheme-format
 msgid "cannot execute ~a"
 msgstr "~a を実行できませんでした"
@@ -5929,7 +5964,7 @@ msgstr "SKK サーバ"
 msgid "Dictionary files"
 msgstr "辞書ファイル"
 
-#: scm/skk-custom.scm:74 scm/tutcode-custom.scm:238
+#: scm/skk-custom.scm:74 scm/tutcode-custom.scm:288
 msgid "Commit candidate by heading label keys"
 msgstr "見出し表示のキーで候補を確定する"
 
@@ -5997,19 +6032,9 @@ msgstr "SKKサーバとの接続にIPv6のみを使う"
 msgid "Address family of skkserv"
 msgstr "SKKサーバのアドレスファミリ"
 
-#: scm/skk-custom.scm:427 scm/skk-custom.scm:449 scm/skk-custom.scm:466
-#: scm/skk-custom.scm:483
-msgid "EUC-JP"
-msgstr "EUC-JP"
-
 #: scm/skk-custom.scm:428
 msgid "Use EUC-JP when talking to skkserv"
 msgstr "skkservとの通信にEUC-JPを使用"
-
-#: scm/skk-custom.scm:429 scm/skk-custom.scm:451 scm/skk-custom.scm:468
-#: scm/skk-custom.scm:485
-msgid "UTF-8"
-msgstr "UTF-8"
 
 #: scm/skk-custom.scm:430
 msgid "Use UTF-8 when talking to skkserv"
@@ -6083,7 +6108,7 @@ msgstr "ddskk"
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: scm/skk-custom.scm:515 scm/tutcode-custom.scm:98
+#: scm/skk-custom.scm:515 scm/tutcode-custom.scm:118
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
@@ -6308,14 +6333,54 @@ msgid "Mazegaki dictionary file"
 msgstr "交ぜ書き変換辞書ファイル"
 
 #: scm/tutcode-custom.scm:73
+#, fuzzy
+msgid "Use EUC-JP for the mazegaki dictionary"
+msgstr "個人辞書にEUC-JPを使用"
+
+#: scm/tutcode-custom.scm:75
+#, fuzzy
+msgid "Use UTF-8 for the mazegaki dictionary"
+msgstr "個人辞書にUTF-8を使用"
+
+#: scm/tutcode-custom.scm:76
+#, fuzzy
+msgid "Mazegaki dictionary encoding"
+msgstr "交ぜ書き変換辞書ファイル"
+
+#: scm/tutcode-custom.scm:77
+#, fuzzy
+msgid "Character encoding of the mazegaki dictionary file."
+msgstr "個人辞書ファイルの文字コード。"
+
+#: scm/tutcode-custom.scm:83
 msgid "Personal mazegaki dictionary file"
 msgstr "交ぜ書き変換個人用辞書ファイル"
 
-#: scm/tutcode-custom.scm:80
+#: scm/tutcode-custom.scm:90
+#, fuzzy
+msgid "Use EUC-JP for the personal mazegaki dictionary"
+msgstr "個人辞書にEUC-JPを使用"
+
+#: scm/tutcode-custom.scm:92
+#, fuzzy
+msgid "Use UTF-8 for the personal mazegaki dictionary"
+msgstr "個人辞書にUTF-8を使用"
+
+#: scm/tutcode-custom.scm:93
+#, fuzzy
+msgid "Personal mazegaki dictionary encoding"
+msgstr "個人辞書の文字コード"
+
+#: scm/tutcode-custom.scm:94
+#, fuzzy
+msgid "Character encoding of the personal mazegaki dictionary file."
+msgstr "個人辞書ファイルの文字コード。"
+
+#: scm/tutcode-custom.scm:100
 msgid "Code table file"
 msgstr "コード表ファイル"
 
-#: scm/tutcode-custom.scm:81
+#: scm/tutcode-custom.scm:101
 msgid ""
 "Code table name is 'filename-rule' when code table file name is "
 "'filename.scm'."
@@ -6323,250 +6388,310 @@ msgstr ""
 "コード表ファイル名がfilename.scmの場合、そのファイル内のfilename-rule変数を"
 "コード表として使用する"
 
-#: scm/tutcode-custom.scm:86
+#: scm/tutcode-custom.scm:106
 msgid "Enable learning in mazegaki conversion"
 msgstr "交ぜ書き変換の学習を有効にする"
 
-#: scm/tutcode-custom.scm:92
+#: scm/tutcode-custom.scm:112
 msgid "Number of candidates to be excluded from mazegaki learning"
 msgstr "交ぜ書き変換の学習から除外する候補数"
 
-#: scm/tutcode-custom.scm:110
+#: scm/tutcode-custom.scm:130
 msgid "Show pending key sequences"
 msgstr "入力途中のキーシーケンスを表示する"
 
-#: scm/tutcode-custom.scm:116
+#: scm/tutcode-custom.scm:136
 msgid "Use Dvorak keyboard"
 msgstr "Dvorakキーボードを使用する"
 
-#: scm/tutcode-custom.scm:122
+#: scm/tutcode-custom.scm:142
 msgid "Enable two stroke kigou mode"
 msgstr "2ストローク記号入力モードを有効にする"
 
-#: scm/tutcode-custom.scm:128
+#: scm/tutcode-custom.scm:148
 msgid "Enable fallback of surrounding text API"
 msgstr "surrounding text APIの代替方法を有効にする"
 
-#: scm/tutcode-custom.scm:134
+#: scm/tutcode-custom.scm:154
 msgid "Keep key sequence not convertible to Kanji"
 msgstr "漢字に対応しないキーシーケンスを残す"
 
-#: scm/tutcode-custom.scm:140
+#: scm/tutcode-custom.scm:160
 msgid "Delete leading delimiter on postfix kanji to sequence conversion"
 msgstr "後置型漢字→シーケンス変換時に直前の区切り文字を削除する"
 
-#: scm/tutcode-custom.scm:146
+#: scm/tutcode-custom.scm:166
 msgid "History size"
 msgstr "確定文字列の履歴サイズ"
 
-#: scm/tutcode-custom.scm:152
+#: scm/tutcode-custom.scm:172
 msgid "Maximum length of yomi for postfix mazegaki conversion"
 msgstr "後置型交ぜ書き変換の読みの最大文字数"
 
-#: scm/tutcode-custom.scm:158
+#: scm/tutcode-custom.scm:178
 msgid "Enable inflection in mazegaki conversion"
 msgstr "交ぜ書き変換での活用する語の変換を有効にする"
 
-#: scm/tutcode-custom.scm:164
+#: scm/tutcode-custom.scm:184
 msgid "Maximum length of yomi suffix for mazegaki conversion"
 msgstr "交ぜ書き変換での読みの中の活用語尾の最大文字数"
 
-#: scm/tutcode-custom.scm:171
+#: scm/tutcode-custom.scm:191
 msgid "tc-2.1+[tcode-ml:1925]"
 msgstr "tc-2.1+[tcode-ml:1925]"
 
-#: scm/tutcode-custom.scm:173
+#: scm/tutcode-custom.scm:193
 msgid "Kanchoku Win YAMANOBE"
 msgstr "漢直Win 山辺アルゴリズム"
 
-#: scm/tutcode-custom.scm:174
+#: scm/tutcode-custom.scm:194
 msgid "tc-2.3.1-22.6"
 msgstr "tc-2.3.1-22.6"
 
-#: scm/tutcode-custom.scm:175
+#: scm/tutcode-custom.scm:195
 msgid "Bushu conversion algorithm"
 msgstr "部首合成変換アルゴリズム"
 
-#: scm/tutcode-custom.scm:181
+#: scm/tutcode-custom.scm:201
 msgid "Enable interactive bushu conversion"
 msgstr "対話的な部首合成変換を有効にする"
 
-#: scm/tutcode-custom.scm:188
+#: scm/tutcode-custom.scm:208
 msgid "bushu.index2 file"
 msgstr "bushu.index2ファイル"
 
-#: scm/tutcode-custom.scm:195
+#: scm/tutcode-custom.scm:215
+#, fuzzy
+msgid "Use EUC-JP for the bushu.index2 file"
+msgstr "bushu.index2ファイル"
+
+#: scm/tutcode-custom.scm:217
+#, fuzzy
+msgid "Use UTF-8 for the bushu.index2 file"
+msgstr "bushu.index2ファイル"
+
+#: scm/tutcode-custom.scm:218
+#, fuzzy
+msgid "bushu.index2 file encoding"
+msgstr "bushu.index2ファイル"
+
+#: scm/tutcode-custom.scm:219
+#, fuzzy
+msgid "Character encoding of the bushu.index2 file."
+msgstr "システム辞書ファイルの文字コード。"
+
+#: scm/tutcode-custom.scm:225
 msgid "bushu.expand file"
 msgstr "bushu.expandファイル"
 
-#: scm/tutcode-custom.scm:201
+#: scm/tutcode-custom.scm:232
+#, fuzzy
+msgid "Use EUC-JP for the bushu.expand file"
+msgstr "bushu.expandファイル"
+
+#: scm/tutcode-custom.scm:234
+#, fuzzy
+msgid "Use UTF-8 for the bushu.expand file"
+msgstr "bushu.expandファイル"
+
+#: scm/tutcode-custom.scm:235
+#, fuzzy
+msgid "bushu.expand file encoding"
+msgstr "bushu.expandファイル"
+
+#: scm/tutcode-custom.scm:236
+#, fuzzy
+msgid "Character encoding of the bushu.expand file."
+msgstr "システム辞書ファイルの文字コード。"
+
+#: scm/tutcode-custom.scm:241
 msgid "bushu.help file"
 msgstr "bushu.helpファイル"
 
-#: scm/tutcode-custom.scm:217
+#: scm/tutcode-custom.scm:248
+#, fuzzy
+msgid "Use EUC-JP for the bushu.help file"
+msgstr "システム辞書にEUC-JPを使用"
+
+#: scm/tutcode-custom.scm:250
+#, fuzzy
+msgid "Use UTF-8 for the bushu.help file"
+msgstr "システム辞書にUTF-8を使用"
+
+#: scm/tutcode-custom.scm:251
+#, fuzzy
+msgid "bushu.help file encoding"
+msgstr "bushu.helpファイル"
+
+#: scm/tutcode-custom.scm:252
+#, fuzzy
+msgid "Character encoding of the bushu.help file."
+msgstr "システム辞書ファイルの文字コード。"
+
+#: scm/tutcode-custom.scm:267
 msgid "Use pseudo table style layout"
 msgstr "擬似表形式を使用する"
 
-#: scm/tutcode-custom.scm:223
+#: scm/tutcode-custom.scm:273
 msgid "qwerty-jis"
 msgstr "qwerty-jis"
 
-#: scm/tutcode-custom.scm:223
+#: scm/tutcode-custom.scm:273
 msgid "Qwerty JIS"
 msgstr "Qwerty JIS"
 
-#: scm/tutcode-custom.scm:224
+#: scm/tutcode-custom.scm:274
 msgid "qwerty-us"
 msgstr "qwerty-us"
 
-#: scm/tutcode-custom.scm:224
+#: scm/tutcode-custom.scm:274
 msgid "Qwerty US"
 msgstr "Qwerty US"
 
-#: scm/tutcode-custom.scm:225
+#: scm/tutcode-custom.scm:275
 msgid "dvorak"
 msgstr "dvorak"
 
-#: scm/tutcode-custom.scm:225
+#: scm/tutcode-custom.scm:275
 msgid "Dvorak"
 msgstr "Dvorak"
 
-#: scm/tutcode-custom.scm:226
+#: scm/tutcode-custom.scm:276
 msgid "Key layout of table style candidate window"
 msgstr "表形式の候補ウィンドウのキー配列"
 
-#: scm/tutcode-custom.scm:232
+#: scm/tutcode-custom.scm:282
 msgid "always"
 msgstr "常に"
 
-#: scm/tutcode-custom.scm:232
+#: scm/tutcode-custom.scm:282
 msgid "All keys as label key"
 msgstr "全キーをラベルキーとして扱う"
 
-#: scm/tutcode-custom.scm:233
+#: scm/tutcode-custom.scm:283
 msgid "which have candidate"
 msgstr "候補のあるキーのみ"
 
-#: scm/tutcode-custom.scm:234
+#: scm/tutcode-custom.scm:284
 msgid "Enable keys which have candidate"
 msgstr "候補のあるキーのみ有効"
 
-#: scm/tutcode-custom.scm:235
+#: scm/tutcode-custom.scm:285
 msgid "while candidate window is shown"
 msgstr "候補ウィンドウ表示中"
 
-#: scm/tutcode-custom.scm:236
+#: scm/tutcode-custom.scm:286
 msgid "Enable while candidate window is shown"
 msgstr "候補ウィンドウ表示中は有効"
 
-#: scm/tutcode-custom.scm:237
+#: scm/tutcode-custom.scm:287
 msgid "never"
 msgstr "無効"
 
-#: scm/tutcode-custom.scm:256
+#: scm/tutcode-custom.scm:306
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
 
-#: scm/tutcode-custom.scm:262
+#: scm/tutcode-custom.scm:312
 msgid "Number of candidates in candidate window at a time for prediction"
 msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
 
-#: scm/tutcode-custom.scm:268
+#: scm/tutcode-custom.scm:318
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
 msgstr "熟語ガイドにおいて候補ウィンドウに一度に表示する候補数"
 
-#: scm/tutcode-custom.scm:274
+#: scm/tutcode-custom.scm:324
 msgid "Number of candidates in candidate window at a time for history"
 msgstr "ヒストリ入力において候補ウィンドウに一度に表示する候補数"
 
-#: scm/tutcode-custom.scm:280
+#: scm/tutcode-custom.scm:330
 msgid "Use stroke help window"
 msgstr "仮想鍵盤ウィンドウを使用する"
 
-#: scm/tutcode-custom.scm:286
+#: scm/tutcode-custom.scm:336
 msgid "Show stroke help window on no input"
 msgstr "何も入力していない時に仮想鍵盤ウィンドウを表示する"
 
-#: scm/tutcode-custom.scm:292
+#: scm/tutcode-custom.scm:342
 msgid "Use auto help window"
 msgstr "自動ヘルプウィンドウを使用する"
 
-#: scm/tutcode-custom.scm:298
+#: scm/tutcode-custom.scm:348
 msgid "Show real keys on auto help window"
 msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
-#: scm/tutcode-custom.scm:304
+#: scm/tutcode-custom.scm:354
 msgid "Use delay showing candidate window"
 msgstr "候補ウィンドウの遅延表示を使用する"
 
-#: scm/tutcode-custom.scm:310
+#: scm/tutcode-custom.scm:360
 msgid "Delay before showing candidate window for mazegaki [s]"
 msgstr "交ぜ書き変換候補ウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:316
+#: scm/tutcode-custom.scm:366
 msgid "Delay before showing candidate window for stroke help [s]"
 msgstr "仮想鍵盤ウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:322
+#: scm/tutcode-custom.scm:372
 msgid "Delay before showing candidate window for auto help [s]"
 msgstr "自動ヘルプウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:328
+#: scm/tutcode-custom.scm:378
 msgid "Delay before showing candidate window for completion [s]"
 msgstr "補完候補ウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:334
+#: scm/tutcode-custom.scm:384
 msgid "Delay before showing candidate window for prediction [s]"
 msgstr "予測入力候補ウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:340
+#: scm/tutcode-custom.scm:390
 msgid "Delay before showing candidate window for bushu prediction [s]"
 msgstr "部首合成変換中の予測入力候補ウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:346
+#: scm/tutcode-custom.scm:396
 msgid ""
 "Delay before showing candidate window for interactive bushu conversion [s]"
 msgstr "対話的な部首合成変換候補ウィンドウ表示遅延時間[s]"
 
-#: scm/tutcode-custom.scm:353
+#: scm/tutcode-custom.scm:403
 msgid "Enable completion"
 msgstr "補完を有効にする"
 
-#: scm/tutcode-custom.scm:359
+#: scm/tutcode-custom.scm:409
 msgid "Minimum character length for completion"
 msgstr "補完の際に考慮する文字数の最小値"
 
-#: scm/tutcode-custom.scm:365
+#: scm/tutcode-custom.scm:415
 msgid "Maximum character length for completion"
 msgstr "補完の際に考慮する文字数の最大値"
 
-#: scm/tutcode-custom.scm:371
+#: scm/tutcode-custom.scm:421
 msgid "Enable input prediction for mazegaki conversion"
 msgstr "交ぜ書き変換中の予測入力を有効にする"
 
-#: scm/tutcode-custom.scm:383
+#: scm/tutcode-custom.scm:433
 msgid "Enable Kanji combination guide"
 msgstr "熟語ガイドを有効にする"
 
-#: scm/tutcode-custom.scm:389
+#: scm/tutcode-custom.scm:439
 msgid "Full stroke help"
 msgstr "仮想鍵盤"
 
-#: scm/tutcode-custom.scm:390
+#: scm/tutcode-custom.scm:440
 msgid "Guide only"
 msgstr "熟語ガイドのみ"
 
-#: scm/tutcode-custom.scm:391
+#: scm/tutcode-custom.scm:441
 msgid "Disable"
 msgstr "無効"
 
-#: scm/tutcode-custom.scm:392
+#: scm/tutcode-custom.scm:442
 msgid "Show stroke help temporarily by keys in kanji combination guide"
 msgstr "熟語ガイドに従って入力する際に一時的に仮想鍵盤を表示する"
 
-#: scm/tutcode-custom.scm:398
+#: scm/tutcode-custom.scm:448
 msgid "Enable input prediction for bushu conversion"
 msgstr "部首合成変換中の予測入力を有効にする"
 
@@ -7034,6 +7159,34 @@ msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (8文字)"
 msgid "[TUT-Code] postfix sequence to kanji conversion of 9 characters"
 msgstr "[TUT-Code] 後置型シーケンス→漢字変換 (9文字)"
 
+#: scm/tutcode-rule-custom.scm:39
+msgid "tutcode-rule"
+msgstr "tutcode-rule"
+
+#: scm/tutcode-rule-custom.scm:40
+msgid "Settings for tutcode-rule.scm"
+msgstr "tutcode-rule.scm設定"
+
+#: scm/tutcode-rule-custom.scm:45
+msgid "Use TUT+ Code which supports shin joyo kanji"
+msgstr "新常用漢字に対応したTUT+コードを使用する"
+
+#: scm/tutcode-rule-custom.scm:51
+msgid "Use uppercase rule to input opposite kana"
+msgstr "大文字でひらがな/カタカナ反転入力する"
+
+#: scm/tutcode-rule-custom.scm:57
+msgid "Exclude uppercase katakana rule"
+msgstr "大文字でカタカナ入力するルールを含めない"
+
+#: scm/tutcode-rule-custom.scm:63
+msgid "Exclude uppercase kigou in katakana rule"
+msgstr "大文字でカタカナ入力するルールに記号を含めない"
+
+#: scm/tutcode.scm:936
+msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
+msgstr "libuim-skk.soが利用不可能なため、交ぜ書き変換は無効"
+
 #: scm/viqr.scm:206
 msgid "VIQR"
 msgstr "VIQR"
@@ -7283,44 +7436,46 @@ msgstr "uim-openssl: %sの証明書検証に失敗しました: %s"
 msgid "uim-openssl: SSL_connect to %s: %s"
 msgstr "uim-openssl: %sへのSSL_connect: %s"
 
-#: uim/skk.c:360
-#, c-format
-msgid "uim-skk: unknown encoding for %s: %s"
+#: uim/skk.c:359
+#, fuzzy, c-format
+msgid "unknown encoding for %s: %s"
 msgstr "uim-skk: %sの文字コード%sは不明です"
 
-#: uim/skk.c:438
+#: uim/skk.c:446
 #, c-format
 msgid "uim-skk: failed to convert skkserv data from %s to %s"
 msgstr "uim-skk: skkservのデータを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:1160
-#, c-format
-msgid "uim-skk: failed to convert system dictionary data from %s to %s"
+#: uim/skk.c:1203
+#, fuzzy, c-format
+msgid "failed to convert system dictionary data from %s to %s"
 msgstr "uim-skk: システム辞書データを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:1324
-msgid "uim-skk: error in expand_str"
+#: uim/skk.c:1367
+#, fuzzy
+msgid "error in expand_str"
 msgstr "uim-skk: expand_strでエラー"
 
-#: uim/skk.c:1339
-msgid "uim-skk: too long word"
+#: uim/skk.c:1382
+#, fuzzy
+msgid "too long word"
 msgstr "uim-skk: 語が長すぎます"
 
-#: uim/skk.c:2251
+#: uim/skk.c:2294
 msgid "SKK server without completion capability\n"
 msgstr "補完機能がないSKKサーバ\n"
 
-#: uim/skk.c:3485
-#, c-format
-msgid "uim-skk: invalid %s dictionary: %s"
+#: uim/skk.c:3528
+#, fuzzy, c-format
+msgid "invalid %s dictionary: %s"
 msgstr "uim-skk: 不正な%sの辞書です: %s"
 
-#: uim/skk.c:3806
-#, c-format
-msgid "uim-skk: cannot encode personal dictionary as %s"
+#: uim/skk.c:3849
+#, fuzzy, c-format
+msgid "cannot encode personal dictionary as %s"
 msgstr "uim-skk: 個人辞書を%sとしてエンコードできません"
 
-#: uim/skk.c:4186
+#: uim/skk.c:4230
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: %sのポート%sへ接続できませんでした"
@@ -7483,34 +7638,6 @@ msgstr "漢字直接入力方式"
 #: scm/trycode.scm:1647
 msgid "Try-Code"
 msgstr "Try-Code"
-
-#: scm/tutcode-rule-custom.scm:39
-msgid "tutcode-rule"
-msgstr "tutcode-rule"
-
-#: scm/tutcode-rule-custom.scm:40
-msgid "Settings for tutcode-rule.scm"
-msgstr "tutcode-rule.scm設定"
-
-#: scm/tutcode-rule-custom.scm:45
-msgid "Use TUT+ Code which supports shin joyo kanji"
-msgstr "新常用漢字に対応したTUT+コードを使用する"
-
-#: scm/tutcode-rule-custom.scm:51
-msgid "Use uppercase rule to input opposite kana"
-msgstr "大文字でひらがな/カタカナ反転入力する"
-
-#: scm/tutcode-rule-custom.scm:57
-msgid "Exclude uppercase katakana rule"
-msgstr "大文字でカタカナ入力するルールを含めない"
-
-#: scm/tutcode-rule-custom.scm:63
-msgid "Exclude uppercase kigou in katakana rule"
-msgstr "大文字でカタカナ入力するルールに記号を含めない"
-
-#: scm/tutcode.scm:938
-msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
-msgstr "libuim-skk.soが利用不可能なため、交ぜ書き変換は無効"
 
 #: scm/wnn-custom.scm:35
 msgid "Wnn"
