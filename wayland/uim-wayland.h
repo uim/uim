@@ -67,6 +67,24 @@ enum uim_wayland_preedit_style {
   UIM_WAYLAND_PREEDIT_STYLE_INCORRECT = 7
 };
 
+/* zwp_input_method_context_v1.content_type refers to the content_hint
+ * and content_purpose enums of zwp_text_input_v1. Only the values
+ * uim-wayland acts on are listed. */
+enum uim_wayland_content_hint {
+  UIM_WAYLAND_CONTENT_HINT_HIDDEN_TEXT = 0x40,
+  UIM_WAYLAND_CONTENT_HINT_SENSITIVE_DATA = 0x80
+};
+
+enum uim_wayland_content_purpose {
+  UIM_WAYLAND_CONTENT_PURPOSE_DIGITS = 2,
+  UIM_WAYLAND_CONTENT_PURPOSE_NUMBER = 3,
+  UIM_WAYLAND_CONTENT_PURPOSE_PHONE = 4,
+  UIM_WAYLAND_CONTENT_PURPOSE_PASSWORD = 8,
+  UIM_WAYLAND_CONTENT_PURPOSE_DATE = 9,
+  UIM_WAYLAND_CONTENT_PURPOSE_TIME = 10,
+  UIM_WAYLAND_CONTENT_PURPOSE_DATETIME = 11
+};
+
 struct uim_wayland_candwin;
 
 struct uim_wayland_preedit_segment {
@@ -75,7 +93,8 @@ struct uim_wayland_preedit_segment {
 };
 
 /* Evdev keycodes are small; 1024 bits is plenty for the bookkeeping
- * of which pressed keys were forwarded to the client. */
+ * of which pressed keys were forwarded to the client and which were
+ * pressed while the field was bypassed. */
 #define UIM_WAYLAND_MAX_KEYCODE 1024
 
 struct uim_wayland {
@@ -98,6 +117,9 @@ struct uim_wayland {
 
   uim_context uc;
   bool focused;
+  /* The field takes no composed text, a password field for instance.
+   * Keys go straight to the application. */
+  bool bypassed;
 
   /* The text around the cursor as the application last reported it,
    * with byte offsets into it. NULL when it has told us nothing. */
@@ -113,6 +135,8 @@ struct uim_wayland {
   struct uim_wayland_candwin *candwin;
 
   uint8_t forwarded_keys[UIM_WAYLAND_MAX_KEYCODE / 8];
+  /* Keys whose press uim didn't see. */
+  uint8_t bypassed_keys[UIM_WAYLAND_MAX_KEYCODE / 8];
 
   int helper_fd;
   bool running;
