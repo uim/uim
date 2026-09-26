@@ -1007,7 +1007,7 @@
       (begin
         (tutcode-context-set-prediction-ctx! tc (predict-make-meta-search))
         (predict-meta-open (tutcode-context-prediction-ctx tc) "tutcode")
-        (predict-meta-set-external-charset! (tutcode-context-prediction-ctx tc) "EUC-JP")))
+        (predict-meta-set-external-charset! (tutcode-context-prediction-ctx tc) "UTF-8")))
     tc))
 
 ;;; ひらがな/カタカナモードの切り替えを行う。
