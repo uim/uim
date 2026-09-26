@@ -723,10 +723,6 @@
        (mozc-run-process mozc-tool-dictionary-tool-cmd (list mozc-tool-dictionary-tool-cmd mozc-tool-dictionary-tool-cmd-option)))
       ((mozc-tool-word-register-dialog)
        (mozc-run-process mozc-tool-word-register-dialog-cmd (list mozc-tool-word-register-dialog-cmd mozc-tool-word-register-dialog-cmd-option)))
-      ((mozc-tool-character-palette)
-       (mozc-run-process mozc-tool-character-palette-cmd (list mozc-tool-character-palette-cmd mozc-tool-character-palette-cmd-option)))
-      ((mozc-tool-hand-writing)
-       (mozc-run-process mozc-tool-hand-writing-cmd (list mozc-tool-hand-writing-cmd mozc-tool-hand-writing-cmd-option)))
       (else
         #f))))
 
@@ -856,20 +852,6 @@
                              "Word register dialog"
                              "Word register dialog")
                            'mozc-tool-word-register-dialog)
-
-(mozc-register-tool-action 'action_mozc_tool_character_palette
-                           '(mozc_tool_character_palette
-                             "P"
-                             "Character palette"
-                             "Character palette")
-                           'mozc-tool-character-palette)
-
-(mozc-register-tool-action 'action_mozc_tool_hand_writing
-                           '(mozc_tool_hand_writing
-                             "H"
-                             "Hand writing"
-                             "Hand writing")
-                           'mozc-tool-hand-writing)
 
 (register-action 'action_mozc_reconvert
                  (lambda (mc)
