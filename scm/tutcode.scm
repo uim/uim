@@ -311,8 +311,6 @@
 ;;;   (tutcode-begin-conv-key)を押すと、対応する文字が確定されます。
 ;;;   以下の3種類の形式での入力が可能(DDSKK 14.2と同様)。
 ;;; + Unicode(UCS): U+の後に16進数。U+のかわりにuでもOK。(例:U+4E85またはu4e85)
-;;;                 (ただし、uim-tutcodeの内部コードはEUC-JP(EUC-JIS-2004)なの
-;;;                  で、JIS X 0213に無い文字(例:はしご高U+9AD9)は入力不可)
 ;;; + 区点番号(JIS X 0213): -で区切った、面-区-点番号(面区点それぞれ10進数)。
 ;;;                         1面の場合、面-は省略可能。(例:1-48-13または48-13)
 ;;; + JISコード(ISO-2022-JP): 4桁の16進数。(例:502d)
@@ -6866,8 +6864,8 @@
 ;;; (define (tutcode-filter-fmt-quote state pc)
 ;;;   (tutcode-selection-filter pc
 ;;;     (lambda (str)
-;;;       ;; 文書整形後、引用マークを行頭に付ける (nkf -e: uim-tutcodeはEUC-JP)
-;;;       (external-filter-launch-command "nkf -e -f | sed -e 's/^/> /'" str))))
+;;;       ;; 文書整形後、引用マークを行頭に付ける (nkf -w: UTF-8で出力)
+;;;       (external-filter-launch-command "nkf -w -f | sed -e 's/^/> /'" str))))
 ;;; (require "fmt-ja.scm")
 ;;; (define (tutcode-filter-fmt-ja state pc)
 ;;;   (tutcode-selection-filter pc
