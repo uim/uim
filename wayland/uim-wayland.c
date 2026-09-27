@@ -34,6 +34,7 @@
 #endif
 
 #include <errno.h>
+#include <fcntl.h>
 #include <locale.h>
 #include <poll.h>
 #include <signal.h>
@@ -52,6 +53,9 @@
 
 
 static volatile sig_atomic_t terminate_requested = 0;
+/* The handler may run on a GLib thread, so it wakes up poll() in the
+ * main thread through this pipe. */
+static int terminate_pipe[2] = {-1, -1};
 static bool debug_enabled = false;
 
 static void debug(const char *format, ...)
@@ -74,7 +78,28 @@ debug(const char *format, ...)
 static void
 terminate_handler(int sig)
 {
+  int saved_errno = errno;
+
   terminate_requested = sig;
+  if (terminate_pipe[1] >= 0 && write(terminate_pipe[1], "", 1) < 0) {
+    /* Full already: poll() wakes up anyway. */
+  }
+  errno = saved_errno;
+}
+
+static bool
+open_terminate_pipe(void)
+{
+  int i;
+
+  if (pipe(terminate_pipe) < 0)
+    return false;
+  for (i = 0; i < 2; i++) {
+    fcntl(terminate_pipe[i], F_SETFD, FD_CLOEXEC);
+    fcntl(terminate_pipe[i], F_SETFL,
+          fcntl(terminate_pipe[i], F_GETFL) | O_NONBLOCK);
+  }
+  return true;
 }
 
 /* pressed key bookkeeping */
@@ -830,8 +855,8 @@ run(struct uim_wayland *uw)
 
   uw->running = true;
   while (uw->running && !terminate_requested) {
-    struct pollfd fds[2];
-    int nfds = 1;
+    struct pollfd fds[3];
+    int nfds = 2;
     short flush_events;
     int ret;
 
@@ -856,11 +881,14 @@ run(struct uim_wayland *uw)
     fds[0].fd = display_fd;
     fds[0].events = flush_events;
     fds[0].revents = 0;
+    fds[1].fd = terminate_pipe[0];
+    fds[1].events = POLLIN;
+    fds[1].revents = 0;
     if (uw->helper_fd >= 0) {
-      fds[1].fd = uw->helper_fd;
-      fds[1].events = POLLIN;
-      fds[1].revents = 0;
-      nfds = 2;
+      fds[2].fd = uw->helper_fd;
+      fds[2].events = POLLIN;
+      fds[2].revents = 0;
+      nfds = 3;
     }
     ret = poll(fds, nfds, -1);
     if (ret < 0) {
@@ -881,8 +909,8 @@ run(struct uim_wayland *uw)
     if (wl_display_dispatch_pending(uw->display) < 0)
       break;
 
-    if (nfds == 2 && fds[1].revents) {
-      if (fds[1].revents & (POLLERR | POLLNVAL))
+    if (nfds == 3 && fds[2].revents) {
+      if (fds[2].revents & (POLLERR | POLLNVAL))
         uim_wayland_helper_disconnect(uw);
       else
         uim_wayland_helper_dispatch(uw);
@@ -1009,6 +1037,11 @@ main(int argc, char **argv)
 
   uw->candwin = uim_wayland_candwin_new(uw);
 
+  if (!open_terminate_pipe()) {
+    fprintf(stderr, "%s: cannot create a pipe: %s\n",
+            UIM_WAYLAND_PROGRAM_NAME, strerror(errno));
+    return EXIT_FAILURE;
+  }
   memset(&action, 0, sizeof(action));
   sigemptyset(&action.sa_mask);
   action.sa_handler = terminate_handler;

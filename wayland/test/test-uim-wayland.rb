@@ -48,6 +48,7 @@
 require "rexml/document"
 require "socket"
 require "tempfile"
+require "tmpdir"
 require "test/unit"
 
 # The protocol descriptions, as wayland-scanner reads them.
@@ -411,8 +412,9 @@ class Compositor
   attr_reader :candidate_window_size
   attr_reader :candidate_window_scale
 
-  def initialize(default_im_name)
+  def initialize(default_im_name, environment={})
     @default_im_name = default_im_name
+    @environment = environment
     @connection = nil
     @process_id = nil
     @scm_file = nil
@@ -452,7 +454,9 @@ class Compositor
       "WAYLAND_SOCKET" => "3",
       "WAYLAND_DISPLAY" => nil,
       "LIBUIM_USER_SCM_FILE" => @scm_file.path,
-    }
+      # The desktop's settings stay out of the test.
+      "GSETTINGS_BACKEND" => "memory",
+    }.merge(@environment)
     @process_id = Process.spawn(environment, program, 3 => theirs)
     theirs.close
     @connection = Wayland::Connection.new(ours,
@@ -517,7 +521,7 @@ class Compositor
   end
 
   # The application reports what is around its cursor, in bytes.
-  def send_surrounding_text(text, cursor, anchor = cursor)
+  def send_surrounding_text(text, cursor, anchor=cursor)
     @connection.send_event(@context, "surrounding_text", text, cursor, anchor)
   end
 
@@ -708,13 +712,17 @@ class UimWaylandTest < Test::Unit::TestCase
   end
 
   def setup
-    @compositor = Compositor.new(default_im_name)
+    @compositor = Compositor.new(default_im_name, uim_wayland_environment)
     begin
       @compositor.start
       yield
     ensure
       @compositor.stop
     end
+  end
+
+  def uim_wayland_environment
+    {}
   end
 
   def omit_unless_scale_supported
@@ -976,6 +984,46 @@ class UimWaylandTest < Test::Unit::TestCase
       @compositor.prefer_scale(2)
       @compositor.wait_for {@compositor.candidate_window_scale == 2}
       assert_equal(2, @compositor.candidate_window_scale)
+    end
+  end
+
+  # The font comes from the desktop's interface settings, here the
+  # default of a schema of our own.
+  sub_test_case("candidate window font") do
+    def default_im_name
+      "candidates"
+    end
+
+    def setup
+      @schema_dir = Dir.mktmpdir("uim-wayland-test-schemas")
+      File.write(File.join(@schema_dir, "test.gschema.xml"), <<~SCHEMA)
+        <schemalist>
+          <schema id="org.gnome.desktop.interface"
+                  path="/org/gnome/desktop/interface/">
+            <key name="font-name" type="s">
+              <default>'sans 40'</default>
+            </key>
+          </schema>
+        </schemalist>
+      SCHEMA
+      unless system("glib-compile-schemas", @schema_dir)
+        omit("glib-compile-schemas is needed")
+      end
+      super
+    ensure
+      FileUtils.rm_rf(@schema_dir)
+    end
+
+    def uim_wayland_environment
+      {"GSETTINGS_SCHEMA_DIR" => @schema_dir}
+    end
+
+    # sans 11 makes a window of about 130 pixels high.
+    def test_desktop_font
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.candidate_window_size}
+      _width, height = @compositor.candidate_window_size
+      assert_operator(height, :>, 300)
     end
   end
 end
