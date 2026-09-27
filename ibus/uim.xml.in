@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ibus-daemon reads this from its component directory. -->
+<component>
+  <name>org.freedesktop.IBus.uim</name>
+  <description>uim</description>
+  <exec>@libexecdir@/ibus-engine-uim --ibus</exec>
+  <version>@PACKAGE_VERSION@</version>
+  <author>uim Project</author>
+  <license>BSD-3-Clause</license>
+  <homepage>https://github.com/uim/uim</homepage>
+  <textdomain>uim</textdomain>
+  <engines>
+    <engine>
+      <name>uim</name>
+      <longname>uim</longname>
+      <description>uim input method</description>
+      <language>other</language>
+      <license>BSD-3-Clause</license>
+      <author>uim Project</author>
+      <icon>@uim_pixmapsdir@/uim-icon.svg</icon>
+      <layout>default</layout>
+      <rank>0</rank>
+    </engine>
+  </engines>
+</component>
