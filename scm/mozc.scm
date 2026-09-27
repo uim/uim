@@ -193,6 +193,7 @@
     (list 'cand-nr         0)
     (list 'cand-reactivate #f)
     (list 'cand-page       0)
+    (list 'cand-page-size  9)
     (list 'preedit-method  'roman)
     (list 'consumed        #f))))
 (define-record 'mozc-context mozc-context-rec-spec)
@@ -352,6 +353,14 @@
     (and (pair? candidates)
          (mozc-alist-ref 'index (car candidates)))))
 
+;; Whether turning forward reaches IDX's page sooner. mozc wraps
+;; around, so the first page is one step forward from the last.
+(define (mozc-page-forward? mc first idx)
+  (let* ((size (mozc-context-cand-page-size mc))
+         (pages (quotient (+ (mozc-context-cand-nr mc) size -1) size))
+         (ahead (modulo (- (quotient idx size) (quotient first size)) pages)))
+    (<= ahead (- pages ahead))))
+
 ;; Turns mozc's page one step toward IDX. Returns #f when it did not
 ;; move. No mozc-update here: a frontend calls this from inside the
 ;; selector callbacks.
@@ -359,9 +368,9 @@
   (let* ((first (mozc-first-index mc))
          (output (and first
                       (mozc-context-send-command
-                       mc `((type . ,(if (< idx first)
-                                         'convert-prev-page
-                                         'convert-next-page))))))
+                       mc `((type . ,(if (mozc-page-forward? mc first idx)
+                                         'convert-next-page
+                                         'convert-prev-page))))))
          (cw (and output (mozc-alist-ref 'candidate-window output))))
     (and cw
          (begin
@@ -406,6 +415,7 @@
                                              '()))
         ;; the callbacks below reach mozc-candidate-at
         (mozc-context-set-cand-nr! mc size)
+        (mozc-context-set-cand-page-size! mc page-size)
         (if (or first-time?
                 (and (mozc-context-cand-reactivate mc)
                      (not (= page (mozc-context-cand-page mc)))))
