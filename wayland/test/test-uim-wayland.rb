@@ -30,8 +30,8 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # A compositor that implements just enough of wl_compositor, wl_shm,
-# zwp_input_method_v1 and zwp_input_panel_v1 to stand in for KWin and
-# Weston. It hands uim-wayland one end of a socketpair in
+# wl_seat, zwp_input_method_v1 and zwp_input_panel_v1 to stand in for
+# KWin and Weston. It hands uim-wayland one end of a socketpair in
 # WAYLAND_SOCKET, exactly as they do, activates a context, grabs the
 # keyboard and sends a key sequence.
 #
@@ -316,6 +316,15 @@ module Keyboard
   PRESSED = 1
 end
 
+module Pointer
+  BTN_LEFT = 0x110
+
+  AXIS_VERTICAL_SCROLL = 0
+
+  # A wheel notch, as KWin reports it.
+  NOTCH = 15
+end
+
 # What zwp_text_input_v1 tells the input method about a field. Only
 # the values the test sends are listed.
 module ContentType
@@ -328,6 +337,7 @@ end
 
 class Compositor
   include Keyboard
+  include Pointer
 
   # XKB numbers the real modifiers, so this doesn't depend on the keymap.
   MOD_CONTROL = 1 << 2
@@ -378,7 +388,10 @@ class Compositor
     "wl_shm" => 1,
     "zwp_input_method_v1" => 1,
     "zwp_input_panel_v1" => 1,
+    "wl_seat" => 5,
   }
+
+  SEAT_CAPABILITY_POINTER = 1
 
   # How long to wait for uim-wayland to answer. It is generous because
   # it is only reached when something is wrong.
@@ -386,6 +399,8 @@ class Compositor
 
   attr_reader :forwarded_keys, :commits, :preedits, :overlay_panels
   attr_reader :deleted
+  # nil while the candidate window is hidden.
+  attr_reader :candidate_window_size
 
   def initialize(default_im_name)
     @default_im_name = default_im_name
@@ -396,6 +411,11 @@ class Compositor
     @input_method = nil
     @context = nil
     @keyboard = nil
+    @pointer = nil
+    @pointer_inside = false
+    @panel_surface = nil
+    @buffer_sizes = {}
+    @candidate_window_size = nil
     @time = 1000
 
     @forwarded_keys = []
@@ -490,6 +510,25 @@ class Compositor
     @connection.send_event(@context, "surrounding_text", text, cursor, anchor)
   end
 
+  # Left-clicks at a point of the candidate window.
+  def click(x, y)
+    enter_candidate_window(x, y)
+    @connection.send_event(@pointer, "motion", @time, x, y)
+    [PRESSED, RELEASED].each do |state|
+      @time += 1
+      @connection.send_event(@pointer, "button", @connection.next_serial,
+                             @time, BTN_LEFT, state)
+    end
+  end
+
+  # Scrolls over the candidate window. Positive is down.
+  def scroll(amount)
+    enter_candidate_window(1, 1)
+    @time += 1
+    @connection.send_event(@pointer, "axis", @time, AXIS_VERTICAL_SCROLL,
+                           amount)
+  end
+
   # SKK leaves the keyboard alone until Ctrl-j puts it into hiragana.
   def switch_to_hiragana
     send_modifiers(MOD_CONTROL)
@@ -500,6 +539,15 @@ class Compositor
   end
 
   private
+  # The pointer stays in the window from then on, as a real one would.
+  def enter_candidate_window(x, y)
+    raise("uim-wayland has no pointer") if @pointer.nil?
+    return if @pointer_inside
+    @connection.send_event(@pointer, "enter", @connection.next_serial,
+                           @panel_surface, x, y)
+    @pointer_inside = true
+  end
+
   def protocol_paths
     core = ENV["WAYLAND_XML"] ||
            File.join(`pkg-config --variable=pkgdatadir wayland-scanner`.strip,
@@ -518,7 +566,9 @@ class Compositor
   # test asks for, plus the one the test ships.
   def user_scm_file
     file = Tempfile.new("uim-wayland-test")
-    file.puts("(load #{scheme_string(File.join(__dir__, "surrounding-text.scm"))})")
+    ["surrounding-text.scm", "candidates.scm"].each do |im|
+      file.puts("(load #{scheme_string(File.join(__dir__, im))})")
+    end
     file.puts("(define default-im-name '#{@default_im_name})")
     file.flush
     file
@@ -537,17 +587,30 @@ class Compositor
       end
     when "wl_registry.bind"
       bound_id = arguments.last
-      if @connection.interface_of(bound_id) == "zwp_input_method_v1"
+      case @connection.interface_of(bound_id)
+      when "zwp_input_method_v1"
         @input_method = bound_id
         activate
+      when "wl_seat"
+        @connection.send_event(bound_id, "capabilities",
+                               SEAT_CAPABILITY_POINTER)
       end
+    when "wl_seat.get_pointer"
+      @pointer = arguments[0]
+    when "wl_shm_pool.create_buffer"
+      @buffer_sizes[arguments[0]] = [arguments[2], arguments[3]]
     when "wl_shm.create_pool"
       arguments[1]&.close
     when "wl_surface.attach"
       buffer = arguments[0]
+      if id == @panel_surface
+        @candidate_window_size = buffer.zero? ? nil : @buffer_sizes[buffer]
+      end
       # A compositor releases the buffer once it has read it, and the
       # candidate window waits for that before it draws again.
       @connection.send_event(buffer, "release") unless buffer.zero?
+    when "zwp_input_panel_v1.get_input_panel_surface"
+      @panel_surface = arguments[1]
     when "zwp_input_panel_surface_v1.set_overlay_panel"
       @overlay_panels += 1
     when "zwp_input_method_context_v1.grab_keyboard"
@@ -600,6 +663,7 @@ end
 class UimWaylandTest < Test::Unit::TestCase
   include ContentType
   include Keyboard
+  include Pointer
 
   # Hiragana ka. It is an escape because power_assert re-reads this
   # file to build its message, and a machine without a UTF-8 locale
@@ -765,6 +829,79 @@ class UimWaylandTest < Test::Unit::TestCase
       @compositor.type(KEY_L)
       @compositor.wait_for {@compositor.commits == ["", "[deleted]"]}
       assert_equal(["", "[deleted]"], @compositor.commits)
+    end
+  end
+
+  # The input method commits the selected index.
+  sub_test_case("candidate window pointer") do
+    def default_im_name
+      "candidates"
+    end
+
+    # candwin.c's layout: height = PADDING * 2 + row height * (PAGE_SIZE + 1).
+    PADDING = 6
+    ROW_GAP = 2
+    PAGE_SIZE = 5
+
+    def show_candidates
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.candidate_window_size}
+      _width, height = @compositor.candidate_window_size
+      @row_height = (height - PADDING * 2) / (PAGE_SIZE + 1.0)
+    end
+
+    def row_y(row)
+      PADDING - ROW_GAP / 2 + @row_height * (row + 0.5)
+    end
+
+    def test_click_selects_candidate
+      show_candidates
+      @compositor.click(10, row_y(2))
+      @compositor.wait_for {@compositor.commits == ["[2]"]}
+      assert_equal(["[2]"], @compositor.commits)
+    end
+
+    def test_click_on_footer_selects_nothing
+      show_candidates
+      _width, height = @compositor.candidate_window_size
+      @compositor.click(10, height - 2)
+      # Waits for the click to be handled.
+      @compositor.type(KEY_L)
+      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, RELEASED])}
+      assert_equal([], @compositor.commits)
+    end
+
+    # With nothing selected, the first candidate of the new page is.
+    def test_scroll_turns_page
+      show_candidates
+      @compositor.scroll(NOTCH)
+      @compositor.wait_for {@compositor.commits == ["[5]"]}
+      assert_equal(["[5]"], @compositor.commits)
+    end
+
+    def test_each_notch_turns_one_page
+      show_candidates
+      @compositor.scroll(NOTCH)
+      @compositor.wait_for {@compositor.commits == ["[5]"]}
+      @compositor.scroll(NOTCH)
+      @compositor.wait_for {@compositor.commits == ["[5]", "[10]"]}
+      assert_equal(["[5]", "[10]"], @compositor.commits)
+    end
+
+    def test_click_after_scroll
+      show_candidates
+      @compositor.scroll(NOTCH)
+      @compositor.wait_for {@compositor.commits == ["[5]"]}
+      @compositor.click(10, row_y(1))
+      @compositor.wait_for {@compositor.commits == ["[5]", "[6]"]}
+      assert_equal(["[5]", "[6]"], @compositor.commits)
+    end
+
+    def test_scroll_up_wraps_to_last_page
+      show_candidates
+      @compositor.scroll(-NOTCH)
+      @compositor.wait_for {@compositor.commits == ["[10]"]}
+      assert_equal(["[10]"], @compositor.commits)
     end
   end
 end
