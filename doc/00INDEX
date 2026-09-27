@@ -1,19 +1,21 @@
-00INDEX (This file)    contain the index.
-COMPATIBILITY          Tracks API/ABI compatibility change
-CUSTOM                 Usage of uim-custom API for developers
-DOT-UIM                Usage of the user customization file
-ENV                    Environment variables
-HELPER-CANDWIN         Protocol between candidatewindow apps and uim-xim
-HELPER-PROTOCOL        Description of the helper message protocol 
-KEY                    KEY customizationg guide
-PACKAGING              Notes for packagers and system integrators
-PLUGIN                 Description of the plugin
-RELEASING              Release procedure
-UIM-SCM                Usage of uim-scm API for developers
-UIM-SH                 How to use uim-sh to debug interactively
-UNIT-TEST              usage of the unit testing framework for uim for developers
-skk-utf8-migration-guide.md     SKK UTF-8 migration guide
-skk-utf8-migration-guide-ja.md  SKK UTF-8 migration guide in Japanese
-uim-custom-cli.md      Set or list custom values from the command line
-uim-im-switcher-cli.md Switch the input method from a shell
-uim-wayland.md         Input method for Wayland compositors (zwp_input_method_v1)
+00INDEX (This file)                contain the index.
+COMPATIBILITY                      Tracks API/ABI compatibility change
+CUSTOM                             Usage of uim-custom API for developers
+DOT-UIM                            Usage of the user customization file
+ENV                                Environment variables
+HELPER-CANDWIN                     Protocol between candidatewindow apps and uim-xim
+HELPER-PROTOCOL                    Description of the helper message protocol
+KEY                                KEY customizationg guide
+PACKAGING                          Notes for packagers and system integrators
+PLUGIN                             Description of the plugin
+RELEASING                          Release procedure
+UIM-SCM                            Usage of uim-scm API for developers
+UIM-SH                             How to use uim-sh to debug interactively
+UNIT-TEST                          usage of the unit testing framework for uim for developers
+skk-utf8-migration-guide.md        SKK UTF-8 migration guide
+skk-utf8-migration-guide-ja.md     SKK UTF-8 migration guide in Japanese
+tutcode-utf8-migration-guide.md    Tutcode UTF-8 migration guide
+tutcode-utf8-migration-guide-ja.md Tutcode UTF-8 migration guide in Japanese
+uim-custom-cli.md                  Set or list custom values from the command line
+uim-im-switcher-cli.md             Switch the input method from a shell
+uim-wayland.md                     Input method for Wayland compositors (zwp_input_method_v1)

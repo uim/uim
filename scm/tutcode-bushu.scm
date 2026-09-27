@@ -28,126 +28,152 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;;; tutcode-bushu.scm: ÂĞÏÃÅª¤ÊÉô¼ó¹çÀ®ÊÑ´¹
+;;; tutcode-bushu.scm: å¯¾è©±çš„ãªéƒ¨é¦–åˆæˆå¤‰æ›
 ;;;
-;;; tc-2.3.1¤Îtc-bushu.el¤ò°Ü¿¢(sort¤Ç¤ÎÂÇ¤Á¤ä¤¹¤µ¤Î¹ÍÎ¸¤ÏÌ¤ÂĞ±ş)¡£
-;;; (»²¹Í:Éô¼ó¹çÀ®¥¢¥ë¥´¥ê¥º¥à¤Ï[tcode-ml:1942]¤¢¤¿¤ê¡£°Ê²¼È´¿è)
-;;; ¡üÄêµÁ
-;;; ¡û¦²¤òÁ´Ê¸»ú¤Î½¸¹ç¤È¤¹¤ë¡£
-;;; ¡û¦°¤òÁ´Éô¼ó¤Î½¸¹ç¤È¤¹¤ë¡£(¦° ¢¾ ¦²¤Ç¤Ê¤¯¤Æ¤â¤è¤¤¤Ï¤º¡£)
-;;; ¡û³ÆÊ¸»úc ¢º ¦²¤ÏÉô¼óp ¢º ¦°¤Î½¸¹ç¤«¤éÀ®¤ë¡£
-;;; ¡û°Ê²¼¤Î½¸¹ç¤òÊ¸»úa¤ÈÊ¸»úb¤Î¹çÀ®½¸¹ç¤È¸Æ¤Ö¡£
+;;; tc-2.3.1ã®tc-bushu.elã‚’ç§»æ¤(sortã§ã®æ‰“ã¡ã‚„ã™ã•ã®è€ƒæ…®ã¯æœªå¯¾å¿œ)ã€‚
+;;; (å‚è€ƒ:éƒ¨é¦–åˆæˆã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã¯[tcode-ml:1942]ã‚ãŸã‚Šã€‚ä»¥ä¸‹æŠœç²‹)
+;;; â—å®šç¾©
+;;; â—‹Î£ã‚’å…¨æ–‡å­—ã®é›†åˆã¨ã™ã‚‹ã€‚
+;;; â—‹Î ã‚’å…¨éƒ¨é¦–ã®é›†åˆã¨ã™ã‚‹ã€‚(Î  âŠ‚ Î£ã§ãªãã¦ã‚‚ã‚ˆã„ã¯ãšã€‚)
+;;; â—‹å„æ–‡å­—c âˆˆ Î£ã¯éƒ¨é¦–p âˆˆ Î ã®é›†åˆã‹ã‚‰æˆã‚‹ã€‚
+;;; â—‹ä»¥ä¸‹ã®é›†åˆã‚’æ–‡å­—aã¨æ–‡å­—bã®åˆæˆé›†åˆã¨å‘¼ã¶ã€‚
 ;;; 
-;;;   {c | c ¢º ¦², c ¢½ a' ¢À b', a' ¢¼ a (a' ¡â ¶õ½¸¹ç), b' ¢¼ b (b' ¡â ¶õ½¸¹ç)
-;;;        c ¡â a, c ¡â b }
+;;;   {c | c âˆˆ Î£, c âŠ‡ a' âˆª b', a' âŠ† a (a' â‰  ç©ºé›†åˆ), b' âŠ† b (b' â‰  ç©ºé›†åˆ)
+;;;        c â‰  a, c â‰  b }
 ;;; 
-;;;   ÆÃ¤Ë¡¢ a' = a ¤«¤Ä b' = b ¤Î¾ì¹ç¤ò¶¯¹çÀ®½¸¹ç¤È¸Æ¤Ö¡£
-;;;   ¶¯¹çÀ®½¸¹ç¤Ç¤Ê¤¤¹çÀ®½¸¹ç¤ò¼å¹çÀ®½¸¹ç¤È¸Æ¤Ö¡£
+;;;   ç‰¹ã«ã€ a' = a ã‹ã¤ b' = b ã®å ´åˆã‚’å¼·åˆæˆé›†åˆã¨å‘¼ã¶ã€‚
+;;;   å¼·åˆæˆé›†åˆã§ãªã„åˆæˆé›†åˆã‚’å¼±åˆæˆé›†åˆã¨å‘¼ã¶ã€‚
 ;;; 
-;;; ¡û°Ê²¼¤Î½¸¹ç¤òÊ¸»úa¤ÈÊ¸»úb¤Îº¹¹çÀ®½¸¹ç¤È¸Æ¤Ö¡£
+;;; â—‹ä»¥ä¸‹ã®é›†åˆã‚’æ–‡å­—aã¨æ–‡å­—bã®å·®åˆæˆé›†åˆã¨å‘¼ã¶ã€‚
 ;;; 
-;;;   {c | c ¢º ¦², c ¢¼ a- ¢À b-}
+;;;   {c | c âˆˆ Î£, c âŠ† a- âˆª b-}
 ;;; 
-;;;   ¤³¤³¤Ç¡¢a-¡¢b-¤ÎÄêµÁ¤Ï¼¡¤È¤ª¤ê¤Ç¤¢¤ë¡£
-;;;         a- = a \ (a ¢Á b)
-;;;         b- = b \ (a ¢Á b)
+;;;   ã“ã“ã§ã€a-ã€b-ã®å®šç¾©ã¯æ¬¡ã¨ãŠã‚Šã§ã‚ã‚‹ã€‚
+;;;         a- = a \ (a âˆ© b)
+;;;         b- = b \ (a âˆ© b)
 ;;; 
-;;;   ÆÃ¤Ë¡¢(a- = ¶õ½¸¹ç) ¤Ş¤¿¤Ï (b- = ¶õ½¸¹ç)¤Î¾ì¹ç¤ò¶¯º¹¹çÀ®½¸¹ç¤È¸Æ¤Ö¡£
-;;;   ¶¯º¹¹çÀ®½¸¹ç¤Ç¤Ê¤¤º¹¹çÀ®½¸¹ç¤ò¼åº¹¹çÀ®½¸¹ç¤È¸Æ¤Ö¡£
+;;;   ç‰¹ã«ã€(a- = ç©ºé›†åˆ) ã¾ãŸã¯ (b- = ç©ºé›†åˆ)ã®å ´åˆã‚’å¼·å·®åˆæˆé›†åˆã¨å‘¼ã¶ã€‚
+;;;   å¼·å·®åˆæˆé›†åˆã§ãªã„å·®åˆæˆé›†åˆã‚’å¼±å·®åˆæˆé›†åˆã¨å‘¼ã¶ã€‚
 ;;; --------------------------------------------------------
-;;; ¡üÉô¼ó¹çÀ®ÊÑ´¹¤ÎÍ¥Àè½ç°Ì
-;;; (1) ¶¯¹çÀ®½¸¹ç
-;;;       Ê£¿ô¤¢¤ë¾ì¹ç¤Ï¡¢Éô¼ó¤Î½¸¹ç¤ÎÍ×ÁÇ¿ô¤¬¾®¤µ¤¤Êı¤¬Í¥Àè?
-;;; (2) ¶¯º¹¹çÀ®½¸¹ç
-;;; (3) ¼å¹çÀ®½¸¹ç
-;;; (4) ¼åº¹¹çÀ®½¸¹ç
+;;; â—éƒ¨é¦–åˆæˆå¤‰æ›ã®å„ªå…ˆé †ä½
+;;; (1) å¼·åˆæˆé›†åˆ
+;;;       è¤‡æ•°ã‚ã‚‹å ´åˆã¯ã€éƒ¨é¦–ã®é›†åˆã®è¦ç´ æ•°ãŒå°ã•ã„æ–¹ãŒå„ªå…ˆ?
+;;; (2) å¼·å·®åˆæˆé›†åˆ
+;;; (3) å¼±åˆæˆé›†åˆ
+;;; (4) å¼±å·®åˆæˆé›†åˆ
 ;;; --------------------------------------------------------
 ;;; 
-;;; Îã:
+;;; ä¾‹:
 ;;; 
-;;; Á² ¢á {¥·, ¼Ö, ¶Ô}
-;;; »Â ¢á {¼Ö, ¶Ô}
+;;; æ¼¸ â‰¡ {ã‚·, è»Š, æ–¤}
+;;; æ–¬ â‰¡ {è»Š, æ–¤}
 ;;; 
-;;; ¹Æ ¢á {²Ó, ¹â}
-;;; »ä ¢á {²Ó, ¥à}
+;;; ç¨¿ â‰¡ {ç¦¾, é«˜}
+;;; ç§ â‰¡ {ç¦¾, ãƒ }
 ;;; --------
 ;;; 
-;;; (i) a = ¥· ¢á {¥·}¡¢ b = »Â¤Î¾ì¹ç
+;;; (i) a = ã‚· â‰¡ {ã‚·}ã€ b = æ–¬ã®å ´åˆ
 ;;; 
-;;;   a ¢À b = {¥·, ¼Ö, ¶Ô} ¤ª¤è¤Ó¡ÖÁ² ¢½ a ¢À b¡×¤è¤ê¡¢
-;;;   ¡ÖÁ²¡×¤Ï¶¯¹çÀ®½¸¹ç¤ÎÍ×ÁÇ¤Ë¤Ê¤ë¡£
+;;;   a âˆª b = {ã‚·, è»Š, æ–¤} ãŠã‚ˆã³ã€Œæ¼¸ âŠ‡ a âˆª bã€ã‚ˆã‚Šã€
+;;;   ã€Œæ¼¸ã€ã¯å¼·åˆæˆé›†åˆã®è¦ç´ ã«ãªã‚‹ã€‚
 ;;; 
-;;; (ii) a = ¥·¡¢ b = ¼Ö ¢á {¼Ö} ¤Î¾ì¹ç
+;;; (ii) a = ã‚·ã€ b = è»Š â‰¡ {è»Š} ã®å ´åˆ
 ;;; 
-;;;   a ¢À b = {¥·, ¼Ö} ¤ª¤è¤Ó¡ÖÁ² ¢½ a ¢À b¡×¤è¤ê¡¢
-;;;   ¡ÖÁ²¡×¤Ï¶¯¹çÀ®½¸¹ç¤ÎÍ×ÁÇ¤Ë¤Ê¤ë¡£
+;;;   a âˆª b = {ã‚·, è»Š} ãŠã‚ˆã³ã€Œæ¼¸ âŠ‡ a âˆª bã€ã‚ˆã‚Šã€
+;;;   ã€Œæ¼¸ã€ã¯å¼·åˆæˆé›†åˆã®è¦ç´ ã«ãªã‚‹ã€‚
 ;;; 
-;;; (iii) a = »ä¡¢b = ¹â ¢á {¹â} ¤Î¾ì¹ç
+;;; (iii) a = ç§ã€b = é«˜ â‰¡ {é«˜} ã®å ´åˆ
 ;;; 
-;;;   a' = {²Ó}, b' = {¹â} ¤È¤¹¤ë¤È¡¢
-;;;   a' ¢À b' = {²Ó, ¹â} ¤Ç¤¢¤ê¡¢¤«¤Ä¡Ö¹Æ ¢½ a' ¢À b'¡×¤è¤ê
-;;;   ¡Ö¹Æ¡×¤Ï¼å¹çÀ®½¸¹ç¤ÎÍ×ÁÇ¤Ë¤Ê¤ë¡£
+;;;   a' = {ç¦¾}, b' = {é«˜} ã¨ã™ã‚‹ã¨ã€
+;;;   a' âˆª b' = {ç¦¾, é«˜} ã§ã‚ã‚Šã€ã‹ã¤ã€Œç¨¿ âŠ‡ a' âˆª b'ã€ã‚ˆã‚Š
+;;;   ã€Œç¨¿ã€ã¯å¼±åˆæˆé›†åˆã®è¦ç´ ã«ãªã‚‹ã€‚
 ;;; 
-;;; (iv) a = »ä¡¢b = ¥à ¤Î¾ì¹ç
+;;; (iv) a = ç§ã€b = ãƒ  ã®å ´åˆ
 ;;; 
-;;;   a- = {¥à}¡¢b- = ¶õ½¸¹ç ¤è¤ê¡¢
-;;;   ¡Ö¥à¡×¤Ï¶¯º¹¹çÀ®½¸¹ç¤ÎÍ×ÁÇ¤Ë¤Ê¤ë¡£
+;;;   a- = {ãƒ }ã€b- = ç©ºé›†åˆ ã‚ˆã‚Šã€
+;;;   ã€Œãƒ ã€ã¯å¼·å·®åˆæˆé›†åˆã®è¦ç´ ã«ãªã‚‹ã€‚
 ;;; 
-;;; (v) a = »ä¡¢b = ¹Æ ¤Î¾ì¹ç
+;;; (v) a = ç§ã€b = ç¨¿ ã®å ´åˆ
 ;;; 
-;;;   a- = {¥à}¡¢b- = {¹â}¤è¤ê¡¢
-;;;   ¡Ö¥à¡×¤ª¤è¤Ó¡Ö¹â¡×¤Ï¼åº¹¹çÀ®½¸¹ç¤ÎÍ×ÁÇ¤Ë¤Ê¤ë¡£
+;;;   a- = {ãƒ }ã€b- = {é«˜}ã‚ˆã‚Šã€
+;;;   ã€Œãƒ ã€ãŠã‚ˆã³ã€Œé«˜ã€ã¯å¼±å·®åˆæˆé›†åˆã®è¦ç´ ã«ãªã‚‹ã€‚
 
 (require-extension (srfi 1 2 8 69 95))
 (require "util.scm")
 (require-dynlib "look")
 
-;;; #t¤Î¾ì¹ç¡¢Éô¼ó¤ÎÊÂ¤ÙÊı¤Ë¤è¤Ã¤Æ¹çÀ®¤µ¤ì¤ëÊ¸»ú¤ÎÍ¥ÀèÅÙ¤¬ÊÑ¤ï¤ë
+(define (tutcode-encoding-name encoding)
+  (if (eq? encoding 'utf-8)
+    "UTF-8"
+    "EUC-JP"))
+
+;;; Convert between Tutcode's UTF-8 strings and external T-Code dictionaries.
+(define (tutcode-utf8-string->encoded s encoding)
+  (let ((encoded-str
+          (if (eq? encoding 'utf-8)
+            s
+            (iconv-convert (tutcode-encoding-name encoding) "UTF-8" s))))
+    (with-char-codec "ISO-8859-1"
+      (lambda ()
+        (%%string-reconstruct! (string-copy encoded-str))))))
+
+(define (tutcode-encoded-string->utf8 s encoding)
+  (let ((utf8-str
+          (if (eq? encoding 'utf-8)
+            s
+            (iconv-convert "UTF-8" (tutcode-encoding-name encoding) s))))
+    (with-char-codec "ISO-8859-1"
+      (lambda ()
+        (%%string-reconstruct! (string-copy utf8-str))))))
+
+;;; #tã®å ´åˆã€éƒ¨é¦–ã®ä¸¦ã¹æ–¹ã«ã‚ˆã£ã¦åˆæˆã•ã‚Œã‚‹æ–‡å­—ã®å„ªå…ˆåº¦ãŒå¤‰ã‚ã‚‹
 (define tutcode-bushu-sequence-sensitive? #t)
 
-;;; Í¥ÀèÅÙ¤¬Æ±¤¸¾ì¹ç¤ËÍ¥Àè¤µ¤ì¤ëÊ¸»ú¤Î¥ê¥¹¥È
+;;; å„ªå…ˆåº¦ãŒåŒã˜å ´åˆã«å„ªå…ˆã•ã‚Œã‚‹æ–‡å­—ã®ãƒªã‚¹ãƒˆ
 (define tutcode-bushu-prioritized-chars ())
 
-;;; Éô¼ó¹çÀ®½ĞÎÏ¤Ë¤ÏÆş¤ì¤Ê¤¤Ê¸»ú¤Î¥ê¥¹¥È (tc-2.3.1-22.6¤è¤ê)
+;;; éƒ¨é¦–åˆæˆå‡ºåŠ›ã«ã¯å…¥ã‚Œãªã„æ–‡å­—ã®ãƒªã‚¹ãƒˆ (tc-2.3.1-22.6ã‚ˆã‚Š)
 (define tutcode-bushu-inhibited-output-chars
-  '("¤¨" "¤·" "¤Ø" "¥¢" "¥¤" "¥¦" "¥¨" "¥ª" "¥«" "¥¯" "¥±" "¥µ" "¥·"
-    "¥¿" "¥Á" "¥Æ" "¥È" "¥Ë" "¥Ì" "¥Í" "¥Î" "¥Ï" "¥Ò" "¥Û" "¥à" "¥á"
-    "¥è" "¥ê" "¥ë" "¥ì" "¥í" "¥ï" "¥ó"))
+  '("ãˆ" "ã—" "ã¸" "ã‚¢" "ã‚¤" "ã‚¦" "ã‚¨" "ã‚ª" "ã‚«" "ã‚¯" "ã‚±" "ã‚µ" "ã‚·"
+    "ã‚¿" "ãƒ" "ãƒ†" "ãƒˆ" "ãƒ‹" "ãƒŒ" "ãƒ" "ãƒ" "ãƒ" "ãƒ’" "ãƒ›" "ãƒ " "ãƒ¡"
+    "ãƒ¨" "ãƒª" "ãƒ«" "ãƒ¬" "ãƒ­" "ãƒ¯" "ãƒ³"))
 
-;;; sort¤òÆş¤ì¤ë¤ÈÃÙ¤¹¤®¤ë´Ä¶­¤Ç¤â¡¢ÂĞÏÃÅª¤ÊÉô¼ó¹çÀ®ÊÑ´¹¤Ï»È¤¤¤¿¤¤¾ì¹ç¸ş¤±¡£
-;;; ~/.uim¤Ë°Ê²¼¤òÄÉ²Ã¤¹¤ë¤Èsort¤ò¾ÊÎ¬²ÄÇ½¡£
+;;; sortã‚’å…¥ã‚Œã‚‹ã¨é…ã™ãã‚‹ç’°å¢ƒã§ã‚‚ã€å¯¾è©±çš„ãªéƒ¨é¦–åˆæˆå¤‰æ›ã¯ä½¿ã„ãŸã„å ´åˆå‘ã‘ã€‚
+;;; ~/.uimã«ä»¥ä¸‹ã‚’è¿½åŠ ã™ã‚‹ã¨sortã‚’çœç•¥å¯èƒ½ã€‚
 ;;; (set! tutcode-bushu-sort! (lambda (seq less?) seq))
 (define tutcode-bushu-sort! sort!)
 
-;;; bushu.help¥Õ¥¡¥¤¥ë¤òÆÉ¤ó¤ÇÀ¸À®¤·¤¿tutcode-bushudic·Á¼°¤Î¥ê¥¹¥È
+;;; bushu.helpãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚“ã§ç”Ÿæˆã—ãŸtutcode-bushudicå½¢å¼ã®ãƒªã‚¹ãƒˆ
 (define tutcode-bushu-help ())
 
-;;; tutcode-bushu-for-char¤Î¥­¥ã¥Ã¥·¥åÍÑhash-table
+;;; tutcode-bushu-for-charã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç”¨hash-table
 (define tutcode-bushu-for-char-hash-table (make-hash-table =))
 
-;;; Ê¸»ú¤Î¥ê¥¹¥È¤È¤·¤ÆÊÖ¤¹¡£
+;;; æ–‡å­—ã®ãƒªã‚¹ãƒˆã¨ã—ã¦è¿”ã™ã€‚
 (define (tutcode-bushu-parse-entry str)
-  (reverse! (string-to-list str)))
+  (reverse! (string-to-list-utf8 str)))
 
-;;; STR ¤Ç»Ï¤Ş¤ë¹Ô¤Î¤¦¤Á¡¢ºÇ½é¤Î¤â¤Î¤ò¸«¤Ä¤±¤ë¡£
-;;; @param str ¸¡º÷Ê¸»úÎó
-;;; @param file ÂĞ¾İ¥Õ¥¡¥¤¥ëÌ¾
-;;; @return ¸«¤Ä¤±¤¿Ê¸»úÎó(str¤Ï´Ş¤Ş¤Ê¤¤)¡£¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¾ì¹ç¤Ï#f
-(define (tutcode-bushu-search str file)
-  (let ((looked (look-lib-look #f #f 1 file str)))
+;;; STR ã§å§‹ã¾ã‚‹è¡Œã®ã†ã¡ã€æœ€åˆã®ã‚‚ã®ã‚’è¦‹ã¤ã‘ã‚‹ã€‚
+;;; @param str æ¤œç´¢æ–‡å­—åˆ—
+;;; @param file å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«å
+;;; @param encoding å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰
+;;; @return è¦‹ã¤ã‘ãŸæ–‡å­—åˆ—(strã¯å«ã¾ãªã„)ã€‚è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯#f
+(define (tutcode-bushu-search str file encoding)
+  (let ((looked (look-lib-look #f #f 1 file (tutcode-utf8-string->encoded str encoding))))
     (and (pair? looked)
-         (car looked)))) ; 1¹Ô¤Ö¤ó¤ÎÊ¸»úÎó¤À¤±¼èÆÀ
+         (tutcode-encoded-string->utf8 (car looked) encoding)))) ; 1è¡Œã¶ã‚“ã®æ–‡å­—åˆ—ã ã‘å–å¾—
 
-;;; CHAR¤ò¹½À®¤¹¤ëÉô¼ó¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
+;;; CHARã‚’æ§‹æˆã™ã‚‹éƒ¨é¦–ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-for-char char)
   (let*
-    ((i (tutcode-euc-jp-string->ichar char))
+    ((i (tutcode-utf8-string->ichar char))
      (cache
       (and i (hash-table-ref/default tutcode-bushu-for-char-hash-table i #f))))
     (if cache
       (list-copy cache)
       (let*
-        ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename))
+        ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename
+                   tutcode-bushu-expand-encoding))
          (res
           (if looked
             (tutcode-bushu-parse-entry looked)
@@ -159,17 +185,17 @@
 (define (tutcode-bushu-lookup-index2-entry-internal str)
   (let
     ((looked (tutcode-bushu-search (string-append str " ")
-              tutcode-bushu-index2-filename)))
+                tutcode-bushu-index2-filename tutcode-bushu-index2-encoding)))
     (if looked
       (tutcode-bushu-parse-entry looked)
       ())))
 
-;;; CHAR¤òÉô¼ó¤È¤·¤Æ»ı¤ÄÊ¸»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
-;;; ÊÖ¤¹¥ê¥¹¥È¤Ë¤ÏCHAR¤â´Ş¤Ş¤ì¤ë¡£
+;;; CHARã‚’éƒ¨é¦–ã¨ã—ã¦æŒã¤æ–‡å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
+;;; è¿”ã™ãƒªã‚¹ãƒˆã«ã¯CHARã‚‚å«ã¾ã‚Œã‚‹ã€‚
 (define (tutcode-bushu-lookup-index2-entry-1 char)
   (cons char (tutcode-bushu-lookup-index2-entry-internal char)))
 
-;;; CHAR¤ÈCHAR2¤òÉô¼ó¤È¤·¤Æ»ı¤ÄÊ¸»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
+;;; CHARã¨CHAR2ã‚’éƒ¨é¦–ã¨ã—ã¦æŒã¤æ–‡å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-lookup-index2-entry-2 char char2)
   (let
     ((str (if (string<? char char2)
@@ -177,23 +203,23 @@
               (string-append char2 char))))
     (tutcode-bushu-lookup-index2-entry-internal str)))
 
-;;; CHAR¤òN¸Ä°Ê¾åÉô¼ó¤È¤·¤Æ»ı¤ÄÊ¸»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
+;;; CHARã‚’Nå€‹ä»¥ä¸Šéƒ¨é¦–ã¨ã—ã¦æŒã¤æ–‡å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-lookup-index2-entry-many char n)
   (if (= n 1)
     (tutcode-bushu-lookup-index2-entry-1 char)
     (tutcode-bushu-lookup-index2-entry-internal
       (apply string-append (make-list n char)))))
 
-;;; LISTÃæ¤ÎELT¤Î¿ô¤òÊÖ¤¹¡£
+;;; LISTä¸­ã®ELTã®æ•°ã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-count elt list)
   (count (lambda (elem) (string=? elt elem)) list))
 
-;;; BUSHU ¤ò N ¸Ä°Ê¾å´Ş¤àÊ¸»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
+;;; BUSHU ã‚’ N å€‹ä»¥ä¸Šå«ã‚€æ–‡å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-included-char-list bushu n)
   (tutcode-bushu-lookup-index2-entry-many bushu n))
 
-;;; LIST1¤¬LIST2¤Ë´Ş¤Ş¤ì¤ë½¸¹ç¤«¤É¤¦¤«¤òÉ½¤¹½Ò¸ì¡£
-;;; Æ±¤¸Í×ÁÇ¤¬Ê£¿ô¤¢¤ë¾ì¹ç¤Ï¡¢LIST2¤Ë´Ş¤Ş¤ì¤ë¿ô¤ÎÊı¤¬¾¯¤Ê¤±¤ì¤Ğ#f¤òÊÖ¤¹¡£
+;;; LIST1ãŒLIST2ã«å«ã¾ã‚Œã‚‹é›†åˆã‹ã©ã†ã‹ã‚’è¡¨ã™è¿°èªã€‚
+;;; åŒã˜è¦ç´ ãŒè¤‡æ•°ã‚ã‚‹å ´åˆã¯ã€LIST2ã«å«ã¾ã‚Œã‚‹æ•°ã®æ–¹ãŒå°‘ãªã‘ã‚Œã°#fã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-included-set? list1 list2)
   (if (null? list1)
     #t
@@ -202,17 +228,17 @@
         #f
         (tutcode-bushu-included-set? (cdr list1) list2)))))
 
-;;; LIST1¤ÈLIST2¤¬Æ±¤¸½¸¹ç¤«¤É¤¦¤«¤òÉ½¤¹½Ò¸ì¡£
-;;; Æ±¤¸Í×ÁÇ¤¬Ê£¿ô¤¢¤ë¾ì¹ç¤Ï¡¢Æ±¤¸¿ô¤À¤±´Ş¤Ş¤ì¤Æ¤¤¤Ê¤¤¤ÈÅù¤·¤¤¤È¤Ï¤ß¤Ê¤µ¤Ê¤¤¡£
+;;; LIST1ã¨LIST2ãŒåŒã˜é›†åˆã‹ã©ã†ã‹ã‚’è¡¨ã™è¿°èªã€‚
+;;; åŒã˜è¦ç´ ãŒè¤‡æ•°ã‚ã‚‹å ´åˆã¯ã€åŒã˜æ•°ã ã‘å«ã¾ã‚Œã¦ã„ãªã„ã¨ç­‰ã—ã„ã¨ã¯ã¿ãªã•ãªã„ã€‚
 (define (tutcode-bushu-same-set? list1 list2)
   (and (= (length list1) (length list2))
        (tutcode-bushu-included-set? list1 list2)))
 
-;;; BUSHU-LIST¤Ç¹½À®¤µ¤ì¤ë»ú¤Î½¸¹ç¤òµá¤á¤ë¡£
+;;; BUSHU-LISTã§æ§‹æˆã•ã‚Œã‚‹å­—ã®é›†åˆã‚’æ±‚ã‚ã‚‹ã€‚
 (define (tutcode-bushu-char-list-for-bushu bushu-list)
   (cond
     ((null? bushu-list) ())
-    ((null? (cdr bushu-list)) ; 1Ê¸»ú
+    ((null? (cdr bushu-list)) ; 1æ–‡å­—
       (let*
         ((bushu (car bushu-list))
          (included (tutcode-bushu-included-char-list bushu 1))
@@ -220,13 +246,13 @@
           (filter-map
             (lambda (elem)
               (let ((l (tutcode-bushu-for-char elem)))
-                ;; Åù²ÁÊ¸»ú
+                ;; ç­‰ä¾¡æ–‡å­—
                 (and (string=? bushu (car l))
                      (null? (cdr l))
                      elem)))
             included)))
         ret))
-    ((null? (cddr bushu-list)) ; 2Ê¸»ú
+    ((null? (cddr bushu-list)) ; 2æ–‡å­—
       (let*
         ((bushu1 (car bushu-list))
          (bushu2 (cadr bushu-list))
@@ -246,7 +272,7 @@
                   elem)))
             included)))
         ret))
-    (else ; 3Ê¸»ú°Ê¾å
+    (else ; 3æ–‡å­—ä»¥ä¸Š
       (let*
         ((bushu1 (car bushu-list))
          (bushu2 (cadr bushu-list))
@@ -261,9 +287,9 @@
             included)))
         ret))))
 
-;;; LIST1¤ÈLIST2¤È¤Î½¸¹çÀÑ¤òÊÖ¤¹¡£
-;;; Æ±¤¸Í×ÁÇ¤¬Ê£¿ô¤¢¤ë¾ì¹ç¤Ï¶èÊÌ¤¹¤ë¡£
-;;; ÊÖ¤êÃÍ¤Ë¤ª¤±¤ëÍ×ÁÇ¤ÎÊÂ¤ÓÊı¤ÏLIST1¤ÎÊı¤Ë´ğ¤Å¤¯¡£
+;;; LIST1ã¨LIST2ã¨ã®é›†åˆç©ã‚’è¿”ã™ã€‚
+;;; åŒã˜è¦ç´ ãŒè¤‡æ•°ã‚ã‚‹å ´åˆã¯åŒºåˆ¥ã™ã‚‹ã€‚
+;;; è¿”ã‚Šå€¤ã«ãŠã‘ã‚‹è¦ç´ ã®ä¸¦ã³æ–¹ã¯LIST1ã®æ–¹ã«åŸºã¥ãã€‚
 (define (tutcode-bushu-intersection list1 list2)
   (let loop
     ((l1 list1)
@@ -331,15 +357,15 @@
               (append! ci (make-list diff e))
               ci)))))))
 
-;;; Éô¼ó¤ÎÉôÊ¬½¸¹ç¤¬BUSHU-LIST¤Ç¤¢¤ë»ú¤Î½¸¹ç¤òµá¤á¤ë¡£
+;;; éƒ¨é¦–ã®éƒ¨åˆ†é›†åˆãŒBUSHU-LISTã§ã‚ã‚‹å­—ã®é›†åˆã‚’æ±‚ã‚ã‚‹ã€‚
 (define (tutcode-bushu-superset bushu-list)
   (cond
     ((null? bushu-list) ())
-    ((null? (cdr bushu-list)) ; 1Ê¸»ú
+    ((null? (cdr bushu-list)) ; 1æ–‡å­—
       (tutcode-bushu-included-char-list (car bushu-list) 1))
-    ((null? (cddr bushu-list)) ; 2Ê¸»ú
+    ((null? (cddr bushu-list)) ; 2æ–‡å­—
       (tutcode-bushu-lookup-index2-entry-2 (car bushu-list) (cadr bushu-list)))
-    (else ; 3Ê¸»ú°Ê¾å
+    (else ; 3æ–‡å­—ä»¥ä¸Š
       (let*
         ((bushu (car bushu-list))
          (n (tutcode-bushu-count bushu bushu-list))
@@ -362,16 +388,16 @@
             included)))
         ret))))
 
-;;; CHAR¤¬ÊÑ¿ô`tutcode-bushu-prioritized-chars'¤Î²¿ÈÖÌÜ¤Ë¤¢¤ë¤«¤òÊÖ¤¹¡£
-;;; ¤Ê¤±¤ì¤Ğ #f ¤òÊÖ¤¹¡£
+;;; CHARãŒå¤‰æ•°`tutcode-bushu-prioritized-chars'ã®ä½•ç•ªç›®ã«ã‚ã‚‹ã‹ã‚’è¿”ã™ã€‚
+;;; ãªã‘ã‚Œã° #f ã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-priority-level char)
   (and (pair? tutcode-bushu-prioritized-chars)
     (let ((char-list (member char tutcode-bushu-prioritized-chars)))
       (and char-list
         (- (length tutcode-bushu-prioritized-chars) (length char-list) -1)))))
 
-;;; REF¤ò´ğ½à¤È¤·¤Æ¡¢BUSHU1¤ÎÊı¤¬BUSHU2¤è¤ê¤âÊÂ¤ÓÊı¤¬´ğ½à¤Ë¶á¤¤¤«¤É¤¦¤«¡£
-;;; È½ÃÇ¤Ç¤­¤Ê¤«¤Ã¤¿¤ê¡¢¤¹¤ëÉ¬Í×¤¬¤Ê¤¤¾ì¹ç¤ÏDEFAULT¤òÊÖ¤¹¡£
+;;; REFã‚’åŸºæº–ã¨ã—ã¦ã€BUSHU1ã®æ–¹ãŒBUSHU2ã‚ˆã‚Šã‚‚ä¸¦ã³æ–¹ãŒåŸºæº–ã«è¿‘ã„ã‹ã©ã†ã‹ã€‚
+;;; åˆ¤æ–­ã§ããªã‹ã£ãŸã‚Šã€ã™ã‚‹å¿…è¦ãŒãªã„å ´åˆã¯DEFAULTã‚’è¿”ã™ã€‚
 (define (tutcode-bushu-higher-priority? bushu1 bushu2 ref default)
   (if tutcode-bushu-sequence-sensitive?
     (let loop
@@ -397,11 +423,11 @@
                 default))))))
     default))
 
-;;; CHAR1¤¬CHAR2¤è¤êÍ¥ÀèÅÙ¤¬¹â¤¤¤«?
-;;; BUSHU-LIST¤Ç»ØÄê¤µ¤ì¤¿Éô¼ó¥ê¥¹¥È¤ò´ğ½à¤È¤¹¤ë¡£
-;;; MANY?¤¬#f¤Î¾ì¹ç¡¢Æ±¤¸Í¥ÀèÅÙ¤Ç¤Ï¡¢BUSHU-LIST¤Ë´Ş¤Ş¤ì¤Ê¤¤
-;;; Éô¼ó¤Î¿ô¤¬¾¯¤Ê¤¤Êı¤¬Í¥Àè¤µ¤ì¤ë¡£
-;;; #t¤Î¾ì¹ç¤ÏÂ¿¤¤Êı¤¬Í¥Àè¤µ¤ì¤ë¡£
+;;; CHAR1ãŒCHAR2ã‚ˆã‚Šå„ªå…ˆåº¦ãŒé«˜ã„ã‹?
+;;; BUSHU-LISTã§æŒ‡å®šã•ã‚ŒãŸéƒ¨é¦–ãƒªã‚¹ãƒˆã‚’åŸºæº–ã¨ã™ã‚‹ã€‚
+;;; MANY?ãŒ#fã®å ´åˆã€åŒã˜å„ªå…ˆåº¦ã§ã¯ã€BUSHU-LISTã«å«ã¾ã‚Œãªã„
+;;; éƒ¨é¦–ã®æ•°ãŒå°‘ãªã„æ–¹ãŒå„ªå…ˆã•ã‚Œã‚‹ã€‚
+;;; #tã®å ´åˆã¯å¤šã„æ–¹ãŒå„ªå…ˆã•ã‚Œã‚‹ã€‚
 (define (tutcode-bushu-less? char1 char2 bushu-list many?)
   (let*
     ((bushu1 (tutcode-bushu-for-char char1))
@@ -439,7 +465,7 @@
                           ((sl1 (length s1))
                            (sl2 (length s2)))
                           (if (= sl1 sl2)
-                            ;;XXX:ÂÇ¤Á¤ä¤¹¤µ¤Ç¤ÎÈæ³Ó¤Ï¾ÊÎ¬
+                            ;;XXX:æ‰“ã¡ã‚„ã™ã•ã§ã®æ¯”è¼ƒã¯çœç•¥
                             (string<? char1 char2)
                             (< sl1 sl2))))
                       (s1
@@ -539,7 +565,7 @@
       all-list)))
 
 (define (tutcode-bushu-weak-compose-set char-list bushu-list strong-compose-set)
-  (if (null? (cdr char-list)) ; char-list ¤¬°ìÊ¸»ú¤À¤±¤Î»ş¤Ï²¿¤â¤·¤Ê¤¤
+  (if (null? (cdr char-list)) ; char-list ãŒä¸€æ–‡å­—ã ã‘ã®æ™‚ã¯ä½•ã‚‚ã—ãªã„
     ()
     (tutcode-bushu-sort!
       (tutcode-bushu-subtract-set
@@ -549,7 +575,7 @@
         (tutcode-bushu-less? a b bushu-list #f)))))
 
 (define (tutcode-bushu-subset bushu-list)
-  ;;XXX:Ä¹¤¤¥ê¥¹¥È¤ËÂĞ¤¹¤ëdelete-duplicates!¤ÏÃÙ¤¤¤Î¤Ç¡¢filter¸å¤Ë¹Ô¤¦
+  ;;XXX:é•·ã„ãƒªã‚¹ãƒˆã«å¯¾ã™ã‚‹delete-duplicates!ã¯é…ã„ã®ã§ã€filterå¾Œã«è¡Œã†
   (delete-duplicates!
     (filter!
       (lambda (char)
@@ -647,18 +673,18 @@
                  (tutcode-bushu-sort! rest-diff-set less-or-many?)))))
     (delete-duplicates! res)))
 
-;;; bushu.help¥Õ¥¡¥¤¥ë¤òÆÉ¤ó¤Çtutcode-bushudic·Á¼°¤Î¥ê¥¹¥È¤òÀ¸À®¤¹¤ë
-;;; @return tutcode-bushudic·Á¼°¤Î¥ê¥¹¥È¡£ÆÉ¤ß¹ş¤á¤Ê¤«¤Ã¤¿¾ì¹ç¤Ï#f
+;;; bushu.helpãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚“ã§tutcode-bushudicå½¢å¼ã®ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã™ã‚‹
+;;; @return tutcode-bushudicå½¢å¼ã®ãƒªã‚¹ãƒˆã€‚èª­ã¿è¾¼ã‚ãªã‹ã£ãŸå ´åˆã¯#f
 (define (tutcode-bushu-help-load)
   (define parse
     (lambda (line)
-      ;; Îã: "Ñ£¥¤Àì* ÅÁ¡¦"
-      ;; ¢ª(((("¥¤" "Àì"))("Ñ£"))((("Àì" "¥¤"))("Ñ£"))((("ÅÁ" "¡¦"))("Ñ£")))
+      ;; ä¾‹: "å‚³ã‚¤å°‚* ä¼ãƒ»"
+      ;; â†’(((("ã‚¤" "å°‚"))("å‚³"))((("å°‚" "ã‚¤"))("å‚³"))((("ä¼" "ãƒ»"))("å‚³")))
       (let*
           ((comps (string-split line " "))
            (kanji-lcomps (map tutcode-bushu-parse-entry comps))
            (kanji (and (pair? (car kanji-lcomps)) (caar kanji-lcomps)))
-           ;; ¹ÔÆ¬¤Î¹çÀ®¸å¤Î´Á»ú¤ò½ü¤¤¤¿¥ê¥¹¥È¡£Îã:(("¥¤" "Àì" "*")("ÅÁ" "¡¦"))
+           ;; è¡Œé ­ã®åˆæˆå¾Œã®æ¼¢å­—ã‚’é™¤ã„ãŸãƒªã‚¹ãƒˆã€‚ä¾‹:(("ã‚¤" "å°‚" "*")("ä¼" "ãƒ»"))
            (lcomps
             (if kanji
                 (cons (cdar kanji-lcomps) (cdr kanji-lcomps))
@@ -690,10 +716,13 @@
                   (eof-object? line))
               rules
               (loop (read-line port)
-                    (append! rules (parse line)))))))))
+                    (append! rules
+                      (parse
+                        (tutcode-encoded-string->utf8
+                          line tutcode-bushu-help-encoding))))))))))
 
 
-;;; bushu.help¥Õ¥¡¥¤¥ë¤Ë´ğ¤Å¤¯Éô¼ó¹çÀ®¤ò¹Ô¤¦
+;;; bushu.helpãƒ•ã‚¡ã‚¤ãƒ«ã«åŸºã¥ãéƒ¨é¦–åˆæˆã‚’è¡Œã†
 (define (tutcode-bushu-compose-explicitly char-list)
   (if (null? tutcode-bushu-help)
     (set! tutcode-bushu-help (tutcode-bushu-help-load)))
@@ -702,22 +731,22 @@
     (cond
       ((null? char-list)
         ())
-      ((null? (cdr char-list)) ; 1Ê¸»ú
+      ((null? (cdr char-list)) ; 1æ–‡å­—
         (map (lambda (elem) (caadr elem))
           (rk-lib-find-partial-seqs char-list tutcode-bushu-help)))
-      ((pair? (cddr char-list)) ; 3Ê¸»ú°Ê¾å
+      ((pair? (cddr char-list)) ; 3æ–‡å­—ä»¥ä¸Š
         ())
-      (else ; 2Ê¸»ú
+      (else ; 2æ–‡å­—
         (let ((seq (rk-lib-find-seq char-list tutcode-bushu-help)))
           (if seq
             (cadr seq)
             ()))))))
 
-;;; ÂĞÏÃÅª¤ÊÉô¼ó¹çÀ®ÊÑ´¹ÍÑ¤Ë¡¢»ØÄê¤µ¤ì¤¿Éô¼ó¤Î¥ê¥¹¥È¤«¤éÉô¼ó¹çÀ®²ÄÇ½¤Ê
-;;; ´Á»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
-;;; @param char-list ÆşÎÏ¤µ¤ì¤¿Éô¼ó¤Î¥ê¥¹¥È
-;;; @param exit-on-found? ´Á»ú¤¬1Ê¸»ú¤Ç¤â¹çÀ®¤Ç¤­¤¿¤é¤½¤ì°Ê¾å¤Î¹çÀ®¤ÏÃæ»ß¤¹¤ë
-;;; @return ¹çÀ®²ÄÇ½¤Ê´Á»ú¤Î¥ê¥¹¥È
+;;; å¯¾è©±çš„ãªéƒ¨é¦–åˆæˆå¤‰æ›ç”¨ã«ã€æŒ‡å®šã•ã‚ŒãŸéƒ¨é¦–ã®ãƒªã‚¹ãƒˆã‹ã‚‰éƒ¨é¦–åˆæˆå¯èƒ½ãª
+;;; æ¼¢å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
+;;; @param char-list å…¥åŠ›ã•ã‚ŒãŸéƒ¨é¦–ã®ãƒªã‚¹ãƒˆ
+;;; @param exit-on-found? æ¼¢å­—ãŒ1æ–‡å­—ã§ã‚‚åˆæˆã§ããŸã‚‰ãã‚Œä»¥ä¸Šã®åˆæˆã¯ä¸­æ­¢ã™ã‚‹
+;;; @return åˆæˆå¯èƒ½ãªæ¼¢å­—ã®ãƒªã‚¹ãƒˆ
 (define (tutcode-bushu-compose-tc23 char-list exit-on-found?)
   (let*
     ((bushu-list (append-map! tutcode-bushu-for-char char-list))
@@ -768,25 +797,25 @@
                                 r6)))))))))))))))
     (delete-duplicates! resall)))
 
-;;; ÂĞÏÃÅª¤ÊÉô¼ó¹çÀ®ÊÑ´¹ÍÑ¤Ë¡¢»ØÄê¤µ¤ì¤¿Éô¼ó¤Î¥ê¥¹¥È¤«¤éÉô¼ó¹çÀ®²ÄÇ½¤Ê
-;;; ´Á»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£
-;;; @param char-list ÆşÎÏ¤µ¤ì¤¿Éô¼ó¤Î¥ê¥¹¥È
-;;; @return ¹çÀ®²ÄÇ½¤Ê´Á»ú¤Î¥ê¥¹¥È
+;;; å¯¾è©±çš„ãªéƒ¨é¦–åˆæˆå¤‰æ›ç”¨ã«ã€æŒ‡å®šã•ã‚ŒãŸéƒ¨é¦–ã®ãƒªã‚¹ãƒˆã‹ã‚‰éƒ¨é¦–åˆæˆå¯èƒ½ãª
+;;; æ¼¢å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
+;;; @param char-list å…¥åŠ›ã•ã‚ŒãŸéƒ¨é¦–ã®ãƒªã‚¹ãƒˆ
+;;; @return åˆæˆå¯èƒ½ãªæ¼¢å­—ã®ãƒªã‚¹ãƒˆ
 (define (tutcode-bushu-compose-interactively char-list)
   (tutcode-bushu-compose-tc23 char-list #f))
 
-;;; Éô¼ó¹çÀ®ÊÑ´¹¤ò¹Ô¤¦¡£
-;;; tc-2.3.1-22.6¤ÎÉô¼ó¹çÀ®¥¢¥ë¥´¥ê¥º¥à¤ò»ÈÍÑ¡£
-;;; @param c1 1ÈÖÌÜ¤ÎÉô¼ó
-;;; @param c2 2ÈÖÌÜ¤ÎÉô¼ó
-;;; @return ¹çÀ®¸å¤ÎÊ¸»ú¡£¹çÀ®¤Ç¤­¤Ê¤«¤Ã¤¿¤È¤­¤Ï#f
+;;; éƒ¨é¦–åˆæˆå¤‰æ›ã‚’è¡Œã†ã€‚
+;;; tc-2.3.1-22.6ã®éƒ¨é¦–åˆæˆã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã‚’ä½¿ç”¨ã€‚
+;;; @param c1 1ç•ªç›®ã®éƒ¨é¦–
+;;; @param c2 2ç•ªç›®ã®éƒ¨é¦–
+;;; @return åˆæˆå¾Œã®æ–‡å­—ã€‚åˆæˆã§ããªã‹ã£ãŸã¨ãã¯#f
 (define (tutcode-bushu-convert-tc23 c1 c2)
   (let ((res (tutcode-bushu-compose-tc23 (list c1 c2) #t)))
     (if (null? res)
       #f
       (car res))))
 
-;; tc-2.3.1¤Îtc-help.el¤«¤é¤Î°Ü¿¢
+;; tc-2.3.1ã®tc-help.elã‹ã‚‰ã®ç§»æ¤
 (define (tutcode-bushu-decompose-to-two-char char)
   (let ((b1 (tutcode-bushu-for-char char)))
     (let loop
@@ -824,15 +853,15 @@
                     (cons (car cl1) (car cl2))
                     (c2loop (cdr cl2))))))))))))
 
-;;; CHAR¤¬Ä¾ÀÜÆşÎÏ²ÄÇ½¤ÊBUSHU1¤ÈBUSHU2¤Ç¹çÀ®¤Ç¤­¤ë¾ì¹ç¡¢
-;;; BUSHU1¤ÈBUSHU2¤Î¥¹¥È¥í¡¼¥¯¤ò´Ş¤à¥ê¥¹¥È¤òÊÖ¤¹¡£
-;;; Îã: "·Ò" => (((("," "o"))("·â")) ((("f" "q"))("»å")))
-;;; @param char ¹çÀ®¸å¤ÎÊ¸»ú
-;;; @param bushu1 Éô¼ó1
-;;; @param bushu2 Éô¼ó2
+;;; CHARãŒç›´æ¥å…¥åŠ›å¯èƒ½ãªBUSHU1ã¨BUSHU2ã§åˆæˆã§ãã‚‹å ´åˆã€
+;;; BUSHU1ã¨BUSHU2ã®ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯ã‚’å«ã‚€ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚
+;;; ä¾‹: "ç¹‹" => (((("," "o"))("æ’ƒ")) ((("f" "q"))("ç³¸")))
+;;; @param char åˆæˆå¾Œã®æ–‡å­—
+;;; @param bushu1 éƒ¨é¦–1
+;;; @param bushu2 éƒ¨é¦–2
 ;;; @param rule tutcode-rule
-;;; @return ÂĞ¾İÊ¸»ú¤ÎÉô¼ó¹çÀ®¤ËÉ¬Í×¤Ê2¤Ä¤ÎÊ¸»ú¤È¥¹¥È¥í¡¼¥¯¤Î¥ê¥¹¥È¡£
-;;;  ¹çÀ®¤Ç¤­¤Ê¤¤¾ì¹ç¤Ï#f
+;;; @return å¯¾è±¡æ–‡å­—ã®éƒ¨é¦–åˆæˆã«å¿…è¦ãª2ã¤ã®æ–‡å­—ã¨ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯ã®ãƒªã‚¹ãƒˆã€‚
+;;;  åˆæˆã§ããªã„å ´åˆã¯#f
 (define (tutcode-bushu-composed char bushu1 bushu2 rule)
   (and-let*
     ((seq1 (tutcode-auto-help-get-stroke bushu1 rule))
@@ -842,14 +871,14 @@
       (string=? composed char)
       (list seq1 seq2))))
 
-;;; ¼«Æ°¥Ø¥ë¥×:ÂĞ¾İÊ¸»ú¤òÉô¼ó¹çÀ®¤¹¤ë¤Î¤ËÉ¬Í×¤È¤Ê¤ë¡¢
-;;; ³°»ú¤Ç¤Ê¤¤2¤Ä¤ÎÊ¸»ú¤Î¥ê¥¹¥È¤òÊÖ¤¹
-;;; Îã: "·Ò" => (((("," "o"))("·â")) ((("f" "q"))("»å")))
-;;; @param kanji ÂĞ¾İÊ¸»ú
+;;; è‡ªå‹•ãƒ˜ãƒ«ãƒ—:å¯¾è±¡æ–‡å­—ã‚’éƒ¨é¦–åˆæˆã™ã‚‹ã®ã«å¿…è¦ã¨ãªã‚‹ã€
+;;; å¤–å­—ã§ãªã„2ã¤ã®æ–‡å­—ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™
+;;; ä¾‹: "ç¹‹" => (((("," "o"))("æ’ƒ")) ((("f" "q"))("ç³¸")))
+;;; @param kanji å¯¾è±¡æ–‡å­—
 ;;; @param rule tutcode-rule
-;;; @param stime ³«»ÏÆü»ş
-;;; @return ÂĞ¾İÊ¸»ú¤ÎÉô¼ó¹çÀ®¤ËÉ¬Í×¤Ê2¤Ä¤ÎÊ¸»ú¤È¥¹¥È¥í¡¼¥¯¤Î¥ê¥¹¥È¡£
-;;;  ¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¾ì¹ç¤Ï#f
+;;; @param stime é–‹å§‹æ—¥æ™‚
+;;; @return å¯¾è±¡æ–‡å­—ã®éƒ¨é¦–åˆæˆã«å¿…è¦ãª2ã¤ã®æ–‡å­—ã¨ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯ã®ãƒªã‚¹ãƒˆã€‚
+;;;  è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯#f
 (define (tutcode-auto-help-bushu-decompose-tc23 kanji rule stime)
   (if (> (string->number (difftime (time) stime)) tutcode-auto-help-time-limit)
     #f
@@ -881,11 +910,11 @@
                             (or res
                               (loop (cdr lis)))))))))
                   (or
-                    ;; ¶¯¹çÀ®½¸¹ç¤òÃµ¤¹
+                    ;; å¼·åˆæˆé›†åˆã‚’æ¢ã™
                     (find-loop (tutcode-bushu-subset bushu-list))
-                    ;; ¼å¹çÀ®½¸¹ç¤òÃµ¤¹
+                    ;; å¼±åˆæˆé›†åˆã‚’æ¢ã™
                     (find-loop (tutcode-bushu-superset bushu-list))
-                    ;; ºÆµ¢Åª¤ËÃµ¤¹
+                    ;; å†å¸°çš„ã«æ¢ã™
                     (let
                       ((dec2
                         (tutcode-auto-help-bushu-decompose-tc23 char2
@@ -910,11 +939,11 @@
                           (or res
                             (loop (cdr lis)))))))))
                 (or
-                  ;; ¶¯¹çÀ®½¸¹ç¤òÃµ¤¹
+                  ;; å¼·åˆæˆé›†åˆã‚’æ¢ã™
                   (find-loop (tutcode-bushu-subset bushu-list))
-                  ;; ¼å¹çÀ®½¸¹ç¤òÃµ¤¹
+                  ;; å¼±åˆæˆé›†åˆã‚’æ¢ã™
                   (find-loop (tutcode-bushu-superset bushu-list))
-                  ;; ºÆµ¢Åª¤ËÃµ¤¹
+                  ;; å†å¸°çš„ã«æ¢ã™
                   (let
                     ((dec1
                       (tutcode-auto-help-bushu-decompose-tc23 char1
@@ -950,8 +979,8 @@
                                   kanji (car cl1) (car cl2) rule)))
                           (or res
                             (loop2 (cdr cl2))))))))))))
-        ;; Æó¤Ä¤ËÊ¬³ä¤Ç¤­¤Ê¤¤¾ì¹ç
-        ;; ¶¯º¹¹çÀ®½¸¹ç¤òÃµ¤¹
+        ;; äºŒã¤ã«åˆ†å‰²ã§ããªã„å ´åˆ
+        ;; å¼·å·®åˆæˆé›†åˆã‚’æ¢ã™
         (let*
           ((bushu-list (tutcode-bushu-for-char kanji))
            (superset

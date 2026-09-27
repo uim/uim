@@ -66,12 +66,32 @@
   (N_ "Mazegaki dictionary file")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-dic-file-encoding 'euc-jp
+  '(tutcode tutcode-dict)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the mazegaki dictionary"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the mazegaki dictionary")))
+  (N_ "Mazegaki dictionary encoding")
+  (N_ "Character encoding of the mazegaki dictionary file."))
+
 (define-custom 'tutcode-personal-dic-filename
   (string-append (or (home-directory (user-name)) "") "/.mazegaki.dic")
   '(tutcode tutcode-dict)
   '(pathname regular-file)
   (N_ "Personal mazegaki dictionary file")
   (N_ "long description will be here."))
+
+(define-custom 'tutcode-personal-dic-encoding 'euc-jp
+  '(tutcode tutcode-dict)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the personal mazegaki dictionary"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the personal mazegaki dictionary")))
+  (N_ "Personal mazegaki dictionary encoding")
+  (N_ "Character encoding of the personal mazegaki dictionary file."))
 
 (define-custom 'tutcode-rule-filename
   (string-append (sys-pkgdatadir) "/tutcode-rule.scm")
@@ -188,6 +208,16 @@
   (N_ "bushu.index2 file")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-bushu-index2-encoding 'euc-jp
+  '(tutcode tutcode-bushu)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the bushu.index2 file"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the bushu.index2 file")))
+  (N_ "bushu.index2 file encoding")
+  (N_ "Character encoding of the bushu.index2 file."))
+
 (define-custom 'tutcode-bushu-expand-filename (string-append (sys-datadir)
 						 "/tc/bushu.expand")
   '(tutcode tutcode-bushu)
@@ -195,11 +225,31 @@
   (N_ "bushu.expand file")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-bushu-expand-encoding 'euc-jp
+  '(tutcode tutcode-bushu)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the bushu.expand file"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the bushu.expand file")))
+  (N_ "bushu.expand file encoding")
+  (N_ "Character encoding of the bushu.expand file."))
+
 (define-custom 'tutcode-bushu-help-filename ""
   '(tutcode tutcode-bushu)
   '(pathname regular-file)
   (N_ "bushu.help file")
   (N_ "long description will be here."))
+
+(define-custom 'tutcode-bushu-help-encoding 'euc-jp
+  '(tutcode tutcode-bushu)
+  (list 'choice
+        (list 'euc-jp (N_ "EUC-JP")
+              (N_ "Use EUC-JP for the bushu.help file"))
+        (list 'utf-8 (N_ "UTF-8")
+              (N_ "Use UTF-8 for the bushu.help file")))
+  (N_ "bushu.help file encoding")
+  (N_ "Character encoding of the bushu.help file."))
 
 ;;
 ;; candidate window

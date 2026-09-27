@@ -9,7 +9,5 @@ scm/google-cgiapi-jp-custom.scm
 scm/japanese-custom.scm
 scm/tcode.scm
 scm/trycode.scm
-scm/tutcode-rule-custom.scm
-scm/tutcode.scm
 scm/wnn-custom.scm
 scm/wnn.scm

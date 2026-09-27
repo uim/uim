@@ -74,6 +74,8 @@ scm/skk-custom.scm
 scm/skk-key-custom.scm
 scm/tutcode-custom.scm
 scm/tutcode-key-custom.scm
+scm/tutcode-rule-custom.scm
+scm/tutcode.scm
 scm/viqr.scm
 scm/wnn-key-custom.scm
 scm/xmload.scm
