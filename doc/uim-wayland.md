@@ -14,6 +14,10 @@ doesn't consume are forwarded to the focused application. Candidates
 are drawn on a `zwp_input_panel_v1` overlay panel, which the
 compositor places next to the text cursor. A click on a candidate
 selects it, as the arrow keys would, and the wheel turns the page.
+The candidates use the desktop's interface font, the `font-name` key
+of `org.gnome.desktop.interface` that GTK uses too and that Plasma
+keeps in step with its own font setting. Without that schema they use
+`sans 11`.
 uim-helper-server is used as in the other bridges, so the toolbar,
 `uim-im-switcher-cli` and input method changes made by other uim
 processes all work.
@@ -30,7 +34,8 @@ protocol, so `uim-wayland` can't be used there.
 ## Build
 
 `uim-wayland` is built when `wayland-client`, `wayland-protocols`,
-`wayland-scanner`, `xkbcommon`, `cairo` and `pangocairo` are found.
+`wayland-scanner`, `xkbcommon`, `cairo`, `pangocairo` and `gio-2.0`
+are found.
 Pass `--without-wayland` to `configure` to disable it.
 
 ## KWin

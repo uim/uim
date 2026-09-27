@@ -53,11 +53,14 @@
 #include <unistd.h>
 
 #include <cairo.h>
+#include <gio/gio.h>
 #include <pango/pangocairo.h>
 
 #include "uim-wayland.h"
 
+/* Used when the desktop has no font-name, as GTK does. */
 #define CANDWIN_FONT "sans 11"
+#define DESKTOP_INTERFACE_SCHEMA "org.gnome.desktop.interface"
 #define CANDWIN_PADDING 6
 #define CANDWIN_COLUMN_GAP 8
 #define CANDWIN_ROW_GAP 2
@@ -110,6 +113,10 @@ struct uim_wayland_candwin {
   /* The buffer scale the compositor asks for. */
   int scale;
 
+  /* The desktop's interface font, which GTK uses too. Plasma copies
+   * its own font here. NULL without the schema. */
+  GSettings *desktop_settings;
+  char *font_name;
   PangoFontDescription *font;
 };
 
@@ -559,6 +566,58 @@ static const struct wl_surface_listener surface_listener = {
 };
 #endif
 
+/* font */
+
+static GSettings *
+desktop_settings_new(void)
+{
+  GSettingsSchemaSource *source = g_settings_schema_source_get_default();
+  GSettingsSchema *schema;
+  GSettings *settings = NULL;
+
+  /* g_settings_new() aborts on a missing schema. */
+  if (!source)
+    return NULL;
+  schema = g_settings_schema_source_lookup(source, DESKTOP_INTERFACE_SCHEMA,
+                                           TRUE);
+  if (!schema)
+    return NULL;
+  if (g_settings_schema_has_key(schema, "font-name"))
+    settings = g_settings_new_full(schema, NULL, NULL);
+  g_settings_schema_unref(schema);
+  return settings;
+}
+
+/* Read on every activation: without a GLib main loop there is no
+ * change notification. */
+static void
+update_font(struct uim_wayland_candwin *cw)
+{
+  char *name = NULL;
+
+  if (cw->desktop_settings) {
+    /* GSettings queues work for the default main context. */
+    while (g_main_context_iteration(NULL, FALSE))
+      ;
+    name = g_settings_get_string(cw->desktop_settings, "font-name");
+    if (name[0] == '\0') {
+      g_free(name);
+      name = NULL;
+    }
+  }
+  if (!name)
+    name = g_strdup(CANDWIN_FONT);
+  if (cw->font && g_strcmp0(name, cw->font_name) == 0) {
+    g_free(name);
+    return;
+  }
+  g_free(cw->font_name);
+  cw->font_name = name;
+  if (cw->font)
+    pango_font_description_free(cw->font);
+  cw->font = pango_font_description_from_string(name);
+}
+
 /* public API */
 
 struct uim_wayland_candwin *
@@ -574,7 +633,8 @@ uim_wayland_candwin_new(struct uim_wayland *uw)
   cw->uw = uw;
   cw->index = -1;
   cw->scale = 1;
-  cw->font = pango_font_description_from_string(CANDWIN_FONT);
+  cw->desktop_settings = desktop_settings_new();
+  update_font(cw);
 
   cw->surface = wl_compositor_create_surface(uw->compositor);
 #ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
@@ -605,6 +665,9 @@ uim_wayland_candwin_free(struct uim_wayland_candwin *cw)
     wl_surface_destroy(cw->surface);
   if (cw->font)
     pango_font_description_free(cw->font);
+  g_free(cw->font_name);
+  if (cw->desktop_settings)
+    g_object_unref(cw->desktop_settings);
   free(cw);
 }
 
@@ -619,6 +682,7 @@ uim_wayland_candwin_activate(struct uim_wayland_candwin *cw,
   cw->display_limit = display_limit;
   cw->page = 0;
   cw->index = -1;
+  update_font(cw);
   fetch_page(cw);
   draw(cw);
 }
