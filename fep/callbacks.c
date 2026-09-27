@@ -351,9 +351,13 @@ static void update_current_im_name(void)
   /* libuim's string is only valid until its next call, and this is
    * kept until the name changes. */
   const char *im_name = uim_get_current_im_name(g_context);
+  char *new_im_name = uim_strdup(im_name ? im_name : "");
 
+  if (s_im_str && strcmp(s_im_str, new_im_name) != 0) {
+    start_callbacks();
+  }
   free(s_im_str);
-  s_im_str = uim_strdup(im_name ? im_name : "");
+  s_im_str = new_im_name;
 }
 
 static void configuration_changed_cb(void *ptr)
