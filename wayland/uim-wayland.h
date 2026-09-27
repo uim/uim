@@ -54,6 +54,14 @@
 
 #define UIM_WAYLAND_PROGRAM_NAME "uim-wayland"
 
+/* wl_surface.preferred_buffer_scale needs version 6, and headers from
+ * wayland 1.22 or later. */
+#ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
+#define UIM_WAYLAND_COMPOSITOR_VERSION 6
+#else
+#define UIM_WAYLAND_COMPOSITOR_VERSION 4
+#endif
+
 /* zwp_input_method_context_v1.preedit_styling refers to the
  * preedit_style enum of zwp_text_input_v1. */
 enum uim_wayland_preedit_style {

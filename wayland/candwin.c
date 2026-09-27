@@ -107,6 +107,9 @@ struct uim_wayland_candwin {
   double pointer_y;
   double scroll;
 
+  /* The buffer scale the compositor asks for. */
+  int scale;
+
   PangoFontDescription *font;
 };
 
@@ -373,6 +376,7 @@ draw(struct uim_wayland_candwin *cw)
    * the text. */
   scratch = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
   cr = cairo_create(scratch);
+  cairo_scale(cr, cw->scale, cw->scale);
   layout = pango_cairo_create_layout(cr);
   pango_layout_set_font_description(layout, cw->font);
 
@@ -418,7 +422,7 @@ draw(struct uim_wayland_candwin *cw)
   cairo_destroy(cr);
   cairo_surface_destroy(scratch);
 
-  b = get_buffer(cw, width, height, &all_busy);
+  b = get_buffer(cw, width * cw->scale, height * cw->scale, &all_busy);
   if (!b) {
     cw->dirty = all_busy;
     return;
@@ -429,6 +433,7 @@ draw(struct uim_wayland_candwin *cw)
                                                 b->width, b->height,
                                                 b->stride);
   cr = cairo_create(surface);
+  cairo_scale(cr, cw->scale, cw->scale);
   layout = pango_cairo_create_layout(cr);
   pango_layout_set_font_description(layout, cw->font);
 
@@ -482,6 +487,9 @@ draw(struct uim_wayland_candwin *cw)
   cairo_surface_destroy(surface);
 
   b->busy = true;
+  if (wl_surface_get_version(cw->surface) >=
+      WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
+    wl_surface_set_buffer_scale(cw->surface, cw->scale);
   wl_surface_attach(cw->surface, b->buffer, 0, 0);
   wl_surface_damage(cw->surface, 0, 0, width, height);
   wl_surface_commit(cw->surface);
@@ -499,6 +507,58 @@ hide(struct uim_wayland_candwin *cw)
   cw->dirty = false;
 }
 
+/* surface */
+
+#ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
+static void
+surface_enter(void *data, struct wl_surface *surface, struct wl_output *output)
+{
+  (void)data;
+  (void)surface;
+  (void)output;
+}
+
+static void
+surface_leave(void *data, struct wl_surface *surface, struct wl_output *output)
+{
+  (void)data;
+  (void)surface;
+  (void)output;
+}
+
+static void
+surface_preferred_buffer_scale(void *data,
+                               struct wl_surface *surface,
+                               int32_t factor)
+{
+  struct uim_wayland_candwin *cw = data;
+  (void)surface;
+
+  if (factor < 1 || factor == cw->scale)
+    return;
+  cw->scale = factor;
+  if (cw->shown)
+    draw(cw);
+}
+
+static void
+surface_preferred_buffer_transform(void *data,
+                                   struct wl_surface *surface,
+                                   uint32_t transform)
+{
+  (void)data;
+  (void)surface;
+  (void)transform;
+}
+
+static const struct wl_surface_listener surface_listener = {
+  surface_enter,
+  surface_leave,
+  surface_preferred_buffer_scale,
+  surface_preferred_buffer_transform
+};
+#endif
+
 /* public API */
 
 struct uim_wayland_candwin *
@@ -513,9 +573,13 @@ uim_wayland_candwin_new(struct uim_wayland *uw)
   memset(cw, 0, sizeof(*cw));
   cw->uw = uw;
   cw->index = -1;
+  cw->scale = 1;
   cw->font = pango_font_description_from_string(CANDWIN_FONT);
 
   cw->surface = wl_compositor_create_surface(uw->compositor);
+#ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
+  wl_surface_add_listener(cw->surface, &surface_listener, cw);
+#endif
   cw->panel_surface =
     zwp_input_panel_v1_get_input_panel_surface(uw->input_panel, cw->surface);
   /* An overlay panel is positioned by the compositor next to the

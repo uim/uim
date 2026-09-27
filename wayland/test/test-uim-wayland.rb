@@ -115,6 +115,7 @@ module Wayland
       @socket = socket
       @protocol = protocol
       @objects = {DISPLAY_ID => "wl_display"}
+      @versions = {}
       @buffer = +""
       @descriptors = []
       @next_server_id = FIRST_SERVER_ID
@@ -138,6 +139,11 @@ module Wayland
 
     def interface_of(id)
       @objects[id]
+    end
+
+    # The version an object was bound at, for globals.
+    def version_of(id)
+      @versions[id]
     end
 
     def register(id, interface)
@@ -249,10 +255,12 @@ module Wayland
             offset += 4
             name = body.byteslice(offset, length - 1)
             offset += padded(length)
-            offset += 4 # version
+            version = body.unpack1("V", offset: offset)
+            offset += 4
             value = body.unpack1("V", offset: offset)
             offset += 4
             register(value, name)
+            @versions[value] = version
           end
         when "string"
           length = body.unpack1("V", offset: offset)
@@ -384,7 +392,7 @@ class Compositor
   KEYMAP
 
   GLOBALS = {
-    "wl_compositor" => 4,
+    "wl_compositor" => 6,
     "wl_shm" => 1,
     "zwp_input_method_v1" => 1,
     "zwp_input_panel_v1" => 1,
@@ -399,8 +407,9 @@ class Compositor
 
   attr_reader :forwarded_keys, :commits, :preedits, :overlay_panels
   attr_reader :deleted
-  # nil while the candidate window is hidden.
+  # In surface coordinates. nil while the candidate window is hidden.
   attr_reader :candidate_window_size
+  attr_reader :candidate_window_scale
 
   def initialize(default_im_name)
     @default_im_name = default_im_name
@@ -416,6 +425,8 @@ class Compositor
     @panel_surface = nil
     @buffer_sizes = {}
     @candidate_window_size = nil
+    @candidate_window_scale = 1
+    @compositor_version = nil
     @time = 1000
 
     @forwarded_keys = []
@@ -510,6 +521,18 @@ class Compositor
     @connection.send_event(@context, "surrounding_text", text, cursor, anchor)
   end
 
+  # uim-wayland built against wayland older than 1.22 binds a lower
+  # version.
+  def preferred_buffer_scale_supported?
+    (@compositor_version || 0) >= 6
+  end
+
+  # Asks for the candidate window to be drawn at SCALE.
+  def prefer_scale(scale)
+    wait_for {@panel_surface}
+    @connection.send_event(@panel_surface, "preferred_buffer_scale", scale)
+  end
+
   # Left-clicks at a point of the candidate window.
   def click(x, y)
     enter_candidate_window(x, y)
@@ -594,6 +617,8 @@ class Compositor
       when "wl_seat"
         @connection.send_event(bound_id, "capabilities",
                                SEAT_CAPABILITY_POINTER)
+      when "wl_compositor"
+        @compositor_version = @connection.version_of(bound_id)
       end
     when "wl_seat.get_pointer"
       @pointer = arguments[0]
@@ -604,11 +629,19 @@ class Compositor
     when "wl_surface.attach"
       buffer = arguments[0]
       if id == @panel_surface
-        @candidate_window_size = buffer.zero? ? nil : @buffer_sizes[buffer]
+        if buffer.zero?
+          @candidate_window_size = nil
+        else
+          @candidate_window_size = @buffer_sizes[buffer].collect do |size|
+            size / @candidate_window_scale.to_f
+          end
+        end
       end
       # A compositor releases the buffer once it has read it, and the
       # candidate window waits for that before it draws again.
       @connection.send_event(buffer, "release") unless buffer.zero?
+    when "wl_surface.set_buffer_scale"
+      @candidate_window_scale = arguments[0] if id == @panel_surface
     when "zwp_input_panel_v1.get_input_panel_surface"
       @panel_surface = arguments[1]
     when "zwp_input_panel_surface_v1.set_overlay_panel"
@@ -682,6 +715,11 @@ class UimWaylandTest < Test::Unit::TestCase
     ensure
       @compositor.stop
     end
+  end
+
+  def omit_unless_scale_supported
+    return if @compositor.preferred_buffer_scale_supported?
+    omit("uim-wayland doesn't support preferred_buffer_scale")
   end
 
   def test_input_method_activated
@@ -861,6 +899,16 @@ class UimWaylandTest < Test::Unit::TestCase
       assert_equal(["[2]"], @compositor.commits)
     end
 
+    # Pointer coordinates are in surface coordinates, not buffer ones.
+    def test_click_at_scale_2
+      omit_unless_scale_supported
+      @compositor.prefer_scale(2)
+      show_candidates
+      @compositor.click(10, row_y(2))
+      @compositor.wait_for {@compositor.commits == ["[2]"]}
+      assert_equal(["[2]"], @compositor.commits)
+    end
+
     def test_click_on_footer_selects_nothing
       show_candidates
       _width, height = @compositor.candidate_window_size
@@ -902,6 +950,32 @@ class UimWaylandTest < Test::Unit::TestCase
       @compositor.scroll(-NOTCH)
       @compositor.wait_for {@compositor.commits == ["[10]"]}
       assert_equal(["[10]"], @compositor.commits)
+    end
+  end
+
+  sub_test_case("candidate window scale") do
+    def default_im_name
+      "candidates"
+    end
+
+    def show_candidates
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.candidate_window_size}
+    end
+
+    def test_scale
+      omit_unless_scale_supported
+      @compositor.prefer_scale(2)
+      show_candidates
+      assert_equal(2, @compositor.candidate_window_scale)
+    end
+
+    def test_redrawn_when_scale_changes
+      omit_unless_scale_supported
+      show_candidates
+      @compositor.prefer_scale(2)
+      @compositor.wait_for {@compositor.candidate_window_scale == 2}
+      assert_equal(2, @compositor.candidate_window_scale)
     end
   end
 end

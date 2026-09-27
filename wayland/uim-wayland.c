@@ -786,9 +786,10 @@ registry_global(void *data,
   struct uim_wayland *uw = data;
 
   if (strcmp(interface, wl_compositor_interface.name) == 0) {
+    if (version > UIM_WAYLAND_COMPOSITOR_VERSION)
+      version = UIM_WAYLAND_COMPOSITOR_VERSION;
     uw->compositor = wl_registry_bind(registry, name,
-                                      &wl_compositor_interface,
-                                      version < 4 ? version : 4);
+                                      &wl_compositor_interface, version);
   } else if (strcmp(interface, wl_shm_interface.name) == 0) {
     uw->shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
   } else if (strcmp(interface, zwp_input_method_v1_interface.name) == 0) {
