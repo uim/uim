@@ -53,11 +53,10 @@
 #include <uim/uim.h>
 #include <uim/uim-util.h>
 
+#include "ibus-engine-uim.h"
+
 #define IBUS_UIM_BUS_NAME "org.freedesktop.IBus.uim"
 #define IBUS_UIM_ENGINE_NAME "uim"
-
-/* IBus key codes are evdev codes, which fit in this. */
-#define IBUS_UIM_MAX_KEYCODE 768
 
 static gboolean debug_enabled;
 
@@ -66,36 +65,6 @@ static gboolean debug_enabled;
     if (debug_enabled)                          \
       g_printerr("ibus-engine-uim: " __VA_ARGS__); \
   } while (0)
-
-typedef struct {
-  int attr;
-  char *str;
-} PreeditSegment;
-
-typedef struct {
-  IBusEngine parent;
-
-  uim_context uc;
-
-  GArray *segments; /* of PreeditSegment */
-  gboolean preedit_shown;
-
-  IBusLookupTable *table;
-  int nr;
-  int display_limit;
-  int page;
-  int index;
-
-  /* The pressed keys uim took, so their releases don't reach the
-   * application either. */
-  guint8 consumed_keys[IBUS_UIM_MAX_KEYCODE / 8];
-} IBusUimEngine;
-
-typedef struct {
-  IBusEngineClass parent;
-} IBusUimEngineClass;
-
-GType ibus_uim_engine_get_type(void);
 
 G_DEFINE_TYPE(IBusUimEngine, ibus_uim_engine, IBUS_TYPE_ENGINE)
 
@@ -234,15 +203,19 @@ was_consumed(IBusUimEngine *engine, guint keycode)
 
 /* text output */
 
-static void
-commit_cb(void *ptr, const char *str)
+void
+ibus_uim_engine_commit_string(IBusUimEngine *engine, const char *str)
 {
-  IBusEngine *engine = ptr;
-
   if (!str || str[0] == '\0')
     return;
   debug("commit \"%s\"\n", str);
-  ibus_engine_commit_text(engine, ibus_text_new_from_string(str));
+  ibus_engine_commit_text(IBUS_ENGINE(engine), ibus_text_new_from_string(str));
+}
+
+static void
+commit_cb(void *ptr, const char *str)
+{
+  ibus_uim_engine_commit_string(ptr, str);
 }
 
 static void
@@ -513,8 +486,18 @@ ibus_uim_engine_focus_in(IBusEngine *ibus_engine)
 {
   IBusUimEngine *engine = (IBusUimEngine *)ibus_engine;
 
-  if (engine->uc)
+  /* ibus-daemon asks whether we take focus IDs only after it starts
+   * the engine, so it may tell about the first focus both ways. */
+  if (engine->focused)
+    return;
+  engine->focused = TRUE;
+  debug("focus in\n");
+  if (engine->uc) {
+    ibus_uim_helper_focus_in(engine);
     uim_focus_in_context(engine->uc);
+    /* Tells the toolbar about this context's input method. */
+    uim_prop_list_update(engine->uc);
+  }
   IBUS_ENGINE_CLASS(ibus_uim_engine_parent_class)->focus_in(ibus_engine);
 }
 
@@ -523,6 +506,10 @@ ibus_uim_engine_focus_out(IBusEngine *ibus_engine)
 {
   IBusUimEngine *engine = (IBusUimEngine *)ibus_engine;
 
+  if (!engine->focused)
+    return;
+  engine->focused = FALSE;
+  debug("focus out\n");
   if (engine->uc) {
     uim_focus_out_context(engine->uc);
     /* ibus-daemon commits the preedit into the application we are
@@ -535,9 +522,47 @@ ibus_uim_engine_focus_out(IBusEngine *ibus_engine)
     engine->preedit_shown = FALSE;
     uim_reset_context(engine->uc);
     clear_segments(engine);
+    ibus_uim_helper_focus_out(engine);
   }
   IBUS_ENGINE_CLASS(ibus_uim_engine_parent_class)->focus_out(ibus_engine);
 }
+
+#if IBUS_CHECK_VERSION(1, 5, 27)
+/* ibus-daemon hands the global engine to a context of its own, named
+ * "fake", while no application has the focus. The engine has nobody
+ * to talk for then, and a uim application may have the focus. */
+static void
+ibus_uim_engine_focus_in_id(IBusEngine *ibus_engine,
+                            const gchar *object_path,
+                            const gchar *client)
+{
+  IBusUimEngine *engine = (IBusUimEngine *)ibus_engine;
+  (void)object_path;
+
+  engine->in_daemon_context = g_strcmp0(client, "fake") == 0;
+  if (engine->in_daemon_context) {
+    debug("focus in ibus-daemon's own context\n");
+    /* A plain focus in may have come for it first. */
+    ibus_uim_engine_focus_out(ibus_engine);
+    return;
+  }
+  ibus_uim_engine_focus_in(ibus_engine);
+}
+
+static void
+ibus_uim_engine_focus_out_id(IBusEngine *ibus_engine,
+                             const gchar *object_path)
+{
+  IBusUimEngine *engine = (IBusUimEngine *)ibus_engine;
+  (void)object_path;
+
+  if (engine->in_daemon_context) {
+    engine->in_daemon_context = FALSE;
+    return;
+  }
+  ibus_uim_engine_focus_out(ibus_engine);
+}
+#endif
 
 static void
 ibus_uim_engine_reset(IBusEngine *ibus_engine)
@@ -602,6 +627,7 @@ ibus_uim_engine_constructed(GObject *object)
                      preedit_update_cb);
   uim_set_candidate_selector_cb(engine->uc, cand_activate_cb, cand_select_cb,
                                 cand_shift_page_cb, cand_deactivate_cb);
+  ibus_uim_helper_add_engine(engine);
 }
 
 static void
@@ -610,6 +636,7 @@ ibus_uim_engine_destroy(IBusObject *object)
   IBusUimEngine *engine = (IBusUimEngine *)object;
 
   if (engine->uc) {
+    ibus_uim_helper_remove_engine(engine);
     uim_release_context(engine->uc);
     engine->uc = NULL;
   }
@@ -644,6 +671,10 @@ ibus_uim_engine_class_init(IBusUimEngineClass *klass)
   engine_class->process_key_event = ibus_uim_engine_process_key_event;
   engine_class->focus_in = ibus_uim_engine_focus_in;
   engine_class->focus_out = ibus_uim_engine_focus_out;
+#if IBUS_CHECK_VERSION(1, 5, 27)
+  engine_class->focus_in_id = ibus_uim_engine_focus_in_id;
+  engine_class->focus_out_id = ibus_uim_engine_focus_out_id;
+#endif
   engine_class->reset = ibus_uim_engine_reset;
   engine_class->page_up = ibus_uim_engine_page_up;
   engine_class->page_down = ibus_uim_engine_page_down;
@@ -676,6 +707,32 @@ create_component(void)
                                                  "default"));
   return component;
 }
+
+#if IBUS_CHECK_VERSION(1, 5, 27)
+/* IBusFactory makes engines without has-focus-id, which can only be
+ * set at construction, so we make them ourselves. */
+static IBusEngine *
+create_engine_cb(IBusFactory *factory,
+                 const gchar *engine_name,
+                 gpointer user_data)
+{
+  GDBusConnection *connection = user_data;
+  static guint id = 0;
+  char *object_path;
+  IBusEngine *engine;
+  (void)factory;
+
+  object_path = g_strdup_printf("/org/freedesktop/IBus/Engine/uim/%u", ++id);
+  engine = g_object_new(ibus_uim_engine_get_type(),
+                        "engine-name", engine_name,
+                        "object-path", object_path,
+                        "connection", connection,
+                        "has-focus-id", TRUE,
+                        NULL);
+  g_free(object_path);
+  return engine;
+}
+#endif
 
 static void
 bus_disconnected_cb(IBusBus *bus, gpointer user_data)
@@ -738,6 +795,10 @@ main(int argc, char *argv[])
   factory = ibus_factory_new(ibus_bus_get_connection(bus));
   ibus_factory_add_engine(factory, IBUS_UIM_ENGINE_NAME,
                           ibus_uim_engine_get_type());
+#if IBUS_CHECK_VERSION(1, 5, 27)
+  g_signal_connect(factory, "create-engine", G_CALLBACK(create_engine_cb),
+                   ibus_bus_get_connection(bus));
+#endif
 
   if (started_by_ibus) {
     ibus_bus_request_name(bus, IBUS_UIM_BUS_NAME, 0);
@@ -751,6 +812,7 @@ main(int argc, char *argv[])
 
   g_object_unref(factory);
   g_object_unref(bus);
+  ibus_uim_helper_disconnect();
   uim_quit();
   return 0;
 }
