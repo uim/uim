@@ -38,11 +38,30 @@
 (define annotation-dict-cache-alist '())
 
 (define (annotation-dict-init)
-  (and (provided? "socket")
-       (set! annotation-dict-port (dict-server-open annotation-dict-server annotation-dict-servname))))
+  (guard (err
+          (#t
+           (annotation-dict-discard-port)
+           (uim-notify-info
+            (format (_ "dict: annotation initialization failed: ~a") err))
+           #f))
+    (and (provided? "socket")
+         (set! annotation-dict-port
+               (dict-server-open annotation-dict-server annotation-dict-servname)))))
+
+(define (annotation-dict-discard-port)
+  (let ((port annotation-dict-port))
+    (set! annotation-dict-port #f)
+    (and port
+         (close-file-port port))))
 
 (define (annotation-dict-get-text-from-server text enc)
-  (apply string-append (dict-server-get-define annotation-dict-port annotation-dict-database text)))
+  (guard (err
+          (#t
+           (annotation-dict-discard-port)
+           (uim-notify-info
+            (format (_ "dict: annotation request failed: ~a") err))
+           ""))
+    (apply string-append (dict-server-get-define annotation-dict-port annotation-dict-database text))))
 
 (define (annotation-dict-get-text-with-cache text enc)
   (let ((ret (assoc text annotation-dict-cache-alist)))
@@ -63,6 +82,13 @@
 
 (define (annotation-dict-release)
   (if annotation-dict-port
-      (begin
-        (dict-server-close annotation-dict-port)
-        (set! annotation-dict-port #f))))
+      (let ((port annotation-dict-port))
+        (set! annotation-dict-port #f)
+        (guard (err
+                (#t
+                 (close-file-port port)
+                 (uim-notify-info
+                  (format (_ "dict: failed to close annotation connection: ~a") err))
+                 #f))
+          (dict-server-close port))))
+  #t)
