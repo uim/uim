@@ -702,3 +702,14 @@
 /wayland/input-method-unstable-v1-protocol.c
 /wayland/uim-wayland
 /wayland/uim-wayland.desktop
+
+# /ibus/
+/ibus/.deps/
+/ibus/Makefile.in
+/ibus/Makefile
+/ibus/*.o
+/ibus/ibus-engine-uim
+/ibus/uim.xml
+/ibus/test/*.log
+/ibus/test/*.trs
+/ibus/test-suite.log

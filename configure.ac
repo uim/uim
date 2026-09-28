@@ -911,6 +911,43 @@ AC_SUBST(WAYLAND_PROTOCOLS_DIR)
 AC_SUBST(WAYLAND_SCANNER)
 AC_SUBST(WAYLAND_CORE_XML)
 
+dnl *****************************
+dnl *** Check for IBus engine ***
+dnl *****************************
+AC_ARG_WITH(ibus,
+  AC_HELP_STRING([--with-ibus],
+    [build ibus-engine-uim (IBus engine for GNOME and others) [default=auto]]),
+  [],
+  [with_ibus=auto])
+
+if test "x$with_ibus" != xno; then
+  PKG_CHECK_MODULES(IBUS, [ibus-1.0 >= 1.5.0],
+                    [have_ibus=yes],
+                    [have_ibus=no
+                     ibus_missing="$IBUS_PKG_ERRORS"])
+  if test "x$have_ibus" = xno; then
+    if test "x$with_ibus" = xyes; then
+      AC_MSG_ERROR([$ibus_missing])
+    fi
+    AC_MSG_WARN([$ibus_missing])
+    AC_MSG_WARN([ibus-engine-uim disabled])
+  fi
+  with_ibus=$have_ibus
+fi
+
+# The test runs its own ibus-daemon on a D-Bus of its own.
+if test "x$with_ibus" = xyes; then
+  AC_CHECK_PROGS([RUBY], [ruby])
+  AC_PATH_PROG([IBUS_DAEMON], [ibus-daemon], [],
+               [$PATH:/usr/libexec:/usr/lib/ibus])
+  AC_PATH_PROG([DBUS_RUN_SESSION], [dbus-run-session])
+fi
+
+AM_CONDITIONAL(IBUS, test "x$with_ibus" = xyes)
+AM_CONDITIONAL(IBUS_TEST,
+               test -n "$RUBY" && test -n "$IBUS_DAEMON" &&
+               test -n "$DBUS_RUN_SESSION")
+
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
     [enable debugging]),
@@ -2064,6 +2101,7 @@ AC_CONFIG_FILES([Makefile
                  qt6/toolbar/Makefile
                  xim/Makefile
                  wayland/Makefile
+                 ibus/Makefile
                  fep/Makefile
                  emacs/Makefile
                  emacs/uim-version.el
@@ -2238,6 +2276,7 @@ Configure Result :
    GNOME3 Applet   : ${enable_gnome3_applet}
    GTK4            : ${with_gtk4}
    Wayland IM      : ${with_wayland}
+   IBus engine     : ${with_ibus}
    Qt3             : ${with_qt}
    Qt3 immodule    : ${with_qt_immodule}
    TQt             : ${with_tqt}
