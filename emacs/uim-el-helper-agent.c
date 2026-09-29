@@ -241,15 +241,16 @@ wait_data_arrival(fd_set *rfds)
 {
   int fdmax = STDIN_FILENO;
 
-  if (helper_fd > 0) {
-	FD_ZERO(rfds);
+  /* Without uim-helper-server, this still has to wait for stdin. */
+  FD_ZERO(rfds);
+  FD_SET(STDIN_FILENO, rfds);
+
+  if (helper_fd >= 0) {
 	FD_SET(helper_fd, rfds);
 	if (helper_fd > fdmax) fdmax = helper_fd;
   }
 
-  FD_SET(STDIN_FILENO, rfds);
-
-  if (select(helper_fd + 1, rfds, NULL, NULL, NULL) < 0)
+  if (select(fdmax + 1, rfds, NULL, NULL, NULL) < 0)
 	debug_printf(DEBUG_ERROR, "select error\n");
 
 }
@@ -306,7 +307,7 @@ main(int argc, char *argv[])
 	    goto QUIT;
 	}
 
-	if (FD_ISSET(helper_fd, &rfds)) {
+	if (helper_fd >= 0 && FD_ISSET(helper_fd, &rfds)) {
 	  /* read message from helper */
 	  uim_helper_read_proc(helper_fd);
 	}
