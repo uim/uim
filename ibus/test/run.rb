@@ -35,13 +35,29 @@ require "test/unit"
 
 # Automake counts 77 as skipped.
 begin
-  require "gobject-introspection"
+  require "gio2"
   GObjectIntrospection::Repository.default.require("IBus")
 rescue LoadError => error
-  puts("Ruby/GObject Introspection and the IBus typelib are needed: " +
-       "#{error.message}")
+  puts("Ruby/GIO2 and the IBus typelib are needed: #{error.message}")
   exit(77)
 end
+
+# Ruby bindings of libibus, through GObject Introspection.
+module IBus
+  class Loader < GObjectIntrospection::Loader
+    private
+    # IBus has constants for the keysyms without the KEY_ prefix too,
+    # and some of those, like "0", can't be Ruby constants.
+    def load_constant_info(info)
+      return unless info.name.match?(/\A[A-Z]/)
+      super
+    end
+  end
+
+  Loader.new(self).load("IBus")
+end
+
+IBus.init
 
 test_dir = File.expand_path(File.join(__dir__, ".."))
 exit(Test::Unit::AutoRunner.run(true, test_dir))

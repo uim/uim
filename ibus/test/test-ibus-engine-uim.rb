@@ -33,14 +33,13 @@
 # directory that has only uim in it, and talks to it as GNOME Shell
 # does, through libibus.
 #
-# Run this under dbus-run-session with IBUS_ENGINE_UIM set. Put
-# IBUS_UIM_DEBUG in the environment to see what the engine makes of
-# the keys.
+# Run this with run.rb, which loads IBus, under dbus-run-session with
+# IBUS_ENGINE_UIM set. Put IBUS_UIM_DEBUG in the environment to see
+# what the engine makes of the keys.
 
 require "fileutils"
+require "socket"
 require "tmpdir"
-
-require_relative "helper"
 
 # X keysyms, evdev key codes and IBus modifiers.
 module Keyboard
@@ -51,6 +50,7 @@ module Keyboard
   KEYVAL_N = 0x6e
   KEYVAL_X = 0x78
   KEYVAL_RETURN = 0xff0d
+  KEYVAL_SHIFT_L = 0xffe1
   KEYVAL_CONTROL_L = 0xffe3
   KEYCODE_A = 30
   KEYCODE_B = 48
@@ -59,9 +59,61 @@ module Keyboard
   KEYCODE_N = 49
   KEYCODE_X = 45
   KEYCODE_LEFTCTRL = 29
+  KEYCODE_LEFTSHIFT = 42
 
   CONTROL_MASK = IBus::ModifierType::CONTROL_MASK.to_i
   RELEASE_MASK = IBus::ModifierType::RELEASE_MASK.to_i
+end
+
+# Stands where uim-helper-server stands: the engine connects to it on
+# its own, and the test reads what the engine tells the toolbar and
+# sends what the toolbar would.
+class HelperServer
+  # Without the empty line that ends each of them.
+  attr_reader :messages
+
+  def initialize(path)
+    @server = UNIXServer.new(path)
+    @clients = {}
+    @messages = []
+  end
+
+  def close
+    disconnect
+    @server.close
+  end
+
+  # As if uim-helper-server went away.
+  def disconnect
+    @clients.each_key(&:close)
+    @clients.clear
+  end
+
+  # A message is lines, each ending with a newline.
+  def send_message(message)
+    @clients.each_key do |client|
+      client.write("#{message}\n")
+    end
+  end
+
+  def receive
+    loop do
+      client = @server.accept_nonblock(exception: false)
+      break if client == :wait_readable
+      @clients[client] = +""
+    end
+    @clients.each do |client, buffer|
+      loop do
+        data = client.read_nonblock(4096, exception: false)
+        break if data == :wait_readable or data.nil?
+        buffer << data
+      end
+      while (index = buffer.index("\n\n"))
+        message = buffer.slice!(0, index + 2)
+        @messages << message.chomp("\n").force_encoding("UTF-8")
+      end
+    end
+  end
 end
 
 class IBusSession
@@ -79,6 +131,7 @@ class IBusSession
   #   lookup-table CURSOR CURSOR_VISIBLE PAGE_SIZE CANDIDATE...
   #   hide-lookup-table
   attr_reader :events
+  attr_reader :helper
 
   def initialize(default_im_name)
     @default_im_name = default_im_name
@@ -86,6 +139,7 @@ class IBusSession
     @daemon = nil
     @connection = nil
     @context = nil
+    @helper = nil
     @events = []
   end
 
@@ -101,6 +155,11 @@ class IBusSession
     File.write(scm_file, user_scm)
     socket = File.join(@dir, "bus")
     address = "unix:path=#{socket}"
+    runtime_dir = File.join(@dir, "runtime")
+    helper_dir = File.join(runtime_dir, "uim", "socket")
+    # libuim wants these directories to be the user's only.
+    FileUtils.mkdir_p(helper_dir, mode: 0700)
+    @helper = HelperServer.new(File.join(helper_dir, "uim-helper"))
 
     environment = {
       "IBUS_COMPONENT_PATH" => component_dir,
@@ -108,6 +167,8 @@ class IBusSession
       "HOME" => @dir,
       "XDG_CONFIG_HOME" => File.join(@dir, "config"),
       "XDG_CACHE_HOME" => File.join(@dir, "cache"),
+      # Where the engine looks for uim-helper-server.
+      "XDG_RUNTIME_DIR" => runtime_dir,
       # The desktop's settings stay out of the test.
       "GSETTINGS_BACKEND" => "memory",
       "DISPLAY" => nil,
@@ -167,6 +228,10 @@ class IBusSession
       Process.waitpid(@daemon)
       @daemon = nil
     end
+    if @helper
+      @helper.close
+      @helper = nil
+    end
     FileUtils.rm_rf(@dir) if @dir
   end
 
@@ -197,6 +262,37 @@ class IBusSession
     key(KEYVAL_CONTROL_L, KEYCODE_LEFTCTRL)
     type(keyval, keycode, CONTROL_MASK)
     key(KEYVAL_CONTROL_L, KEYCODE_LEFTCTRL, CONTROL_MASK | RELEASE_MASK)
+  end
+
+  # Waits for what the engine does in its own time, like answering
+  # uim-helper-server.
+  def wait_until
+    deadline = Time.now + TIMEOUT
+    loop do
+      drain
+      @helper.receive
+      break if yield
+      break if Time.now > deadline
+      sleep(0.01)
+    end
+  end
+
+  # Waits until the engine has done what it was asked before: a key
+  # goes through the engine, and it answers only after that. The key
+  # is the release of a key nobody pressed, which no input method
+  # minds.
+  def sync_engine
+    key(KEYVAL_SHIFT_L, KEYCODE_LEFTSHIFT, RELEASE_MASK)
+    @helper.receive
+  end
+
+  # The first lines of the messages to uim-helper-server. The same one
+  # in a row counts once: some input methods tell about their
+  # properties themselves when they get the focus, and the engine does
+  # it again for those that don't.
+  def helper_commands
+    commands = @helper.messages.collect {|message| message.lines.first.chomp}
+    commands.chunk_while {|a, b| a == b}.collect(&:first)
   end
 
   private
@@ -357,6 +453,120 @@ class TestIBusEngineUim < Test::Unit::TestCase
     @ibus.focus_in
     @ibus.type(KEYVAL_A, KEYCODE_A)
     assert_equal(["commit k", "commit #{A}"], @ibus.events.grep(/\Acommit /))
+  end
+
+  sub_test_case("uim-helper-server") do
+    setup do
+      # The engine connects when it gets the focus, and tells the
+      # toolbar about its input method.
+      @ibus.wait_until {@ibus.helper_commands.include?("prop_list_update")}
+      @ibus.sync_engine
+    end
+
+    def prop_list_updates
+      @ibus.helper.messages.select do |message|
+        message.start_with?("prop_list_update\n")
+      end
+    end
+
+    def test_focus_in
+      assert_equal(["focus_in", "prop_list_update"], @ibus.helper_commands)
+    end
+
+    # ibus-daemon hands the global engine to a context of its own
+    # while the focus is away, which is no application to talk for.
+    def test_focus_out
+      @ibus.focus_out
+      @ibus.focus_in
+      @ibus.wait_until {@ibus.helper_commands.size >= 5}
+      @ibus.sync_engine
+      assert_equal(["focus_in", "prop_list_update",
+                    "focus_out", "focus_in", "prop_list_update"],
+                   @ibus.helper_commands)
+    end
+
+    # Another uim client, say a GTK application with GTK_IM_MODULE=uim,
+    # got the focus: the toolbar is theirs until the engine gets the
+    # focus back.
+    def test_focus_in_elsewhere
+      n_updates = prop_list_updates.size
+      @ibus.helper.send_message("focus_in\n")
+      @ibus.helper.send_message("commit_string\nabc\n")
+      # Every engine takes this one, so the engine has seen the others
+      # once it has.
+      @ibus.helper.send_message("im_change_whole_desktop\ncandidates\n")
+      @ibus.wait_until do
+        @ibus.type(KEYVAL_A, KEYCODE_A)
+        not @ibus.events.grep(/\Alookup-table /).empty?
+      end
+      assert_equal([[], n_updates],
+                   [@ibus.events.grep(/\Acommit /), prop_list_updates.size])
+
+      @ibus.focus_out
+      @ibus.focus_in
+      # The engine must have the focus before the text comes.
+      @ibus.sync_engine
+      @ibus.helper.send_message("commit_string\ndef\n")
+      @ibus.wait_until {not @ibus.events.grep(/\Acommit /).empty?}
+      assert_equal(["commit def"], @ibus.events.grep(/\Acommit /))
+    end
+
+    def test_im_list_get
+      @ibus.helper.send_message("im_list_get\n")
+      @ibus.wait_until {@ibus.helper_commands.include?("im_list")}
+      im_list = @ibus.helper.messages.find do |message|
+        message.start_with?("im_list\n")
+      end
+      assert_equal("skk\tJapanese\tuim version of SKK input method\tselected\n",
+                   im_list.lines.grep(/\Askk\t/).first)
+    end
+
+    def test_prop_activate
+      n_updates = prop_list_updates.size
+      @ibus.helper.send_message("prop_activate\naction_skk_hiragana\n")
+      @ibus.wait_until {prop_list_updates.size > n_updates}
+      @ibus.type(KEYVAL_K, KEYCODE_K)
+      assert_equal("preedit 1 1 k", @ibus.events.grep(/\Apreedit /).last)
+    end
+
+    def test_im_change_this_text_area_only
+      n_updates = prop_list_updates.size
+      @ibus.helper.send_message("im_change_this_text_area_only\ncandidates\n")
+      @ibus.wait_until {prop_list_updates.size > n_updates}
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal(1, @ibus.events.grep(/\Alookup-table /).size)
+    end
+
+    def test_commit_string
+      @ibus.helper.send_message("commit_string\nabc\n")
+      @ibus.wait_until {not @ibus.events.empty?}
+      assert_equal(["commit abc"], @ibus.events)
+    end
+
+    def test_commit_string_with_charset
+      @ibus.helper.send_message("commit_string\ncharset=EUC-JP\n\xA4\xA2\n".b)
+      @ibus.wait_until {not @ibus.events.empty?}
+      assert_equal(["commit #{A}"], @ibus.events)
+    end
+
+    # The charset line isn't the text.
+    def test_commit_string_with_charset_and_no_text
+      @ibus.helper.send_message("commit_string\ncharset=UTF-8\n")
+      @ibus.helper.send_message("commit_string\nabc\n")
+      @ibus.wait_until {not @ibus.events.empty?}
+      assert_equal(["commit abc"], @ibus.events)
+    end
+
+    def test_reconnect
+      @ibus.helper.disconnect
+      @ibus.helper.messages.clear
+      # The engine must notice before the focus moves.
+      @ibus.sync_engine
+      @ibus.focus_out
+      @ibus.focus_in
+      @ibus.wait_until {@ibus.helper_commands.include?("prop_list_update")}
+      assert_equal(["focus_in", "prop_list_update"], @ibus.helper_commands)
+    end
   end
 
   sub_test_case("candidates") do
