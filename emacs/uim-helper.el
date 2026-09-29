@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2006-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2006-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -36,9 +37,9 @@
 
 (defun uim-helper-send-message (helperstr)
   (mapcar
-   '(lambda (x)
-      (process-send-string uim-el-helper-agent-process (concat x "\n"))
-      )
+   (lambda (x)
+     (process-send-string uim-el-helper-agent-process (concat x "\n"))
+     )
    helperstr)
   )
 
@@ -53,11 +54,11 @@
 	   ;; update all buffer
 	   (save-current-buffer
 	     (mapcar
-	      '(lambda (x)
-		 (set-buffer x)
-		 (if (and (boundp 'uim-mode) uim-mode)
-		     (uim-do-send-recv-cmd (format "%d NOP" uim-context-id)))
-		 )
+	      (lambda (x)
+		(set-buffer x)
+		(if (and (boundp 'uim-mode) uim-mode)
+		    (uim-do-send-recv-cmd (format "%d NOP" uim-context-id)))
+		)
 	      (buffer-list)))
 	   )
 	  (t

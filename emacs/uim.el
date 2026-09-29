@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -272,8 +273,8 @@
 ;;
 (defun uim-prop-activate (proplist)
   (mapcar 
-   '(lambda (x)
-      (uim-do-send-recv-cmd (format "%d PROP %s" uim-context-id x)))
+   (lambda (x)
+     (uim-do-send-recv-cmd (format "%d PROP %s" uim-context-id x)))
    proplist))
 
 ;;
@@ -345,9 +346,9 @@
 
   ;; hide candidate/preedit when buffer-save has been called
   (add-hook 'local-write-file-hooks 
-	    '(lambda ()
-	       (if (or uim-preedit-displayed uim-candidate-displayed)
-		   (uim-process-agent-output '(("e"))))))
+	    (lambda ()
+	      (if (or uim-preedit-displayed uim-candidate-displayed)
+		  (uim-process-agent-output '(("e"))))))
 
   ;; change IM engine to uim-default-im-engine
   (if (and uim-default-im-engine
@@ -553,12 +554,12 @@
 ;;
 (defun uim-update-imlist (imlist)
   (setq uim-im-alist 
-	(mapcar '(lambda (x) 
-		   (let ((im (nth 0 x))
-			 (lang-uim (nth 2 x)))
-		     (cons im
-			   (or (assoc lang-uim uim-lang-code-alist)
-			       (assoc "Other" uim-lang-code-alist)))))
+	(mapcar (lambda (x)
+		  (let ((im (nth 0 x))
+			(lang-uim (nth 2 x)))
+		    (cons im
+			  (or (assoc lang-uim uim-lang-code-alist)
+			      (assoc "Other" uim-lang-code-alist)))))
 		imlist))
   )
 
@@ -569,14 +570,14 @@
 (defun uim-update-label (label)
   (let ((mode-str ""))
     (mapcar
-     '(lambda (x)
-	(cond ((string= (nth 0 x) "im-mode")
-	       (setq mode-str (concat mode-str (nth 2 x))))
-	      ((string= (nth 0 x) "im-name")
-	       (setq uim-im-indication-id (nth 1 x))
-	       (setq uim-im-name-str (nth 3 x)))
-	      )
-	)
+     (lambda (x)
+       (cond ((string= (nth 0 x) "im-mode")
+	      (setq mode-str (concat mode-str (nth 2 x))))
+	     ((string= (nth 0 x) "im-name")
+	      (setq uim-im-indication-id (nth 1 x))
+	      (setq uim-im-name-str (nth 3 x)))
+	     )
+       )
      label)
 
     (setq uim-im-mode-str mode-str)
@@ -637,8 +638,8 @@
 ;;
 (defun uim-init-all-local-var ()
    (mapcar
-    '(lambda (x)
-       (set (car x) (cdr x)))
+    (lambda (x)
+      (set (car x) (cdr x)))
     uim-local-var))
 
 ;; 
@@ -1112,9 +1113,9 @@
 			    (concat " " (key-description uim-prefix-arg-vector) " ")
 			  ""))
 
-	      (mapcar '(lambda (x)
-			 (setq msg (concat msg
-					   (key-description (vector x)) " ")))
+	      (mapcar (lambda (x)
+			(setq msg (concat msg
+					  (key-description (vector x)) " ")))
 		 
 		      (append (if uim-xemacs
 				  (uim-translate-escape-meta send-vector-raw)
@@ -1187,41 +1188,41 @@
 	(set-buffer-modified-p modified))
 
       (mapcar 
-       '(lambda (x) 
-	  (let ((rcode (car x))
-		(rval (cdr x)))
+       (lambda (x)
+	 (let ((rcode (car x))
+	       (rval (cdr x)))
 	
-	    (cond ((string= rcode "n") ;; uim returns key code
-		   (if uim-last-key-vector
-		       (setq key uim-last-key-vector)
-		     (setq key (car rval)))
-		   )
-		  ((string= rcode "s") ;; commit string
-		   (setq commit (append commit (list (car rval))))
-		   )
-		  ((string= rcode "c") ;; candidate data
-		   (setq candidate rval)
-		   )
-		  ((string= rcode "p") ;; preedit
-		   (setq preedit rval)
-		   )
-		  ((string= rcode "d") ;; default engine
-		   (setq default (car rval))
-		   )
-		  ((string= rcode "i") ;; current im
-		   (setq im rval)
-		   )
-		  ((string= rcode "l") ;; label
-		   (setq label rval)
-		   )
-		  ((string= rcode "h") ;; helper message
-		   (setq helpermsg (append helpermsg rval))
-		   )
-		  ((string= rcode "L") ;; IM list
-		   (setq imlist rval)
-		   )
+	   (cond ((string= rcode "n") ;; uim returns key code
+		  (if uim-last-key-vector
+		      (setq key uim-last-key-vector)
+		    (setq key (car rval)))
 		  )
-	    )) 
+		 ((string= rcode "s") ;; commit string
+		  (setq commit (append commit (list (car rval))))
+		  )
+		 ((string= rcode "c") ;; candidate data
+		  (setq candidate rval)
+		  )
+		 ((string= rcode "p") ;; preedit
+		  (setq preedit rval)
+		  )
+		 ((string= rcode "d") ;; default engine
+		  (setq default (car rval))
+		  )
+		 ((string= rcode "i") ;; current im
+		  (setq im rval)
+		  )
+		 ((string= rcode "l") ;; label
+		  (setq label rval)
+		  )
+		 ((string= rcode "h") ;; helper message
+		  (setq helpermsg (append helpermsg rval))
+		  )
+		 ((string= rcode "L") ;; IM list
+		  (setq imlist rval)
+		  )
+		 )
+	   ))
        str)
 
       (when helpermsg
@@ -1249,32 +1250,32 @@
 		(uim-unfreeze-buffer))
 
 	    (mapcar
-	     '(lambda (x)
-		;; enable buffer-undo temporarily
-		(when uim-buffer-undo-list-saved
-		  (setq buffer-undo-list nil)
-		  (buffer-enable-undo))
+	     (lambda (x)
+	       ;; enable buffer-undo temporarily
+	       (when uim-buffer-undo-list-saved
+		 (setq buffer-undo-list nil)
+		 (buffer-enable-undo))
 
-		(let ((buffer-undo-list-tmp buffer-undo-list))
-		  (unwind-protect
-		      (progn
-			(setq buffer-undo-list nil)
-			(insert x))
-		    (when buffer-undo-list
-		      (setq buffer-undo-list
- 			    (append (cons nil 
-					  (uim-delete-atom buffer-undo-list))
-				    buffer-undo-list-tmp))
+	       (let ((buffer-undo-list-tmp buffer-undo-list))
+		 (unwind-protect
+		     (progn
+		       (setq buffer-undo-list nil)
+		       (insert x))
+		   (when buffer-undo-list
+		     (setq buffer-undo-list
+ 			   (append (cons nil
+					 (uim-delete-atom buffer-undo-list))
+				   buffer-undo-list-tmp))
 
-		      )))
+		     )))
 
-		;; disable buffer-undo temporarily
-		(when uim-buffer-undo-list-saved
+	       ;; disable buffer-undo temporarily
+	       (when uim-buffer-undo-list-saved
 		    
-		  (setq uim-buffer-undo-list
-			(append buffer-undo-list uim-buffer-undo-list))
-		  (setq buffer-undo-list nil)
-		  (buffer-disable-undo)))
+		 (setq uim-buffer-undo-list
+		       (append buffer-undo-list uim-buffer-undo-list))
+		 (setq buffer-undo-list nil)
+		 (buffer-disable-undo)))
 	     commit)
 
 	    (if auto-fill-function
@@ -1423,9 +1424,9 @@
 
   ;; set Uim side encoding to agent
   (mapcar 
-   '(lambda (x)
-      (let ((im (car x)))
-	(uim-set-encoding im (uim-get-uim-encoding im))))
+   (lambda (x)
+     (let ((im (car x)))
+       (uim-set-encoding im (uim-get-uim-encoding im))))
    uim-im-alist))
 
 ;;
@@ -1542,8 +1543,8 @@ uim mode facilitates internationalized input through the uim library."
   (when uim-initialized
     (if (not im)
 	(let (alist)
-	  (setq alist (mapcar '(lambda (x) 
-				 (cons (car x) (car x))) 
+	  (setq alist (mapcar (lambda (x)
+				(cons (car x) (car x)))
 			      uim-im-alist))
 	  (save-window-excursion
 	    (setq im (cdr (assoc

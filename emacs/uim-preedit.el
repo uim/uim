@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -52,51 +53,51 @@
       (let ((preedit-blocks preedit) block-start-point)
 
 	(mapcar
-	 '(lambda (x)
-	    (let ((preedit-flag (format "%s" (car x)))
-		  (preedit-str (car (cdr x))))
+	 (lambda (x)
+	   (let ((preedit-flag (format "%s" (car x)))
+		 (preedit-str (car (cdr x))))
 
-	      ;; save point for candidate displaying before insertion
-	      ;;  i.e. head of the block
-	      (if (string-match "c" preedit-flag)
-		  (if (> (length preedit-str) 0)
-		    (setq uim-preedit-current-sentence-start (point))
-		    ;; workaround for uim-prime 
-		  (setq uim-preedit-current-sentence-start
-			block-start-point)))
+	     ;; save point for candidate displaying before insertion
+	     ;;  i.e. head of the block
+	     (if (string-match "c" preedit-flag)
+		 (if (> (length preedit-str) 0)
+		     (setq uim-preedit-current-sentence-start (point))
+		   ;; workaround for uim-prime
+		   (setq uim-preedit-current-sentence-start
+			 block-start-point)))
 	    
-	      (setq block-start-point (point))
+	     (setq block-start-point (point))
 
-	      (when (> (length preedit-str) 0)
+	     (when (> (length preedit-str) 0)
 
-		(insert preedit-str)
+	       (insert preedit-str)
 
-		(let ((face (cond
-			     ((string-match "s" preedit-flag)
-			      'uim-separator-face)
-			     ((string-match "ru" preedit-flag)
-			      'uim-preedit-highlight-underline-face)
-			     ((string-match "u" preedit-flag)
-			      'uim-preedit-underline-face)
-			     ((string-match "r" preedit-flag)
-			      'uim-preedit-highlight-face)
-			     (t 
-			      'uim-preedit-face))))
+	       (let ((face (cond
+			    ((string-match "s" preedit-flag)
+			     'uim-separator-face)
+			    ((string-match "ru" preedit-flag)
+			     'uim-preedit-highlight-underline-face)
+			    ((string-match "u" preedit-flag)
+			     'uim-preedit-underline-face)
+			    ((string-match "r" preedit-flag)
+			     'uim-preedit-highlight-face)
+			    (t
+			     'uim-preedit-face))))
 
-		  (put-text-property block-start-point (point) 'face face)
+		 (put-text-property block-start-point (point) 'face face)
 
-		  )
-		)
+		 )
+	       )
 	      
 
-	      ;; save point for cursor displaying after insertion
-	      (if (string-match "c" preedit-flag)
-		  (setq uim-preedit-cursor (point)))
+	     ;; save point for cursor displaying after insertion
+	     (if (string-match "c" preedit-flag)
+		 (setq uim-preedit-cursor (point)))
 
-	      ;; update preedit-end
-	      (setq uim-preedit-end (point))
+	     ;; update preedit-end
+	     (setq uim-preedit-end (point))
 
-	      ))
+	     ))
 	 preedit-blocks)
 	)
       )

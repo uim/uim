@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -142,6 +143,10 @@
   (undo-boundary) 
   )
 
+
+;; uim-command-execute binds this around the command it runs, for the
+;; this-command-keys and read-char-exclusive overridden below.
+(defvar uim-key-vector nil)
 
 (defun uim-this-command-keys-override ()
   (if (not uim-this-command-keys-original)
@@ -348,10 +353,10 @@
   (if (not uim-menubar-temp)
       (progn
 	(setq uim-menubar-temp current-menubar)
-	(setq current-menubar (mapcar '(lambda (x)
-				     (if x
-					 (list (car x) ["" nil :active nil])
-				       nil))
+	(setq current-menubar (mapcar (lambda (x)
+					(if x
+					    (list (car x) ["" nil :active nil])
+					  nil))
 				      current-menubar))
 	))
   )
@@ -449,13 +454,13 @@
 (defun uim-check-shift (input-vector)
   (eval (cons 'or
 	      (mapcar
-	       '(lambda (x)
-		  (or (and uim-emacs
-			   (or (and (integerp x) (/= (logand (lsh 1 25) x) 0))
-			       (string-match "S-" (format "%s" x))))
-		      (and uim-xemacs
-			   (string-match "Sh-" 
-					 (key-description input-vector)))))
+	       (lambda (x)
+		 (or (and uim-emacs
+			  (or (and (integerp x) (/= (logand (lsh 1 25) x) 0))
+			      (string-match "S-" (format "%s" x))))
+		     (and uim-xemacs
+			  (string-match "Sh-"
+					(key-description input-vector)))))
 	       (append input-vector nil)))))
 
 
@@ -464,24 +469,24 @@
 ;;
 (defun uim-remove-shift (input-vector)
   (vconcat (mapcar 
-	   '(lambda (x)
-	      (cond (uim-emacs
-		     (if (and (integerp x)
-			      (/= (logand (lsh 1 25) x) 0))
-			 (logand (lognot (lsh 1 25)) x)
-		       (let ((key-str (format "%s" x)))
-			 (if (string-match "S-" key-str)
-			     (read (replace-match "" nil nil 
-						  key-str))
-			   x))))
-		    (uim-xemacs
-		     (let ((key-str 
-			    (key-description input-vector)))
-		       (if (string-match "Sh-" key-str)
-			   (uim-xemacs-make-event 
-			    (uim-convert-char-to-symbolvector 
-			     (replace-match "" nil nil key-str)))
-			 x)))))
+	   (lambda (x)
+	     (cond (uim-emacs
+		    (if (and (integerp x)
+			     (/= (logand (lsh 1 25) x) 0))
+			(logand (lognot (lsh 1 25)) x)
+		      (let ((key-str (format "%s" x)))
+			(if (string-match "S-" key-str)
+			    (read (replace-match "" nil nil
+						 key-str))
+			  x))))
+		   (uim-xemacs
+		    (let ((key-str
+			   (key-description input-vector)))
+		      (if (string-match "Sh-" key-str)
+			  (uim-xemacs-make-event
+			   (uim-convert-char-to-symbolvector
+			    (replace-match "" nil nil key-str)))
+			x)))))
 	   (append input-vector nil))))
 
 

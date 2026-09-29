@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -76,17 +77,17 @@
 (defun uim-unbind-mouse-event ()
 
   (mapcar
-   '(lambda (w)
-      (mapcar 
-       '(lambda (x)
-	  (mapcar 
-	   '(lambda (y)
-	      (let ((event (vector (append w x (list y)))))
-	    (define-key uim-mode-map event nil)
-	    (define-key uim-preedit-map event nil)
-	    ))
-	   '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
-       uim-mouse-modifiers))
+   (lambda (w)
+     (mapcar
+      (lambda (x)
+	(mapcar
+	 (lambda (y)
+	   (let ((event (vector (append w x (list y)))))
+	     (define-key uim-mode-map event nil)
+	     (define-key uim-preedit-map event nil)
+	     ))
+	 '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
+      uim-mouse-modifiers))
    uim-generic-modifiers)
   
   (define-key uim-mode-map [vertical-scroll-bar] nil)

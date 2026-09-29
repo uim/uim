@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -33,6 +34,10 @@
 ;;  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
+
+;; Defined in uim-var.el, which this file doesn't load. uim-echo-candidate
+;; binds it for uim-window-changed.
+(defvar uim-candidate-in-echo-region)
 
 ;;
 ;; Checks that the candidate list can be displayed inlinely on current window.
@@ -310,24 +315,24 @@
 
 
     (mapcar 
-     '(lambda (x)
-	(let ((selected (nth 0 x))
-	      (candlabel (nth 1 x))
-	      (candstr (nth 2 x)))
+     (lambda (x)
+       (let ((selected (nth 0 x))
+	     (candlabel (nth 1 x))
+	     (candstr (nth 2 x)))
 
-	  (if selected
-	      (setq selstart (length cands)))
+	 (if selected
+	     (setq selstart (length cands)))
 
-	  (setq cands
-		(if selected
-		    (concat cands "[" candlabel "." candstr "]")
-		  (concat cands " "  candlabel "." candstr " ")))
+	 (setq cands
+	       (if selected
+		   (concat cands "[" candlabel "." candstr "]")
+		 (concat cands " "  candlabel "." candstr " ")))
 
-	  (if selected
-	      (setq selend (length cands)))
+	 (if selected
+	     (setq selend (length cands)))
 
-	  )
-	) cand)
+	 )
+       ) cand)
 
     
     (setq cands-tmp (concat page-label cands))
@@ -444,51 +449,51 @@
 	 (candlist '()))
 
     (mapcar 
-     '(lambda (x)
-	(let ((selected (nth 0 x))
-	      (candlabel (nth 1 x))
-	      (candstr (nth 2 x)))
+     (lambda (x)
+       (let ((selected (nth 0 x))
+	     (candlabel (nth 1 x))
+	     (candstr (nth 2 x)))
 
-	  (setq candlabel 
-		(concat (make-string (- uim-max-candlabel 
-					(string-width candlabel)) 32)
-			candlabel))
+	 (setq candlabel
+	       (concat (make-string (- uim-max-candlabel
+				       (string-width candlabel)) 32)
+		       candlabel))
 
-	  (setq candstr (concat candlabel "." candstr))
+	 (setq candstr (concat candlabel "." candstr))
 	
-	  (catch 'truncate-loop
-	    (let (candlabelpad)
-	      (while t
-		(let* ((trunc (truncate-string-to-width candstr
-							truncwidth nil))
-		       (width-truncated (string-width trunc))
-		       )
+	 (catch 'truncate-loop
+	   (let (candlabelpad)
+	     (while t
+	       (let* ((trunc (truncate-string-to-width candstr
+						       truncwidth nil))
+		      (width-truncated (string-width trunc))
+		      )
 		
-		  (setq candlist 
-			(append candlist 
-				(list 
-				 (list i (concat trunc 
-						 (make-string (- truncwidth
-								 width-truncated)
-							      32))
-				       selected))))
+		 (setq candlist
+		       (append candlist
+			       (list
+				(list i (concat trunc
+						(make-string (- truncwidth
+								width-truncated)
+							     32))
+				      selected))))
 
-		  (if (= width-truncated (string-width candstr))
-		      (throw 'truncate-loop t))
+		 (if (= width-truncated (string-width candstr))
+		     (throw 'truncate-loop t))
 
-		  (if (not candlabelpad)
-		      (setq candlabelpad
-			    (make-string (+ (string-width candlabel) 1) 32)))
+		 (if (not candlabelpad)
+		     (setq candlabelpad
+			   (make-string (+ (string-width candlabel) 1) 32)))
 
-		  (setq candstr
-			(concat candlabelpad
-				(truncate-string-to-width candstr
-							  (string-width candstr)
-							  width-truncated)))
-		  ))))
-	  )
-	(setq i (+ i 1))
-	) cand)
+		 (setq candstr
+		       (concat candlabelpad
+			       (truncate-string-to-width candstr
+							 (string-width candstr)
+							 width-truncated)))
+		 ))))
+	 )
+       (setq i (+ i 1))
+       ) cand)
 
     (setq uim-candidate-line-list candlist)
     )
@@ -537,36 +542,36 @@
   (setq candidate
 	(cons (car candidate)
 	      (mapcar
-	       '(lambda (x)
-		  (let ((selected (nth 0 x))
-			(candlabel (nth 1 x))
-			(candstr (nth 2 x))
-			eom)
+	       (lambda (x)
+		 (let ((selected (nth 0 x))
+		       (candlabel (nth 1 x))
+		       (candstr (nth 2 x))
+		       eom)
 		    
-		    ;; separate appendix (for prime...)
-		    (if (not uim-candidate-display-appendix)
-			(when (string-match "\t" candstr)
-			  (setq candstr (substring candstr 0 
-						   (match-beginning 0))))
-		      (while (setq eom (string-match "\t" candstr))
-			(setq candstr
-			      (concat (substring candstr 0 eom)
-				      " "
-				      (substring candstr (+ eom 1))))))
+		   ;; separate appendix (for prime...)
+		   (if (not uim-candidate-display-appendix)
+		       (when (string-match "\t" candstr)
+			 (setq candstr (substring candstr 0
+						  (match-beginning 0))))
+		     (while (setq eom (string-match "\t" candstr))
+		       (setq candstr
+			     (concat (substring candstr 0 eom)
+				     " "
+				     (substring candstr (+ eom 1))))))
    
-		    (list selected candlabel candstr)
-		    )
-		  ) (cdr candidate))))
+		   (list selected candlabel candstr)
+		   )
+		 ) (cdr candidate))))
 	
   (setq uim-max-candlabel 
 	(eval (cons 'max 
-		    (mapcar '(lambda (x) (string-width (nth 1 x)))
+		    (mapcar (lambda (x) (string-width (nth 1 x)))
 			    (cdr candidate)))))
 
   ;; get max width 
   (setq uim-max-candstr 
 	(eval (cons 'max 
-		    (mapcar '(lambda (x) (string-width (nth 2 x)))
+		    (mapcar (lambda (x) (string-width (nth 2 x)))
 			    (cdr candidate)))))
 
   (setq uim-candidate-page-label 
