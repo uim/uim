@@ -1,4 +1,9 @@
-EXTRA_DIST = README.ja uim-version.el.in
+EXTRA_DIST =			\
+	README.ja		\
+	test/candidates.scm	\
+	test/run.el		\
+	test/test-uim.el	\
+	uim-version.el.in
 
 if UIM_EL
 AM_CPPFLAGS =					\
@@ -30,5 +35,23 @@ uim_el_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
 uim_el_helper_agent_CPPFLAGS = $(AM_CPPFLAGS)
 uim_el_helper_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
 			    $(top_builddir)/uim/libuim.la
+
+# ERT tests that drive uim.el in a batch Emacs with the agents in the
+# build tree.
+if UIM_EL_TEST
+
+TESTS_ENVIRONMENT = \
+	UIM_EL_AGENT="$(abs_builddir)/uim-el-agent" \
+	UIM_EL_HELPER_AGENT="$(abs_builddir)/uim-el-helper-agent" \
+	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/sigscheme/lib" \
+	LIBUIM_SCM_FILES="$(abs_top_builddir)/scm:$(abs_top_srcdir)/scm" \
+	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs"
+TEST_EXTENSIONS = .el
+EL_LOG_COMPILER = $(EMACS)
+# uim-version.el is made in the build tree.
+AM_EL_LOG_FLAGS = -Q --batch -L $(abs_srcdir) -L $(abs_builddir) -l
+TESTS = test/run.el
+
+endif
 
 endif
