@@ -289,8 +289,10 @@ release_uim_agent_context(int context_id)
 	  uim_agent_context *ua = ptr->agent_context;
 
 	  /* clear current */
-	  if (current == ua)
+	  if (current == ua) {
 		clear_current_uim_agent_context();
+		current = NULL;
+	  }
 	  
 	  /* release */
 	  uim_release_context(ua->context);
