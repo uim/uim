@@ -47,6 +47,7 @@ module Keyboard
   KEYVAL_B = 0x62
   KEYVAL_J = 0x6a
   KEYVAL_K = 0x6b
+  KEYVAL_L = 0x6c
   KEYVAL_N = 0x6e
   KEYVAL_X = 0x78
   KEYVAL_RETURN = 0xff0d
@@ -56,6 +57,7 @@ module Keyboard
   KEYCODE_B = 48
   KEYCODE_J = 36
   KEYCODE_K = 37
+  KEYCODE_L = 38
   KEYCODE_N = 49
   KEYCODE_X = 45
   KEYCODE_LEFTCTRL = 29
@@ -243,6 +245,12 @@ class IBusSession
   def focus_in
     @context.focus_in
     sync
+  end
+
+  # What the focused field takes, an IBus::InputPurpose.
+  def set_content_type(purpose)
+    @context.set_content_type(purpose.to_i, 0)
+    sync_engine
   end
 
   # Returns whether the engine took the key. What the engine sent back
@@ -453,6 +461,82 @@ class TestIBusEngineUim < Test::Unit::TestCase
     @ibus.focus_in
     @ibus.type(KEYVAL_A, KEYCODE_A)
     assert_equal(["commit k", "commit #{A}"], @ibus.events.grep(/\Acommit /))
+  end
+
+  # A field that takes no composed text gets the keys as they are.
+  sub_test_case("content type") do
+    def test_password_is_left_alone
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.set_content_type(IBus::InputPurpose::PASSWORD)
+      assert_equal([false, false], @ibus.type(KEYVAL_K, KEYCODE_K))
+      assert_equal([], @ibus.events.grep(/\Apreedit /))
+    end
+
+    def test_pin_is_left_alone
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.set_content_type(IBus::InputPurpose::PIN)
+      assert_equal([false, false], @ibus.type(KEYVAL_K, KEYCODE_K))
+    end
+
+    def test_digits_is_left_alone
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.set_content_type(IBus::InputPurpose::DIGITS)
+      assert_equal([false, false], @ibus.type(KEYVAL_K, KEYCODE_K))
+    end
+
+    def test_number_is_left_alone
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.set_content_type(IBus::InputPurpose::NUMBER)
+      assert_equal([false, false], @ibus.type(KEYVAL_K, KEYCODE_K))
+    end
+
+    def test_phone_is_left_alone
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.set_content_type(IBus::InputPurpose::PHONE)
+      assert_equal([false, false], @ibus.type(KEYVAL_K, KEYCODE_K))
+    end
+
+    def test_free_form_still_composes
+      @ibus.set_content_type(IBus::InputPurpose::FREE_FORM)
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.type(KEYVAL_K, KEYCODE_K)
+      assert_equal("preedit 1 1 k", @ibus.events.grep(/\Apreedit /).last)
+    end
+
+    def test_preedit_is_dropped_when_field_turns_password
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.type(KEYVAL_K, KEYCODE_K)
+      @ibus.set_content_type(IBus::InputPurpose::PASSWORD)
+      assert_equal([false, false], @ibus.type(KEYVAL_L, KEYCODE_L))
+      assert_equal(["preedit 1 1 k", "preedit 0 0 "],
+                   @ibus.events.grep(/\Apreedit /))
+    end
+
+    # The press went to the application, so its release does too.
+    def test_key_held_while_field_turns_free_form
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.set_content_type(IBus::InputPurpose::PASSWORD)
+      assert do
+        not @ibus.key(KEYVAL_K, KEYCODE_K)
+      end
+      @ibus.set_content_type(IBus::InputPurpose::FREE_FORM)
+      assert do
+        not @ibus.key(KEYVAL_K, KEYCODE_K, RELEASE_MASK)
+      end
+    end
+
+    # The press went to the input method, so the application never
+    # sees its release.
+    def test_key_held_while_field_turns_password
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      assert do
+        @ibus.key(KEYVAL_K, KEYCODE_K)
+      end
+      @ibus.set_content_type(IBus::InputPurpose::PASSWORD)
+      assert do
+        @ibus.key(KEYVAL_K, KEYCODE_K, RELEASE_MASK)
+      end
+    end
   end
 
   sub_test_case("uim-helper-server") do
