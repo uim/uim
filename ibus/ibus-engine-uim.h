@@ -66,6 +66,11 @@ typedef struct {
    * application either. */
   guint8 consumed_keys[IBUS_UIM_MAX_KEYCODE / 8];
 
+  /* The field takes no composed text, so the keys go around uim. */
+  gboolean bypassed;
+  /* The pressed keys that went around uim, so their releases do too. */
+  guint8 bypassed_keys[IBUS_UIM_MAX_KEYCODE / 8];
+
   gboolean focused;
   /* Focused on ibus-daemon's own context, which it focuses while no
    * application has the focus. */

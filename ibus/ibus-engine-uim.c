@@ -181,24 +181,24 @@ modifiers_to_umod(guint modifiers)
 
 /* Keycode 0 is what clients that make up keys (virtual keyboards,
  * xdotool) send for all of them, so it tells no key from another and
- * isn't tracked: its releases go to the application. */
+ * isn't tracked: FALLBACK says where its release goes. */
 static void
-set_consumed(IBusUimEngine *engine, guint keycode, gboolean consumed)
+set_key_bit(guint8 *bits, guint keycode, gboolean on)
 {
   if (keycode == 0 || keycode >= IBUS_UIM_MAX_KEYCODE)
     return;
-  if (consumed)
-    engine->consumed_keys[keycode / 8] |= 1 << (keycode % 8);
+  if (on)
+    bits[keycode / 8] |= 1 << (keycode % 8);
   else
-    engine->consumed_keys[keycode / 8] &= ~(1 << (keycode % 8));
+    bits[keycode / 8] &= ~(1 << (keycode % 8));
 }
 
 static gboolean
-was_consumed(IBusUimEngine *engine, guint keycode)
+key_bit(const guint8 *bits, guint keycode, gboolean fallback)
 {
   if (keycode == 0 || keycode >= IBUS_UIM_MAX_KEYCODE)
-    return FALSE;
-  return (engine->consumed_keys[keycode / 8] & (1 << (keycode % 8))) != 0;
+    return fallback;
+  return (bits[keycode / 8] & (1 << (keycode % 8))) != 0;
 }
 
 /* text output */
@@ -463,16 +463,23 @@ ibus_uim_engine_process_key_event(IBusEngine *ibus_engine,
   if (!engine->uc)
     return FALSE;
 
+  /* A release goes wherever its press went, so neither uim nor the
+   * application sees an unbalanced key, even when the field changes
+   * what it takes while the key is held. A press we never saw, say
+   * one made before this engine was up, went to the application. */
   if (modifiers & IBUS_RELEASE_MASK) {
-    uim_release_key(engine->uc, ukey, umod);
-    /* A release goes wherever its press went, so the application
-     * never sees an unbalanced key. A press we never saw, say one
-     * made before this engine was up, went to the application. */
-    forward = !was_consumed(engine, keycode);
-    set_consumed(engine, keycode, FALSE);
+    if (!key_bit(engine->bypassed_keys, keycode, engine->bypassed))
+      uim_release_key(engine->uc, ukey, umod);
+    forward = !key_bit(engine->consumed_keys, keycode, FALSE);
+    set_key_bit(engine->bypassed_keys, keycode, FALSE);
+    set_key_bit(engine->consumed_keys, keycode, FALSE);
   } else {
-    forward = uim_press_key(engine->uc, ukey, umod) != 0;
-    set_consumed(engine, keycode, !forward);
+    if (engine->bypassed)
+      forward = TRUE;
+    else
+      forward = uim_press_key(engine->uc, ukey, umod) != 0;
+    set_key_bit(engine->bypassed_keys, keycode, engine->bypassed);
+    set_key_bit(engine->consumed_keys, keycode, !forward);
   }
   debug("key %#x (code %u ukey %d umod %#x) %s: %s\n",
         keyval, keycode, ukey, umod,
@@ -563,6 +570,58 @@ ibus_uim_engine_focus_out_id(IBusEngine *ibus_engine,
   ibus_uim_engine_focus_out(ibus_engine);
 }
 #endif
+
+/* Composing into a field that hides what is typed, or that takes only
+ * digits, gives the user nothing and leaks the text into the preedit
+ * of an input method that has no business seeing it. There is no
+ * hint for hidden text in IBus: a hidden field says it is for a
+ * password or a PIN. IBUS_INPUT_HINT_PRIVATE only asks not to learn
+ * from what is typed, and private browser windows set it. */
+static gboolean
+takes_composed_text(guint purpose)
+{
+  switch (purpose) {
+  case IBUS_INPUT_PURPOSE_DIGITS:
+  case IBUS_INPUT_PURPOSE_NUMBER:
+  case IBUS_INPUT_PURPOSE_PHONE:
+  case IBUS_INPUT_PURPOSE_PASSWORD:
+  case IBUS_INPUT_PURPOSE_PIN:
+    return FALSE;
+  default:
+    return TRUE;
+  }
+}
+
+/* ibus-daemon tells this after the focus in, and only when it differs
+ * from what it told this engine last, so the last one still holds. */
+static void
+ibus_uim_engine_set_content_type(IBusEngine *ibus_engine,
+                                 guint purpose,
+                                 guint hints)
+{
+  IBusUimEngine *engine = (IBusUimEngine *)ibus_engine;
+  gboolean bypassed = !takes_composed_text(purpose);
+
+  IBUS_ENGINE_CLASS(ibus_uim_engine_parent_class)->
+    set_content_type(ibus_engine, purpose, hints);
+
+  debug("content type: purpose %u hints %#x, input method %s\n",
+        purpose, hints, bypassed ? "off" : "on");
+  if (bypassed == engine->bypassed)
+    return;
+  engine->bypassed = bypassed;
+  if (!bypassed || !engine->uc)
+    return;
+
+  /* Whatever is being composed would end up in a field that doesn't
+   * take it, so it is dropped. The field may have been composed into
+   * before it said what it takes, or it may have changed what it takes
+   * while focused, when a password is hidden again for instance. */
+  cand_deactivate_cb(engine);
+  uim_reset_context(engine->uc);
+  clear_segments(engine);
+  preedit_update_cb(engine);
+}
 
 static void
 ibus_uim_engine_reset(IBusEngine *ibus_engine)
@@ -676,6 +735,7 @@ ibus_uim_engine_class_init(IBusUimEngineClass *klass)
   engine_class->focus_out_id = ibus_uim_engine_focus_out_id;
 #endif
   engine_class->reset = ibus_uim_engine_reset;
+  engine_class->set_content_type = ibus_uim_engine_set_content_type;
   engine_class->page_up = ibus_uim_engine_page_up;
   engine_class->page_down = ibus_uim_engine_page_down;
   engine_class->candidate_clicked = ibus_uim_engine_candidate_clicked;
