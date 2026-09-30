@@ -91,8 +91,7 @@ process_command()
 
   if (rest > 0)
 	memmove(cmdbuf, p + 1, rest);
-  else
-	cmdbuf[0] = '\0';
+  cmdbuf[rest] = '\0';
 
   return 1;
 }
@@ -287,6 +286,7 @@ main(int argc, char *argv[])
   atexit(cleanup);
 
   a_printf("OK\n");
+  fflush(stdout);
 
   cmdbuf_len = DEFAULT_MESSAGE_SIZE;
   cmdbuf = uim_malloc(cmdbuf_len);

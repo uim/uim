@@ -100,8 +100,10 @@
 
     (message "uim.el: starting uim-el-helper-agent...")
 
-    (setq proc (start-process "uim-el-helper-agent" 
-			      buffer uim-el-helper-agent))
+    ;; Helper messages can exceed the canonical input limit of a PTY.
+    (let ((process-connection-type nil))
+      (setq proc (start-process "uim-el-helper-agent"
+			        buffer uim-el-helper-agent)))
 
     (if (not proc)
 	(error "uim.el: Couldn't invoke uim-el-helper-agent."))
