@@ -741,10 +741,12 @@ uim_notify_info(const char *msg_fmt, ...)
 {
   va_list args;
   int ret;
+  const char *translated_msg_fmt;
 
+  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(args, msg_fmt);
   fputs("libuim: [info] ", stderr);
-  ret = vfprintf(stderr, msg_fmt, args);
+  ret = vfprintf(stderr, translated_msg_fmt, args);
   fputs("\n", stderr);
   va_end(args);
 
@@ -756,10 +758,12 @@ uim_notify_fatal(const char *msg_fmt, ...)
 {
   va_list args;
   int ret;
+  const char *translated_msg_fmt;
 
+  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(args, msg_fmt);
   fputs("libuim: [fatal] ", stderr);
-  ret = vfprintf(stderr, msg_fmt, args);
+  ret = vfprintf(stderr, translated_msg_fmt, args);
   fputs("\n", stderr);
   va_end(args);
 
