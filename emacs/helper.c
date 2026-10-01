@@ -40,7 +40,6 @@ static void
 helper_send_im_list(void)
 {
   int nim, i;
-  int buflen;
   char *buf;
   char *current_im_name;
   uim_agent_context *ua;
@@ -48,8 +47,10 @@ helper_send_im_list(void)
 
   debug_printf(DEBUG_NOTE, "helper_send_im_list\n");
 
-  /* Use 1st context */
-  if (agent_context_list_head) {
+  /* Use the focused context when available. */
+  if (current && current->context) {
+	ua = current;
+  } else if (agent_context_list_head) {
 	ua = agent_context_list_head->agent_context;
   } else {
 	dummy_agent_context = 1;
@@ -63,7 +64,7 @@ helper_send_im_list(void)
 
 #define HEADER_FORMAT "im_list\ncharset=%s\n"
 
-  buflen = uim_asprintf(&buf,  HEADER_FORMAT, ua->encoding);
+  uim_asprintf(&buf, HEADER_FORMAT, ua->encoding);
 
 #undef HEADER_FORMAT
 
@@ -82,7 +83,10 @@ helper_send_im_list(void)
 						   strcmp(name, current_im_name) == 0 ?
 						   "selected" : "") < 0 || tmpbuf == NULL);
 	if (!failed) {
-		strlcat(buf, tmpbuf, buflen);
+		char *newbuf;
+		uim_asprintf(&newbuf, "%s%s", buf, tmpbuf);
+		free(buf);
+		buf = newbuf;
 		free(tmpbuf);
 	}
 	free(name);
