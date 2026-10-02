@@ -126,6 +126,11 @@ struct skk_cand_array {
   struct skk_line *line;
 };
 
+struct skk_dic_index_entry {
+  char *key;
+  int line_offset;
+};
+
 /* skk_line state */
 #define SKK_LINE_NEED_SAVE	(1<<0)
 #define SKK_LINE_USE_FOR_COMPLETION	(1<<1)
@@ -158,6 +163,13 @@ typedef struct dic_info_ {
   int size;
   /* encoding of the mmap'ed dictionary file */
   enum skk_dictionary_encoding encoding;
+  /* optional index sorted by decoded UTF-8 keys */
+  int use_unicode_sort_index;
+  int unicode_sort_index_ready;
+  int nr_okuri_index_entries;
+  struct skk_dic_index_entry *okuri_index_entries;
+  int nr_okuri_nasi_index_entries;
+  struct skk_dic_index_entry *okuri_nasi_index_entries;
   /* encoding used for skkserv communication */
   enum skk_dictionary_encoding skkserv_encoding;
   /* head of cached skk dictionary line list. LRU ordered */
@@ -468,6 +480,148 @@ is_okuri(const char *line_str)
 }
 
 static int
+append_dic_index_entry(dic_info *di, struct skk_dic_index_entry **entries,
+                       int *nr_entries, int *capacity, const char *line,
+                       int key_len, int line_offset)
+{
+  char *key, *utf8_key;
+  size_t utf8_key_len;
+  int new_capacity;
+
+  if (key_len <= 0 || memchr(line, '\0', key_len))
+    return 0;
+
+  key = uim_malloc(key_len + 1);
+  memcpy(key, line, key_len);
+  key[key_len] = '\0';
+  if (!convert_dictionary_buffer(SKK_DICTIONARY_ENCODING_UTF8, di->encoding,
+                                 key, &utf8_key, &utf8_key_len)) {
+    free(key);
+    return 0;
+  }
+  free(key);
+  if (utf8_key_len == 0) {
+    free(utf8_key);
+    return 0;
+  }
+
+  if (*nr_entries == *capacity) {
+    if (*capacity == 0)
+      new_capacity = 128;
+    else if (*capacity <= di->size / 2)
+      new_capacity = *capacity * 2;
+    else
+      new_capacity = di->size;
+
+    if (new_capacity <= *capacity) {
+      free(utf8_key);
+      return 0;
+    }
+    *entries = uim_realloc(*entries,
+                           sizeof(struct skk_dic_index_entry) *
+                           new_capacity);
+    *capacity = new_capacity;
+  }
+
+  (*entries)[*nr_entries].key = utf8_key;
+  (*entries)[*nr_entries].line_offset = line_offset;
+  (*nr_entries)++;
+  return 1;
+}
+
+static void
+free_dic_index_entries(struct skk_dic_index_entry *entries, int nr_entries)
+{
+  int i;
+
+  for (i = 0; i < nr_entries; i++)
+    free(entries[i].key);
+  free(entries);
+}
+
+static void
+free_unicode_sort_index(dic_info *di)
+{
+  free_dic_index_entries(di->okuri_index_entries, di->nr_okuri_index_entries);
+  free_dic_index_entries(di->okuri_nasi_index_entries, di->nr_okuri_nasi_index_entries);
+  di->okuri_index_entries = NULL;
+  di->nr_okuri_index_entries = 0;
+  di->okuri_nasi_index_entries = NULL;
+  di->nr_okuri_nasi_index_entries = 0;
+}
+
+static int
+compare_dic_index_entries(const void *a, const void *b)
+{
+  const struct skk_dic_index_entry *entry_a = a;
+  const struct skk_dic_index_entry *entry_b = b;
+  int result = strcmp(entry_a->key, entry_b->key);
+
+  if (result)
+    return result;
+  if (entry_a->line_offset < entry_b->line_offset)
+    return -1;
+  if (entry_a->line_offset > entry_b->line_offset)
+    return 1;
+  return 0;
+}
+
+static int
+build_unicode_sort_index(dic_info *di, const char *filename)
+{
+  const char *addr = di->addr;
+  int okuri_capacity = 0, okuri_nasi_capacity = 0;
+  int offset = di->first;
+  int okuri_end = di->border;
+
+  while (offset < di->size) {
+    const char *line = addr + offset;
+    const char *newline = memchr(line, '\n', di->size - offset);
+    const char *space;
+    int line_len = newline ? (int)(newline - line) : di->size - offset;
+
+    if (line_len > 0 && line[0] != ';') {
+      struct skk_dic_index_entry **entries;
+      int *nr_entries, *capacity;
+
+      space = memchr(line, ' ', line_len);
+      if (!space || space == line)
+        goto error;
+      if (offset < okuri_end) {
+        entries = &di->okuri_index_entries;
+        nr_entries = &di->nr_okuri_index_entries;
+        capacity = &okuri_capacity;
+      } else {
+        entries = &di->okuri_nasi_index_entries;
+        nr_entries = &di->nr_okuri_nasi_index_entries;
+        capacity = &okuri_nasi_capacity;
+      }
+      if (!append_dic_index_entry(di, entries, nr_entries, capacity,
+                                  line, (int)(space - line), offset))
+        goto error;
+    }
+
+    if (!newline)
+      break;
+    offset += line_len + 1;
+  }
+
+  if (di->nr_okuri_index_entries > 1)
+    qsort(di->okuri_index_entries, di->nr_okuri_index_entries,
+          sizeof(struct skk_dic_index_entry), compare_dic_index_entries);
+  if (di->nr_okuri_nasi_index_entries > 1)
+    qsort(di->okuri_nasi_index_entries, di->nr_okuri_nasi_index_entries,
+          sizeof(struct skk_dic_index_entry), compare_dic_index_entries);
+  return 1;
+
+error:
+  free_unicode_sort_index(di);
+  uim_notify_info(N_("failed to build a Unicode-sorted index for system dictionary: %s"),
+                  filename);
+  return 0;
+}
+
+static int
 find_first_line(dic_info *di)
 {
   char *s = di->addr;
@@ -495,8 +649,8 @@ find_border(dic_info *di)
       return off;
     off += l + 1;
   }
-  /* every entry is okuri-ari, it may not happen. */
-  return di->size - 1;
+  /* No okuri-nasi section; use the one-past-end boundary. */
+  return di->size;
 }
 
 static dic_info *
@@ -511,6 +665,12 @@ alloc_dic_info(void)
   di->border = 0;
   di->size = 0;
   di->encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
+  di->use_unicode_sort_index = 0;
+  di->unicode_sort_index_ready = 0;
+  di->nr_okuri_index_entries = 0;
+  di->okuri_index_entries = NULL;
+  di->nr_okuri_nasi_index_entries = 0;
+  di->okuri_nasi_index_entries = NULL;
   di->skkserv_encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
   di->head.next = NULL;
   di->personal_dic_timestamp = 0;
@@ -627,6 +787,28 @@ do_search_line(dic_info *di, const char *s, int min,
   return -1;
 }
 
+static int
+search_unicode_sort_index(const struct skk_dic_index_entry *entries,
+                          int nr_entries, const char *key)
+{
+  int min = 0;
+  int max = nr_entries;
+
+  while (min < max) {
+    int idx = min + (max - min) / 2;
+    int result = strcmp(key, entries[idx].key);
+
+    if (result == 0)
+      return entries[idx].line_offset;
+    if (result < 0)
+      max = idx;
+    else
+      min = idx + 1;
+  }
+
+  return -1;
+}
+
 /* This function name is temporary. I want a better name. */
 static char *
 first_space(char *str)
@@ -736,6 +918,7 @@ free_skk_dic(dic_info *skk_dic)
 
     if (skk_dic->addr)
       munmap(skk_dic->addr, skk_dic->size);
+    free_unicode_sort_index(skk_dic);
 
     sl = skk_dic->head.next;
     while (sl) {
@@ -797,6 +980,25 @@ skk_dic_open_with_encoding(uim_lisp fn_, uim_lisp encoding_setting_)
   get_configured_encoding(C_SYM(encoding_setting_), &file_encoding);
 
   return MAKE_PTR(open_file_dic(REFER_C_STR(fn_), file_encoding));
+}
+
+static uim_lisp
+skk_dic_open_with_encoding_and_unicode_sort(uim_lisp fn_,
+                                            uim_lisp encoding_setting_)
+{
+  enum skk_dictionary_encoding file_encoding;
+  const char *fn;
+  dic_info *di;
+
+  get_configured_encoding(C_SYM(encoding_setting_), &file_encoding);
+  fn = REFER_C_STR(fn_);
+
+  di = open_file_dic(fn, file_encoding);
+  di->use_unicode_sort_index = 1;
+  if (di->addr)
+    di->unicode_sort_index_ready = build_unicode_sort_index(di, fn);
+
+  return MAKE_PTR(di);
 }
 
 static uim_lisp
@@ -1173,20 +1375,30 @@ search_line_from_file(dic_info *di, const char *s, char okuri_head)
   if (!di->addr)
     return NULL;
 
-  uim_asprintf(&idx, "%s%c", s, okuri_head);
-  if (!convert_dictionary_buffer(di->encoding, SKK_DICTIONARY_ENCODING_UTF8,
-                                 idx, &encoded_idx, &encoded_idx_len)) {
-    free(idx);
+  if (di->use_unicode_sort_index && !di->unicode_sort_index_ready)
     return NULL;
+
+  uim_asprintf(&idx, "%s%c", s, okuri_head);
+  if (di->use_unicode_sort_index) {
+    if (okuri_head)
+      n = search_unicode_sort_index(di->okuri_index_entries,
+                                    di->nr_okuri_index_entries, idx);
+    else
+      n = search_unicode_sort_index(di->okuri_nasi_index_entries,
+                                    di->nr_okuri_nasi_index_entries, idx);
+  } else {
+    if (!convert_dictionary_buffer(di->encoding, SKK_DICTIONARY_ENCODING_UTF8,
+                                   idx, &encoded_idx, &encoded_idx_len)) {
+      free(idx);
+      return NULL;
+    }
+    if (okuri_head)
+      n = do_search_line(di, encoded_idx, di->first, di->border - 1, -1);
+    else
+      n = do_search_line(di, encoded_idx, di->border, di->size - 1, 1);
+    free(encoded_idx);
   }
   free(idx);
-
-  if (okuri_head)
-    n = do_search_line(di, encoded_idx, di->first, di->border - 1, -1);
-  else
-    n = do_search_line(di, encoded_idx, di->border, di->size - 1, 1);
-
-  free(encoded_idx);
 
   if (n == -1)
     return NULL;
@@ -4157,6 +4369,8 @@ uim_plugin_instance_init(void)
 {
   uim_scm_init_proc5("skk-lib-dic-open", skk_dic_open);
   uim_scm_init_proc2("skk-lib-dic-open-with-encoding", skk_dic_open_with_encoding);
+  uim_scm_init_proc2("skk-lib-dic-open-with-encoding-and-unicode-sort",
+                     skk_dic_open_with_encoding_and_unicode_sort);
   uim_scm_init_proc1("skk-lib-free-dic", skk_free_dic);
   uim_scm_init_proc2("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
   uim_scm_init_proc2("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);

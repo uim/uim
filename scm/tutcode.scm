@@ -929,7 +929,7 @@
 (define (tutcode-context-new id im)
   (im-set-delay-activating-handler! im tutcode-delay-activating-handler)
   (if (not tutcode-dic)
-    (if (not (symbol-bound? 'skk-lib-dic-open))
+    (if (not (symbol-bound? 'skk-lib-dic-open-with-encoding-and-unicode-sort))
       (begin
         (if (symbol-bound? 'uim-notify-info)
           (uim-notify-info
@@ -938,7 +938,7 @@
         (set! tutcode-enable-mazegaki-learning? #f))
       (begin
         (set! tutcode-dic
-          (skk-lib-dic-open-with-encoding
+          (skk-lib-dic-open-with-encoding-and-unicode-sort
             tutcode-dic-filename 'tutcode-dic-file-encoding))
         (if tutcode-use-recursive-learning?
           (require "tutcode-editor.scm"))

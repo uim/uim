@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-09-26 16:17+0900\n"
+"POT-Creation-Date: 2026-10-02 07:23+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -7415,44 +7415,49 @@ msgstr "uim-openssl: %sの証明書検証に失敗しました: %s"
 msgid "uim-openssl: SSL_connect to %s: %s"
 msgstr "uim-openssl: %sへのSSL_connect: %s"
 
-#: uim/skk.c:359
+#: uim/skk.c:371
 #, c-format
 msgid "unknown encoding for %s: %s"
 msgstr "%sの文字コード%sは不明です"
 
-#: uim/skk.c:446
+#: uim/skk.c:458
 #, c-format
 msgid "uim-skk: failed to convert skkserv data from %s to %s"
 msgstr "uim-skk: skkservのデータを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:1203
+#: uim/skk.c:619
+#, c-format
+msgid "failed to build a Unicode-sorted index for system dictionary: %s"
+msgstr "システム辞書のユニコード順インデックスの構築に失敗しました: %s"
+
+#: uim/skk.c:1415
 #, c-format
 msgid "failed to convert system dictionary data from %s to %s"
 msgstr "システム辞書データを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:1367
+#: uim/skk.c:1579
 msgid "error in expand_str"
 msgstr "expand_strでエラー"
 
-#: uim/skk.c:1382
+#: uim/skk.c:1594
 msgid "too long word"
 msgstr "語が長すぎます"
 
-#: uim/skk.c:2294
+#: uim/skk.c:2506
 msgid "SKK server without completion capability\n"
 msgstr "補完機能がないSKKサーバ\n"
 
-#: uim/skk.c:3528
+#: uim/skk.c:3740
 #, c-format
 msgid "invalid %s dictionary: %s"
 msgstr "不正な%sの辞書です: %s"
 
-#: uim/skk.c:3849
+#: uim/skk.c:4061
 #, c-format
 msgid "cannot encode personal dictionary as %s"
 msgstr "個人辞書を%sとしてエンコードできません"
 
-#: uim/skk.c:4230
+#: uim/skk.c:4444
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: %sのポート%sへ接続できませんでした"
