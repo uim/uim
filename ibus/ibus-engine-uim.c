@@ -33,8 +33,8 @@
  * An IBus engine that hands the keys to uim. ibus-daemon starts it
  * with --ibus when a client selects the "uim" engine; GNOME Shell is
  * such a client for every application that talks text-input to
- * Mutter. The preedit and the candidates go back through ibus-daemon,
- * so GNOME Shell draws them.
+ * Mutter. The preedit, the candidates and the properties go back
+ * through ibus-daemon, so GNOME Shell draws them.
  *
  * Every IBus input context gets an engine of its own, and so a uim
  * context of its own.
@@ -216,6 +216,13 @@ static void
 commit_cb(void *ptr, const char *str)
 {
   ibus_uim_engine_commit_string(ptr, str);
+}
+
+static void
+prop_list_update_cb(void *ptr, const char *str)
+{
+  ibus_uim_property_update(ptr, str);
+  ibus_uim_helper_prop_list_update(ptr, str);
 }
 
 static void
@@ -500,6 +507,8 @@ ibus_uim_engine_focus_in(IBusEngine *ibus_engine)
   engine->focused = TRUE;
   debug("focus in\n");
   if (engine->uc) {
+    /* The panel takes the properties of the focused context. */
+    engine->props_registered = FALSE;
     ibus_uim_helper_focus_in(engine);
     uim_focus_in_context(engine->uc);
     /* Tells the toolbar about this context's input method. */
@@ -634,6 +643,15 @@ ibus_uim_engine_reset(IBusEngine *ibus_engine)
 }
 
 static void
+ibus_uim_engine_property_activate(IBusEngine *ibus_engine,
+                                  const gchar *prop_name,
+                                  guint prop_state)
+{
+  ibus_uim_property_activate((IBusUimEngine *)ibus_engine, prop_name,
+                             prop_state);
+}
+
+static void
 ibus_uim_engine_page_up(IBusEngine *ibus_engine)
 {
   shift_page((IBusUimEngine *)ibus_engine, FALSE);
@@ -686,6 +704,7 @@ ibus_uim_engine_constructed(GObject *object)
                      preedit_update_cb);
   uim_set_candidate_selector_cb(engine->uc, cand_activate_cb, cand_select_cb,
                                 cand_shift_page_cb, cand_deactivate_cb);
+  uim_set_prop_list_update_cb(engine->uc, prop_list_update_cb);
   ibus_uim_helper_add_engine(engine);
 }
 
@@ -702,6 +721,10 @@ ibus_uim_engine_destroy(IBusObject *object)
   if (engine->table) {
     g_object_unref(engine->table);
     engine->table = NULL;
+  }
+  if (engine->props) {
+    g_object_unref(engine->props);
+    engine->props = NULL;
   }
   if (engine->segments) {
     clear_segments(engine);
@@ -736,6 +759,7 @@ ibus_uim_engine_class_init(IBusUimEngineClass *klass)
 #endif
   engine_class->reset = ibus_uim_engine_reset;
   engine_class->set_content_type = ibus_uim_engine_set_content_type;
+  engine_class->property_activate = ibus_uim_engine_property_activate;
   engine_class->page_up = ibus_uim_engine_page_up;
   engine_class->page_down = ibus_uim_engine_page_down;
   engine_class->candidate_clicked = ibus_uim_engine_candidate_clicked;

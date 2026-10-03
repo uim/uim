@@ -16,7 +16,8 @@ libexec_PROGRAMS = ibus-engine-uim
 ibus_engine_uim_SOURCES =	\
 	helper.c		\
 	ibus-engine-uim.c	\
-	ibus-engine-uim.h
+	ibus-engine-uim.h	\
+	property.c
 ibus_engine_uim_CPPFLAGS = $(AM_CPPFLAGS)
 ibus_engine_uim_CFLAGS = @IBUS_CFLAGS@ -Wall
 ibus_engine_uim_LDADD = $(top_builddir)/uim/libuim-scm.la \

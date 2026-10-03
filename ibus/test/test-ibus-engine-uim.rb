@@ -125,6 +125,12 @@ class IBusSession
 
   SERVICE = "org.freedesktop.IBus"
   PATH = "/org/freedesktop/IBus"
+  PANEL_SERVICE = "org.freedesktop.IBus.Panel"
+
+  # A copy of an IBus::Property: ibus-daemon's own go away after the
+  # signal.
+  Property = Struct.new(:key, :type, :label, :symbol, :state, :visible,
+                        :sub_props)
 
   # What the engine sent back, one string each:
   #
@@ -134,6 +140,8 @@ class IBusSession
   #   hide-lookup-table
   attr_reader :events
   attr_reader :helper
+  # What the panel shows, Property each.
+  attr_reader :properties
 
   def initialize(default_im_name)
     @default_im_name = default_im_name
@@ -142,6 +150,8 @@ class IBusSession
     @connection = nil
     @context = nil
     @helper = nil
+    @panel = nil
+    @properties = nil
     @events = []
   end
 
@@ -173,6 +183,8 @@ class IBusSession
       "XDG_RUNTIME_DIR" => runtime_dir,
       # The desktop's settings stay out of the test.
       "GSETTINGS_BACKEND" => "memory",
+      # The labels stay untranslated even with uim installed.
+      "LC_ALL" => "C.UTF-8",
       "DISPLAY" => nil,
       "WAYLAND_DISPLAY" => nil,
     }
@@ -196,6 +208,7 @@ class IBusSession
     flags = Gio::DBusConnectionFlags::AUTHENTICATION_CLIENT |
             Gio::DBusConnectionFlags::MESSAGE_BUS_CONNECTION
     @connection = Gio::DBusConnection.new(address, flags, nil, nil)
+    start_panel
     reply = call(PATH, SERVICE, "CreateInputContext",
                  GLib::Variant.parse('("test",)'))
     @context = IBus::InputContext.new(reply[0], @connection, nil)
@@ -218,6 +231,7 @@ class IBusSession
 
   def stop
     @context = nil
+    @panel = nil
     if @connection
       @connection.close_sync(nil)
       @connection = nil
@@ -294,6 +308,31 @@ class IBusSession
     @helper.receive
   end
 
+  # The symbol of the input mode, which GNOME Shell shows in the top
+  # bar. It skips hidden properties.
+  def input_mode
+    prop = find_property(@properties, "InputMode")
+    return nil if prop.nil? or not prop.visible
+    prop.symbol
+  end
+
+  # The labels of the menus, as GNOME Shell shows them in the input
+  # source menu.
+  def menu_labels
+    (@properties || []).select(&:visible).collect(&:label)
+  end
+
+  # Whether the radio item for the action is the chosen one.
+  def checked?(key)
+    prop = find_property(@properties, key)
+    not prop.nil? and prop.state == IBus::PropState::CHECKED
+  end
+
+  # As GNOME Shell does when a radio item in the menu is chosen.
+  def activate_property(key)
+    @panel.property_activate(key, IBus::PropState::CHECKED)
+  end
+
   # The first lines of the messages to uim-helper-server. The same one
   # in a row counts once: some input methods tell about their
   # properties themselves when they get the focus, and the engine does
@@ -304,6 +343,63 @@ class IBusSession
   end
 
   private
+  def find_property(props, key)
+    (props || []).each do |prop|
+      return prop if prop.key == key
+      found = find_property(prop.sub_props, key)
+      return found if found
+    end
+    nil
+  end
+
+  def copy_property(prop)
+    Property.new(prop.key, prop.prop_type, prop.label.text, prop.symbol.text,
+                 prop.state, prop.visible?, copy_properties(prop.sub_props))
+  end
+
+  def copy_properties(props)
+    copies = []
+    i = 0
+    while (prop = props.get(i))
+      copies << copy_property(prop)
+      i += 1
+    end
+    copies
+  end
+
+  # As GNOME Shell does: the property of the same key and type, but not
+  # what is in its menu.
+  def update_property(props, update)
+    props.each do |prop|
+      if prop.key == update.key and prop.type == update.type
+        prop.label = update.label
+        prop.symbol = update.symbol
+        prop.state = update.state
+        prop.visible = update.visible
+        return true
+      end
+      return true if update_property(prop.sub_props, update)
+    end
+    false
+  end
+
+  # The properties go to the panel. GNOME Shell takes the first ones
+  # after the engine changes and only updates to them after that, so
+  # this does too.
+  def start_panel
+    @connection.call_sync("org.freedesktop.DBus", "/org/freedesktop/DBus",
+                          "org.freedesktop.DBus", "RequestName",
+                          GLib::Variant.parse("(\"#{PANEL_SERVICE}\", uint32 0)"),
+                          nil, :none, TIMEOUT * 1000, nil)
+    @panel = IBus::PanelService.new(@connection)
+    @panel.signal_connect("register-properties") do |_, props|
+      @properties ||= copy_properties(props) if props.get(0)
+    end
+    @panel.signal_connect("update-property") do |_, prop|
+      update_property(@properties, copy_property(prop)) if @properties
+    end
+  end
+
   def call(path, interface, method, parameters=nil)
     @connection.call_sync(SERVICE, path, interface, method, parameters,
                           nil, :none, TIMEOUT * 1000, nil)
@@ -394,6 +490,9 @@ class TestIBusEngineUim < Test::Unit::TestCase
   KA = "\u304B"
   # Hiragana a.
   A = "\u3042"
+  # SKK's labels for its latin mode and romaji input.
+  DIRECT_INPUT = "\u76F4\u63A5\u5165\u529B"
+  ROMAJI = "\u30ED\u30FC\u30DE\u5B57"
 
   def default_im_name
     "skk"
@@ -536,6 +635,55 @@ class TestIBusEngineUim < Test::Unit::TestCase
       assert do
         @ibus.key(KEYVAL_K, KEYCODE_K, RELEASE_MASK)
       end
+    end
+  end
+
+  sub_test_case("properties") do
+    setup do
+      @ibus.wait_until {@ibus.input_mode}
+    end
+
+    def test_input_mode
+      assert_equal("a", @ibus.input_mode)
+    end
+
+    # uim tells no name for the other widgets.
+    def test_menu_labels
+      assert_equal(["Input method (SKK)",
+                    "Input mode (#{DIRECT_INPUT})",
+                    ROMAJI],
+                   @ibus.menu_labels)
+    end
+
+    def test_input_mode_follows_the_input_method
+      @ibus.control(KEYVAL_J, KEYCODE_J)
+      @ibus.wait_until {@ibus.input_mode == A}
+      assert_equal(A, @ibus.input_mode)
+    end
+
+    # GNOME Shell keeps the menus of the first input method.
+    def test_switch_input_method
+      @ibus.activate_property("action_imsw_direct")
+      @ibus.wait_until {@ibus.input_mode == "-"}
+      assert_equal(["Input method (Direct)", "-"],
+                   [@ibus.menu_labels.first, @ibus.input_mode])
+    end
+
+    # ibus-daemon aborts when a menu and an item in it share a key.
+    def test_activate_other_widget
+      @ibus.activate_property("action_skk_azik")
+      @ibus.wait_until {@ibus.checked?("action_skk_azik")}
+      assert_equal([true, false],
+                   [@ibus.checked?("action_skk_azik"),
+                    @ibus.checked?("action_skk_roma")])
+    end
+
+    def test_activate
+      @ibus.activate_property("action_skk_hiragana")
+      @ibus.wait_until {@ibus.input_mode == A}
+      @ibus.type(KEYVAL_K, KEYCODE_K)
+      assert_equal([A, "preedit 1 1 k"],
+                   [@ibus.input_mode, @ibus.events.grep(/\Apreedit /).last])
     end
   end
 

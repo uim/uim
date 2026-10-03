@@ -71,6 +71,12 @@ typedef struct {
   /* The pressed keys that went around uim, so their releases do too. */
   guint8 bypassed_keys[IBUS_UIM_MAX_KEYCODE / 8];
 
+  /* The properties last told to the panel. */
+  IBusPropList *props;
+  /* Whether the panel has been told the properties since the focus
+   * came in, so changes can go as updates. */
+  gboolean props_registered;
+
   gboolean focused;
   /* Focused on ibus-daemon's own context, which it focuses while no
    * application has the focus. */
@@ -90,4 +96,10 @@ void ibus_uim_helper_add_engine(IBusUimEngine *engine);
 void ibus_uim_helper_remove_engine(IBusUimEngine *engine);
 void ibus_uim_helper_focus_in(IBusUimEngine *engine);
 void ibus_uim_helper_focus_out(IBusUimEngine *engine);
+void ibus_uim_helper_prop_list_update(IBusUimEngine *engine, const char *str);
 void ibus_uim_helper_disconnect(void);
+
+/* property.c */
+void ibus_uim_property_update(IBusUimEngine *engine, const char *str);
+void ibus_uim_property_activate(IBusUimEngine *engine, const char *key,
+                                guint state);

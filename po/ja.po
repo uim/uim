@@ -713,6 +713,10 @@ msgstr "uimの状態を示すアプレット"
 msgid "About"
 msgstr "このプログラムについて"
 
+#: ibus/property.c:142
+msgid "Input method"
+msgstr "入力方式"
+
 #: qt3/chardict/bushuviewwidget.cpp:72 qt4/chardict/bushuviewwidget.cpp:90
 #: tqt/chardict/bushuviewwidget.cpp:72
 msgid "Bushu List"

@@ -16,6 +16,7 @@ gtk3/toolbar/standalone-gtk.c
 gtk3/toolbar/UimApplet.panel-applet.desktop.in.in
 gtk3/toolbar/applet-gnome3.c
 gtk3/toolbar/uim-applet-menu.xml
+ibus/property.c
 qt3/chardict/bushuviewwidget.cpp
 qt3/chardict/qt.cpp
 qt3/chardict/unicodeviewwidget.cpp
