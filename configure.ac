@@ -1402,6 +1402,8 @@ if test "x$enable_emacs" != xno; then
 fi
 
 AM_CONDITIONAL(UIM_EL, test "x$enable_emacs" = xyes)
+AM_CONDITIONAL(UIM_EL_TEST,
+               test "x$enable_emacs" = xyes && test "x$EMACS" != xno)
 
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],

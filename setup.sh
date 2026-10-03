@@ -16,6 +16,7 @@ function setup_with_apt () {
     autoconf-archive \
     autopoint \
     cmake \
+    emacs-nox \
     extra-cmake-modules \
     g++ \
     gcc \

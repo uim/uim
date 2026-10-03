@@ -50,6 +50,9 @@
 /emacs/uim-el-helper-agent
 /emacs/uim-version.el
 /emacs/*.o
+/emacs/test/*.log
+/emacs/test/*.trs
+/emacs/test-suite.log
 
 # /examples/
 /examples/Makefile.in
