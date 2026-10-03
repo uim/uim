@@ -20,7 +20,7 @@ UIM_SH_ENV = \
 	LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs \
 	UIM_DISABLE_NOTIFY=1
 
-#if MAINTAINER_MODE
+if MAINTAINER_MODE
 wb86.scm: $(top_srcdir)/scm/wb86.scm
 	$(LN_S) $< $@
 
@@ -33,7 +33,7 @@ zm.scm: $(top_srcdir)/scm/zm.scm
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim sigscheme-combined && \
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-sh && \
 	echo "(begin (load \"$<\") (for-each (lambda (key) (display (format \"~a ~W\n\" (apply string-append (caar key)) (cadr key)))) `basename $< .scm`-rule))" | $(UIM_SH_ENV) $(UIM_SH) -b | grep -v "^#<undef>" | LANG=C LC_ALL=C sort > $@
-#endif
+endif
 
 clean-genscm:
 	rm -f $(SCMS)
