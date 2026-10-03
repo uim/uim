@@ -141,19 +141,6 @@ switch_other_engines(IBusUimEngine *engine, const char *name)
 /* callbacks from libuim */
 
 static void
-prop_list_update_cb(void *ptr, const char *str)
-{
-  IBusUimEngine *engine = ptr;
-  char *message;
-
-  if (engine != talking_engine())
-    return;
-  message = g_strdup_printf("prop_list_update\ncharset=UTF-8\n%s", str);
-  send_message(message);
-  g_free(message);
-}
-
-static void
 configuration_changed_cb(void *ptr)
 {
   IBusUimEngine *engine = ptr;
@@ -375,7 +362,6 @@ ibus_uim_helper_add_engine(IBusUimEngine *engine)
   engines = g_list_prepend(engines, engine);
   if (helper_fd >= 0)
     uim_set_uim_fd(engine->uc, helper_fd);
-  uim_set_prop_list_update_cb(engine->uc, prop_list_update_cb);
   uim_set_configuration_changed_cb(engine->uc, configuration_changed_cb);
   uim_set_im_switch_request_cb(engine->uc, switch_app_global_im_cb,
                                switch_system_global_im_cb);
@@ -404,4 +390,16 @@ ibus_uim_helper_focus_out(IBusUimEngine *engine)
   uim_helper_client_focus_out(engine->uc);
   if (focused_engine == engine)
     focused_engine = NULL;
+}
+
+void
+ibus_uim_helper_prop_list_update(IBusUimEngine *engine, const char *str)
+{
+  char *message;
+
+  if (engine != talking_engine())
+    return;
+  message = g_strdup_printf("prop_list_update\ncharset=UTF-8\n%s", str);
+  send_message(message);
+  g_free(message);
 }
