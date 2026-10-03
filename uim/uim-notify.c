@@ -187,9 +187,11 @@ uim_notify_info(const char *msg_fmt, ...)
 {
   va_list ap;
   char msg[BUFSIZ];
+  const char *translated_msg_fmt;
 
+  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(ap, msg_fmt);
-  vsnprintf(msg, sizeof(msg), msg_fmt, ap);
+  vsnprintf(msg, sizeof(msg), translated_msg_fmt, ap);
   va_end(ap);
 
   return agent->notify_info(msg);
@@ -200,9 +202,11 @@ uim_notify_fatal(const char *msg_fmt, ...)
 {
   va_list ap;
   char msg[BUFSIZ];
+  const char *translated_msg_fmt;
 
+  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(ap, msg_fmt);
-  vsnprintf(msg, sizeof(msg), msg_fmt, ap);
+  vsnprintf(msg, sizeof(msg), translated_msg_fmt, ap);
   va_end(ap);
 
   return agent->notify_fatal(msg);
