@@ -794,7 +794,13 @@
       (if (and
 	   (null? csc)
 	   (eq? stat 'skk-state-kcode))
-	  (im-pushback-preedit sc skk-preedit-attr-mode-mark "JIS "))
+	  (let ((h (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))))
+	    (if (and (string? h)
+		     (> (string-length h) 0)
+		     (or (char=? (string-ref h 0) #\u)
+			 (char=? (string-ref h 0) #\U)))
+		(im-pushback-preedit sc skk-preedit-attr-mode-mark "Unicode ")
+		(im-pushback-preedit sc skk-preedit-attr-mode-mark "JIS "))))
       (if (or
 	   (not (null? csc))
 	   (eq? stat 'skk-state-converting))
