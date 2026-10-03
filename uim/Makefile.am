@@ -202,6 +202,12 @@ libuim_look_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la
 libuim_look_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_look_la_CPPFLAGS = $(AM_CPPFLAGS)
 
+uimplugin_LTLIBRARIES += libuim-tutcode.la
+libuim_tutcode_la_SOURCES = tutcode.c
+libuim_tutcode_la_LIBADD = libuim-scm.la libuim.la
+libuim_tutcode_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
+libuim_tutcode_la_CPPFLAGS = $(AM_CPPFLAGS)
+
 libuim_bsdlook_la_SOURCES = bsdlook.h bsdlook.c
 libuim_bsdlook_la_LIBADD =
 libuim_bsdlook_la_CPPFLAGS = $(AM_CPPFLAGS)

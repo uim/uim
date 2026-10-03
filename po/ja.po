@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-02 07:23+0900\n"
+"POT-Creation-Date: 2026-10-03 16:21+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -7461,6 +7461,50 @@ msgstr "個人辞書を%sとしてエンコードできません"
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: %sのポート%sへ接続できませんでした"
+
+#: uim/tutcode.c:78
+#, c-format
+msgid "uim-tutcode: bushu dictionary %s: %s"
+msgstr "uim-tutcode: 部首辞書 %s: %s"
+
+#: uim/tutcode.c:85
+#, c-format
+msgid "uim-tutcode: bushu dictionary %s: invalid line %lu"
+msgstr "uim-tutcode: 部首辞書 %s の %lu 行目が不正です"
+
+#: uim/tutcode.c:446
+#, c-format
+msgid "cannot open file: %s"
+msgstr "ファイルを開けません: %s"
+
+#: uim/tutcode.c:454
+msgid "cannot create character converter"
+msgstr "文字コード変換器を作成できません"
+
+#: uim/tutcode.c:490
+msgid "index is too large"
+msgstr "インデックスが大きすぎます"
+
+#: uim/tutcode.c:496
+msgid "failed while reading file"
+msgstr "ファイルの読み込み中にエラーが発生しました"
+
+#: uim/tutcode.c:501
+msgid "failed while closing file"
+msgstr "ファイルを閉じる際にエラーが発生しました"
+
+#: uim/tutcode.c:509
+msgid "failed to finalize index"
+msgstr "インデックスの確定に失敗しました"
+
+#: uim/tutcode.c:581
+#, c-format
+msgid "uim-tutcode: unknown bushu dictionary kind: %s"
+msgstr "uim-tutcode: 不明な部首辞書の種類です: %s"
+
+#: uim/tutcode.c:593
+msgid "uim-tutcode: invalid UTF-8 bushu lookup key"
+msgstr "uim-tutcode: 部首検索キーが不正なUTF-8文字列です"
 
 #: uim/uim.c:772
 msgid "builtin"
