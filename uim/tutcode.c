@@ -59,6 +59,7 @@ struct tutcode_bushu_index {
   char *filename;
   char *encoding;
   enum tutcode_bushu_index_kind kind;
+  int build_failed;
   struct tutcode_bushu_index_entry *entries;
   size_t nr_entries;
   size_t capacity;
@@ -80,10 +81,23 @@ notify_dictionary_error(const char *filename, const char *message)
 }
 
 static void
-notify_invalid_line(const char *filename, size_t line_number)
+notify_invalid_lines(const char *filename, const char *encoding,
+                     size_t invalid_line_count, size_t first_invalid_line,
+                     int no_valid_entries)
 {
-  uim_notify_info(N_("uim-tutcode: bushu dictionary %s: invalid line %lu"),
-                  filename, (unsigned long)line_number);
+  if (no_valid_entries) {
+    uim_notify_info(
+      N_("uim-tutcode: bushu dictionary %s (encoding: %s): no usable entries after "
+         "skipping %lu invalid lines (first at line %lu); check the encoding"),
+      filename, encoding, (unsigned long)invalid_line_count,
+      (unsigned long)first_invalid_line);
+  } else {
+    uim_notify_info(
+      N_("uim-tutcode: bushu dictionary %s (encoding: %s): skipped %lu invalid lines "
+         "(first at line %lu)"),
+      filename, encoding, (unsigned long)invalid_line_count,
+      (unsigned long)first_invalid_line);
+  }
 }
 
 static char *
@@ -435,7 +449,7 @@ build_index(const char *filename, const char *encoding,
   struct tutcode_bushu_index *index;
   FILE *fp;
   void *converter;
-  size_t line_number = 0;
+  size_t line_number = 0, invalid_line_count = 0, first_invalid_line = 0;
   int read_error;
   char *line;
 
@@ -472,15 +486,26 @@ build_index(const char *filename, const char *encoding,
     free(line);
     if (!utf8_line || (line_nonempty && utf8_line[0] == '\0')) {
       free(utf8_line);
-      notify_invalid_line(filename, line_number);
-      goto error;
+      if (!invalid_line_count)
+        first_invalid_line = line_number;
+      invalid_line_count++;
+      uim_iconv->release(converter);
+      converter = uim_iconv->create("UTF-8", encoding);
+      if (!converter) {
+        notify_dictionary_error(filename,
+                                _("cannot create character converter"));
+        goto error;
+      }
+      continue;
     }
 
     parse_status = parse_dictionary_line(kind, utf8_line, &key, &value);
     free(utf8_line);
     if (parse_status < 0) {
-      notify_invalid_line(filename, line_number);
-      goto error;
+      if (!invalid_line_count)
+        first_invalid_line = line_number;
+      invalid_line_count++;
+      continue;
     }
     if (parse_status == 0)
       continue;
@@ -505,10 +530,18 @@ build_index(const char *filename, const char *encoding,
 
   uim_iconv->release(converter);
   converter = NULL;
+  if (invalid_line_count && index->nr_entries == 0) {
+    notify_invalid_lines(filename, encoding, invalid_line_count,
+                         first_invalid_line, 1);
+    goto error;
+  }
   if (!finalize_index(index)) {
     notify_dictionary_error(filename, _("failed to finalize index"));
     goto error;
   }
+  if (invalid_line_count)
+    notify_invalid_lines(filename, encoding, invalid_line_count,
+                         first_invalid_line, 0);
   return index;
 
 error:
@@ -518,6 +551,20 @@ error:
     uim_iconv->release(converter);
   free_index(index);
   return NULL;
+}
+
+static struct tutcode_bushu_index *
+new_failed_index(const char *filename, const char *encoding,
+                 enum tutcode_bushu_index_kind kind)
+{
+  struct tutcode_bushu_index *index = uim_malloc(sizeof(*index));
+
+  memset(index, 0, sizeof(*index));
+  index->filename = uim_strdup(filename);
+  index->encoding = uim_strdup(encoding);
+  index->kind = kind;
+  index->build_failed = 1;
+  return index;
 }
 
 static struct tutcode_bushu_index *
@@ -534,10 +581,10 @@ get_index(const char *filename, const char *encoding,
   }
 
   index = build_index(filename, encoding, kind);
-  if (index) {
-    index->next = tutcode_bushu_indexes;
-    tutcode_bushu_indexes = index;
-  }
+  if (!index)
+    index = new_failed_index(filename, encoding, kind);
+  index->next = tutcode_bushu_indexes;
+  tutcode_bushu_indexes = index;
   return index;
 }
 
@@ -584,7 +631,7 @@ tutcode_bushu_indexed_search(uim_lisp filename_, uim_lisp encoding_,
   }
 
   index = get_index(filename, encoding, kind);
-  if (!index)
+  if (!index || index->build_failed)
     return uim_scm_f();
 
   if (kind == TUTCODE_BUSHU_INDEX2) {
