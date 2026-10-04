@@ -128,6 +128,11 @@ class IBusSession
   SERVICE = "org.freedesktop.IBus"
   PATH = "/org/freedesktop/IBus"
   PANEL_SERVICE = "org.freedesktop.IBus.Panel"
+  CAPABILITIES_WITHOUT_SURROUNDING_TEXT = IBus::Capabilite::PREEDIT_TEXT |
+                                          IBus::Capabilite::LOOKUP_TABLE |
+                                          IBus::Capabilite::FOCUS
+  CAPABILITIES = CAPABILITIES_WITHOUT_SURROUNDING_TEXT |
+                 IBus::Capabilite::SURROUNDING_TEXT
 
   # A copy of an IBus::Property: ibus-daemon's own go away after the
   # signal.
@@ -218,9 +223,7 @@ class IBusSession
 
     # The client asks for the lookup table itself, so ibus-daemon sends
     # it here instead of to a panel.
-    @context.capabilities = IBus::Capabilite::PREEDIT_TEXT |
-                            IBus::Capabilite::LOOKUP_TABLE |
-                            IBus::Capabilite::FOCUS
+    @context.capabilities = CAPABILITIES
     @context.focus_in
     # As GNOME Shell does. ibus-daemon replies once the engine is up and
     # attached to the focused context.
@@ -260,6 +263,21 @@ class IBusSession
 
   def focus_in
     @context.focus_in
+    sync
+  end
+
+  # The text around the cursor, with the cursor and the anchor counted
+  # in characters, as GNOME Shell sends it. libibus sends it only once
+  # the engine has asked, which it does when it gets the focus.
+  def set_surrounding_text(text, cursor, anchor=cursor)
+    wait_until {@context.needs_surrounding_text}
+    @context.set_surrounding_text(IBus::Text.new(text),
+                                  cursor, anchor)
+  end
+
+  # As an application that doesn't send the text around the cursor.
+  def stop_sending_surrounding_text
+    @context.capabilities = CAPABILITIES_WITHOUT_SURROUNDING_TEXT
     sync
   end
 
@@ -446,6 +464,9 @@ class IBusSession
     @context.signal_connect("hide-lookup-table") do
       @events << "hide-lookup-table"
     end
+    @context.signal_connect("delete-surrounding-text") do |_, offset, n_chars|
+      @events << "delete #{offset} #{n_chars}"
+    end
   end
 
   def wait_for
@@ -480,6 +501,7 @@ class IBusSession
   def user_scm
     <<-SCM
 (load "#{File.join(__dir__, "candidates.scm")}")
+(load "#{File.join(__dir__, "surrounding-text.scm")}")
 (define default-im-name '#{@default_im_name})
     SCM
   end
@@ -686,6 +708,64 @@ class TestIBusEngineUim < Test::Unit::TestCase
       @ibus.type(KEYVAL_K, KEYCODE_K)
       assert_equal([A, "preedit 1 1 k"],
                    [@ibus.input_mode, @ibus.events.grep(/\Apreedit /).last])
+    end
+  end
+
+  sub_test_case("surrounding text") do
+    def default_im_name
+      "surrounding-text"
+    end
+
+    def commits
+      @ibus.events.grep(/\Acommit /)
+    end
+
+    def test_whole_text
+      @ibus.set_surrounding_text("hello world", 5)
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal(["commit [hello| world]"], commits)
+    end
+
+    def test_line_before_the_cursor
+      @ibus.set_surrounding_text("one\ntwo", 7)
+      @ibus.type(KEYVAL_J, KEYCODE_J)
+      assert_equal(["commit [two|]"], commits)
+    end
+
+    def test_selection
+      @ibus.set_surrounding_text("hello world", 5, 0)
+      @ibus.type(KEYVAL_K, KEYCODE_K)
+      assert_equal(["commit [|hello]"], commits)
+    end
+
+    # IBus counts characters, not bytes.
+    def test_characters
+      @ibus.set_surrounding_text("#{KA}#{A}#{KA}", 2)
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal(["commit [#{KA}#{A}|#{KA}]"], commits)
+    end
+
+    # Until the field that got the focus sends its text, there is none:
+    # not the text of the one that had the focus before.
+    def test_focus_moved
+      @ibus.set_surrounding_text("hello", 5)
+      @ibus.focus_out
+      @ibus.focus_in
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal(["commit []"], commits)
+    end
+
+    def test_nothing_sent
+      @ibus.stop_sending_surrounding_text
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal(["commit []"], commits)
+    end
+
+    def test_delete
+      @ibus.set_surrounding_text("hello", 5)
+      @ibus.type(KEYVAL_L, KEYCODE_L)
+      assert_equal(["delete -1 1", "commit [deleted]"],
+                   @ibus.events.grep(/\A(?:delete|commit) /))
     end
   end
 

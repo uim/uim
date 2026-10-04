@@ -1,6 +1,7 @@
 EXTRA_DIST =				\
 	test/candidates.scm		\
 	test/run.rb			\
+	test/surrounding-text.scm	\
 	test/test-ibus-engine-uim.rb	\
 	uim.xml.in
 
@@ -17,7 +18,8 @@ ibus_engine_uim_SOURCES =	\
 	helper.c		\
 	ibus-engine-uim.c	\
 	ibus-engine-uim.h	\
-	property.c
+	property.c		\
+	text.c
 ibus_engine_uim_CPPFLAGS = $(AM_CPPFLAGS)
 ibus_engine_uim_CFLAGS = @IBUS_CFLAGS@ -Wall
 ibus_engine_uim_LDADD = $(top_builddir)/uim/libuim-scm.la \

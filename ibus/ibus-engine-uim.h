@@ -77,6 +77,10 @@ typedef struct {
    * came in, so changes can go as updates. */
   gboolean props_registered;
 
+  /* The application has sent the text around the cursor since the
+   * focus came in. */
+  gboolean has_surrounding_text;
+
   gboolean focused;
   /* Focused on ibus-daemon's own context, which it focuses while no
    * application has the focus. */
@@ -103,3 +107,11 @@ void ibus_uim_helper_disconnect(void);
 void ibus_uim_property_update(IBusUimEngine *engine, const char *str);
 void ibus_uim_property_activate(IBusUimEngine *engine, const char *key,
                                 guint state);
+
+/* text.c */
+int ibus_uim_text_acquire(void *ptr, enum UTextArea text_id,
+                          enum UTextOrigin origin, int former_length,
+                          int latter_length, char **former, char **latter);
+int ibus_uim_text_delete(void *ptr, enum UTextArea text_id,
+                         enum UTextOrigin origin, int former_length,
+                         int latter_length);

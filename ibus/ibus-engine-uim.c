@@ -514,6 +514,11 @@ ibus_uim_engine_focus_in(IBusEngine *ibus_engine)
     return;
   engine->focused = TRUE;
   debug("focus in\n");
+  /* What IBus kept of the text is another field's until the application
+   * sends this one's, which it does when asked. ibus-daemon enables a
+   * global engine only once, so asking then isn't enough. */
+  engine->has_surrounding_text = FALSE;
+  ibus_engine_get_surrounding_text(ibus_engine, NULL, NULL, NULL);
   if (engine->uc) {
     /* The panel takes the properties of the focused context. */
     engine->props_registered = FALSE;
@@ -526,6 +531,17 @@ ibus_uim_engine_focus_in(IBusEngine *ibus_engine)
 }
 
 static void
+ibus_uim_engine_set_surrounding_text(IBusEngine *ibus_engine,
+                                     IBusText *text,
+                                     guint cursor_pos,
+                                     guint anchor_pos)
+{
+  IBUS_ENGINE_CLASS(ibus_uim_engine_parent_class)->
+    set_surrounding_text(ibus_engine, text, cursor_pos, anchor_pos);
+  ((IBusUimEngine *)ibus_engine)->has_surrounding_text = TRUE;
+}
+
+static void
 ibus_uim_engine_focus_out(IBusEngine *ibus_engine)
 {
   IBusUimEngine *engine = (IBusUimEngine *)ibus_engine;
@@ -533,6 +549,7 @@ ibus_uim_engine_focus_out(IBusEngine *ibus_engine)
   if (!engine->focused)
     return;
   engine->focused = FALSE;
+  engine->has_surrounding_text = FALSE;
   debug("focus out\n");
   if (engine->uc) {
     uim_focus_out_context(engine->uc);
@@ -713,6 +730,8 @@ ibus_uim_engine_constructed(GObject *object)
   uim_set_candidate_selector_cb(engine->uc, cand_activate_cb, cand_select_cb,
                                 cand_shift_page_cb, cand_deactivate_cb);
   uim_set_prop_list_update_cb(engine->uc, prop_list_update_cb);
+  uim_set_text_acquisition_cb(engine->uc, ibus_uim_text_acquire,
+                              ibus_uim_text_delete);
   ibus_uim_helper_add_engine(engine);
 }
 
@@ -761,6 +780,7 @@ ibus_uim_engine_class_init(IBusUimEngineClass *klass)
   engine_class->process_key_event = ibus_uim_engine_process_key_event;
   engine_class->focus_in = ibus_uim_engine_focus_in;
   engine_class->focus_out = ibus_uim_engine_focus_out;
+  engine_class->set_surrounding_text = ibus_uim_engine_set_surrounding_text;
 #if IBUS_CHECK_VERSION(1, 5, 27)
   engine_class->focus_in_id = ibus_uim_engine_focus_in_id;
   engine_class->focus_out_id = ibus_uim_engine_focus_out_id;
