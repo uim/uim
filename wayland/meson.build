@@ -1,24 +1,35 @@
-# Client code for zwp_input_method_v1 generated from wayland-protocols.
-wayland_input_method_xml = (
+# Client code generated from the protocol descriptions.
+wayland_input_method_v1_xml = (
   wayland_protocols.get_variable(pkgconfig: 'pkgdatadir') /
   'unstable' / 'input-method' / 'input-method-unstable-v1.xml')
+# wayland-protocols doesn't have these.
+wayland_input_method_v2_xml = (meson.current_source_dir() / 'protocol' /
+                               'input-method-unstable-v2.xml')
+wayland_virtual_keyboard_xml = (meson.current_source_dir() / 'protocol' /
+                                'virtual-keyboard-unstable-v1.xml')
 wayland_scanner_program = find_program(
   wayland_scanner.get_variable(pkgconfig: 'wayland_scanner'),
   native: true)
 wayland_protocol_sources = []
-foreach definition : [
-  ['client-header', 'input-method-unstable-v1-client-protocol.h'],
-  ['private-code', 'input-method-unstable-v1-protocol.c'],
+foreach protocol : [
+  [wayland_input_method_v1_xml, 'input-method-unstable-v1'],
+  [wayland_input_method_v2_xml, 'input-method-unstable-v2'],
+  [wayland_virtual_keyboard_xml, 'virtual-keyboard-unstable-v1'],
 ]
-  wayland_protocol_sources += [
-    custom_target(definition[1],
-                  input: wayland_input_method_xml,
-                  output: definition[1],
-                  command: [wayland_scanner_program,
-                            definition[0],
-                            '@INPUT@',
-                            '@OUTPUT@']),
+  foreach definition : [
+    ['client-header', protocol[1] + '-client-protocol.h'],
+    ['private-code', protocol[1] + '-protocol.c'],
   ]
+    wayland_protocol_sources += [
+      custom_target(definition[1],
+                    input: protocol[0],
+                    output: definition[1],
+                    command: [wayland_scanner_program,
+                              definition[0],
+                              '@INPUT@',
+                              '@OUTPUT@']),
+    ]
+  endforeach
 endforeach
 
 # The sources include config.h only when HAVE_CONFIG_H is defined as
@@ -27,6 +38,7 @@ uim_wayland = executable('uim-wayland',
                          'candwin.c',
                          'helper.c',
                          'input-method-v1.c',
+                         'input-method-v2.c',
                          'key.c',
                          'text.c',
                          'uim-wayland.c',
@@ -69,8 +81,10 @@ if get_option('tests').allowed()
          args: [files('test' / 'run.rb')],
          depends: uim_wayland,
          env: uim_build_tree_env + {
-           'INPUT_METHOD_XML': wayland_input_method_xml,
+           'INPUT_METHOD_V1_XML': wayland_input_method_v1_xml,
+           'INPUT_METHOD_V2_XML': wayland_input_method_v2_xml,
            'UIM_WAYLAND': uim_wayland.full_path(),
+           'VIRTUAL_KEYBOARD_XML': wayland_virtual_keyboard_xml,
            'WAYLAND_XML': wayland_core_xml,
          },
          suite: 'wayland',
