@@ -58,11 +58,8 @@ static volatile sig_atomic_t terminate_requested = 0;
 static int terminate_pipe[2] = {-1, -1};
 static bool debug_enabled = false;
 
-static void debug(const char *format, ...)
-  __attribute__((format(printf, 1, 2)));
-
-static void
-debug(const char *format, ...)
+void
+uim_wayland_debug(const char *format, ...)
 {
   va_list args;
 
@@ -152,9 +149,9 @@ was_bypassed(struct uim_wayland *uw, uint32_t key)
 void
 uim_wayland_commit_string(struct uim_wayland *uw, const char *str)
 {
-  if (!uw->context || !str || str[0] == '\0')
+  if (!uw->focused || !str || str[0] == '\0')
     return;
-  zwp_input_method_context_v1_commit_string(uw->context, uw->serial, str);
+  uw->input_method->commit_string(uw, str);
 }
 
 static void
@@ -202,16 +199,6 @@ preedit_pushback_cb(void *ptr, int attr, const char *str)
   segment->str = uim_strdup(str);
 }
 
-static uint32_t
-preedit_style(int attr)
-{
-  if (attr & UPreeditAttr_Reverse)
-    return UIM_WAYLAND_PREEDIT_STYLE_HIGHLIGHT;
-  if (attr & UPreeditAttr_UnderLine)
-    return UIM_WAYLAND_PREEDIT_STYLE_UNDERLINE;
-  return UIM_WAYLAND_PREEDIT_STYLE_DEFAULT;
-}
-
 static void
 preedit_update_cb(void *ptr)
 {
@@ -219,14 +206,17 @@ preedit_update_cb(void *ptr)
   size_t capacity = 256;
   size_t length = 0;
   char *text;
+  struct uim_wayland_preedit_span *spans;
+  size_t n_spans = 0;
   int cursor = -1;
   size_t i;
 
-  if (!uw->context)
+  if (!uw->focused)
     return;
 
   text = uim_malloc(capacity);
   text[0] = '\0';
+  spans = uim_malloc(sizeof(*spans) * (uw->n_segments + 1));
   for (i = 0; i < uw->n_segments; i++) {
     struct uim_wayland_preedit_segment *segment = &uw->segments[i];
     const char *str = segment->str;
@@ -245,27 +235,25 @@ preedit_update_cb(void *ptr)
       text = uim_realloc(text, capacity);
     }
     memcpy(text + length, str, str_length);
-    zwp_input_method_context_v1_preedit_styling(uw->context,
-                                                (uint32_t)length,
-                                                (uint32_t)str_length,
-                                                preedit_style(segment->attr));
+    spans[n_spans].offset = (uint32_t)length;
+    spans[n_spans].length = (uint32_t)str_length;
+    spans[n_spans].attr = segment->attr;
+    n_spans++;
     length += str_length;
     text[length] = '\0';
   }
 
   if (length == 0 && !uw->preedit_shown) {
+    free(spans);
     free(text);
     return;
   }
 
   if (cursor < 0)
     cursor = (int)length;
-  zwp_input_method_context_v1_preedit_cursor(uw->context, cursor);
-  /* The second string is what the client commits if it loses the
-   * context while the preedit is shown. */
-  zwp_input_method_context_v1_preedit_string(uw->context, uw->serial,
-                                             text, text);
+  uw->input_method->set_preedit(uw, text, (uint32_t)cursor, spans, n_spans);
   uw->preedit_shown = length > 0;
+  free(spans);
   free(text);
 }
 
@@ -275,7 +263,7 @@ static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
 {
   struct uim_wayland *uw = ptr;
-  if (uw->context)
+  if (uw->focused)
     uim_wayland_candwin_activate(uw->candwin, nr, display_limit);
 }
 
@@ -283,7 +271,7 @@ static void
 cand_select_cb(void *ptr, int index)
 {
   struct uim_wayland *uw = ptr;
-  if (uw->context)
+  if (uw->focused)
     uim_wayland_candwin_select(uw->candwin, index);
 }
 
@@ -291,7 +279,7 @@ static void
 cand_shift_page_cb(void *ptr, int direction)
 {
   struct uim_wayland *uw = ptr;
-  if (uw->context)
+  if (uw->focused)
     uim_wayland_candwin_shift_page(uw->candwin, direction != 0);
 }
 
@@ -364,18 +352,15 @@ switch_system_global_im_cb(void *ptr, const char *name)
   free(message);
 }
 
-/* grabbed keyboard */
+/* keyboard */
 
-static void
-keyboard_keymap(void *data,
-                struct wl_keyboard *keyboard,
-                uint32_t format,
-                int32_t fd,
-                uint32_t size)
+void
+uim_wayland_set_keymap(struct uim_wayland *uw,
+                       uint32_t format,
+                       int32_t fd,
+                       uint32_t size)
 {
-  struct uim_wayland *uw = data;
   char *map;
-  (void)keyboard;
 
   if (format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1) {
     close(fd);
@@ -403,44 +388,25 @@ keyboard_keymap(void *data,
     return;
   }
   uw->xkb_state = xkb_state_new(uw->xkb_keymap);
-  debug("received keymap (%u bytes)", size);
+  uim_wayland_debug("received keymap (%u bytes)", size);
 }
 
 static void
-keyboard_enter(void *data,
-               struct wl_keyboard *keyboard,
-               uint32_t serial,
-               struct wl_surface *surface,
-               struct wl_array *keys)
+release_keymap(struct uim_wayland *uw)
 {
-  (void)data;
-  (void)keyboard;
-  (void)serial;
-  (void)surface;
-  (void)keys;
+  if (uw->xkb_state) {
+    xkb_state_unref(uw->xkb_state);
+    uw->xkb_state = NULL;
+  }
+  if (uw->xkb_keymap) {
+    xkb_keymap_unref(uw->xkb_keymap);
+    uw->xkb_keymap = NULL;
+  }
 }
 
-static void
-keyboard_leave(void *data,
-               struct wl_keyboard *keyboard,
-               uint32_t serial,
-               struct wl_surface *surface)
+bool
+uim_wayland_filter_key(struct uim_wayland *uw, uint32_t key, uint32_t state)
 {
-  (void)data;
-  (void)keyboard;
-  (void)serial;
-  (void)surface;
-}
-
-static void
-keyboard_key(void *data,
-             struct wl_keyboard *keyboard,
-             uint32_t serial,
-             uint32_t time,
-             uint32_t key,
-             uint32_t state)
-{
-  struct uim_wayland *uw = data;
   /* A compositor may send WL_KEYBOARD_KEY_STATE_REPEATED (wl_keyboard
    * version 10) for an auto-repeating key. Anything that isn't a
    * release is a press as far as uim is concerned; testing for
@@ -452,11 +418,11 @@ keyboard_key(void *data,
   int ukey, umod;
   int pass_through;
   bool forward;
-  (void)keyboard;
 
-  debug("received key %u %s", key, pressed ? "pressed" : "released");
-  if (!uw->context)
-    return;
+  uim_wayland_debug("received key %u %s", key,
+                    pressed ? "pressed" : "released");
+  if (!uw->focused)
+    return false;
 
   if (uw->xkb_state)
     sym = xkb_state_key_get_one_sym(uw->xkb_state, code);
@@ -483,124 +449,41 @@ keyboard_key(void *data,
     forward = was_forwarded(uw, key);
   }
 
-  debug("key %u (sym %#x ukey %d umod %#x) %s: %s", key, sym, ukey, umod,
-        pressed ? "pressed" : "released",
-        forward ? "forwarded" : "consumed");
-  if (forward) {
-    zwp_input_method_context_v1_key(uw->context, serial, time, key, state);
-  }
+  uim_wayland_debug("key %u (sym %#x ukey %d umod %#x) %s: %s",
+                    key, sym, ukey, umod,
+                    pressed ? "pressed" : "released",
+                    forward ? "forwarded" : "consumed");
+  return forward;
 }
 
-static void
-keyboard_modifiers(void *data,
-                   struct wl_keyboard *keyboard,
-                   uint32_t serial,
-                   uint32_t mods_depressed,
-                   uint32_t mods_latched,
-                   uint32_t mods_locked,
-                   uint32_t group)
+void
+uim_wayland_set_modifiers(struct uim_wayland *uw,
+                          uint32_t mods_depressed,
+                          uint32_t mods_latched,
+                          uint32_t mods_locked,
+                          uint32_t group)
 {
-  struct uim_wayland *uw = data;
-  (void)keyboard;
-
-  debug("received modifiers %#x/%#x/%#x group %u",
-        mods_depressed, mods_latched, mods_locked, group);
+  uim_wayland_debug("received modifiers %#x/%#x/%#x group %u",
+                    mods_depressed, mods_latched, mods_locked, group);
   if (uw->xkb_state)
     xkb_state_update_mask(uw->xkb_state, mods_depressed, mods_latched,
                           mods_locked, 0, 0, group);
-  /* The client only receives what we forward. */
-  if (uw->context)
-    zwp_input_method_context_v1_modifiers(uw->context, serial,
-                                          mods_depressed, mods_latched,
-                                          mods_locked, group);
 }
 
-static void
-keyboard_repeat_info(void *data,
-                     struct wl_keyboard *keyboard,
-                     int32_t rate,
-                     int32_t delay)
+/* text field */
+
+void
+uim_wayland_reset(struct uim_wayland *uw)
 {
-  (void)data;
-  (void)keyboard;
-  /* A non-zero rate asks us to repeat keys ourselves, which isn't
-   * implemented. A compositor that repeats keys on its own sends
-   * WL_KEYBOARD_KEY_STATE_REPEATED instead, which is handled. */
-  debug("received repeat_info rate %d delay %d (ignored)", rate, delay);
-}
-
-static const struct wl_keyboard_listener keyboard_listener = {
-  keyboard_keymap,
-  keyboard_enter,
-  keyboard_leave,
-  keyboard_key,
-  keyboard_modifiers,
-  keyboard_repeat_info
-};
-
-/* input method context */
-
-static void
-context_surrounding_text(void *data,
-                         struct zwp_input_method_context_v1 *context,
-                         const char *text,
-                         uint32_t cursor,
-                         uint32_t anchor)
-{
-  struct uim_wayland *uw = data;
-  (void)context;
-
-  uim_wayland_text_set_surrounding(uw, text, cursor, anchor);
-}
-
-static void
-context_reset(void *data, struct zwp_input_method_context_v1 *context)
-{
-  struct uim_wayland *uw = data;
-  (void)context;
-
   uim_reset_context(uw->uc);
   uim_wayland_text_forget_surrounding(uw);
   clear_segments(uw);
   preedit_update_cb(uw);
 }
 
-/* Composing into a field that hides what is typed, or that takes only
- * digits, gives the user nothing and leaks the text into the preedit
- * of an input method that has no business seeing it. */
-static bool
-takes_composed_text(uint32_t hint, uint32_t purpose)
+void
+uim_wayland_set_bypassed(struct uim_wayland *uw, bool bypassed)
 {
-  if (hint & (UIM_WAYLAND_CONTENT_HINT_HIDDEN_TEXT |
-              UIM_WAYLAND_CONTENT_HINT_SENSITIVE_DATA))
-    return false;
-
-  switch (purpose) {
-  case UIM_WAYLAND_CONTENT_PURPOSE_DIGITS:
-  case UIM_WAYLAND_CONTENT_PURPOSE_NUMBER:
-  case UIM_WAYLAND_CONTENT_PURPOSE_PHONE:
-  case UIM_WAYLAND_CONTENT_PURPOSE_PASSWORD:
-  case UIM_WAYLAND_CONTENT_PURPOSE_DATE:
-  case UIM_WAYLAND_CONTENT_PURPOSE_TIME:
-  case UIM_WAYLAND_CONTENT_PURPOSE_DATETIME:
-    return false;
-  default:
-    return true;
-  }
-}
-
-static void
-context_content_type(void *data,
-                     struct zwp_input_method_context_v1 *context,
-                     uint32_t hint,
-                     uint32_t purpose)
-{
-  struct uim_wayland *uw = data;
-  bool bypassed = !takes_composed_text(hint, purpose);
-  (void)context;
-
-  debug("content type: hint %#x purpose %u, input method %s",
-        hint, purpose, bypassed ? "off" : "on");
   if (bypassed == uw->bypassed)
     return;
   uw->bypassed = bypassed;
@@ -617,79 +500,27 @@ context_content_type(void *data,
   preedit_update_cb(uw);
 }
 
-static void
-context_invoke_action(void *data,
-                      struct zwp_input_method_context_v1 *context,
-                      uint32_t button,
-                      uint32_t index)
+void
+uim_wayland_activate(struct uim_wayland *uw)
 {
-  (void)data;
-  (void)context;
-  (void)button;
-  (void)index;
+  uw->focused = true;
+  /* A field says what it takes only after it is activated. */
+  uw->bypassed = false;
+  uw->preedit_shown = false;
+  memset(uw->forwarded_keys, 0, sizeof(uw->forwarded_keys));
+  memset(uw->bypassed_keys, 0, sizeof(uw->bypassed_keys));
+
+  uim_wayland_helper_focus_in(uw);
+  uim_focus_in_context(uw->uc);
+  uim_prop_list_update(uw->uc);
+  uim_wayland_debug("activated, input method: %s",
+                    uim_get_current_im_name(uw->uc));
 }
 
-static void
-context_commit_state(void *data,
-                     struct zwp_input_method_context_v1 *context,
-                     uint32_t serial)
+void
+uim_wayland_deactivate(struct uim_wayland *uw)
 {
-  struct uim_wayland *uw = data;
-  (void)context;
-  uw->serial = serial;
-}
-
-static void
-context_preferred_language(void *data,
-                           struct zwp_input_method_context_v1 *context,
-                           const char *language)
-{
-  (void)data;
-  (void)context;
-  (void)language;
-}
-
-static const struct zwp_input_method_context_v1_listener context_listener = {
-  context_surrounding_text,
-  context_reset,
-  context_content_type,
-  context_invoke_action,
-  context_commit_state,
-  context_preferred_language
-};
-
-/* activation */
-
-static void
-release_keyboard(struct uim_wayland *uw)
-{
-  if (uw->keyboard) {
-    wl_keyboard_destroy(uw->keyboard);
-    uw->keyboard = NULL;
-  }
-  if (uw->xkb_state) {
-    xkb_state_unref(uw->xkb_state);
-    uw->xkb_state = NULL;
-  }
-  if (uw->xkb_keymap) {
-    xkb_keymap_unref(uw->xkb_keymap);
-    uw->xkb_keymap = NULL;
-  }
-}
-
-static void
-deactivate(struct uim_wayland *uw)
-{
-  struct zwp_input_method_context_v1 *context = uw->context;
-
-  if (!context)
-    return;
-
-  debug("deactivated");
-  /* Detach first: the callbacks triggered by focus out must not talk
-   * to a context that is going away. The client resets its own
-   * preedit on deactivation. */
-  uw->context = NULL;
+  uim_wayland_debug("deactivated");
   uw->focused = false;
   uim_wayland_candwin_deactivate(uw->candwin);
   uim_focus_out_context(uw->uc);
@@ -703,59 +534,8 @@ deactivate(struct uim_wayland *uw)
   uim_wayland_text_forget_surrounding(uw);
   clear_segments(uw);
   uw->preedit_shown = false;
-
-  release_keyboard(uw);
-  zwp_input_method_context_v1_destroy(context);
+  release_keymap(uw);
 }
-
-static void
-input_method_activate(void *data,
-                      struct zwp_input_method_v1 *input_method,
-                      struct zwp_input_method_context_v1 *context)
-{
-  struct uim_wayland *uw = data;
-  (void)input_method;
-
-  deactivate(uw);
-
-  uw->context = context;
-  uw->serial = 0;
-  uw->focused = true;
-  /* A field says what it takes only after it is activated. */
-  uw->bypassed = false;
-  uw->preedit_shown = false;
-  memset(uw->forwarded_keys, 0, sizeof(uw->forwarded_keys));
-  memset(uw->bypassed_keys, 0, sizeof(uw->bypassed_keys));
-  zwp_input_method_context_v1_add_listener(context, &context_listener, uw);
-
-  uw->keyboard = zwp_input_method_context_v1_grab_keyboard(context);
-  wl_keyboard_add_listener(uw->keyboard, &keyboard_listener, uw);
-
-  uim_wayland_helper_focus_in(uw);
-  uim_focus_in_context(uw->uc);
-  uim_prop_list_update(uw->uc);
-  debug("activated, input method: %s", uim_get_current_im_name(uw->uc));
-}
-
-static void
-input_method_deactivate(void *data,
-                        struct zwp_input_method_v1 *input_method,
-                        struct zwp_input_method_context_v1 *context)
-{
-  struct uim_wayland *uw = data;
-  (void)input_method;
-
-  if (context != uw->context) {
-    zwp_input_method_context_v1_destroy(context);
-    return;
-  }
-  deactivate(uw);
-}
-
-static const struct zwp_input_method_v1_listener input_method_listener = {
-  input_method_activate,
-  input_method_deactivate
-};
 
 /* seat */
 
@@ -810,6 +590,8 @@ registry_global(void *data,
 {
   struct uim_wayland *uw = data;
 
+  if (uim_wayland_v1_bind(uw, registry, name, interface))
+    return;
   if (strcmp(interface, wl_compositor_interface.name) == 0) {
     if (version > UIM_WAYLAND_COMPOSITOR_VERSION)
       version = UIM_WAYLAND_COMPOSITOR_VERSION;
@@ -817,14 +599,6 @@ registry_global(void *data,
                                       &wl_compositor_interface, version);
   } else if (strcmp(interface, wl_shm_interface.name) == 0) {
     uw->shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
-  } else if (strcmp(interface, zwp_input_method_v1_interface.name) == 0) {
-    uw->input_method = wl_registry_bind(registry, name,
-                                        &zwp_input_method_v1_interface, 1);
-    zwp_input_method_v1_add_listener(uw->input_method,
-                                     &input_method_listener, uw);
-  } else if (strcmp(interface, zwp_input_panel_v1_interface.name) == 0) {
-    uw->input_panel = wl_registry_bind(registry, name,
-                                       &zwp_input_panel_v1_interface, 1);
   } else if (strcmp(interface, wl_seat_interface.name) == 0 && !uw->seat) {
     /* Only the first seat. */
     uw->seat = wl_registry_bind(registry, name, &wl_seat_interface,
@@ -982,7 +756,7 @@ main(int argc, char **argv)
   }
   /* The returned string is only valid until the next libuim call. */
   im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));
-  debug("default input method: %s", im_name);
+  uim_wayland_debug("default input method: %s", im_name);
   uw->uc = uim_create_context(uw, "UTF-8", NULL, im_name, uim_iconv,
                               commit_cb);
   if (!uw->uc) {
@@ -1051,7 +825,7 @@ main(int argc, char **argv)
 
   status = run(uw);
 
-  deactivate(uw);
+  uw->input_method->deactivate(uw);
   uim_wayland_helper_disconnect(uw);
   /* Release the uim context first: a Scheme release handler can still
    * reach the candidate window callbacks. */
@@ -1068,9 +842,7 @@ main(int argc, char **argv)
     else
       wl_seat_destroy(uw->seat);
   }
-  if (uw->input_panel)
-    zwp_input_panel_v1_destroy(uw->input_panel);
-  zwp_input_method_v1_destroy(uw->input_method);
+  uw->input_method->destroy(uw);
   if (uw->shm)
     wl_shm_destroy(uw->shm);
   if (uw->compositor)

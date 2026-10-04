@@ -16,11 +16,13 @@ AM_CPPFLAGS =					\
 bin_PROGRAMS = uim-wayland
 
 uim_wayland_SOURCES = \
-	uim-wayland.c uim-wayland.h \
-	key.c \
 	candwin.c \
 	helper.c \
-	text.c
+	input-method-v1.c \
+	key.c \
+	text.c \
+	uim-wayland.c \
+	uim-wayland.h
 nodist_uim_wayland_SOURCES = $(PROTOCOL_SOURCES)
 uim_wayland_CPPFLAGS = $(AM_CPPFLAGS)
 uim_wayland_CFLAGS = @WAYLAND_CFLAGS@ -Wall
