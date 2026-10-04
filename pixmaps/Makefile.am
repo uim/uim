@@ -9,13 +9,12 @@ SVGS = unknown.svg
 SVGS += unknown_dark_background.svg
 
 # input methods
-SVGS += direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg wb86.svg zm.svg
+SVGS += direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg
 # dark background
 SVGS += direct_dark_background.svg \
         skk_dark_background.svg \
         tcode_dark_background.svg \
-        tutcode_dark_background.svg \
-        wb86_dark_background.svg zm_dark_background.svg
+        tutcode_dark_background.svg
 
 # input modes
 SVGS += direct_input.svg on.svg off.svg \
@@ -78,7 +77,6 @@ SVG_PNGS = unknown.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_act.png ja_kzik.png \
            ja_nicola.png \
            ja_pocketbell.png \
-           wb86.png zm.png \
            im_switcher.png uim-dict.png $(IM_SUBST_PNGS) \
            unknown_dark_background.png \
            direct_dark_background.png \
@@ -86,8 +84,6 @@ SVG_PNGS = unknown.png \
            tcode_dark_background.png \
            tutcode_dark_background.png \
            trycode_dark_background.png \
-           wb86_dark_background.png \
-           zm_dark_background.png \
            direct_input_dark_background.png \
            on_dark_background.png \
            off_dark_background.png \
