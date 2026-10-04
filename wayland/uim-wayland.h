@@ -37,6 +37,7 @@
  * wl_keyboard, go through libuim, and the results are sent back with
  * commit_string/preedit_string.  Keys uim doesn't consume are
  * forwarded to the focused client with the "key" request.
+ * Only input-method-v1.c talks the protocol.
  */
 
 #pragma once
@@ -62,43 +63,40 @@
 #define UIM_WAYLAND_COMPOSITOR_VERSION 4
 #endif
 
-/* zwp_input_method_context_v1.preedit_styling refers to the
- * preedit_style enum of zwp_text_input_v1. */
-enum uim_wayland_preedit_style {
-  UIM_WAYLAND_PREEDIT_STYLE_DEFAULT = 0,
-  UIM_WAYLAND_PREEDIT_STYLE_NONE = 1,
-  UIM_WAYLAND_PREEDIT_STYLE_ACTIVE = 2,
-  UIM_WAYLAND_PREEDIT_STYLE_INACTIVE = 3,
-  UIM_WAYLAND_PREEDIT_STYLE_HIGHLIGHT = 4,
-  UIM_WAYLAND_PREEDIT_STYLE_UNDERLINE = 5,
-  UIM_WAYLAND_PREEDIT_STYLE_SELECTION = 6,
-  UIM_WAYLAND_PREEDIT_STYLE_INCORRECT = 7
-};
-
-/* zwp_input_method_context_v1.content_type refers to the content_hint
- * and content_purpose enums of zwp_text_input_v1. Only the values
- * uim-wayland acts on are listed. */
-enum uim_wayland_content_hint {
-  UIM_WAYLAND_CONTENT_HINT_HIDDEN_TEXT = 0x40,
-  UIM_WAYLAND_CONTENT_HINT_SENSITIVE_DATA = 0x80
-};
-
-enum uim_wayland_content_purpose {
-  UIM_WAYLAND_CONTENT_PURPOSE_DIGITS = 2,
-  UIM_WAYLAND_CONTENT_PURPOSE_NUMBER = 3,
-  UIM_WAYLAND_CONTENT_PURPOSE_PHONE = 4,
-  UIM_WAYLAND_CONTENT_PURPOSE_PASSWORD = 8,
-  UIM_WAYLAND_CONTENT_PURPOSE_DATE = 9,
-  UIM_WAYLAND_CONTENT_PURPOSE_TIME = 10,
-  UIM_WAYLAND_CONTENT_PURPOSE_DATETIME = 11
-};
-
 struct uim_wayland_candwin;
 
 struct uim_wayland_preedit_segment {
   int attr;
   char *str;
 };
+
+/* A part of the preedit text, in bytes, with its UPreeditAttr. */
+struct uim_wayland_preedit_span {
+  uint32_t offset;
+  uint32_t length;
+  int attr;
+};
+
+struct uim_wayland;
+
+/* What the protocol in use does for the rest of uim-wayland. The
+ * requests are dropped while no text field is focused. */
+struct uim_wayland_input_method {
+  void (*commit_string)(struct uim_wayland *uw, const char *str);
+  void (*set_preedit)(struct uim_wayland *uw,
+                      const char *text,
+                      uint32_t cursor,
+                      const struct uim_wayland_preedit_span *spans,
+                      size_t n_spans);
+  /* index is the start of the text relative to the cursor, in bytes. */
+  void (*delete_surrounding_text)(struct uim_wayland *uw,
+                                  int32_t index,
+                                  uint32_t length);
+  void (*deactivate)(struct uim_wayland *uw);
+  void (*destroy)(struct uim_wayland *uw);
+};
+
+struct uim_wayland_v1;
 
 /* Evdev keycodes are small; 1024 bits is plenty for the bookkeeping
  * of which pressed keys were forwarded to the client and which were
@@ -110,17 +108,13 @@ struct uim_wayland {
   struct wl_registry *registry;
   struct wl_compositor *compositor;
   struct wl_shm *shm;
-  struct zwp_input_method_v1 *input_method;
+  /* The protocol in use. NULL until the compositor offers one. */
+  const struct uim_wayland_input_method *input_method;
+  struct uim_wayland_v1 *v1;
   struct zwp_input_panel_v1 *input_panel;
   /* For the pointer on the candidate window. */
   struct wl_seat *seat;
   struct wl_pointer *pointer;
-
-  /* The active context. NULL while no text field is focused. */
-  struct zwp_input_method_context_v1 *context;
-  struct wl_keyboard *keyboard;
-  /* Serial from the last commit_state event. */
-  uint32_t serial;
 
   struct xkb_context *xkb_context;
   struct xkb_keymap *xkb_keymap;
@@ -154,7 +148,35 @@ struct uim_wayland {
 };
 
 /* uim-wayland.c */
+void uim_wayland_debug(const char *format, ...)
+  __attribute__((format(printf, 1, 2)));
 void uim_wayland_commit_string(struct uim_wayland *uw, const char *str);
+/* For the protocol in use to tell what the compositor says. */
+void uim_wayland_activate(struct uim_wayland *uw);
+void uim_wayland_deactivate(struct uim_wayland *uw);
+void uim_wayland_reset(struct uim_wayland *uw);
+void uim_wayland_set_bypassed(struct uim_wayland *uw, bool bypassed);
+void uim_wayland_set_keymap(struct uim_wayland *uw,
+                            uint32_t format,
+                            int32_t fd,
+                            uint32_t size);
+void uim_wayland_set_modifiers(struct uim_wayland *uw,
+                               uint32_t mods_depressed,
+                               uint32_t mods_latched,
+                               uint32_t mods_locked,
+                               uint32_t group);
+/* Whether the key goes on to the client. state is a
+ * wl_keyboard_key_state. */
+bool uim_wayland_filter_key(struct uim_wayland *uw,
+                            uint32_t key,
+                            uint32_t state);
+
+/* input-method-v1.c */
+/* Binds the global if it belongs to zwp_input_method_v1. */
+bool uim_wayland_v1_bind(struct uim_wayland *uw,
+                         struct wl_registry *registry,
+                         uint32_t name,
+                         const char *interface);
 
 /* key.c */
 void uim_wayland_convert_key(xkb_keysym_t sym,

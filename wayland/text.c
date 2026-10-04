@@ -248,7 +248,7 @@ uim_wayland_text_delete(void *ptr,
   size_t middle;
   size_t to;
 
-  if (!uw->context)
+  if (!uw->focused)
     return -1;
   if (!range_of(uw, text_id, origin, former_length, latter_length,
                 &from, &middle, &to))
@@ -258,13 +258,10 @@ uim_wayland_text_delete(void *ptr,
 
   /* The offsets the application gets are relative to its own cursor,
    * which is where uim_wayland_text_set_surrounding() put ours. */
-  zwp_input_method_context_v1_delete_surrounding_text(
-    uw->context,
+  uw->input_method->delete_surrounding_text(
+    uw,
     (int32_t)from - (int32_t)uw->surrounding_cursor,
     (uint32_t)(to - from));
-  /* A deletion is applied along with the commit that follows it, so
-   * send one even though there is nothing to insert. */
-  zwp_input_method_context_v1_commit_string(uw->context, uw->serial, "");
 
   /* What we knew about the text is out of date until the application
    * tells us again. */

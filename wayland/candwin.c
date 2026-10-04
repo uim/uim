@@ -757,7 +757,7 @@ pointer_candwin(struct uim_wayland *uw)
 {
   struct uim_wayland_candwin *cw = uw->candwin;
 
-  if (!cw || !cw->pointer_inside || !cw->shown || !uw->context)
+  if (!cw || !cw->pointer_inside || !cw->shown || !uw->focused)
     return NULL;
   return cw;
 }
