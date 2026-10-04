@@ -63,7 +63,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  dict-socket.scm
 
 OTHER_SCM_FILES = \
- wb86.scm zm.scm \
  macro-expander.scm macro-expander-chicken.scm \
  json-parser-expander.scm json.scm.in packrat.scm.in
 EXTRA_DIST = $(OTHER_SCM_FILES)

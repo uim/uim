@@ -1,42 +1,43 @@
 tablesdir = $(pkgdatadir)/tables
 
-SCMS = wb86.scm zm.scm
-SCM_TABLES = wb86.table zm.table
+GENERATED_TABLES = wb86.table zm.table
 
-NATIVE_TABLES = 
+dist_tables_DATA = $(GENERATED_TABLES)
 
-GENERATED_TABLES = $(SCM_TABLES)
+TABLE_SOURCE_FILES = \
+	source/README \
+	source/wb86/COPYING \
+	source/wb86/README \
+	source/wb86/wubi-haifeng86.txt \
+	source/zm/README \
+	source/zm/zhengma.txt
 
-TABLES = $(NATIVE_TABLES) $(GENERATED_TABLES)
-
-dist_tables_DATA = $(TABLES)
+EXTRA_DIST = \
+	fetch-table-sources.rb \
+	generate-table.rb \
+	test/test-generate-table.rb \
+	$(TABLE_SOURCE_FILES)
 
 MAINTAINERCLEANFILES = $(GENERATED_TABLES)
+CLEANFILES = $(GENERATED_TABLES:%=%.tmp)
 
-UIM_SH = $(top_builddir)/uim/uim-sh
-UIM_SH_ENV = \
-        LIBUIM_SYSTEM_SCM_FILES=$(abs_top_srcdir)/sigscheme/lib \
-	LIBUIM_SCM_FILES=$(abs_top_srcdir)/scm \
-	LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs \
-	UIM_DISABLE_NOTIFY=1
+if MAINTAINER_MODE
 
-#if MAINTAINER_MODE
-wb86.scm: $(top_srcdir)/scm/wb86.scm
-	$(LN_S) $< $@
+wb86.table: $(srcdir)/source/wb86/wubi-haifeng86.txt $(srcdir)/generate-table.rb
+	$(AM_V_GEN)$(RUBY) $(srcdir)/generate-table.rb wb86 $< > $@.tmp && \
+	mv $@.tmp $@
 
-zm.scm: $(top_srcdir)/scm/zm.scm
-	$(LN_S) $< $@
+zm.table: $(srcdir)/source/zm/zhengma.txt $(srcdir)/generate-table.rb
+	$(AM_V_GEN)$(RUBY) $(srcdir)/generate-table.rb zm $< > $@.tmp && \
+	mv $@.tmp $@
 
-.scm.table:
-	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme && \
-	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/replace && \
-	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim sigscheme-combined && \
-	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-sh && \
-	echo "(begin (load \"$<\") (for-each (lambda (key) (display (format \"~a ~W\n\" (apply string-append (caar key)) (cadr key)))) `basename $< .scm`-rule))" | $(UIM_SH_ENV) $(UIM_SH) -b | grep -v "^#<undef>" | LANG=C LC_ALL=C sort > $@
-#endif
+endif
 
-clean-genscm:
-	rm -f $(SCMS)
+TEST_EXTENSIONS = .rb
+RB_LOG_COMPILER = $(RUBY)
 
-clean-gentable:
-	rm -f $(GENERATED_TABLES)
+if HAVE_RUBY
+
+TESTS = test/test-generate-table.rb
+
+endif

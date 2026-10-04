@@ -60,6 +60,11 @@ PKG_PROG_PKG_CONFIG
 
 AM_MAINTAINER_MODE
 
+AC_CHECK_PROGS([RUBY], [ruby])
+AS_IF([test "x$USE_MAINTAINER_MODE" = xyes && test -z "$RUBY"],
+      [AC_MSG_ERROR([Ruby is required in maintainer mode])])
+AM_CONDITIONAL([HAVE_RUBY], [test -n "$RUBY"])
+
 # Checks for libraries
 AC_CHECK_LIB(dl,dlopen)
 AC_CHECK_LIB(socket,socket)
@@ -897,7 +902,6 @@ fi
 # description of the core protocol.
 WAYLAND_CORE_XML=
 if test "x$with_wayland" = xyes; then
-  AC_CHECK_PROGS([RUBY], [ruby])
   wayland_dir=`$PKG_CONFIG wayland-scanner --variable=pkgdatadir`
   if test -n "$wayland_dir" && test -f "$wayland_dir/wayland.xml"; then
     WAYLAND_CORE_XML="$wayland_dir/wayland.xml"
@@ -937,7 +941,6 @@ fi
 
 # The test runs its own ibus-daemon on a D-Bus of its own.
 if test "x$with_ibus" = xyes; then
-  AC_CHECK_PROGS([RUBY], [ruby])
   AC_PATH_PROG([IBUS_DAEMON], [ibus-daemon], [],
                [$PATH:/usr/libexec:/usr/lib/ibus])
   AC_PATH_PROG([DBUS_RUN_SESSION], [dbus-run-session])
