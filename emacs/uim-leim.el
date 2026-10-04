@@ -1,5 +1,6 @@
-;; 
-;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;; -*- lexical-binding: t -*-
+;;
+;;  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -139,17 +140,17 @@
   (setq uim-show-im-mode nil)
 
   (mapcar
-   '(lambda (x)
-      (let* ((name (car x))
-	     (lang (uim-get-emacs-lang name)))
-	(when (and name lang)
-	  (setq im (uim-leim-make-im-name name))
-	  (register-input-method im lang 'uim-leim-activate "uim"
-				 (concat "uim " name))
+   (lambda (x)
+     (let* ((name (car x))
+	    (lang (uim-get-emacs-lang name)))
+       (when (and name lang)
+	 (let ((im (uim-leim-make-im-name name)))
+	   (register-input-method im lang 'uim-leim-activate "uim"
+				  (concat "uim " name))
 
-	  ;; ( japanese-anthy-uim . anthy )
-	  (setq uim-leim-inputmethod-alist 
-		(cons (cons im name) uim-leim-inputmethod-alist)))))
+	   ;; ( japanese-anthy-uim . anthy )
+	   (setq uim-leim-inputmethod-alist
+		 (cons (cons im name) uim-leim-inputmethod-alist))))))
    uim-im-alist)
 
   (add-hook 'uim-update-default-engine-hook 
