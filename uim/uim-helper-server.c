@@ -38,6 +38,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/param.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdlib.h>
@@ -78,18 +79,153 @@ static int nr_client_slots;
 static struct client *clients;
 static char read_buf[BUFFER_SIZE];
 
+#define SERVER_ALREADY_RUNNING -2
+#define SERVER_LOCK_BUSY -3
+#define SERVER_START_RETRY_COUNT 100
+#define SERVER_START_RETRY_USEC 10000
+
+static int s_server_active_lock_fd = -1;
+
+static int
+acquire_server_lock(const char *socket_path, const char *suffix, int wait)
+{
+  char lock_path[MAXPATHLEN];
+  struct flock lock;
+  int lock_fd, result;
+
+  if (strlcpy(lock_path, socket_path, sizeof(lock_path)) >= sizeof(lock_path) ||
+      strlcat(lock_path, suffix, sizeof(lock_path)) >= sizeof(lock_path)) {
+    errno = ENAMETOOLONG;
+    return -1;
+  }
+
+  lock_fd = open(lock_path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+  if (lock_fd < 0)
+    return -1;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_WRLCK;
+  lock.l_whence = SEEK_SET;
+  do {
+    result = fcntl(lock_fd, wait ? F_SETLKW : F_SETLK, &lock);
+  } while (wait && result < 0 && errno == EINTR);
+
+  if (result < 0) {
+    int saved_errno = errno;
+    close(lock_fd);
+    errno = saved_errno;
+    if (!wait && (saved_errno == EACCES || saved_errno == EAGAIN))
+      return SERVER_LOCK_BUSY;
+    return -1;
+  }
+
+  return lock_fd;
+}
+
+static void
+release_server_lock(int lock_fd)
+{
+  struct flock lock;
+
+  if (lock_fd < 0)
+    return;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_UNLCK;
+  lock.l_whence = SEEK_SET;
+  fcntl(lock_fd, F_SETLK, &lock);
+  close(lock_fd);
+}
+
+static int
+probe_server(const char *path)
+{
+  int fd, result, saved_errno;
+  struct sockaddr_un server;
+
+  fd = socket(PF_UNIX, SOCK_STREAM, 0);
+  if (fd < 0)
+    return -1;
+
+  memset(&server, 0, sizeof(server));
+  server.sun_family = PF_UNIX;
+  strlcpy(server.sun_path, path, sizeof(server.sun_path));
+  result = connect(fd, (struct sockaddr *)&server, SUN_LEN(&server));
+  saved_errno = errno;
+  close(fd);
+
+  if (result == 0)
+    return 1;
+
+  errno = saved_errno;
+  if (errno == ECONNREFUSED || errno == ENOENT)
+    return 0;
+  return -1;
+}
+
+static int
+wait_for_server(const char *path)
+{
+  int attempt, result;
+  struct timeval delay;
+
+  for (attempt = 0; attempt < SERVER_START_RETRY_COUNT; attempt++) {
+    result = probe_server(path);
+    if (result != 0 || errno == ENOENT)
+      return result;
+
+    delay.tv_sec = 0;
+    delay.tv_usec = SERVER_START_RETRY_USEC;
+    select(0, NULL, NULL, NULL, &delay);
+  }
+
+  return 0;
+}
+
+static int
+unlink_stale_socket(const char *path)
+{
+  struct stat st;
+
+  if (lstat(path, &st) < 0)
+    return (errno == ENOENT) ? 0 : -1;
+  if (!S_ISSOCK(st.st_mode)) {
+    errno = EEXIST;
+    return -1;
+  }
+  return unlink(path);
+}
+
 static int
 init_server_fd(char *path)
 {
-  int fd, flag;
+  int fd, flag, socket_path_lock_fd, active_lock_fd, server_status, saved_errno;
+  int bound = 0;
   struct sockaddr_un myhost;
   struct passwd *pw;
   char *logname;
 
+  socket_path_lock_fd = acquire_server_lock(path, ".server-socket-path.lock", 1);
+  if (socket_path_lock_fd < 0) {
+    perror("failed to acquire helper server socket path lock");
+    return -1;
+  }
+
+  active_lock_fd = acquire_server_lock(path, ".server-active.lock", 0);
+  if (active_lock_fd == SERVER_LOCK_BUSY) {
+    release_server_lock(socket_path_lock_fd);
+    return SERVER_ALREADY_RUNNING;
+  }
+  if (active_lock_fd < 0) {
+    perror("failed to acquire helper server active lock");
+    release_server_lock(socket_path_lock_fd);
+    return -1;
+  }
+
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
     perror("failed in socket()");
-    return -1;
+    goto error;
   }
   fchmod(fd, S_IRUSR | S_IWUSR);
 
@@ -98,9 +234,33 @@ init_server_fd(char *path)
   strlcpy(myhost.sun_path, path, sizeof(myhost.sun_path));
 
   if (bind(fd, (struct sockaddr *)&myhost, SUN_LEN(&myhost)) < 0) {
-    perror("failed in bind()");
-    return -1;
+    if (errno != EADDRINUSE) {
+      perror("failed in bind()");
+      goto error;
+    }
+
+    server_status = wait_for_server(path);
+    if (server_status > 0) {
+      close(fd);
+      release_server_lock(active_lock_fd);
+      release_server_lock(socket_path_lock_fd);
+      return SERVER_ALREADY_RUNNING;
+    }
+    if (server_status < 0) {
+      perror("failed to check existing helper server");
+      goto error;
+    }
+
+    if (unlink_stale_socket(path) < 0) {
+      perror("failed to remove stale helper server socket");
+      goto error;
+    }
+    if (bind(fd, (struct sockaddr *)&myhost, SUN_LEN(&myhost)) < 0) {
+      perror("failed in bind()");
+      goto error;
+    }
   }
+  bound = 1;
 
   logname = getenv("LOGNAME");
   if (logname) {
@@ -111,25 +271,36 @@ init_server_fd(char *path)
   }
 
   if ((flag = fcntl(fd, F_GETFL)) < 0) {
-    close(fd);
-    return -1;
+    goto error;
   }
 
   flag |= O_NONBLOCK;
   if (fcntl(fd, F_SETFL, flag) < 0) {
-    close(fd);
-    return -1;
+    goto error;
   }
 
   if (listen(fd, 5) < 0) {
     perror("failed in listen()");
-    return -1;
+    goto error;
   }
 
   FD_SET(fd, &s_fdset_read);
   s_max_fd = fd;
 
+  s_server_active_lock_fd = active_lock_fd;
+  release_server_lock(socket_path_lock_fd);
   return fd;
+
+ error:
+  saved_errno = errno;
+  if (bound && unlink(path) < 0 && errno != ENOENT)
+    perror("failed to remove helper server socket after startup error");
+  if (fd >= 0)
+    close(fd);
+  release_server_lock(active_lock_fd);
+  release_server_lock(socket_path_lock_fd);
+  errno = saved_errno;
+  return -1;
 }
 
 static struct client *
@@ -372,14 +543,12 @@ int
 main(int argc, char **argv)
 {
   char path[MAXPATHLEN];
-  int server_fd;
+  int server_fd, socket_path_lock_fd;
 
   uim_init_error();
 
   if (!uim_helper_get_pathname(path, sizeof(path)))
     return 0;
-
-  unlink(path);
 
   clients = NULL;
   nr_client_slots = 0;
@@ -389,19 +558,32 @@ main(int argc, char **argv)
   s_max_fd = 0;
   server_fd = init_server_fd(path);
 
+  if (server_fd < 0 && server_fd != SERVER_ALREADY_RUNNING)
+    return 0;
+
   printf("waiting\n\n");
   fflush(stdout);
 
   fclose(stdin);
   fclose(stdout);
 
-  if (server_fd < 0)
+  if (server_fd == SERVER_ALREADY_RUNNING)
     return 0;
 
   /*  fprintf(stderr,"Waiting for connection at %s\n", path);*/
 
   signal(SIGPIPE, SIG_IGN);
   uim_helper_server_process_connection(server_fd);
+  socket_path_lock_fd = acquire_server_lock(path, ".server-socket-path.lock", 1);
+  if (socket_path_lock_fd < 0) {
+    perror("failed to acquire helper server socket path lock during shutdown");
+  } else {
+    if (unlink(path) < 0 && errno != ENOENT)
+      perror("failed to remove helper server socket during shutdown");
+  }
+  close(server_fd);
+  release_server_lock(s_server_active_lock_fd);
+  release_server_lock(socket_path_lock_fd);
 
   return 0;
 }
