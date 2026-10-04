@@ -152,13 +152,20 @@ static uim_bool
 check_dir(const char *dir)
 {
   struct stat st;
+  mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
 
-  if (stat(dir, &st) < 0)
-    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
-  else {
-    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
-    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
+  if (stat(dir, &st) < 0) {
+    if (errno != ENOENT)
+      return UIM_FALSE;
+
+    if (mkdir(dir, 0700) == 0)
+      return UIM_TRUE;
+
+    if (errno != EEXIST || stat(dir, &st) < 0)
+      return UIM_FALSE;
   }
+
+  return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
 }
 
 uim_bool
