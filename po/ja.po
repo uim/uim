@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-04 13:48+0900\n"
+"POT-Creation-Date: 2026-10-04 22:53+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -713,9 +713,20 @@ msgstr "uimの状態を示すアプレット"
 msgid "About"
 msgstr "このプログラムについて"
 
-#: ibus/property.c:142
+#: ibus/property.c:141
 msgid "Input method"
 msgstr "入力方式"
+
+#: ibus/property.c:144 scm/anthy-utf8-custom.scm:196
+#: scm/anthy-utf8-custom.scm:197 scm/m17nlib-custom.scm:62
+#: scm/m17nlib-custom.scm:63 scm/skk-custom.scm:234 scm/skk-custom.scm:235
+#: scm/anthy-custom.scm:189 scm/anthy-custom.scm:190
+#: scm/baidu-olime-jp-custom.scm:194 scm/baidu-olime-jp-custom.scm:195
+#: scm/canna-custom.scm:194 scm/canna-custom.scm:195
+#: scm/google-cgiapi-jp-custom.scm:194 scm/google-cgiapi-jp-custom.scm:195
+#: scm/wnn-custom.scm:194 scm/wnn-custom.scm:195
+msgid "Input mode"
+msgstr "入力モード"
 
 #: qt3/chardict/bushuviewwidget.cpp:72 qt4/chardict/bushuviewwidget.cpp:90
 #: tqt/chardict/bushuviewwidget.cpp:72
@@ -3291,16 +3302,6 @@ msgstr "KZIK"
 #: scm/wnn-custom.scm:185
 msgid "KZIK extended romaji input mode"
 msgstr "KZIK拡張ローマ字入力モード"
-
-#: scm/anthy-utf8-custom.scm:196 scm/anthy-utf8-custom.scm:197
-#: scm/m17nlib-custom.scm:62 scm/m17nlib-custom.scm:63 scm/skk-custom.scm:234
-#: scm/skk-custom.scm:235 scm/anthy-custom.scm:189 scm/anthy-custom.scm:190
-#: scm/baidu-olime-jp-custom.scm:194 scm/baidu-olime-jp-custom.scm:195
-#: scm/canna-custom.scm:194 scm/canna-custom.scm:195
-#: scm/google-cgiapi-jp-custom.scm:194 scm/google-cgiapi-jp-custom.scm:195
-#: scm/wnn-custom.scm:194 scm/wnn-custom.scm:195
-msgid "Input mode"
-msgstr "入力モード"
 
 #: scm/anthy-utf8-custom.scm:199 scm/anthy-utf8-custom.scm:200
 #: scm/skk-custom.scm:237 scm/skk-custom.scm:238 scm/anthy-custom.scm:192
@@ -7413,39 +7414,58 @@ msgstr "%sの文字コード%sは不明です"
 msgid "uim-skk: failed to convert skkserv data from %s to %s"
 msgstr "uim-skk: skkservのデータを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:619
+#: uim/skk.c:521
+#, c-format
+msgid ""
+"uim-tutcode: mazegaki dictionary %s (encoding: %s): no usable entries after "
+"skipping %lu invalid lines (first at line %lu); check the encoding"
+msgstr ""
+"uim-tutcode: 交ぜ書き辞書 %s (文字コード: %s): 不正な行を%lu行スキップした結"
+"果、有効な項目がありません (最初の不正行: %lu行目)。文字コード設定を確認して"
+"ください"
+
+#: uim/skk.c:528
+#, c-format
+msgid ""
+"uim-tutcode: mazegaki dictionary %s (encoding: %s): skipped %lu invalid "
+"lines (first at line %lu)"
+msgstr ""
+"uim-tutcode: 交ぜ書き辞書 %s (文字コード: %s): 不正な行を%lu行スキップしまし"
+"た (最初の不正行: %lu行目)"
+
+#: uim/skk.c:686
 #, c-format
 msgid "failed to build a Unicode-sorted index for system dictionary: %s"
 msgstr "システム辞書のユニコード順インデックスの構築に失敗しました: %s"
 
-#: uim/skk.c:1415
+#: uim/skk.c:1492
 #, c-format
 msgid "failed to convert system dictionary data from %s to %s"
 msgstr "システム辞書データを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:1579
+#: uim/skk.c:1656
 msgid "error in expand_str"
 msgstr "expand_strでエラー"
 
-#: uim/skk.c:1594
+#: uim/skk.c:1671
 msgid "too long word"
 msgstr "語が長すぎます"
 
-#: uim/skk.c:2506
+#: uim/skk.c:2583
 msgid "SKK server without completion capability\n"
 msgstr "補完機能がないSKKサーバ\n"
 
-#: uim/skk.c:3740
+#: uim/skk.c:3817
 #, c-format
 msgid "invalid %s dictionary: %s"
 msgstr "不正な%sの辞書です: %s"
 
-#: uim/skk.c:4061
+#: uim/skk.c:4138
 #, c-format
 msgid "cannot encode personal dictionary as %s"
 msgstr "個人辞書を%sとしてエンコードできません"
 
-#: uim/skk.c:4444
+#: uim/skk.c:4521
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: %sのポート%sへ接続できませんでした"
@@ -7508,11 +7528,11 @@ msgstr "uim-tutcode: 不明な部首辞書の種類です: %s"
 msgid "uim-tutcode: invalid UTF-8 bushu lookup key"
 msgstr "uim-tutcode: 部首検索キーが不正なUTF-8文字列です"
 
-#: uim/uim.c:772
+#: uim/uim.c:776
 msgid "builtin"
 msgstr "組み込み"
 
-#: uim/uim.c:772
+#: uim/uim.c:776
 msgid "libuim builtin"
 msgstr "libuim組み込み"
 
