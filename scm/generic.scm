@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -78,13 +78,11 @@
 
 (register-action 'action_generic_on
 		 (lambda (gc)
-		   (let* ((im (generic-context-im gc))
-			  (name (symbol->string (im-name im))))
-		     (list
-		      'on
-		      "O"
-		      (N_ "on")
-		      (string-append name (N_ " Mode")))))
+		   (list
+		    'on
+		    "O"
+		    (N_ "on")
+		    (im-name-label (generic-context-im gc))))
 		 (lambda (gc)
 		   (generic-context-on gc))
 		 (lambda (gc)
