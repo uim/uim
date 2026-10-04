@@ -675,6 +675,13 @@
     (if output
         (mozc-update mc output))))
 
+;; Drops what is being composed, and what Mozc remembers to undo the
+;; last commit, as Mozc's own IBus engine does.
+(define (mozc-revert mc)
+  (let ((output (mozc-context-send-command mc '((type . revert)))))
+    (if output
+        (mozc-update mc output))))
+
 (define (mozc-set-mode mc mode)
   (cond
    ((not (mozc-context-session-ready? mc))
@@ -1013,7 +1020,14 @@
 
 (define mozc-reset-handler
   (lambda (mc)
-    #f))
+    (mozc-revert mc)))
+
+;; The next field must not undo a commit into this one. What is being
+;; composed is kept, for a bridge that shows it again on focus in.
+(define mozc-focus-out-handler
+  (lambda (mc)
+    (if (not (mozc-context-has-preedit mc))
+        (mozc-revert mc))))
 
 (define mozc-displace-handler
   (lambda (mc)
@@ -1056,7 +1070,7 @@
   context-prop-activate-handler
   #f
   #f
-  #f
+  mozc-focus-out-handler
   #f
   mozc-displace-handler
 )
