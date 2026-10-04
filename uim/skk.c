@@ -465,11 +465,11 @@ convert_skkserv_buffer(enum skk_dictionary_encoding to_encoding,
 }
 
 static int
-is_okuri(const char *line_str)
+is_okuri(const char *line_str, int line_len)
 {
   const char *b;
   /* find first white space */
-  b = strchr(line_str, ' ');
+  b = memchr(line_str, ' ', line_len);
   if (!b || b == line_str)
     return 0;
   /* check previous character */
@@ -481,29 +481,10 @@ is_okuri(const char *line_str)
 
 static int
 append_dic_index_entry(dic_info *di, struct skk_dic_index_entry **entries,
-                       int *nr_entries, int *capacity, const char *line,
-                       int key_len, int line_offset)
+                       int *nr_entries, int *capacity, char *utf8_key,
+                       int line_offset)
 {
-  char *key, *utf8_key;
-  size_t utf8_key_len;
   int new_capacity;
-
-  if (key_len <= 0 || memchr(line, '\0', key_len))
-    return 0;
-
-  key = uim_malloc(key_len + 1);
-  memcpy(key, line, key_len);
-  key[key_len] = '\0';
-  if (!convert_dictionary_buffer(SKK_DICTIONARY_ENCODING_UTF8, di->encoding,
-                                 key, &utf8_key, &utf8_key_len)) {
-    free(key);
-    return 0;
-  }
-  free(key);
-  if (utf8_key_len == 0) {
-    free(utf8_key);
-    return 0;
-  }
 
   if (*nr_entries == *capacity) {
     if (*capacity == 0)
@@ -513,10 +494,10 @@ append_dic_index_entry(dic_info *di, struct skk_dic_index_entry **entries,
     else
       new_capacity = di->size;
 
-    if (new_capacity <= *capacity) {
-      free(utf8_key);
+    if (new_capacity <= *capacity ||
+        (size_t)new_capacity > ((size_t)-1) /
+                               sizeof(struct skk_dic_index_entry))
       return 0;
-    }
     *entries = uim_realloc(*entries,
                            sizeof(struct skk_dic_index_entry) *
                            new_capacity);
@@ -527,6 +508,29 @@ append_dic_index_entry(dic_info *di, struct skk_dic_index_entry **entries,
   (*entries)[*nr_entries].line_offset = line_offset;
   (*nr_entries)++;
   return 1;
+}
+
+static void
+notify_invalid_unicode_sort_index_lines(const char *filename,
+                                       enum skk_dictionary_encoding encoding,
+                                       size_t invalid_line_count,
+                                       size_t first_invalid_line,
+                                       int no_usable_entries)
+{
+  if (no_usable_entries) {
+    uim_notify_info(N_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
+                       "no usable entries after skipping %lu invalid lines "
+                       "(first at line %lu); check the encoding"),
+                    filename, skk_encoding_name(encoding),
+                    (unsigned long)invalid_line_count,
+                    (unsigned long)first_invalid_line);
+  } else {
+    uim_notify_info(N_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
+                       "skipped %lu invalid lines (first at line %lu)"),
+                    filename, skk_encoding_name(encoding),
+                    (unsigned long)invalid_line_count,
+                    (unsigned long)first_invalid_line);
+  }
 }
 
 static void
@@ -572,22 +576,69 @@ build_unicode_sort_index(dic_info *di, const char *filename)
   const char *addr = di->addr;
   int okuri_capacity = 0, okuri_nasi_capacity = 0;
   int offset = di->first;
-  int okuri_end = di->border;
+  int line_offset;
+  int okuri_nasi_started = 0;
+  size_t line_number = 0;
+  size_t invalid_line_count = 0, first_invalid_line = 0;
+
+  for (line_offset = 0;
+       line_offset < di->first && line_offset < di->size;
+       line_offset++) {
+    if (addr[line_offset] == '\n')
+      line_number++;
+  }
 
   while (offset < di->size) {
     const char *line = addr + offset;
     const char *newline = memchr(line, '\n', di->size - offset);
     const char *space;
     int line_len = newline ? (int)(newline - line) : di->size - offset;
+    int key_len;
+    int is_okuri_entry;
+    char *key;
+    char *utf8_key;
+    size_t utf8_key_len;
 
+    line_number++;
     if (line_len > 0 && line[0] != ';') {
       struct skk_dic_index_entry **entries;
       int *nr_entries, *capacity;
 
       space = memchr(line, ' ', line_len);
-      if (!space || space == line)
-        goto error;
-      if (offset < okuri_end) {
+      if (!space || space == line || memchr(line, '\0', line_len)) {
+        if (!invalid_line_count)
+          first_invalid_line = line_number;
+        invalid_line_count++;
+        goto next_line;
+      }
+
+      key_len = (int)(space - line);
+      key = uim_malloc(key_len + 1);
+      memcpy(key, line, key_len);
+      key[key_len] = '\0';
+      if (!convert_dictionary_buffer(SKK_DICTIONARY_ENCODING_UTF8,
+                                     di->encoding, key, &utf8_key,
+                                     &utf8_key_len)) {
+        free(key);
+        if (!invalid_line_count)
+          first_invalid_line = line_number;
+        invalid_line_count++;
+        goto next_line;
+      }
+      free(key);
+      if (utf8_key_len == 0) {
+        free(utf8_key);
+        if (!invalid_line_count)
+          first_invalid_line = line_number;
+        invalid_line_count++;
+        goto next_line;
+      }
+
+      is_okuri_entry = is_okuri(line, line_len);
+      if (!okuri_nasi_started && !is_okuri_entry)
+        okuri_nasi_started = 1;
+
+      if (!okuri_nasi_started) {
         entries = &di->okuri_index_entries;
         nr_entries = &di->nr_okuri_index_entries;
         capacity = &okuri_capacity;
@@ -597,13 +648,25 @@ build_unicode_sort_index(dic_info *di, const char *filename)
         capacity = &okuri_nasi_capacity;
       }
       if (!append_dic_index_entry(di, entries, nr_entries, capacity,
-                                  line, (int)(space - line), offset))
+                                  utf8_key, offset)) {
+        free(utf8_key);
         goto error;
+      }
     }
 
+  next_line:
     if (!newline)
       break;
     offset += line_len + 1;
+  }
+
+  if (invalid_line_count &&
+      !di->nr_okuri_index_entries && !di->nr_okuri_nasi_index_entries) {
+    free_unicode_sort_index(di);
+    notify_invalid_unicode_sort_index_lines(filename, di->encoding,
+                                            invalid_line_count,
+                                            first_invalid_line, 1);
+    return 0;
   }
 
   if (di->nr_okuri_index_entries > 1)
@@ -612,6 +675,10 @@ build_unicode_sort_index(dic_info *di, const char *filename)
   if (di->nr_okuri_nasi_index_entries > 1)
     qsort(di->okuri_nasi_index_entries, di->nr_okuri_nasi_index_entries,
           sizeof(struct skk_dic_index_entry), compare_dic_index_entries);
+  if (invalid_line_count)
+    notify_invalid_unicode_sort_index_lines(filename, di->encoding,
+                                            invalid_line_count,
+                                            first_invalid_line, 0);
   return 1;
 
 error:
@@ -628,7 +695,12 @@ find_first_line(dic_info *di)
   int off = 0;
 
   while (off < di->size && s[off] == ';') {
-    int l = calc_line_len(&s[off]);
+    char *line = &s[off];
+    char *newline = memchr(line, '\n', di->size - off);
+    int l = newline ? (int)(newline - line) : di->size - off;
+
+    if (!newline)
+      return di->size;
     off += l + 1;
   }
   return off;
@@ -640,13 +712,18 @@ find_border(dic_info *di)
   char *s = di->addr;
   int off = 0;
   while (off < di->size) {
-    int l = calc_line_len(&s[off]);
-    if (s[off] == ';') {
-      off += l + 1;
-      continue;
+    char *line = &s[off];
+    char *newline = memchr(line, '\n', di->size - off);
+    int l = newline ? (int)(newline - line) : di->size - off;
+
+    if (l > 0 && line[0] != ';' && !memchr(line, '\0', l)) {
+      const char *space = memchr(line, ' ', l);
+
+      if (space && space != line && !is_okuri(line, l))
+        return off;
     }
-    if (!is_okuri(&s[off]))
-      return off;
+    if (!newline)
+      break;
     off += l + 1;
   }
   /* No okuri-nasi section; use the one-past-end boundary. */
