@@ -27,8 +27,6 @@ uim-gray.png im_subst.svg, im_switcher.svg:
 # uim-dict.svg is based on public domain image.
 # http://commons.wikimedia.org/wiki/Image:Books-aj.svg_aj_ashton_01.svg
 uim-dict.svg
-# tentative WuBi86 and Zhengma input method icons
-wb86.svg, zm.svg
 # ja_kzik.svg is derived from ja_azik.svg
 ja_kzik.svg
   Etsushi Kato <ek.kato@gmail.com>

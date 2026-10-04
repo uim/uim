@@ -2107,7 +2107,6 @@ AC_CONFIG_FILES([Makefile
                  fep/Makefile
                  emacs/Makefile
                  emacs/uim-version.el
-                 tables/Makefile
                  byeoru-data/Makefile
                  data/Makefile
                  test/Makefile

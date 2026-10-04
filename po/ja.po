@@ -7343,22 +7343,6 @@ msgstr "[Wnn] 次予測候補"
 msgid "[Wnn] Previous prediction candidate"
 msgstr "[Wnn] 前予測候補"
 
-#: scm/xmload.scm:41
-msgid "ZhengMa"
-msgstr "ZhengMa"
-
-#: scm/xmload.scm:42
-msgid "ZhengMa input method (Chinese)"
-msgstr "ZhengMa入力方式(中国語)"
-
-#: scm/xmload.scm:53
-msgid "WuBi 86"
-msgstr "WuBi 86"
-
-#: scm/xmload.scm:54
-msgid "WuBi 86 input method (Chinese)"
-msgstr "WuBi 86入力方式(中国語)"
-
 #: uim.desktop.in.in:3
 msgid "Input Method"
 msgstr "入力メソッド"

@@ -19,7 +19,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  predict-look.scm predict-look-skk.scm predict-sqlite3.scm \
  predict-google-suggest.scm \
  pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
- xmload.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  japanese-act.scm japanese-kzik.scm japanese-custom.scm \
  japanese-utf8.scm japanese-azik-utf8.scm japanese-kana-utf8.scm \
@@ -63,7 +62,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  dict-socket.scm
 
 OTHER_SCM_FILES = \
- wb86.scm zm.scm \
  macro-expander.scm macro-expander-chicken.scm \
  json-parser-expander.scm json.scm.in packrat.scm.in
 EXTRA_DIST = $(OTHER_SCM_FILES)
@@ -94,7 +92,6 @@ module_names += "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif
-module_names += "xmload"
 # less preferable IMs
 module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"

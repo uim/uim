@@ -60,10 +60,8 @@
     (tutcode          . "Tu")
     (trycode          . "Tr")
     (viqr             . "V")
-    (wb86             . "Wb")
     (wnn              . "Wn")
-    (google-cgiapi-jp . "Gj")
-    (zm               . "Zm")))
+    (google-cgiapi-jp . "Gj")))
 
 (define imsw-default-iconic-label "IM")
 
