@@ -7098,22 +7098,6 @@ msgstr "[Wnn] ამოცნობის შემდეგი კანდი�
 msgid "[Wnn] Previous prediction candidate"
 msgstr "[Wnn] ამოცნობის შემდეგი კანდიდატი"
 
-#: scm/xmload.scm:41
-msgid "ZhengMa"
-msgstr "ZhengMa"
-
-#: scm/xmload.scm:42
-msgid "ZhengMa input method (Chinese)"
-msgstr "შეყვანის მეთოდი ZhengMa (ჩინური)"
-
-#: scm/xmload.scm:53
-msgid "WuBi 86"
-msgstr "WuBi 86"
-
-#: scm/xmload.scm:54
-msgid "WuBi 86 input method (Chinese)"
-msgstr "შეყვანის მეთოდი WuBi 86 (ჩინური)"
-
 #: uim.desktop.in.in:3
 msgid "Input Method"
 msgstr "შეტანის მეთოდი"
