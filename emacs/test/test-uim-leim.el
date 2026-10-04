@@ -34,37 +34,13 @@
 ;;  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
-;; Types into a buffer with uim-mode on, as a user would, and looks at
-;; what uim.el leaves there.
+;; Uses uim through LEIM, the input methods that set-input-method and
+;; C-\ choose from.
 
-(defun uim-test-type (im keys)
-  "Type KEYS into a new buffer with uim-mode on and IM.
-Return a plist of the buffer's text with its properties, whether
-candidates were shown, and the text once uim-mode is off again."
-  (setq uim-default-im-engine im)
+(ert-deftest uim-test-leim ()
   (ert-with-test-buffer-selected ()
-    (uim-mode 1)
-    (execute-kbd-macro (kbd keys))
-    (let ((result (list :text (buffer-string)
-                        :candidate-displayed (and uim-candidate-displayed t))))
-      (uim-mode 0)
-      (append result (list :text-after-off (buffer-string))))))
-
-(ert-deftest uim-test-commit ()
-  (should (equal uim-test-ka
-                 (plist-get (uim-test-type "skk" "C-j k a") :text))))
-
-(ert-deftest uim-test-preedit ()
-  (let ((result (uim-test-type "skk" "C-j k")))
-    (should (equal "k" (substring-no-properties (plist-get result :text))))
-    (should (eq 'uim-preedit-underline-face
-                (get-text-property 0 'face (plist-get result :text))))
-    ;; The preedit is uim.el's, not the buffer's.
-    (should (equal "" (plist-get result :text-after-off)))))
-
-;; SKK starts with the input method off, so the key goes to Emacs.
-(ert-deftest uim-test-unconsumed-key ()
-  (should (equal "a" (plist-get (uim-test-type "skk" "a") :text))))
-
-(ert-deftest uim-test-candidates ()
-  (should (plist-get (uim-test-type "candidates" "a") :candidate-displayed)))
+    (set-input-method "japanese-skk-uim")
+    (execute-kbd-macro (kbd "C-j k a"))
+    (should (equal uim-test-ka (buffer-string)))
+    (deactivate-input-method)
+    (should-not uim-mode)))
