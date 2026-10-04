@@ -66,6 +66,10 @@ Supplementary explanation (only for help and not legal):
     license, but has different copyright holders. See
     pixmaps/{COPYING.BSDL,README,AUTHORS} for further information.
 
+  * wayland/protocol/*.xml come from wlroots, you can use, modify,
+    distribute and sell them under the terms of the MIT license in
+    each file.
+
 
 subprojects/sigscheme/ is covered by:
 ------------------------------------------------------------------------------
