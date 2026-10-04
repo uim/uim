@@ -340,7 +340,7 @@
           (if (>= (+ offset length) 0)
               (im-delete-text mc 'primary 'cursor (- offset) (+ offset length)))))))
 
-;; mozc's output holds only the page it shows now, while uim asks for
+;; Mozc's output holds only the page it shows now, while uim asks for
 ;; any candidate by its index in the whole list.
 
 (define (mozc-find-candidate mc idx)
@@ -353,7 +353,7 @@
     (and (pair? candidates)
          (mozc-alist-ref 'index (car candidates)))))
 
-;; Whether turning forward reaches IDX's page sooner. mozc wraps
+;; Whether turning forward reaches IDX's page sooner. Mozc wraps
 ;; around, so the first page is one step forward from the last.
 (define (mozc-page-forward? mc first idx)
   (let* ((size (mozc-context-cand-page-size mc))
@@ -361,7 +361,7 @@
          (ahead (modulo (- (quotient idx size) (quotient first size)) pages)))
     (<= ahead (- pages ahead))))
 
-;; Turns mozc's page one step toward IDX. Returns #f when it did not
+;; Turns Mozc's page one step toward IDX. Returns #f when it did not
 ;; move. No mozc-update here: a frontend calls this from inside the
 ;; selector callbacks.
 (define (mozc-turn-page mc idx)
@@ -376,7 +376,7 @@
          (begin
            (mozc-context-set-candidates! mc (or (mozc-alist-ref 'candidate cw)
                                                 '()))
-           ;; mozc wraps around at both ends
+           ;; Mozc wraps around at both ends
            (not (eqv? first (mozc-first-index mc)))))))
 
 (define (mozc-candidate-at mc idx)
@@ -425,7 +425,7 @@
         (mozc-context-set-cand-page! mc page)
         (if focused
             (im-select-candidate mc focused))
-        ;; a frontend draws page 0 first, which can move mozc off it
+        ;; a frontend draws page 0 first, which can move Mozc off it
         (if (and focused (not (mozc-find-candidate mc focused)))
             (mozc-highlight-candidate mc focused)))))))
 
