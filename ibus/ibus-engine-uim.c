@@ -325,10 +325,18 @@ preedit_update_cb(void *ptr)
 
 /* candidates */
 
+/* IBusLookupTable takes no more in a page. */
+#define IBUS_UIM_MAX_PAGE_SIZE 16
+
+/* An input method with more in a page has its pages split here, so
+ * after the first page the labels and the keys it takes no longer
+ * match what is shown. That beats aborting in ibus_lookup_table_new(). */
 static int
 page_size(IBusUimEngine *engine)
 {
-  return engine->display_limit > 0 ? engine->display_limit : engine->nr;
+  int size = engine->display_limit > 0 ? engine->display_limit : engine->nr;
+
+  return MIN(size, IBUS_UIM_MAX_PAGE_SIZE);
 }
 
 static int

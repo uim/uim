@@ -28,12 +28,14 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;;; Shows candidates and commits the selected index, for the
-;;; ibus-engine-uim test. "a" opens the selector, "b" selects the
-;;; eighth candidate, "n" turns the page and "x" closes the selector.
-;;; Anything else is committed as it is.
+;;; ibus-engine-uim test. "a" opens the selector, "c" opens it with
+;;; more candidates in a page than IBus takes, "b" selects the eighth
+;;; candidate, "n" turns the page and "x" closes the selector. Anything
+;;; else is committed as it is.
 
 (define candidates-count 12)
 (define candidates-page-size 5)
+(define candidates-large-count 20)
 
 (define candidates-context-rec-spec context-rec-spec)
 (define-record 'candidates-context candidates-context-rec-spec)
@@ -53,6 +55,10 @@
       (im-activate-candidate-selector c
                                       candidates-count
                                       candidates-page-size))
+     ((= key 99)
+      (im-activate-candidate-selector c
+                                      candidates-large-count
+                                      candidates-large-count))
      ((= key 98)
       (im-select-candidate c 7))
      ((= key 110)

@@ -45,6 +45,7 @@ require "tmpdir"
 module Keyboard
   KEYVAL_A = 0x61
   KEYVAL_B = 0x62
+  KEYVAL_C = 0x63
   KEYVAL_J = 0x6a
   KEYVAL_K = 0x6b
   KEYVAL_L = 0x6c
@@ -55,6 +56,7 @@ module Keyboard
   KEYVAL_CONTROL_L = 0xffe3
   KEYCODE_A = 30
   KEYCODE_B = 48
+  KEYCODE_C = 46
   KEYCODE_J = 36
   KEYCODE_K = 37
   KEYCODE_L = 38
@@ -832,6 +834,16 @@ class TestIBusEngineUim < Test::Unit::TestCase
       assert_equal(["commit [11]",
                     "lookup-table 11 1 5 #{candidates}"],
                    @ibus.events.grep(/\A(?:commit|lookup-table) /).last(2))
+    end
+
+    # IBus takes at most 16 in a page.
+    def test_large_page
+      large_candidates = (0...20).collect {|i| "candidate#{i}"}.join(" ")
+      @ibus.type(KEYVAL_C, KEYCODE_C)
+      @ibus.type(KEYVAL_N, KEYCODE_N)
+      assert_equal(["lookup-table 0 0 16 #{large_candidates}",
+                    "lookup-table 16 0 16 #{large_candidates}"],
+                   @ibus.events.grep(/\Alookup-table /).last(2))
     end
 
     def test_deactivate
