@@ -98,6 +98,25 @@ translated(const char *text)
   return utf8 ? utf8 : g_strdup(text);
 }
 
+/* uim leaves the labels to be translated, as its toolbars do. Only
+ * ASCII ones can be msgids: some input methods give theirs in their
+ * own language. "" would give the header of the catalog. */
+static void
+translate_cols(char **cols, guint from, guint to)
+{
+  guint i;
+
+  for (i = from; i <= to; i++) {
+    char *text;
+
+    if (!*cols[i] || !g_str_is_ascii(cols[i]))
+      continue;
+    text = translated(g_dgettext(GETTEXT_PACKAGE, cols[i]));
+    g_free(cols[i]);
+    cols[i] = text;
+  }
+}
+
 /* What the widget is set to, or what it can be set to when it is set
  * to none of them. */
 static char *
@@ -177,12 +196,15 @@ parse_prop_list(const char *str)
         ibus_prop_list_append(props,
                               new_menu(branch, leaves, &has_input_mode));
       g_strfreev(branch);
+      translate_cols(cols, 2, 3);
       branch = cols;
       leaves = ibus_prop_list_new();
       continue;
     }
-    if (n >= 7 && strcmp(cols[0], "leaf") == 0 && branch)
+    if (n >= 7 && strcmp(cols[0], "leaf") == 0 && branch) {
+      translate_cols(cols, 2, 4);
       ibus_prop_list_append(leaves, new_leaf(cols));
+    }
     g_strfreev(cols);
   }
   if (branch)
