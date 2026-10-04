@@ -79,7 +79,6 @@ scm/tutcode-rule-custom.scm
 scm/tutcode.scm
 scm/viqr.scm
 scm/wnn-key-custom.scm
-scm/xmload.scm
 tqt/chardict/bushuviewwidget.cpp
 tqt/chardict/qt.cpp
 tqt/chardict/unicodeviewwidget.cpp
