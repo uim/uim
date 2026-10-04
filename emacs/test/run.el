@@ -41,6 +41,7 @@
 ;;   emacs -Q --batch -L emacs -l emacs/test/run.el
 
 (require 'ert)
+(require 'ert-x)
 
 ;; uim.el blocks without a limit writing to an agent that stopped
 ;; reading. A hang must fail the tests, not hold the build.
@@ -52,6 +53,35 @@
                               (format " in %S" (ert-test-name test))
                             "")))
                (kill-emacs 1)))
+
+(defvar uim-test-directory (make-temp-file "uim-el-test" t))
+
+(add-hook 'kill-emacs-hook
+          (lambda () (delete-directory uim-test-directory t)))
+
+;; The agents read the user's uim configuration and look for
+;; uim-helper-server under these, so the tests keep them to their own.
+;; default-directory may start with the "~" that is about to move.
+(setq default-directory (expand-file-name default-directory))
+(setenv "HOME" uim-test-directory)
+(setenv "XDG_RUNTIME_DIR" uim-test-directory)
+
+(setenv "LIBUIM_USER_SCM_FILE"
+        (expand-file-name "user.scm" uim-test-directory))
+(with-temp-file (getenv "LIBUIM_USER_SCM_FILE")
+  (insert (format "(load %S)\n"
+                  (expand-file-name "candidates.scm"
+                                    (file-name-directory load-file-name)))))
+
+(setq uim-el-agent (getenv "UIM_EL_AGENT"))
+(setq uim-el-helper-agent (getenv "UIM_EL_HELPER_AGENT"))
+
+;; uim-leim changes uim.el as it is loaded, so every test gets it.
+(require 'uim)
+(require 'uim-leim)
+
+;; Hiragana ka, as an escape so that the tests stay ASCII.
+(defconst uim-test-ka "\u304b")
 
 (dolist (file (directory-files (file-name-directory load-file-name)
                                t "\\`test-.*\\.el\\'"))
