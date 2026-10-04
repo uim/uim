@@ -1,0 +1,43 @@
+Table source provenance
+=======================
+
+These files are the inputs used to generate tables/wb86.table and
+tables/zm.table.
+They are vendored so that release builds do not access the network and the
+generated files can be audited and reproduced.  Run
+`ruby ../fetch-table-sources.rb` from this directory to retrieve the exact
+revisions and verify their SHA-256 digests.
+
+Zhengma
+-------
+
+File: zm/zhengma.txt
+Upstream: https://github.com/fcitx/fcitx5-table-extra
+Revision: dbc7154a7f0b9fc04313160ae8066ed4d8cbc446
+Original path: tables/zhengma.txt
+Imported: 2026-10-04
+
+The upstream README states that its data files are in the public domain.
+Debian's licensing audit additionally documents the table family as
+clean-room regenerated from the input method's ideas:
+
+https://sources.debian.org/src/fcitx-table-extra/0.3.8-3/debian/README.source/
+
+The upstream statement is preserved as zm/README.
+
+Wubi86
+------
+
+File: wb86/wubi-haifeng86.txt
+Upstream: https://github.com/mike-fabian/ibus-table-chinese
+Revision: 44301450e681c23d60301747856c74b5b9d1312e
+Original path: tables/wubi-haifeng/wubi-haifeng86.UTF-8
+Imported: 2026-10-04
+
+The BSD 3-clause license added with the table in 2010 is preserved as
+wb86/COPYING.  The upstream table header currently labels the table
+as 0BSD, but that label does not match the license text and is not used here.
+
+The original 2005 README contains a non-commercial-use statement that appears
+to predate the explicit 2010 BSD grant.  It is preserved unmodified as
+wb86/README so that this discrepancy remains visible for audit.

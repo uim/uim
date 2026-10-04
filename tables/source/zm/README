@@ -1,0 +1,27 @@
+Requirements:
+
+    You need to install fcitx5-chinese-addons and libime first.
+
+```
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=<fcitx's prefix>
+cmake --build .
+cmake --install . # You may need to use root.
+```
+
+Introduction:
+
+    fcitx5-table-extra provides extra table for Fcitx5, including Boshiamy, Zhengma, Cangjie, and Quick.
+
+Zhengma's patent is expired at 2009. [1]
+Boshiamy's patent is expired at 2003.11.11. [2]
+Cangjie's author drop Cangjie's patent in 1982. [3]
+
+The code of this package are released under GPLv3 or later.
+
+All the data file is now in public domain.
+
+[1] http://211.157.104.87:8080/sipo/zljs/hyjs-yx-new.jsp?recid=CN89108851.2&leixin=fmzl&title=%D7%D6%B8%F9%B1%E0%C2%EB%CA%E4%C8%EB%B7%A8%BC%B0%C6%E4%C9%E8%B1%B8&ipc=G06F3/023
+[2] http://twpat6.tipo.gov.tw/tipotwoc/tipotwkm?00545097BFC6010100000000000100A000000041000000000^A14^076103932
+[3] http://en.wikipedia.org/wiki/Cangjie_input_method
