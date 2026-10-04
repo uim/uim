@@ -101,6 +101,7 @@
 (require-extension (srfi 1 2 8 69 95))
 (require "util.scm")
 (require-dynlib "look")
+(require-dynlib "tutcode")
 
 (define (tutcode-encoding-name encoding)
   (if (eq? encoding 'utf-8)
@@ -148,6 +149,7 @@
 
 ;;; tutcode-bushu-for-charのキャッシュ用hash-table
 (define tutcode-bushu-for-char-hash-table (make-hash-table =))
+(define tutcode-bushu-for-char-cache-config #f)
 
 ;;; 文字のリストとして返す。
 (define (tutcode-bushu-parse-entry str)
@@ -163,29 +165,39 @@
     (and (pair? looked)
          (tutcode-encoded-string->utf8 (car looked) encoding)))) ; 1行ぶんの文字列だけ取得
 
+(define (tutcode-bushu-indexed-search key filename encoding kind)
+  (tutcode-bushu-lib-indexed-search
+    filename (tutcode-encoding-name encoding) (symbol->string kind) key))
+
 ;;; CHARを構成する部首のリストを返す。
 (define (tutcode-bushu-for-char char)
-  (let*
-    ((i (tutcode-utf8-string->ichar char))
-     (cache
-      (and i (hash-table-ref/default tutcode-bushu-for-char-hash-table i #f))))
-    (if cache
-      (list-copy cache)
-      (let*
-        ((looked (tutcode-bushu-search char tutcode-bushu-expand-filename
-                   tutcode-bushu-expand-encoding))
-         (res
-          (if looked
-            (tutcode-bushu-parse-entry looked)
-            (list char))))
-        (if i
-          (hash-table-set! tutcode-bushu-for-char-hash-table i (list-copy res)))
-        res))))
+  (let ((cache-config
+          (list tutcode-bushu-expand-filename tutcode-bushu-expand-encoding)))
+    (if (not (equal? cache-config tutcode-bushu-for-char-cache-config))
+      (begin
+        (set! tutcode-bushu-for-char-hash-table (make-hash-table =))
+        (set! tutcode-bushu-for-char-cache-config cache-config)))
+    (let*
+      ((i (tutcode-utf8-string->ichar char))
+       (cache
+        (and i (hash-table-ref/default tutcode-bushu-for-char-hash-table i #f))))
+      (if cache
+        (list-copy cache)
+        (let*
+          ((looked (tutcode-bushu-indexed-search char tutcode-bushu-expand-filename
+                     tutcode-bushu-expand-encoding 'expand))
+           (res
+            (if looked
+              (tutcode-bushu-parse-entry looked)
+              (list char))))
+          (if i
+            (hash-table-set! tutcode-bushu-for-char-hash-table i (list-copy res)))
+          res)))))
 
 (define (tutcode-bushu-lookup-index2-entry-internal str)
   (let
-    ((looked (tutcode-bushu-search (string-append str " ")
-                tutcode-bushu-index2-filename tutcode-bushu-index2-encoding)))
+    ((looked (tutcode-bushu-indexed-search str
+                tutcode-bushu-index2-filename tutcode-bushu-index2-encoding 'index2)))
     (if looked
       (tutcode-bushu-parse-entry looked)
       ())))
