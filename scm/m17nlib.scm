@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -55,13 +55,11 @@
 
 (register-action 'action_m17nlib_on
 		 (lambda (mc)
-		   (let* ((im (m17nlib-context-im mc))
-			  (name (symbol->string (im-name im))))
-		     (list
-		      'on
-		      "O"
-		      (N_ "on")
-		      (string-append name (N_ " Mode")))))
+		   (list
+		    'on
+		    "O"
+		    (N_ "on")
+		    (im-name-label (m17nlib-context-im mc))))
 		 (lambda (mc)
 		   (m17nlib-context-on mc))
 		 (lambda (mc)
