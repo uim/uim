@@ -1,5 +1,94 @@
 # NEWS
 
+## 1.9.9 - 2026-10-05
+
+### Improvements
+
+  * Wayland: Added support for passing the text around the cursor.
+    * [GH-352](https://github.com/uim/uim/issues/352)
+
+  * Wayland: Added support for content type.
+    * [GH-355](https://github.com/uim/uim/issues/355)
+
+  * Wayland: Added support for mouse in the candidate window.
+    * [GH-357](https://github.com/uim/uim/issues/357)
+
+  * Wayland: Added support for HiDPI.
+    * [GH-359](https://github.com/uim/uim/issues/359)
+
+  * Wayland: Added support for system font in the candidate window.
+    * [GH-360](https://github.com/uim/uim/issues/360)
+
+  * IBus: Added IBus engine.
+    * [GH-362](https://github.com/uim/uim/issues/362)
+    * [GH-363](https://github.com/uim/uim/issues/363)
+    * [GH-366](https://github.com/uim/uim/issues/366)
+    * [GH-372](https://github.com/uim/uim/issues/372)
+    * [GH-379](https://github.com/uim/uim/issues/379)
+    * [GH-382](https://github.com/uim/uim/issues/382)
+    * [GH-388](https://github.com/uim/uim/issues/388)
+
+  * Mozc: Dropped character palette and hand-writing menu.
+    * [GH-353](https://github.com/uim/uim/issues/353)
+    * Patch by Kentaro Hayashi
+
+  * Mozc: Improved page turning performance.
+    * [GH-358](https://github.com/uim/uim/issues/358)
+
+  * Georgian: Added translation.
+    * [GH-373](https://github.com/uim/uim/issues/373)
+    * Patch by Ekaterine Papava
+
+  * SKK: Improved prompt in char-code mode.
+    * [GH-376](https://github.com/uim/uim/issues/376)
+    * Patch by SATO Tatsuya
+
+  * FEP: Improved status line.
+    * [GH-383](https://github.com/uim/uim/issues/383)
+    * Patch by yamam
+
+  * Removed Wubi86 and Zhengma table data.
+    * [GH-386](https://github.com/uim/uim/issues/386)
+    * Patch by dai
+
+  * Emacs: Changed to use lexical binding.
+    * [GH-364](https://github.com/uim/uim/issues/364)
+    * [GH-387](https://github.com/uim/uim/issues/387)
+    * Reported by Akira TAGOH
+
+  * Made the description of the "on" mode translatable.
+    * [GH-389](https://github.com/uim/uim/issues/389)
+
+### Fixes
+
+  * Mozc: Fixed page shift in the candidate window.
+    * [GH-356](https://github.com/uim/uim/issues/356)
+    * Patch by Kentaro Hayashi
+
+  * Mozc: Stopped undoing a commit into another field.
+    * [GH-384](https://github.com/uim/uim/issues/384)
+
+  * TUT-Code: Fixed mazegaki conversion.
+    * [GH-354](https://github.com/uim/uim/issues/354)
+    * Patch by yamam
+
+  * TUT-Code: Fixed bushu lookup for EUC-JP dictionaries.
+    * [GH-374](https://github.com/uim/uim/issues/374)
+    * Patch by yamam
+
+  * Emacs: Fixed IM list delivery.
+    * [GH-367](https://github.com/uim/uim/issues/367)
+    * Patch by yamam
+
+### Thanks
+
+  * Kentaro Hayashi
+  * yamam
+  * Ekaterine Papava
+  * SATO Tatsuya
+  * dai
+  * Akira TAGOH
+
 ## 1.9.8 - 2026-09-23
 
 ### Improvements
