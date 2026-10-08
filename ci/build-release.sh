@@ -8,9 +8,9 @@ rm -rf ~/source
 cp -a /source ~/source
 pushd ~/source
 ./autogen.sh
-pushd sigscheme
+pushd subprojects/sigscheme
 ./autogen.sh
-pushd libgcroots
+pushd subprojects/libgcroots
 ./autogen.sh
 popd
 popd

@@ -64,7 +64,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
 OTHER_SCM_FILES = \
  macro-expander.scm macro-expander-chicken.scm \
  json-parser-expander.scm json.scm.in packrat.scm.in
-EXTRA_DIST = $(OTHER_SCM_FILES)
+EXTRA_DIST = $(OTHER_SCM_FILES) meson.build
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 
@@ -100,7 +100,7 @@ module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
-        LIBUIM_SYSTEM_SCM_FILES=$(abs_top_srcdir)/sigscheme/lib \
+        LIBUIM_SYSTEM_SCM_FILES=$(abs_top_srcdir)/subprojects/sigscheme/lib \
         LIBUIM_SCM_FILES=$(abs_srcdir) \
         LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs \
         UIM_DISABLE_NOTIFY=1

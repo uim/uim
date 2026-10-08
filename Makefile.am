@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4.generated -I m4
 
-SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
+SUBDIRS = m4 doc replace subprojects/sigscheme uim scm test test2 \
           gtk3 gtk4 qt3 tqt qt4 qt5 qt6 notify
 SUBDIRS += xim wayland ibus fep emacs pixmaps examples byeoru-data data
 if MOZC
@@ -11,7 +11,8 @@ if USE_NLS
 endif
 
 EXTRA_DIST = RELNOTE Rakefile autogen.sh setup.sh \
-	uim.pc.in uim.desktop
+	uim.pc.in uim.desktop \
+	meson.build meson_options.txt
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc

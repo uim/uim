@@ -3,5 +3,5 @@
 set -e
 
 ${AUTORECONF:-autoreconf} --force --install "$@"
-cd sigscheme
+cd subprojects/sigscheme
 ./autogen.sh "$@"

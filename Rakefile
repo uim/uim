@@ -25,7 +25,11 @@ namespace :version do
         gsub(/(UIM_MINOR_VERSION\],\s*\[)\d+/) {"#{$1}#{next_minor}"}.
         gsub(/(UIM_PATCHLEVEL_VERSION\],\s*\[)\d+/) {"#{$1}#{next_patch}"}
     File.write("configure.ac", configure_ac)
-    sh("git", "add", "configure.ac")
+    meson_build =
+      File.read("meson.build").
+        sub(/^(        version: ')[\d.]+'/) {"#{$1}#{next_version}'"}
+    File.write("meson.build", meson_build)
+    sh("git", "add", "configure.ac", "meson.build")
     sh("git", "commit", "-m", "Bump version")
     sh("git", "push")
   end

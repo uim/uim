@@ -1,0 +1,5 @@
+/* config.h for Meson. The defines come from meson.build. */
+#include "config-meson.h"
+
+/* Include os specific header. */
+#include "os_dep.h"

@@ -21,3 +21,5 @@ libreplace_la_SOURCES = \
 	strtonum.c
 
 strtonum.lo: CFLAGS+=-std=c99
+
+EXTRA_DIST = meson.build
