@@ -75,15 +75,28 @@ libuim_sources = files(
   'uim-util.c',
   'uim.c',
 )
+libuim_c_args = [
+  '-DPKGLIBDIR="@0@"'.format(prefix / pkglibdir),
+  '-DPKGDATADIR="@0@"'.format(prefix / pkgdatadir),
+]
+libuim_dependencies = [dl, socket, iconv, intl]
+# Anthy can be built into libuim instead of a plugin.
+# [plugin, dependency, static option, macro]
+anthy_definitions = [
+  ['anthy', anthy, 'anthy_static', 'ENABLE_ANTHY_STATIC'],
+  ['anthy-utf8', anthy_utf8, 'anthy_utf8_static', 'ENABLE_ANTHY_UTF8_STATIC'],
+]
+foreach definition : anthy_definitions
+  if definition[1].found() and get_option(definition[2])
+    libuim_sources += files(definition[0] + '.c')
+    libuim_c_args += ['-D' + definition[3]]
+    libuim_dependencies += [definition[1]]
+  endif
+endforeach
 libuim = library('uim',
                  libuim_sources,
-                 c_args: (uim_c_args +
-                          uim_defs +
-                          [
-                            '-DPKGLIBDIR="@0@"'.format(prefix / pkglibdir),
-                            '-DPKGDATADIR="@0@"'.format(prefix / pkgdatadir),
-                          ]),
-                 dependencies: [dl, socket, iconv, intl],
+                 c_args: uim_c_args + uim_defs + libuim_c_args,
+                 dependencies: libuim_dependencies,
                  include_directories: uim_include_directories,
                  install: true,
                  link_with: [libuim_scm, libreplace],
@@ -120,6 +133,14 @@ if get_option('skk')
     ['skk', ['skk.c'], [libuim_bsdlook], net_libraries],
   ]
 endif
+foreach definition : anthy_definitions
+  if definition[1].found() and not get_option(definition[2])
+    plugin_definitions += [
+      [definition[0], [definition[0] + '.c'], [], [definition[1]]],
+    ]
+  endif
+  optional_plugins += {definition[0]: definition[1].found()}
+endforeach
 # [plugin, option, dependency, version]
 foreach definition : [
   ['editline', 'libedit', 'libedit', []],
