@@ -342,6 +342,9 @@ subdir('replace')
 subdir('uim')
 subdir('scm')
 subdir('test2')
+if intl.found()
+  subdir('po')
+endif
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(libraries: [libuim_scm, libuim],

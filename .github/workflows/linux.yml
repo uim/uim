@@ -68,6 +68,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y -V \
+            gettext \
             meson \
             ninja-build \
             ruby
@@ -80,6 +81,11 @@ jobs:
       - name: Test
         run: |
           meson test -C build --print-errorlogs
+      # This fails when a gettext update stops accepting our sources, as
+      # happened with gettext 0.23 (#221).
+      - name: Generate uim.pot
+        run: |
+          meson compile -C build pot
       - name: Install
         run: |
           meson install -C build

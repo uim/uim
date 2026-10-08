@@ -9,25 +9,13 @@ DOMAIN = $(PACKAGE)
 LINGUAS = $(shell sed -e '/^\#/d' $(srcdir)/LINGUAS)
 GMOFILES = $(LINGUAS:%=%.gmo)
 
-# --keyword=Description: an extra key to extract from
-# gtk3/toolbar/UimApplet.panel-applet.desktop.in.in.
-XGETTEXT_KEYWORDS = --keyword=_ --keyword=N_ --keyword=NC_:1c,2 \
-	--keyword=Description
-# GETTEXTDATADIRS lets xgettext find its/*.loc, which describe how to
-# extract strings from our GMenu XML files.
-XGETTEXT_RUN = GETTEXTDATADIRS=$(srcdir) $(XGETTEXT) \
-	--default-domain=$(DOMAIN) --add-comments=TRANSLATORS: \
-	$(XGETTEXT_KEYWORDS) \
-	--package-name=$(PACKAGE) --package-version=$(VERSION) \
-	--copyright-holder='uim Developers' \
-	--msgid-bugs-address='uim-en@googlegroups.com'
-
 POTFILES = $(shell sed -e '/^\#/d' -e 's|^|$(top_srcdir)/|' \
 	$(srcdir)/POTFILES.in)
 EUCJP_POTFILES = $(shell sed -e '/^\#/d' -e 's|^|$(top_srcdir)/|' \
 	$(srcdir)/POTFILES.eucjp.in)
 
 EXTRA_DIST = LINGUAS POTFILES.in POTFILES.eucjp.in \
+	meson.build update-po.sh \
 	its/uim-gmenu.its its/uim-gmenu.loc \
 	$(LINGUAS:%=%.po)
 CLEANFILES = $(GMOFILES) $(DOMAIN).pot eucjp.pot
@@ -38,31 +26,20 @@ all-local: $(GMOFILES)
 .po.gmo:
 	$(MSGFMT) -c --statistics --verbose -o $@ $<
 
-# xgettext accepts a single --from-code per run, but some scm/*.scm
-# files are still EUC-JP.  Those are listed in POTFILES.eucjp.in and
-# extracted separately into eucjp.pot, which is then fed into the main
-# UTF-8 run as an additional input.  Remove all of this once every
-# source file is UTF-8.
-eucjp.pot: $(srcdir)/POTFILES.eucjp.in $(EUCJP_POTFILES)
-	$(XGETTEXT_RUN) --from-code=EUC-JP --directory=$(top_srcdir) \
-	  --files-from=$(srcdir)/POTFILES.eucjp.in --output=$@
+# See update-po.sh for how uim.pot is generated.
+UPDATE_PO = $(SHELL) $(srcdir)/update-po.sh
+UPDATE_PO_ARGS = '$(abs_top_srcdir)' '$(abs_builddir)' '$(VERSION)' \
+	'$(XGETTEXT)' '$(MSGMERGE)' '$(MSGATTRIB)'
 
-$(DOMAIN).pot: $(srcdir)/POTFILES.in $(POTFILES) eucjp.pot
-	$(XGETTEXT_RUN) --from-code=UTF-8 --directory=$(top_srcdir) \
-	  --files-from=$(srcdir)/POTFILES.in $(abs_builddir)/eucjp.pot \
-	  --output=$@
+$(DOMAIN).pot: $(srcdir)/update-po.sh \
+	$(srcdir)/POTFILES.in $(POTFILES) \
+	$(srcdir)/POTFILES.eucjp.in $(EUCJP_POTFILES)
+	$(UPDATE_PO) pot $(UPDATE_PO_ARGS)
 
 # Merge the current sources into the translations.  This is the only
 # rule that writes into the source directory; run it explicitly.
-update-po: $(DOMAIN).pot
-	@for lang in $(LINGUAS); do \
-	  echo "$(MSGMERGE) --update --backup=none $(srcdir)/$$lang.po $(DOMAIN).pot"; \
-	  $(MSGMERGE) --update --backup=none $(srcdir)/$$lang.po $(DOMAIN).pot \
-	    || exit 1; \
-	  echo "$(MSGATTRIB) --no-obsolete --output-file=$(srcdir)/$$lang.po $(srcdir)/$$lang.po"; \
-	  $(MSGATTRIB) --no-obsolete --output-file=$(srcdir)/$$lang.po $(srcdir)/$$lang.po \
-	    || exit 1; \
-	done
+update-po:
+	$(UPDATE_PO) update-po $(UPDATE_PO_ARGS)
 .PHONY: update-po
 
 install-data-local: $(GMOFILES)
