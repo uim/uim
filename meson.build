@@ -364,3 +364,4 @@ summary({
           'SKK': get_option('skk'),
         },
         section: 'Features')
+summary(optional_plugins, section: 'Plugins')

@@ -71,13 +71,25 @@ jobs:
           sudo apt update
           sudo apt install -y -V \
             gettext \
+            libedit-dev \
+            libexpat1-dev \
+            libffi-dev \
             librsvg2-bin \
+            libsqlite3-dev \
+            libssl-dev \
             meson \
             ninja-build \
             ruby
       - name: Setup
         run: |
-          meson setup --prefix=/tmp/local build
+          meson setup \
+            --prefix=/tmp/local \
+            -Dexpat=enabled \
+            -Dffi=enabled \
+            -Dlibedit=enabled \
+            -Dopenssl=enabled \
+            -Dsqlite3=enabled \
+            build
       - name: Build
         run: |
           meson compile -C build

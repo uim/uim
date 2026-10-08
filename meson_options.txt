@@ -1,4 +1,24 @@
+option('expat',
+       type: 'feature',
+       value: 'disabled',
+       description: 'build a plugin for Expat')
+option('ffi',
+       type: 'feature',
+       value: 'disabled',
+       description: 'build a plugin for libffi')
+option('libedit',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a plugin for libedit used by uim-sh')
+option('openssl',
+       type: 'feature',
+       value: 'disabled',
+       description: 'build a plugin for OpenSSL')
 option('skk',
        type: 'boolean',
        value: true,
        description: 'build a plugin for SKK')
+option('sqlite3',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a plugin for SQLite3')

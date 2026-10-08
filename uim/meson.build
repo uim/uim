@@ -104,6 +104,7 @@ libuim_bsdlook = static_library('uim-bsdlook',
                                 include_directories: uim_include_directories,
                                 pic: true)
 
+optional_plugins = {}
 # [name, sources, extra link_with, extra dependencies]
 plugin_definitions = [
   ['custom-enabler', ['uim-custom-enabler.c'], [libuim_custom], []],
@@ -119,6 +120,24 @@ if get_option('skk')
     ['skk', ['skk.c'], [libuim_bsdlook], net_libraries],
   ]
 endif
+# [plugin, option, dependency, version]
+foreach definition : [
+  ['editline', 'libedit', 'libedit', []],
+  ['expat', 'expat', 'expat', []],
+  ['ffi', 'ffi', 'libffi', ['>=3.0.0']],
+  ['openssl', 'openssl', 'openssl', ['>=1.1.0']],
+  ['sqlite3', 'sqlite3', 'sqlite3', ['>=3.0.0']],
+]
+  plugin_dependency = dependency(definition[2],
+                                 required: get_option(definition[1]),
+                                 version: definition[3])
+  if plugin_dependency.found()
+    plugin_definitions += [
+      [definition[0], [definition[0] + '.c'], [], [plugin_dependency]],
+    ]
+  endif
+  optional_plugins += {definition[0]: plugin_dependency.found()}
+endforeach
 plugins = []
 foreach definition : plugin_definitions
   plugins += [
