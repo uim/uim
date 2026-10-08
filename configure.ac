@@ -1972,12 +1972,12 @@ AC_SUBST(abs_builddir)
 AC_SUBST(abs_top_srcdir)
 AC_SUBST(abs_top_builddir)
 
-# configure sigscheme/ subdir
+# configure subprojects/sigscheme/ subdir
 #
 # --with-master-pkg=uim instructs that pkgdatadir for Scheme libraries.
-# See also sigscheme/lib/Makefile.am
+# See also subprojects/sigscheme/lib/Makefile.am
 ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-libsscm --disable-shell"
-AC_CONFIG_SUBDIRS([sigscheme])
+AC_CONFIG_SUBDIRS([subprojects/sigscheme])
 
 AC_ARG_WITH(libgcroots,
             AS_HELP_STRING([--with-libgcroots@<:@=WHICH@:>@],
@@ -1989,8 +1989,8 @@ AC_ARG_WITH(libgcroots,
 case "${with_libgcroots:=no}" in
   no)
     # bundled libgcroots package
-    GCROOTS_LIBS='$(abs_top_builddir)/sigscheme/libgcroots/libgcroots.la'
-    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/libgcroots/include'
+    GCROOTS_LIBS='$(abs_top_builddir)/subprojects/sigscheme/subprojects/libgcroots/libgcroots.la'
+    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/subprojects/sigscheme/subprojects/libgcroots/include'
   ;;
   yes|installed)
     PKG_CHECK_MODULES(
@@ -2004,7 +2004,7 @@ case "${with_libgcroots:=no}" in
   tiny-subst)
     # use src/gcroots/gcroots.[hc]
     GCROOTS_LIBS=
-    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/src/gcroots'
+    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/subprojects/sigscheme/src/gcroots'
   ;;
   *)
     AC_MSG_ERROR([invalid argument for --with-libgcroots.])

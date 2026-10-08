@@ -11,7 +11,8 @@ DEFS += $(SSCM_DEFS)
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = encoding-table.c test-gc.c version.h.in
+EXTRA_DIST = encoding-table.c test-gc.c version.h.in \
+	config.h.meson meson.build
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
@@ -40,7 +41,7 @@ uimplugindir = $(pkglibdir)/plugin
 BUILT_SOURCES = sigscheme-combined
 .PHONY: sigscheme-combined
 sigscheme-combined:
-	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme/src combined
+	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/subprojects/sigscheme/src combined
 
 pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h uim-posix.h dynlib.h \
@@ -224,9 +225,10 @@ libuim_scm_la_SOURCES = uim-scm-sigscheme.c
 libuim_scm_la_LIBADD = $(BDWGC_LIBS) $(GCROOTS_LIBS)
 libuim_scm_la_LDFLAGS = -version-info $(libuim_scm_version) -export-dynamic
 libuim_scm_la_CPPFLAGS = $(AM_CPPFLAGS) \
-			 -I$(top_builddir)/sigscheme/include \
-			 -I$(top_srcdir)/sigscheme/src \
-			 -I$(top_builddir)/sigscheme/src \
+			 -I$(top_builddir)/subprojects/sigscheme/include \
+			 -I$(top_srcdir)/subprojects/sigscheme/include \
+			 -I$(top_srcdir)/subprojects/sigscheme/src \
+			 -I$(top_builddir)/subprojects/sigscheme/src \
 			 $(BDWGC_CFLAGS) \
 			 $(GCROOTS_CFLAGS)
 libuim_scm_la_CFLAGS =

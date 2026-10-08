@@ -44,7 +44,7 @@ if UIM_EL_TEST
 TESTS_ENVIRONMENT = \
 	UIM_EL_AGENT="$(abs_builddir)/uim-el-agent" \
 	UIM_EL_HELPER_AGENT="$(abs_builddir)/uim-el-helper-agent" \
-	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/sigscheme/lib" \
+	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/subprojects/sigscheme/lib" \
 	LIBUIM_SCM_FILES="$(abs_top_builddir)/scm:$(abs_top_srcdir)/scm" \
 	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs"
 TEST_EXTENSIONS = .el

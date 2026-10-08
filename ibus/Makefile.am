@@ -44,7 +44,7 @@ if IBUS_TEST
 TESTS_ENVIRONMENT = \
 	IBUS_ENGINE_UIM="$(abs_builddir)/ibus-engine-uim" \
 	IBUS_DAEMON="$(IBUS_DAEMON)" \
-	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/sigscheme/lib" \
+	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/subprojects/sigscheme/lib" \
 	LIBUIM_SCM_FILES="$(abs_top_builddir)/scm:$(abs_top_srcdir)/scm" \
 	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs"
 TEST_EXTENSIONS = .rb

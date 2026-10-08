@@ -1,0 +1,4 @@
+option('skk',
+       type: 'boolean',
+       value: true,
+       description: 'build a plugin for SKK')
