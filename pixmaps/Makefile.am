@@ -144,6 +144,13 @@ trycode_dark_background.svg: tcode_dark_background.svg
 	if test -n "$(RSVG)"; then		 \
 	    $(RSVG) -w 48 -h 48 -f png $< -o $@; \
 	fi
+
+# im_subst.svg embeds uim-gray.png by a relative path. A copy in the
+# build directory can't find it, so these are rendered from the original.
+$(IM_SUBST_PNGS): im_subst.svg uim-gray.png
+	if test -n "$(RSVG)"; then		 \
+	    $(RSVG) -w 48 -h 48 -f png $(srcdir)/im_subst.svg -o $@; \
+	fi
 endif
 
 clean-svgpng:
