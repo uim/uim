@@ -26,3 +26,5 @@ uim_custom_update_LDADD = $(uim_libs)
 uim_custom_update_CPPFLAGS = $(AM_CPPFLAGS)
 uim_custom_update_CFLAGS =
 uim_custom_update_SOURCES = uim-custom-update.c
+
+EXTRA_DIST = meson.build
