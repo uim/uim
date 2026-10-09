@@ -69,11 +69,11 @@ services:
       dockerfile: debian-13-qt6.dockerfile
     volumes:
       - .:/source:delegated
-  debian-12-release:
-    image: uim/uim-debian-12-release
+  debian-13-release:
+    image: uim/uim-debian-13-release
     build:
       context: ci/dockerfiles
-      dockerfile: debian-12-release.dockerfile
+      dockerfile: debian-13-release.dockerfile
     volumes:
       - .:/source:delegated
   debian-13-tqt:

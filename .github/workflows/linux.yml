@@ -162,10 +162,10 @@ jobs:
           submodules: recursive
       - name: Build Docker image
         run: |
-          docker compose build debian-12-release
+          docker compose build debian-13-release
       - name: Run Docker image
         run: |
-          docker compose run debian-12-release
+          docker compose run debian-13-release
       - uses: actions/upload-artifact@v7
         with:
           name: source
