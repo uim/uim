@@ -47,6 +47,34 @@ if not cc.has_function('inet_aton')
   net_libraries += [cc.find_library('resolv', required: false)]
 endif
 
+# Anthy (EUC-JP) and Anthy (UTF-8). anthy.pc of 8622 or later, or
+# Debian's that is older than 1000, can handle UTF-8.
+anthy_utf8_capable_versions = ['>=8622', '<1000']
+anthy = dependency('anthy', required: get_option('anthy'))
+anthy_utf8_capable = false
+if anthy.found()
+  foreach version : anthy_utf8_capable_versions
+    if anthy.version().version_compare(version)
+      anthy_utf8_capable = true
+    endif
+  endforeach
+endif
+anthy_utf8 = dependency('', required: false)
+if not get_option('anthy_utf8').disabled()
+  anthy_utf8 = dependency('anthy-unicode', required: false)
+  foreach version : anthy_utf8_capable_versions
+    if not anthy_utf8.found()
+      anthy_utf8 = dependency('anthy', required: false, version: version)
+    endif
+  endforeach
+  if get_option('anthy_utf8').enabled() and not anthy_utf8.found()
+    error('Anthy that can handle UTF-8 is needed for anthy_utf8')
+  endif
+  if anthy_utf8.found()
+    anthy_utf8_capable = true
+  endif
+endif
+
 # SigScheme is compiled into libuim-scm as a single translation unit
 # with uim-scm-sigscheme.c. See uim/uim-scm-sigscheme.c.
 sigscheme_combined = dependency('sigscheme-combined',
@@ -332,6 +360,10 @@ config_data.set_quoted('LOCALEDIR', prefix / localedir)
 config_data.set_quoted('GNOMELOCALEDIR', prefix / localedir)
 config_data.set_quoted('GNOME3LOCALEDIR', prefix / localedir)
 config_data.set_quoted('UIM_PIXMAPSDIR', prefix / uim_pixmapsdir)
+
+if anthy_utf8_capable
+  config_data.set('LIBANTHY_UTF8_CAPABLE', 1)
+endif
 
 # longjmp-based error handlings
 config_data.set('UIM_USE_ERROR_GUARD', 1)

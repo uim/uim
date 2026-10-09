@@ -133,6 +133,12 @@ install_data(scm_files, install_dir: pkgdatadir)
 # The order is the preference order at the default input method
 # selection for each language.
 module_names = []
+if anthy.found()
+  module_names += ['anthy']
+endif
+if anthy_utf8.found()
+  module_names += ['anthy-utf8']
+endif
 if get_option('skk')
   module_names += ['skk']
 endif
