@@ -92,14 +92,6 @@ if M17NLIB
   libuim_m17nlib_la_CPPFLAGS = $(AM_CPPFLAGS) @M17NLIB_CFLAGS@
 endif
 
-if WNN
-uimplugin_LTLIBRARIES += libuim-wnn.la
-libuim_wnn_la_SOURCES = wnnlib.h wnnlib.c
-libuim_wnn_la_LIBADD = libuim.la $(WNN_LIBS) -lwnn @WNN_LIBADD@
-libuim_wnn_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-libuim_wnn_la_CPPFLAGS = $(AM_CPPFLAGS) $(WNN_CPPFLAGS)
-endif
-
 if ANTHY
 if ENABLE_ANTHY_STATIC
   libuim_la_SOURCES += anthy.c

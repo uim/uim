@@ -27,7 +27,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
  mozc.scm mozc-custom.scm mozc-key-custom.scm \
  canna.scm cannav3-socket.scm canna-custom.scm canna-key-custom.scm \
- wnn.scm wnn-custom.scm wnn-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
  tcode.scm trycode.scm \
  tutcode.scm tutcode-custom.scm tutcode-key-custom.scm tutcode-bushu.scm \
@@ -77,9 +76,6 @@ if ANTHY_UTF8
 endif
 if CANNA
   module_names += "canna"
-endif
-if WNN
-  module_names += "wnn"
 endif
 if SKK
   module_names += "skk"

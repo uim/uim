@@ -37,8 +37,7 @@ set -x
   --with-qt6 \
   --with-qt6-immodule \
   --with-gtk3 \
-  --with-gtk4 \
-  --with-wnn
+  --with-gtk4
 set +x
 echo "::endgroup::"
 

@@ -5790,8 +5790,8 @@ msgid "Ancillary Prediction"
 msgstr "補助予測入力"
 
 #: scm/predict-custom.scm:45
-msgid "Enable ancillary prediction (for Canna, TUT-Code, Wnn)"
-msgstr "Canna、TUT-Code、Wnn用の補助予測入力を有効にする"
+msgid "Enable ancillary prediction (for Canna, TUT-Code)"
+msgstr "Canna、TUT-Code用の補助予測入力を有効にする"
 
 #: scm/predict-custom.scm:53 scm/predict-custom.scm:75
 msgid "Look prediction"

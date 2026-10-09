@@ -40,7 +40,6 @@ function setup_with_apt () {
     libsqlite3-dev \
     libssl-dev \
     libtool \
-    libwnn-dev \
     libx11-dev \
     make \
     pkg-config \

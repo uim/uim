@@ -8,6 +8,5 @@ EXTRA_DIST = \
 	eb4.m4 \
 	expat.m4 \
 	isc-posix.m4 \
-	wnn.m4 \
 	xft.m4 \
 	xkb.m4

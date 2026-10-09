@@ -78,7 +78,6 @@ scm/tutcode-key-custom.scm
 scm/tutcode-rule-custom.scm
 scm/tutcode.scm
 scm/viqr.scm
-scm/wnn-key-custom.scm
 tqt/chardict/bushuviewwidget.cpp
 tqt/chardict/qt.cpp
 tqt/chardict/unicodeviewwidget.cpp
@@ -95,4 +94,3 @@ uim/tutcode.c
 uim/uim.c
 uim/uim-eb.c
 uim/uim-error.c
-uim/wnnlib.c
