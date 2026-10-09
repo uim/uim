@@ -396,6 +396,7 @@ pkgconfig.generate(libraries: [libuim_scm, libuim],
                    ])
 
 summary({
+          'Canna': get_option('canna'),
           'NLS': intl.found(),
           'SKK': get_option('skk'),
         },

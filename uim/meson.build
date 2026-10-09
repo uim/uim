@@ -145,6 +145,14 @@ if m17nlib.found()
   plugin_definitions += [['m17nlib', ['m17nlib.c'], [], [m17nlib]]]
 endif
 optional_plugins += {'m17nlib': m17nlib.found()}
+# EB Library has no pkg-config file.
+eb = cc.find_library('eb',
+                     has_headers: ['eb/eb.h'],
+                     required: get_option('eb'))
+if eb.found()
+  plugin_definitions += [['eb', ['eb.c', 'uim-eb.c'], [], [eb]]]
+endif
+optional_plugins += {'eb': eb.found()}
 # [plugin, option, dependency, version]
 foreach definition : [
   ['editline', 'libedit', 'libedit', []],

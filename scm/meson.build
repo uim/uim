@@ -136,6 +136,10 @@ endif
 if anthy_utf8.found()
   module_names += ['anthy-utf8']
 endif
+# Canna is used through cannaserver, so it needs no plugin.
+if get_option('canna')
+  module_names += ['canna']
+endif
 if get_option('skk')
   module_names += ['skk']
 endif

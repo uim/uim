@@ -72,6 +72,7 @@ jobs:
           sudo apt install -y -V \
             gettext \
             libanthy-dev \
+            libeb16-dev \
             libedit-dev \
             libexpat1-dev \
             libffi-dev \
@@ -88,6 +89,8 @@ jobs:
             --prefix=/tmp/local \
             -Danthy=enabled \
             -Danthy_utf8=enabled \
+            -Dcanna=true \
+            -Deb=enabled \
             -Dexpat=enabled \
             -Dffi=enabled \
             -Dlibedit=enabled \
