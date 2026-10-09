@@ -26,6 +26,10 @@ option('libedit',
        type: 'feature',
        value: 'auto',
        description: 'build a plugin for libedit used by uim-sh')
+option('m17nlib',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a plugin for m17n-lib')
 option('openssl',
        type: 'feature',
        value: 'disabled',

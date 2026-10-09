@@ -75,6 +75,7 @@ jobs:
             libedit-dev \
             libexpat1-dev \
             libffi-dev \
+            libm17n-dev \
             librsvg2-bin \
             libsqlite3-dev \
             libssl-dev \
@@ -90,6 +91,7 @@ jobs:
             -Dexpat=enabled \
             -Dffi=enabled \
             -Dlibedit=enabled \
+            -Dm17nlib=enabled \
             -Dopenssl=enabled \
             -Dsqlite3=enabled \
             build

@@ -141,6 +141,10 @@ foreach definition : anthy_definitions
   endif
   optional_plugins += {definition[0]: definition[1].found()}
 endforeach
+if m17nlib.found()
+  plugin_definitions += [['m17nlib', ['m17nlib.c'], [], [m17nlib]]]
+endif
+optional_plugins += {'m17nlib': m17nlib.found()}
 # [plugin, option, dependency, version]
 foreach definition : [
   ['editline', 'libedit', 'libedit', []],

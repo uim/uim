@@ -183,3 +183,18 @@ foreach svg_png : svg_pngs
                   output: svg_png[0])
   endif
 endforeach
+
+# Links the icons of m17n-db into uim's at installation as Autotools
+# does, so that they are the ones installed then.
+m17n_db = find_program('m17n-db', required: false)
+if m17nlib.found() and m17n_db.found()
+  m17n_db_dir = run_command(m17n_db, check: true).stdout().strip()
+  meson.add_install_script(
+    'sh', '-c',
+    'for f in "$1"/icons/*.png; do ' +
+    'if test -f "$f"; then ' +
+    'ln -sf "$f" "${MESON_INSTALL_DESTDIR_PREFIX}/$2/m17n-$(basename "$f")"; ' +
+    'fi; ' +
+    'done',
+    'sh', m17n_db_dir, uim_pixmapsdir)
+endif

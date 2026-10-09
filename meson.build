@@ -75,6 +75,10 @@ if not get_option('anthy_utf8').disabled()
   endif
 endif
 
+m17nlib = dependency('m17n-shell',
+                     required: get_option('m17nlib'),
+                     version: '>=1.3.1')
+
 # SigScheme is compiled into libuim-scm as a single translation unit
 # with uim-scm-sigscheme.c. See uim/uim-scm-sigscheme.c.
 sigscheme_combined = dependency('sigscheme-combined',
