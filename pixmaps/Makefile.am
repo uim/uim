@@ -1,9 +1,5 @@
 pixmapsdir = @uim_pixmapsdir@
 
-if M17NLIB
-bin_SCRIPTS = uim-m17nlib-relink-icons
-endif
-
 SVGS = unknown.svg
 # dark background
 SVGS += unknown_dark_background.svg
@@ -167,7 +163,12 @@ dist-hook:
 	@test -n "$(RSVG)" \
 	    || (echo 'rsvg-convert(1) not found: install it'; exit 1)
 
+# Links the icons of m17n-db into uim's.
 install-data-hook:
 if M17NLIB
-	DESTDIR="$(DESTDIR)" $(SH) $(builddir)/uim-m17nlib-relink-icons
+	for f in $(m17n_db_dir)/icons/*.png; do \
+	  if test -f "$$f"; then \
+	    $(LN_S) -f "$$f" "$(DESTDIR)$(pixmapsdir)/m17n-`basename "$$f"`"; \
+	  fi; \
+	done
 endif

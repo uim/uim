@@ -18,9 +18,3 @@ Notes for Packagers and System Integrators
   provided by separated package depends on it. Add
   '--with-libgcroots=installed' to configure options for uim to
   disable build and install of the bundled version of libgcroots
-
-- For uim-m17nlib, the command 'uim-m17nlib-relink-icons' to import
-  icons from m17n-db is provided. Run it when m17n-db has been
-  updated. Whether making the command itself available for users or
-  just use it as post-package-install script is the system
-  integrator's choice

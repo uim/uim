@@ -2115,7 +2115,6 @@ AC_CONFIG_FILES([Makefile
                  examples/Makefile
                  examples/uim-custom/Makefile
                  pixmaps/Makefile
-                 pixmaps/uim-m17nlib-relink-icons
                  replace/Makefile
                  notify/Makefile
                  uim.pc
