@@ -190,6 +190,7 @@
     (list 'mode            'hiragana) ; composition mode symbol
     (list 'has-preedit     #f)
     (list 'candidates      '()) ; candidates of the current page
+    (list 'cand-focused    #f)  ; index Mozc itself has focused
     (list 'cand-nr         0)
     (list 'cand-reactivate #f)
     (list 'cand-page       0)
@@ -353,6 +354,13 @@
     (and (pair? candidates)
          (mozc-alist-ref 'index (car candidates)))))
 
+;; Remembers the page CW holds and which candidate Mozc focuses there.
+;; Turning a page also moves Mozc's focus (to the top of the new page),
+;; so the two are always taken from the same candidate window.
+(define (mozc-store-candidate-window! mc cw)
+  (mozc-context-set-candidates! mc (or (mozc-alist-ref 'candidate cw) '()))
+  (mozc-context-set-cand-focused! mc (mozc-alist-ref 'focused-index cw)))
+
 ;; Whether turning forward reaches IDX's page sooner. Mozc wraps
 ;; around, so the first page is one step forward from the last.
 (define (mozc-page-forward? mc first idx)
@@ -374,8 +382,7 @@
          (cw (and output (mozc-alist-ref 'candidate-window output))))
     (and cw
          (begin
-           (mozc-context-set-candidates! mc (or (mozc-alist-ref 'candidate cw)
-                                                '()))
+           (mozc-store-candidate-window! mc cw)
            ;; Mozc wraps around at both ends
            (not (eqv? first (mozc-first-index mc)))))))
 
@@ -391,10 +398,14 @@
 ;; is wrong: it closes the candidate window.
 (define (mozc-highlight-candidate mc idx)
   (let* ((candidate (mozc-candidate-at mc idx))
-         (id (and candidate (mozc-alist-ref 'id candidate))))
-    (and id
-         (mozc-context-send-command mc `((type . highlight-candidate)
-                                         (id . ,id))))))
+         (id (and candidate (mozc-alist-ref 'id candidate)))
+         (output (and id
+                      (mozc-context-send-command
+                       mc `((type . highlight-candidate) (id . ,id)))))
+         (cw (and output (mozc-alist-ref 'candidate-window output))))
+    (if cw
+        (mozc-store-candidate-window! mc cw))
+    output))
 
 (define (mozc-update-candidates mc output)
   (let ((cw (mozc-alist-ref 'candidate-window output)))
@@ -403,6 +414,7 @@
       (if (> (mozc-context-cand-nr mc) 0)
           (im-deactivate-candidate-selector mc))
       (mozc-context-set-candidates! mc '())
+      (mozc-context-set-cand-focused! mc #f)
       (mozc-context-set-cand-nr! mc 0))
      (else
       (let* ((size (or (mozc-alist-ref 'size cw) 0))
@@ -411,8 +423,7 @@
              (page (if focused (quotient focused page-size) 0))
              (first-time? (or (not (= (mozc-context-cand-nr mc) size))
                               (not focused))))
-        (mozc-context-set-candidates! mc (or (mozc-alist-ref 'candidate cw)
-                                             '()))
+        (mozc-store-candidate-window! mc cw)
         ;; the callbacks below reach mozc-candidate-at
         (mozc-context-set-cand-nr! mc size)
         (mozc-context-set-cand-page-size! mc page-size)
@@ -425,8 +436,14 @@
         (mozc-context-set-cand-page! mc page)
         (if focused
             (im-select-candidate mc focused))
-        ;; a frontend draws page 0 first, which can move Mozc off it
-        (if (and focused (not (mozc-find-candidate mc focused)))
+        ;; Fetching candidate text for the selector turns Mozc's page,
+        ;; and every turn moves Mozc's focus to the top of that page
+        ;; (a frontend may fetch page 0 first, or every page at once
+        ;; like mlterm). Checking only that FOCUSED is on the loaded
+        ;; page misses e.g. the last candidate of a full last page:
+        ;; Mozc would sit on that page's first candidate and commit it.
+        (if (and focused
+                 (not (eqv? focused (mozc-context-cand-focused mc))))
             (mozc-highlight-candidate mc focused)))))))
 
 (define (mozc-update-mode mc output)
