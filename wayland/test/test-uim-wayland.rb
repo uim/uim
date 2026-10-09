@@ -31,9 +31,10 @@
 
 # A compositor that implements just enough of wl_compositor, wl_shm,
 # wl_seat, zwp_input_method_v1 and zwp_input_panel_v1 to stand in for
-# KWin and Weston. It hands uim-wayland one end of a socketpair in
-# WAYLAND_SOCKET, exactly as they do, activates a context, grabs the
-# keyboard and sends a key sequence.
+# KWin and Weston, or of zwp_input_method_v2 and zwp_virtual_keyboard_v1
+# to stand in for Sway. It hands uim-wayland one end of a socketpair in
+# WAYLAND_SOCKET, activates a text field, grabs the keyboard and sends a
+# key sequence.
 #
 # No display and no compositor are needed, so this runs unattended.
 #
@@ -392,12 +393,23 @@ class Compositor
     };
   KEYMAP
 
-  GLOBALS = {
+  COMMON_GLOBALS = {
     "wl_compositor" => 6,
     "wl_shm" => 1,
+    "wl_seat" => 5,
+  }
+  V1_GLOBALS = {
     "zwp_input_method_v1" => 1,
     "zwp_input_panel_v1" => 1,
-    "wl_seat" => 5,
+  }
+  V2_GLOBALS = {
+    "zwp_input_method_manager_v2" => 1,
+    "zwp_virtual_keyboard_manager_v1" => 1,
+  }
+  GLOBALS = {
+    v1: COMMON_GLOBALS.merge(V1_GLOBALS),
+    v2: COMMON_GLOBALS.merge(V2_GLOBALS),
+    both: COMMON_GLOBALS.merge(V1_GLOBALS).merge(V2_GLOBALS),
   }
 
   SEAT_CAPABILITY_POINTER = 1
@@ -408,13 +420,19 @@ class Compositor
 
   attr_reader :forwarded_keys, :commits, :preedits, :overlay_panels
   attr_reader :deleted
+  # zwp_input_method_v2 only: the serials of the commit requests, and
+  # the number of done events sent.
+  attr_reader :commit_serials, :done_count
+  attr_reader :virtual_keyboard_keymaps
   # In surface coordinates. nil while the candidate window is hidden.
   attr_reader :candidate_window_size
   attr_reader :candidate_window_scale
 
-  def initialize(default_im_name, environment={})
+  # protocol is :v1, :v2 or :both, the input method protocols offered.
+  def initialize(default_im_name, environment={}, protocol: :v1)
     @default_im_name = default_im_name
     @environment = environment
+    @protocol = protocol
     @connection = nil
     @process_id = nil
     @scm_file = nil
@@ -422,6 +440,7 @@ class Compositor
     @input_method = nil
     @context = nil
     @keyboard = nil
+    @virtual_keyboard = nil
     @pointer = nil
     @pointer_inside = false
     @panel_surface = nil
@@ -436,6 +455,9 @@ class Compositor
     @preedits = []
     @deleted = []
     @overlay_panels = 0
+    @commit_serials = []
+    @done_count = 0
+    @virtual_keyboard_keymaps = 0
   end
 
   # Runs uim-wayland and waits until it has taken the keyboard, which
@@ -485,6 +507,21 @@ class Compositor
 
   def activated?
     not @input_method.nil?
+  end
+
+  def keyboard_grabbed?
+    not @keyboard.nil?
+  end
+
+  # The text field loses the focus.
+  def deactivate
+    return if @input_method.nil?
+    if @protocol == :v2
+      @connection.send_event(@input_method, "deactivate")
+      send_done
+    elsif @context
+      @connection.send_event(@input_method, "deactivate", @context)
+    end
   end
 
   # Reads whatever uim-wayland has to say until the block is happy or
@@ -579,7 +616,12 @@ class Compositor
     core = ENV["WAYLAND_XML"] ||
            File.join(`pkg-config --variable=pkgdatadir wayland-scanner`.strip,
                      "wayland.xml")
-    [core, ENV["INPUT_METHOD_XML"]]
+    [
+      core,
+      ENV["INPUT_METHOD_V1_XML"],
+      ENV["INPUT_METHOD_V2_XML"],
+      ENV["VIRTUAL_KEYBOARD_XML"],
+    ]
   end
 
   # Scheme wants only the quote and the backslash escaped, and it wants
@@ -609,7 +651,7 @@ class Compositor
       @connection.delete_id(callback)
     when "wl_display.get_registry"
       registry = arguments[0]
-      GLOBALS.each_with_index do |(global, version), index|
+      GLOBALS[@protocol].each_with_index do |(global, version), index|
         @connection.send_event(registry, "global", index + 1, global, version)
       end
     when "wl_registry.bind"
@@ -661,6 +703,28 @@ class Compositor
       @forwarded_keys << [arguments[2], arguments[3]]
     when "zwp_input_method_context_v1.delete_surrounding_text"
       @deleted << [arguments[0], arguments[1]]
+    when "zwp_input_method_manager_v2.get_input_method"
+      @input_method = arguments[1]
+      @connection.send_event(@input_method, "activate")
+      send_done
+    when "zwp_input_method_v2.grab_keyboard"
+      @keyboard = arguments[0]
+      send_keymap
+    when "zwp_input_method_keyboard_grab_v2.release"
+      @keyboard = nil
+    when "zwp_input_method_v2.commit_string"
+      @commits << arguments[0]
+    when "zwp_input_method_v2.set_preedit_string"
+      @preedits << arguments[0]
+    when "zwp_input_method_v2.commit"
+      @commit_serials << arguments[0]
+    when "zwp_virtual_keyboard_manager_v1.create_virtual_keyboard"
+      @virtual_keyboard = arguments[1]
+    when "zwp_virtual_keyboard_v1.keymap"
+      arguments[1]&.close
+      @virtual_keyboard_keymaps += 1
+    when "zwp_virtual_keyboard_v1.key"
+      @forwarded_keys << [arguments[1], arguments[2]]
     end
 
     @connection.delete_id(id) if message.destructor
@@ -672,9 +736,9 @@ class Compositor
     @connection.send_event(@context, "commit_state", 1)
   end
 
-  def deactivate
-    return if @input_method.nil? or @context.nil?
-    @connection.send_event(@input_method, "deactivate", @context)
+  def send_done
+    @connection.send_event(@input_method, "done")
+    @done_count += 1
   end
 
   def send_keymap
@@ -712,7 +776,8 @@ class UimWaylandTest < Test::Unit::TestCase
   end
 
   def setup
-    @compositor = Compositor.new(default_im_name, uim_wayland_environment)
+    @compositor = Compositor.new(default_im_name, uim_wayland_environment,
+                                 protocol: protocol)
     begin
       @compositor.start
       yield
@@ -723,6 +788,10 @@ class UimWaylandTest < Test::Unit::TestCase
 
   def uim_wayland_environment
     {}
+  end
+
+  def protocol
+    :v1
   end
 
   def omit_unless_scale_supported
@@ -763,6 +832,81 @@ class UimWaylandTest < Test::Unit::TestCase
   def test_candidate_window_is_an_overlay_panel
     @compositor.wait_for {@compositor.overlay_panels == 1}
     assert_equal(1, @compositor.overlay_panels)
+  end
+
+  # Sway and other wlroots-based compositors.
+  sub_test_case("zwp_input_method_v2") do
+    def protocol
+      :v2
+    end
+
+    def test_input_method_activated
+      assert do
+        @compositor.activated?
+      end
+    end
+
+    # It goes through the virtual keyboard, which has to know the keymap
+    # first.
+    def test_unconsumed_key_is_forwarded
+      @compositor.type(KEY_A)
+      forwarded_keys = [[KEY_A, PRESSED], [KEY_A, RELEASED]]
+      @compositor.wait_for {@compositor.forwarded_keys == forwarded_keys}
+      assert_equal([1, forwarded_keys],
+                   [@compositor.virtual_keyboard_keymaps,
+                    @compositor.forwarded_keys])
+    end
+
+    def test_preedit
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.wait_for {@compositor.preedits == ["k"]}
+      assert_equal(["k"], @compositor.preedits)
+    end
+
+    # A commit applies the text, and refers to the done events so far.
+    def test_commit
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.commits == [KA]}
+      assert_equal([[KA], [@compositor.done_count]],
+                   [@compositor.commits, @compositor.commit_serials.uniq])
+    end
+
+    # Its release would come after the grab is gone, so the application
+    # would repeat it.
+    def test_held_key_released_on_deactivation
+      @compositor.press(KEY_A)
+      @compositor.wait_for {@compositor.forwarded_keys == [[KEY_A, PRESSED]]}
+      @compositor.deactivate
+      forwarded_keys = [[KEY_A, PRESSED], [KEY_A, RELEASED]]
+      @compositor.wait_for {@compositor.forwarded_keys == forwarded_keys}
+      assert_equal(forwarded_keys, @compositor.forwarded_keys)
+    end
+
+    # The compositor sends the grab every key of the seat.
+    def test_keyboard_released_on_deactivation
+      @compositor.deactivate
+      @compositor.wait_for {not @compositor.keyboard_grabbed?}
+      assert do
+        not @compositor.keyboard_grabbed?
+      end
+    end
+  end
+
+  # KWin and Weston start the input method themselves for
+  # zwp_input_method_v1.
+  sub_test_case("both protocols") do
+    def protocol
+      :both
+    end
+
+    def test_v1_is_used
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.forwarded_keys.size == 2}
+      assert_equal(0, @compositor.virtual_keyboard_keymaps)
+    end
   end
 
   # A field that takes no composed text gets the keys as they are.

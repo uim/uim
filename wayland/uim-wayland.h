@@ -30,14 +30,20 @@
 */
 
 /*
- * uim-wayland: an input method for Wayland compositors that implement
- * zwp_input_method_v1 (Weston, KWin).  The compositor starts this
- * program itself and hands it a zwp_input_method_context_v1 whenever
- * a text field is focused.  Key events arrive through the grabbed
- * wl_keyboard, go through libuim, and the results are sent back with
- * commit_string/preedit_string.  Keys uim doesn't consume are
- * forwarded to the focused client with the "key" request.
- * Only input-method-v1.c talks the protocol.
+ * uim-wayland: an input method for Wayland compositors. Key events
+ * arrive through a keyboard grab, go through libuim, and the results
+ * are sent back as preedit and committed text. Keys uim doesn't
+ * consume go on to the focused client.
+ *
+ * input-method-v1.c talks zwp_input_method_v1 (Weston, KWin). The
+ * compositor starts this program itself and hands it a
+ * zwp_input_method_context_v1 whenever a text field is focused, and
+ * the keys go back with its "key" request.
+ *
+ * input-method-v2.c talks zwp_input_method_v2 (wlroots-based
+ * compositors such as Sway), which is used when the compositor offers
+ * no zwp_input_method_v1. The user starts this program, and the keys
+ * go back through a zwp_virtual_keyboard_v1.
  */
 
 #pragma once
@@ -52,6 +58,8 @@
 #include <uim/uim.h>
 
 #include <input-method-unstable-v1-client-protocol.h>
+#include <input-method-unstable-v2-client-protocol.h>
+#include <virtual-keyboard-unstable-v1-client-protocol.h>
 
 #define UIM_WAYLAND_PROGRAM_NAME "uim-wayland"
 
@@ -97,6 +105,7 @@ struct uim_wayland_input_method {
 };
 
 struct uim_wayland_v1;
+struct uim_wayland_v2;
 
 /* Evdev keycodes are small; 1024 bits is plenty for the bookkeeping
  * of which pressed keys were forwarded to the client and which were
@@ -111,6 +120,11 @@ struct uim_wayland {
   /* The protocol in use. NULL until the compositor offers one. */
   const struct uim_wayland_input_method *input_method;
   struct uim_wayland_v1 *v1;
+  struct uim_wayland_v2 *v2;
+  /* The zwp_input_method_v2 globals offered, 0 for none. They are bound
+   * only if the protocol is used. */
+  uint32_t v2_manager_name;
+  uint32_t v2_virtual_keyboard_manager_name;
   struct zwp_input_panel_v1 *input_panel;
   /* For the pointer on the candidate window. */
   struct wl_seat *seat;
@@ -177,6 +191,15 @@ bool uim_wayland_v1_bind(struct uim_wayland *uw,
                          struct wl_registry *registry,
                          uint32_t name,
                          const char *interface);
+
+/* input-method-v2.c */
+/* Notes the global if it belongs to zwp_input_method_v2. */
+bool uim_wayland_v2_offer(struct uim_wayland *uw,
+                          uint32_t name,
+                          const char *interface);
+/* Uses zwp_input_method_v2 if the compositor offered it along with
+ * zwp_virtual_keyboard_v1 and a seat. */
+void uim_wayland_v2_start(struct uim_wayland *uw);
 
 /* key.c */
 void uim_wayland_convert_key(xkb_keysym_t sym,
