@@ -14,6 +14,14 @@ option('anthy_utf8_static',
        type: 'boolean',
        value: false,
        description: 'build Anthy (UTF-8) into libuim instead of a plugin')
+option('canna',
+       type: 'boolean',
+       value: false,
+       description: 'use Canna')
+option('eb',
+       type: 'feature',
+       value: 'disabled',
+       description: 'build a plugin for EB Library')
 option('expat',
        type: 'feature',
        value: 'disabled',
