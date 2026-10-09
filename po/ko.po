@@ -5669,7 +5669,7 @@ msgid "Ancillary Prediction"
 msgstr ""
 
 #: scm/predict-custom.scm:45
-msgid "Enable ancillary prediction (for Canna, TUT-Code, Wnn)"
+msgid "Enable ancillary prediction (for Canna, TUT-Code)"
 msgstr ""
 
 #: scm/predict-custom.scm:53 scm/predict-custom.scm:75

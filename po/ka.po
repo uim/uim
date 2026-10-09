@@ -5678,8 +5678,8 @@ msgid "Ancillary Prediction"
 msgstr "დაქვემდებარებული პროგნოზი"
 
 #: scm/predict-custom.scm:45
-msgid "Enable ancillary prediction (for Canna, TUT-Code, Wnn)"
-msgstr "დაქვემდებარებული პროგნოზის ჩართვა (კანა, TUT-Code, Wnn)"
+msgid "Enable ancillary prediction (for Canna, TUT-Code)"
+msgstr "დაქვემდებარებული პროგნოზის ჩართვა (კანა, TUT-Code)"
 
 #: scm/predict-custom.scm:53 scm/predict-custom.scm:75
 msgid "Look prediction"

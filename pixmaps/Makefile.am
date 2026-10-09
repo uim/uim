@@ -52,7 +52,7 @@ SVGS += uim-icon.svg
 IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 hangul2.svg hangul3.svg romaja.svg \
                 viqr.svg ipa-x-sampa.svg latin.svg elatin.svg \
-                look.svg scim.svg wnn.svg \
+                look.svg scim.svg \
                 google-cgiapi-jp.svg baidu-olime-jp.svg
 GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg trycode_dark_background.svg
 SVGS += im_subst.svg $(GENERATED_SVGS)
@@ -60,7 +60,7 @@ SVGS += im_subst.svg $(GENERATED_SVGS)
 IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 hangul2.png hangul3.png romaja.png \
                 viqr.png ipa-x-sampa.png latin.png elatin.png \
-                look.png scim.png wnn.png \
+                look.png scim.png \
                 google-cgiapi-jp.png baidu-olime-jp.png
 
 SVG_PNGS = unknown.png \
@@ -101,7 +101,7 @@ SVG_PNGS = unknown.png \
 NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png
 
 SCIM_PNGS = scim-anthy.png scim-canna.png \
-	    scim-skk.png scim-wnn.png
+	    scim-skk.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png
 if ANTHY_UTF8
 SCIM_ORIGINATED_PNGS += anthy-utf8.png

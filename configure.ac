@@ -190,21 +190,6 @@ AC_ARG_WITH(canna,
 AM_CONDITIONAL(CANNA, test "x$with_canna" = xyes)
 
 # *********************
-# *** Tests for Wnn ***
-# *********************
-AC_ARG_WITH(wnn,
-  AS_HELP_STRING([--with-wnn],
-    [build with libwnn]),
-  [],
-  [with_wnn=no])
-
-if test "x$with_wnn" != xno; then
-  AM_PATH_WNN(with_wnn=yes, with_wnn=no)
-fi
-
-AM_CONDITIONAL(WNN, test "x$with_wnn" = xyes)
-
-# *********************
 # *** Tests for SKK ***
 # *********************
 AC_ARG_WITH(skk,
@@ -2266,7 +2251,6 @@ Configure Result :
    Canna           : ${with_canna}
    SKK             : ${with_skk}
    Mozc            : ${with_mozc}
-   Wnn             : ${with_wnn}
    m17n-lib        : ${with_m17nlib}
    expat           : ${expat_found}
    OpenSSL         : ${enable_openssl}

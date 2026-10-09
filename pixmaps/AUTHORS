@@ -6,9 +6,6 @@ scim-anthy.png, scim-canna.png, uim-icon64.png, uim-icon48.png, uim-icon.svg:
 scim-skk.png:
   Jun Mukai <mukai@jmuk.org>
 
-scim-wnn.png:
-  Teppei Tamra <tam-t@par.odn.ne.jp>
-
 # These icons use M+ outline fonts TESTFLIGHT 011 by MORISHITA Coji.
 # Thank you for the good fonts.
 # http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/index.html

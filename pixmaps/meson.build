@@ -79,7 +79,6 @@ im_subst_names = [
   'elatin',
   'look',
   'scim',
-  'wnn',
   'google-cgiapi-jp',
   'baidu-olime-jp',
 ]
