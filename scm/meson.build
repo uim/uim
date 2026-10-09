@@ -147,6 +147,11 @@ module_names += [
   'byeoru',
   'latin',
   'elatin',
+]
+if m17nlib.found()
+  module_names += ['m17nlib']
+endif
+module_names += [
   # less preferable IMs
   'pyload',
   'viqr',
