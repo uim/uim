@@ -36,17 +36,28 @@
 
 (define annotation-dict-port #f)
 (define annotation-dict-cache-alist '())
+(define annotation-dict-disabled? #f)
 
 (define (annotation-dict-init)
-  (guard (err
-          (#t
-           (annotation-dict-discard-port)
-           (uim-notify-info
-            (format (_ "dict: annotation initialization failed: ~a") err))
-           #f))
-    (and (provided? "socket")
-         (set! annotation-dict-port
-               (dict-server-open annotation-dict-server annotation-dict-servname)))))
+  (set! annotation-dict-disabled? #f)
+  #t)
+
+(define (annotation-dict-open)
+  (or annotation-dict-port
+      (and (not annotation-dict-disabled?)
+           (provided? "socket")
+           (guard (err
+                   (#t
+                    (set! annotation-dict-disabled? #t)
+                    (raise err)))
+             (let ((port (dict-server-open annotation-dict-server annotation-dict-servname)))
+               (if port
+                   (begin
+                     (set! annotation-dict-port port)
+                     port)
+                   (begin
+                     (set! annotation-dict-disabled? #t)
+                     #f)))))))
 
 (define (annotation-dict-discard-port)
   (let ((port annotation-dict-port))
@@ -57,11 +68,15 @@
 (define (annotation-dict-get-text-from-server text enc)
   (guard (err
           (#t
+           (set! annotation-dict-disabled? #t)
            (annotation-dict-discard-port)
            (uim-notify-info
             (format (_ "dict: annotation request failed: ~a") err))
            ""))
-    (apply string-append (dict-server-get-define annotation-dict-port annotation-dict-database text))))
+    (if (annotation-dict-open)
+        (apply string-append
+               (dict-server-get-define annotation-dict-port annotation-dict-database text))
+        "")))
 
 (define (annotation-dict-get-text-with-cache text enc)
   (let ((ret (assoc text annotation-dict-cache-alist)))
@@ -76,7 +91,7 @@
 
 
 (define (annotation-dict-get-text text enc)
-  (or (and annotation-dict-port
+  (or (and (not annotation-dict-disabled?)
            (annotation-dict-get-text-with-cache text enc))
       ""))
 
@@ -91,4 +106,5 @@
                   (format (_ "dict: failed to close annotation connection: ~a") err))
                  #f))
           (dict-server-close port))))
+  (set! annotation-dict-disabled? #t)
   #t)
