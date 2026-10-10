@@ -1,5 +1,5 @@
 
-EXTRA_DIST = README.ja README.key
+EXTRA_DIST = README.ja README.key meson.build
 
 if UIM_FEP
 

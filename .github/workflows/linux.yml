@@ -77,6 +77,7 @@ jobs:
             libexpat1-dev \
             libffi-dev \
             libm17n-dev \
+            libncurses-dev \
             libnotify-dev \
             librsvg2-bin \
             libsqlite3-dev \
@@ -93,6 +94,7 @@ jobs:
             -Dcanna=true \
             -Deb=enabled \
             -Dexpat=enabled \
+            -Dfep=enabled \
             -Dffi=enabled \
             -Dlibedit=enabled \
             -Dlibnotify=enabled \

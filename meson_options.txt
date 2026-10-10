@@ -26,6 +26,10 @@ option('expat',
        type: 'feature',
        value: 'disabled',
        description: 'build a plugin for Expat')
+option('fep',
+       type: 'feature',
+       value: 'auto',
+       description: 'build uim-fep')
 option('ffi',
        type: 'feature',
        value: 'disabled',

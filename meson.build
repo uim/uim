@@ -75,6 +75,8 @@ if not get_option('anthy_utf8').disabled()
   endif
 endif
 
+curses = dependency('curses', required: get_option('fep'))
+
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
                      version: '>=1.3.1')
@@ -203,6 +205,17 @@ if cc.has_function('dlfunc', dependencies: dl)
 endif
 if cc.has_function('realloc')
   config_data.set('HAVE_REALLOC', 1)
+endif
+# forkpty() is in libutil on some systems.
+forkpty_dependencies = []
+if cc.has_function('forkpty')
+  config_data.set('HAVE_FORKPTY', 1)
+else
+  util = cc.find_library('util', required: false)
+  if cc.has_function('forkpty', dependencies: util)
+    config_data.set('HAVE_FORKPTY', 1)
+    forkpty_dependencies += [util]
+  endif
 endif
 
 sigsetjmp_code = '''
@@ -386,6 +399,9 @@ subdir('test2')
 subdir('pixmaps')
 subdir('byeoru-data')
 subdir('examples')
+if curses.found()
+  subdir('fep')
+endif
 if intl.found()
   subdir('po')
 endif
@@ -402,6 +418,7 @@ pkgconfig.generate(libraries: [libuim_scm, libuim],
 
 summary({
           'Canna': get_option('canna'),
+          'FEP': curses.found(),
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'SKK': get_option('skk'),
