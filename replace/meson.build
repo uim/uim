@@ -5,7 +5,6 @@ replace_sources = files(
   'bsd-misc.c',
   'bsd-poll.c',
   'bsd-snprintf.c',
-  'bsd-waitpid.c',
   'daemon.c',
   'fake-rfc2553.c',
   'getpeereid.c',
