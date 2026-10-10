@@ -118,7 +118,6 @@ uim_notify_load(const char *name)
     uim_notify_load_stderr();
   } else {
     char path[PATH_MAX];
-    const char *str;
 
     agent->quit();
     if (notify_dlhandle)
@@ -128,8 +127,8 @@ uim_notify_load(const char *name)
 	     NOTIFY_PLUGIN_PREFIX, name, NOTIFY_PLUGIN_SUFFIX);
 
     notify_dlhandle = dlopen(path, RTLD_NOW);
-    if ((str = dlerror())) {
-      fprintf(stderr, "uim-notify: load failed %s(%s)\n", path, str);
+    if (!notify_dlhandle) {
+      fprintf(stderr, "uim-notify: load failed %s(%s)\n", path, dlerror());
       uim_notify_load_stderr();
       return UIM_FALSE;
     }
@@ -232,7 +231,6 @@ notify_get_plugins_internal(void)
   const uim_notify_desc *desc;
   void *handle;
   uim_notify_desc *(*desc_func)(void);
-  const char *str;
 
   plen = sizeof(NOTIFY_PLUGIN_PREFIX);
   slen = sizeof(NOTIFY_PLUGIN_SUFFIX);
@@ -259,8 +257,8 @@ notify_get_plugins_internal(void)
 
       snprintf(path, sizeof(path), "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
       handle = dlopen(path, RTLD_NOW);
-      if ((str = dlerror()) != NULL) {
-	fprintf(stderr, "load failed %s(%s)\n", path, str);
+      if (!handle) {
+	fprintf(stderr, "load failed %s(%s)\n", path, dlerror());
 	continue;
       }
       desc_func = (uim_notify_desc *(*)(void))dlfunc(handle, "uim_notify_plugin_get_desc");
