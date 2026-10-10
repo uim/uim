@@ -193,7 +193,6 @@ foreach function : [
   'vasprintf',
   'vfork',
   'vsnprintf',
-  'waitpid',
   'wcswidth',
 ]
   if cc.has_function(function)

@@ -92,9 +92,7 @@
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
-#endif
 #include <time.h>
 #ifdef HAVE_STROPTS_H
 #include <stropts.h>

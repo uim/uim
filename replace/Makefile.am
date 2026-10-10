@@ -6,8 +6,6 @@ libreplace_la_SOURCES = \
 	bsd-poll.c \
 	bsd-poll.h \
 	bsd-snprintf.c \
-	bsd-waitpid.c \
-	bsd-waitpid.h \
 	daemon.c \
 	fake-rfc2553.c \
 	fake-rfc2553.h \
