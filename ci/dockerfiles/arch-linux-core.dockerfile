@@ -6,6 +6,7 @@ RUN \
     gcc \
     gettext \
     libedit \
+    libnotify \
     librsvg \
     make \
     ncurses \

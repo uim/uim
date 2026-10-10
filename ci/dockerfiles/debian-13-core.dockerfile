@@ -15,6 +15,7 @@ RUN \
     gettext \
     libedit-dev \
     libncurses-dev \
+    libnotify-dev \
     librsvg2-bin \
     libssl-dev \
     make \

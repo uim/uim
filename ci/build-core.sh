@@ -6,6 +6,7 @@ echo "::group::configure"
 set -x
 /source/configure \
   --enable-maintainer-mode \
+  --enable-notify=libnotify \
   --enable-openssl \
   --prefix=/tmp/local
 set +x
