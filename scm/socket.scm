@@ -63,7 +63,7 @@
 
 (define (call-with-getaddrinfo hostname servname hints thunk)
   (let* ((res (getaddrinfo hostname servname hints))
-         (ret (if res (thunk res) '())))
+         (ret (if res (thunk res) #f)))
     (if res
         (freeaddrinfo (car res)))
     ret))
@@ -131,29 +131,30 @@
 (define (tcp-listen hostname servname)
   (filter
    integer?
-   (call-with-getaddrinfo-hints
-    '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-    (lambda (hints)
-      (call-with-getaddrinfo
-       hostname servname hints
-       (lambda (res)
-         (map (lambda (res0)
-                (let ((s (socket (addrinfo-ai-family? res0)
-                                 (addrinfo-ai-socktype? res0)
-                                 (addrinfo-ai-protocol? res0))))
-                  (if (< s 0)
-                      #f
-                      (if (< (bind s
-                                   (addrinfo-ai-addr? res0)
-                                   (addrinfo-ai-addrlen? res0))
-                             0)
-                          (begin
-                            (file-close s)
-                            #f)
-                          (begin
-                            (listen s *tcp-listen:backlog-length*)
-                            s)))))
-              res)))))))
+   (or (call-with-getaddrinfo-hints
+        '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+        (lambda (hints)
+          (call-with-getaddrinfo
+           hostname servname hints
+           (lambda (res)
+             (map (lambda (res0)
+                    (let ((s (socket (addrinfo-ai-family? res0)
+                                     (addrinfo-ai-socktype? res0)
+                                     (addrinfo-ai-protocol? res0))))
+                      (if (< s 0)
+                          #f
+                          (if (< (bind s
+                                       (addrinfo-ai-addr? res0)
+                                       (addrinfo-ai-addrlen? res0))
+                                 0)
+                              (begin
+                                (file-close s)
+                                #f)
+                              (begin
+                                (listen s *tcp-listen:backlog-length*)
+                                s)))))
+                  res)))))
+       '())))
 
 (define (unix-domain-listen path)
   (let ((s (socket (addrinfo-ai-family-number '$PF_LOCAL)

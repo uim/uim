@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-04 22:53+0900\n"
+"POT-Creation-Date: 2026-10-10 07:42+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -713,18 +713,17 @@ msgstr "uimの状態を示すアプレット"
 msgid "About"
 msgstr "このプログラムについて"
 
-#: ibus/property.c:141
+#: ibus/property.c:160
 msgid "Input method"
 msgstr "入力方式"
 
-#: ibus/property.c:144 scm/anthy-utf8-custom.scm:196
+#: ibus/property.c:163 scm/anthy-utf8-custom.scm:196
 #: scm/anthy-utf8-custom.scm:197 scm/m17nlib-custom.scm:62
 #: scm/m17nlib-custom.scm:63 scm/skk-custom.scm:234 scm/skk-custom.scm:235
 #: scm/anthy-custom.scm:189 scm/anthy-custom.scm:190
 #: scm/baidu-olime-jp-custom.scm:194 scm/baidu-olime-jp-custom.scm:195
 #: scm/canna-custom.scm:194 scm/canna-custom.scm:195
 #: scm/google-cgiapi-jp-custom.scm:194 scm/google-cgiapi-jp-custom.scm:195
-#: scm/wnn-custom.scm:194 scm/wnn-custom.scm:195
 msgid "Input mode"
 msgstr "入力モード"
 
@@ -2548,15 +2547,13 @@ msgstr "註釈を有効にする"
 #: scm/tutcode-key-custom.scm:38 scm/tutcode-key-custom.scm:42
 #: scm/tutcode-key-custom.scm:46 scm/tutcode-rule-custom.scm:46
 #: scm/tutcode-rule-custom.scm:52 scm/tutcode-rule-custom.scm:58
-#: scm/tutcode-rule-custom.scm:64 scm/wnn-key-custom.scm:36
-#: scm/wnn-key-custom.scm:40 scm/wnn-key-custom.scm:44
-#: scm/wnn-key-custom.scm:48 scm/anthy-custom.scm:48 scm/anthy-custom.scm:58
-#: scm/anthy-custom.scm:64 scm/anthy-custom.scm:79 scm/anthy-custom.scm:85
-#: scm/anthy-custom.scm:91 scm/anthy-custom.scm:97 scm/anthy-custom.scm:195
-#: scm/anthy-custom.scm:214 scm/anthy-custom.scm:223 scm/anthy-custom.scm:265
-#: scm/anthy-custom.scm:274 scm/anthy-custom.scm:312 scm/anthy-custom.scm:318
-#: scm/anthy-custom.scm:324 scm/anthy-custom.scm:330 scm/anthy-custom.scm:362
-#: scm/anthy-custom.scm:368 scm/anthy-custom.scm:374
+#: scm/tutcode-rule-custom.scm:64 scm/anthy-custom.scm:48
+#: scm/anthy-custom.scm:58 scm/anthy-custom.scm:64 scm/anthy-custom.scm:79
+#: scm/anthy-custom.scm:85 scm/anthy-custom.scm:91 scm/anthy-custom.scm:97
+#: scm/anthy-custom.scm:195 scm/anthy-custom.scm:214 scm/anthy-custom.scm:223
+#: scm/anthy-custom.scm:265 scm/anthy-custom.scm:274 scm/anthy-custom.scm:312
+#: scm/anthy-custom.scm:318 scm/anthy-custom.scm:324 scm/anthy-custom.scm:330
+#: scm/anthy-custom.scm:362 scm/anthy-custom.scm:368 scm/anthy-custom.scm:374
 #: scm/baidu-olime-jp-custom.scm:44 scm/baidu-olime-jp-custom.scm:48
 #: scm/baidu-olime-jp-custom.scm:52 scm/baidu-olime-jp-custom.scm:62
 #: scm/baidu-olime-jp-custom.scm:68 scm/baidu-olime-jp-custom.scm:83
@@ -2592,14 +2589,6 @@ msgstr "註釈を有効にする"
 #: scm/google-cgiapi-jp-custom.scm:393 scm/japanese-custom.scm:467
 #: scm/japanese-custom.scm:471 scm/japanese-custom.scm:479
 #: scm/japanese-custom.scm:489 scm/japanese-custom.scm:495
-#: scm/wnn-custom.scm:44 scm/wnn-custom.scm:48 scm/wnn-custom.scm:52
-#: scm/wnn-custom.scm:62 scm/wnn-custom.scm:68 scm/wnn-custom.scm:83
-#: scm/wnn-custom.scm:89 scm/wnn-custom.scm:95 scm/wnn-custom.scm:101
-#: scm/wnn-custom.scm:200 scm/wnn-custom.scm:219 scm/wnn-custom.scm:228
-#: scm/wnn-custom.scm:270 scm/wnn-custom.scm:279 scm/wnn-custom.scm:322
-#: scm/wnn-custom.scm:329 scm/wnn-custom.scm:340 scm/wnn-custom.scm:346
-#: scm/wnn-custom.scm:352 scm/wnn-custom.scm:359 scm/wnn-custom.scm:365
-#: scm/wnn-custom.scm:371 scm/wnn-custom.scm:377 scm/wnn-custom.scm:383
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
@@ -2700,6 +2689,21 @@ msgstr "カスタムフィルタサーバポート"
 #: scm/annotation-custom.scm:231
 msgid "Path of custom filter"
 msgstr "カスタムフィルタのパス"
+
+#: scm/annotation-dict.scm:45
+#, scheme-format
+msgid "dict: annotation initialization failed: ~a"
+msgstr "dict: 注釈辞書の初期化に失敗しました: ~a"
+
+#: scm/annotation-dict.scm:62
+#, scheme-format
+msgid "dict: annotation request failed: ~a"
+msgstr "dict: 注釈辞書への問い合わせに失敗しました: ~a"
+
+#: scm/annotation-dict.scm:91
+#, scheme-format
+msgid "dict: failed to close annotation connection: ~a"
+msgstr "dict: 注釈サーバへの接続を閉じられませんでした: ~a"
 
 #: scm/annotation-filter.scm:69
 msgid "Custom filter connection is not defined"
@@ -2916,25 +2920,6 @@ msgstr "[Anthy] 次文節"
 #: scm/tutcode-key-custom.scm:658 scm/tutcode-key-custom.scm:664
 #: scm/tutcode-key-custom.scm:670 scm/tutcode-key-custom.scm:676
 #: scm/tutcode-key-custom.scm:682 scm/tutcode-key-custom.scm:688
-#: scm/wnn-key-custom.scm:54 scm/wnn-key-custom.scm:60
-#: scm/wnn-key-custom.scm:66 scm/wnn-key-custom.scm:72
-#: scm/wnn-key-custom.scm:78 scm/wnn-key-custom.scm:84
-#: scm/wnn-key-custom.scm:90 scm/wnn-key-custom.scm:96
-#: scm/wnn-key-custom.scm:102 scm/wnn-key-custom.scm:108
-#: scm/wnn-key-custom.scm:117 scm/wnn-key-custom.scm:124
-#: scm/wnn-key-custom.scm:130 scm/wnn-key-custom.scm:136
-#: scm/wnn-key-custom.scm:142 scm/wnn-key-custom.scm:148
-#: scm/wnn-key-custom.scm:154 scm/wnn-key-custom.scm:160
-#: scm/wnn-key-custom.scm:166 scm/wnn-key-custom.scm:175
-#: scm/wnn-key-custom.scm:181 scm/wnn-key-custom.scm:187
-#: scm/wnn-key-custom.scm:193 scm/wnn-key-custom.scm:199
-#: scm/wnn-key-custom.scm:205 scm/wnn-key-custom.scm:211
-#: scm/wnn-key-custom.scm:217 scm/wnn-key-custom.scm:223
-#: scm/wnn-key-custom.scm:233 scm/wnn-key-custom.scm:239
-#: scm/wnn-key-custom.scm:245 scm/wnn-key-custom.scm:251
-#: scm/wnn-key-custom.scm:257 scm/wnn-key-custom.scm:263
-#: scm/wnn-key-custom.scm:269 scm/wnn-key-custom.scm:275
-#: scm/wnn-key-custom.scm:281
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
@@ -3089,7 +3074,6 @@ msgstr "Anthy"
 #: scm/anthy-utf8-custom.scm:36 scm/anthy-utf8-custom.scm:39
 #: scm/anthy-custom.scm:36 scm/baidu-olime-jp-custom.scm:36
 #: scm/canna-custom.scm:36 scm/google-cgiapi-jp-custom.scm:36
-#: scm/wnn-custom.scm:36
 msgid "A multi-segment kana-kanji conversion engine"
 msgstr "連文節かな漢字変換エンジン"
 
@@ -3108,19 +3092,18 @@ msgstr "Anthyの高度な設定"
 #: scm/anthy-utf8-custom.scm:54 scm/tutcode-custom.scm:55
 #: scm/anthy-custom.scm:47 scm/baidu-olime-jp-custom.scm:51
 #: scm/canna-custom.scm:51 scm/google-cgiapi-jp-custom.scm:51
-#: scm/wnn-custom.scm:51
 msgid "Prediction"
 msgstr "予測入力"
 
 #: scm/anthy-utf8-custom.scm:64 scm/anthy-custom.scm:57
 #: scm/baidu-olime-jp-custom.scm:61 scm/canna-custom.scm:61
-#: scm/google-cgiapi-jp-custom.scm:61 scm/wnn-custom.scm:61
+#: scm/google-cgiapi-jp-custom.scm:61
 msgid "Show segment separator"
 msgstr "文節区切りを表示"
 
 #: scm/anthy-utf8-custom.scm:70 scm/im-custom.scm:102 scm/anthy-custom.scm:63
 #: scm/baidu-olime-jp-custom.scm:67 scm/canna-custom.scm:67
-#: scm/google-cgiapi-jp-custom.scm:67 scm/wnn-custom.scm:67
+#: scm/google-cgiapi-jp-custom.scm:67
 msgid "Segment separator"
 msgstr "文節区切り"
 
@@ -3128,178 +3111,160 @@ msgstr "文節区切り"
 #: scm/m17nlib-custom.scm:135 scm/skk-custom.scm:68 scm/tutcode-custom.scm:261
 #: scm/anthy-custom.scm:78 scm/baidu-olime-jp-custom.scm:82
 #: scm/canna-custom.scm:82 scm/google-cgiapi-jp-custom.scm:82
-#: scm/wnn-custom.scm:82
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
 #: scm/anthy-utf8-custom.scm:91 scm/generic-custom.scm:48 scm/skk-custom.scm:94
 #: scm/tutcode-custom.scm:294 scm/anthy-custom.scm:84
 #: scm/baidu-olime-jp-custom.scm:88 scm/canna-custom.scm:88
-#: scm/google-cgiapi-jp-custom.scm:88 scm/wnn-custom.scm:88
+#: scm/google-cgiapi-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
 
 #: scm/anthy-utf8-custom.scm:97 scm/generic-custom.scm:54
 #: scm/skk-custom.scm:100 scm/tutcode-custom.scm:300 scm/anthy-custom.scm:90
 #: scm/baidu-olime-jp-custom.scm:94 scm/canna-custom.scm:94
-#: scm/google-cgiapi-jp-custom.scm:94 scm/wnn-custom.scm:94
+#: scm/google-cgiapi-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
 
 #: scm/anthy-utf8-custom.scm:103 scm/elatin-custom.scm:264
 #: scm/generic-custom.scm:60 scm/anthy-custom.scm:96
 #: scm/baidu-olime-jp-custom.scm:100 scm/canna-custom.scm:100
-#: scm/google-cgiapi-jp-custom.scm:100 scm/wnn-custom.scm:100
+#: scm/google-cgiapi-jp-custom.scm:100
 msgid "Select candidate by numeral keys"
 msgstr "数字キーで候補を選択する"
 
 #: scm/anthy-utf8-custom.scm:133 scm/skk-custom.scm:178
 #: scm/anthy-custom.scm:126 scm/baidu-olime-jp-custom.scm:130
 #: scm/canna-custom.scm:130 scm/google-cgiapi-jp-custom.scm:130
-#: scm/wnn-custom.scm:130
 msgid "Direct input"
 msgstr "直接入力"
 
 #: scm/anthy-utf8-custom.scm:134 scm/m17nlib-custom.scm:49
 #: scm/skk-custom.scm:179 scm/anthy-custom.scm:127
 #: scm/baidu-olime-jp-custom.scm:131 scm/canna-custom.scm:131
-#: scm/google-cgiapi-jp-custom.scm:131 scm/wnn-custom.scm:131
+#: scm/google-cgiapi-jp-custom.scm:131
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
 #: scm/anthy-utf8-custom.scm:138 scm/skk-custom.scm:183
 #: scm/anthy-custom.scm:131 scm/baidu-olime-jp-custom.scm:135
 #: scm/canna-custom.scm:135 scm/google-cgiapi-jp-custom.scm:135
-#: scm/wnn-custom.scm:135
 msgid "Hiragana"
 msgstr "ひらがな"
 
 #: scm/anthy-utf8-custom.scm:139 scm/skk-custom.scm:184
 #: scm/anthy-custom.scm:132 scm/baidu-olime-jp-custom.scm:136
 #: scm/canna-custom.scm:136 scm/google-cgiapi-jp-custom.scm:136
-#: scm/wnn-custom.scm:136
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
 
 #: scm/anthy-utf8-custom.scm:143 scm/skk-custom.scm:188
 #: scm/anthy-custom.scm:136 scm/baidu-olime-jp-custom.scm:140
 #: scm/canna-custom.scm:140 scm/google-cgiapi-jp-custom.scm:140
-#: scm/wnn-custom.scm:140
 msgid "Katakana"
 msgstr "カタカナ"
 
 #: scm/anthy-utf8-custom.scm:144 scm/skk-custom.scm:189
 #: scm/anthy-custom.scm:137 scm/baidu-olime-jp-custom.scm:141
 #: scm/canna-custom.scm:141 scm/google-cgiapi-jp-custom.scm:141
-#: scm/wnn-custom.scm:141
 msgid "Katakana input mode"
 msgstr "カタカナ入力モード"
 
 #: scm/anthy-utf8-custom.scm:148 scm/skk-custom.scm:193
 #: scm/anthy-custom.scm:141 scm/baidu-olime-jp-custom.scm:145
 #: scm/canna-custom.scm:145 scm/google-cgiapi-jp-custom.scm:145
-#: scm/wnn-custom.scm:145
 msgid "Halfwidth Katakana"
 msgstr "半角カタカナ"
 
 #: scm/anthy-utf8-custom.scm:149 scm/skk-custom.scm:194
 #: scm/anthy-custom.scm:142 scm/baidu-olime-jp-custom.scm:146
 #: scm/canna-custom.scm:146 scm/google-cgiapi-jp-custom.scm:146
-#: scm/wnn-custom.scm:146
 msgid "Halfwidth Katakana input mode"
 msgstr "半角カタカナ入力モード"
 
 #: scm/anthy-utf8-custom.scm:153 scm/anthy-custom.scm:146
 #: scm/baidu-olime-jp-custom.scm:150 scm/canna-custom.scm:150
-#: scm/google-cgiapi-jp-custom.scm:150 scm/wnn-custom.scm:150
+#: scm/google-cgiapi-jp-custom.scm:150
 msgid "Halfwidth Alphanumeric"
 msgstr "半角英数"
 
 #: scm/anthy-utf8-custom.scm:154 scm/anthy-custom.scm:147
 #: scm/baidu-olime-jp-custom.scm:151 scm/canna-custom.scm:151
-#: scm/google-cgiapi-jp-custom.scm:151 scm/wnn-custom.scm:151
+#: scm/google-cgiapi-jp-custom.scm:151
 msgid "Halfwidth Alphanumeric input mode"
 msgstr "半額英数字入力モード"
 
 #: scm/anthy-utf8-custom.scm:158 scm/skk-custom.scm:198
 #: scm/anthy-custom.scm:151 scm/baidu-olime-jp-custom.scm:156
 #: scm/canna-custom.scm:156 scm/google-cgiapi-jp-custom.scm:156
-#: scm/wnn-custom.scm:156
 msgid "Fullwidth Alphanumeric"
 msgstr "全角英数"
 
 #: scm/anthy-utf8-custom.scm:159 scm/skk-custom.scm:199
 #: scm/anthy-custom.scm:152 scm/baidu-olime-jp-custom.scm:157
 #: scm/canna-custom.scm:157 scm/google-cgiapi-jp-custom.scm:157
-#: scm/wnn-custom.scm:157
 msgid "Fullwidth Alphanumeric input mode"
 msgstr "全角英数字入力モード"
 
 #: scm/anthy-utf8-custom.scm:166 scm/skk-custom.scm:206
 #: scm/anthy-custom.scm:159 scm/baidu-olime-jp-custom.scm:164
 #: scm/canna-custom.scm:164 scm/google-cgiapi-jp-custom.scm:164
-#: scm/wnn-custom.scm:164
 msgid "Romaji"
 msgstr "ローマ字"
 
 #: scm/anthy-utf8-custom.scm:167 scm/skk-custom.scm:207
 #: scm/anthy-custom.scm:160 scm/baidu-olime-jp-custom.scm:165
 #: scm/canna-custom.scm:165 scm/google-cgiapi-jp-custom.scm:165
-#: scm/wnn-custom.scm:165
 msgid "Romaji input mode"
 msgstr "ローマ字入力モード"
 
 #: scm/anthy-utf8-custom.scm:171 scm/anthy-custom.scm:164
 #: scm/baidu-olime-jp-custom.scm:169 scm/canna-custom.scm:169
-#: scm/google-cgiapi-jp-custom.scm:169 scm/wnn-custom.scm:169
+#: scm/google-cgiapi-jp-custom.scm:169
 msgid "Kana"
 msgstr "かな"
 
 #: scm/anthy-utf8-custom.scm:172 scm/anthy-custom.scm:165
 #: scm/baidu-olime-jp-custom.scm:170 scm/canna-custom.scm:170
-#: scm/google-cgiapi-jp-custom.scm:170 scm/wnn-custom.scm:170
+#: scm/google-cgiapi-jp-custom.scm:170
 msgid "Kana input mode"
 msgstr "かな入力モード"
 
 #: scm/anthy-utf8-custom.scm:176 scm/skk-custom.scm:212
 #: scm/anthy-custom.scm:169 scm/baidu-olime-jp-custom.scm:174
 #: scm/canna-custom.scm:174 scm/google-cgiapi-jp-custom.scm:174
-#: scm/wnn-custom.scm:174
 msgid "AZIK"
 msgstr "AZIK"
 
 #: scm/anthy-utf8-custom.scm:177 scm/skk-custom.scm:213
 #: scm/anthy-custom.scm:170 scm/baidu-olime-jp-custom.scm:175
 #: scm/canna-custom.scm:175 scm/google-cgiapi-jp-custom.scm:175
-#: scm/wnn-custom.scm:175
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
 #: scm/anthy-utf8-custom.scm:181 scm/skk-custom.scm:218
 #: scm/anthy-custom.scm:174 scm/baidu-olime-jp-custom.scm:179
 #: scm/canna-custom.scm:179 scm/google-cgiapi-jp-custom.scm:179
-#: scm/wnn-custom.scm:179
 msgid "ACT"
 msgstr "ACT"
 
 #: scm/anthy-utf8-custom.scm:182 scm/skk-custom.scm:219
 #: scm/anthy-custom.scm:175 scm/baidu-olime-jp-custom.scm:180
 #: scm/canna-custom.scm:180 scm/google-cgiapi-jp-custom.scm:180
-#: scm/wnn-custom.scm:180
 msgid "ACT extended romaji input mode"
 msgstr "ACT拡張ローマ字入力モード"
 
 #: scm/anthy-utf8-custom.scm:186 scm/skk-custom.scm:224
 #: scm/anthy-custom.scm:179 scm/baidu-olime-jp-custom.scm:184
 #: scm/canna-custom.scm:184 scm/google-cgiapi-jp-custom.scm:184
-#: scm/wnn-custom.scm:184
 msgid "KZIK"
 msgstr "KZIK"
 
 #: scm/anthy-utf8-custom.scm:187 scm/skk-custom.scm:225
 #: scm/anthy-custom.scm:180 scm/baidu-olime-jp-custom.scm:185
 #: scm/canna-custom.scm:185 scm/google-cgiapi-jp-custom.scm:185
-#: scm/wnn-custom.scm:185
 msgid "KZIK extended romaji input mode"
 msgstr "KZIK拡張ローマ字入力モード"
 
@@ -3308,8 +3273,7 @@ msgstr "KZIK拡張ローマ字入力モード"
 #: scm/anthy-custom.scm:193 scm/baidu-olime-jp-custom.scm:197
 #: scm/baidu-olime-jp-custom.scm:198 scm/canna-custom.scm:197
 #: scm/canna-custom.scm:198 scm/google-cgiapi-jp-custom.scm:197
-#: scm/google-cgiapi-jp-custom.scm:198 scm/wnn-custom.scm:197
-#: scm/wnn-custom.scm:198
+#: scm/google-cgiapi-jp-custom.scm:198
 msgid "Kana input method"
 msgstr "かな入力方式"
 
@@ -3318,67 +3282,64 @@ msgstr "かな入力方式"
 #: scm/anthy-utf8-custom.scm:201 scm/m17nlib-custom.scm:64
 #: scm/skk-custom.scm:239 scm/anthy-custom.scm:194
 #: scm/baidu-olime-jp-custom.scm:199 scm/canna-custom.scm:199
-#: scm/google-cgiapi-jp-custom.scm:199 scm/wnn-custom.scm:199
+#: scm/google-cgiapi-jp-custom.scm:199
 msgid "Enabled toolbar buttons"
 msgstr "有効にするボタン"
 
 #: scm/anthy-utf8-custom.scm:220 scm/m17nlib-custom.scm:82
 #: scm/skk-custom.scm:258 scm/anthy-custom.scm:213
 #: scm/baidu-olime-jp-custom.scm:218 scm/canna-custom.scm:218
-#: scm/google-cgiapi-jp-custom.scm:218 scm/wnn-custom.scm:218
+#: scm/google-cgiapi-jp-custom.scm:218
 msgid "Default input mode"
 msgstr "標準の入力モード"
 
 #: scm/anthy-utf8-custom.scm:229 scm/m17nlib-custom.scm:91
 #: scm/skk-custom.scm:267 scm/anthy-custom.scm:222
 #: scm/baidu-olime-jp-custom.scm:227 scm/canna-custom.scm:227
-#: scm/google-cgiapi-jp-custom.scm:227 scm/wnn-custom.scm:227
+#: scm/google-cgiapi-jp-custom.scm:227
 msgid "Input mode menu items"
 msgstr "入力モードのメニュー項目"
 
 #: scm/anthy-utf8-custom.scm:271 scm/skk-custom.scm:298
 #: scm/anthy-custom.scm:264 scm/baidu-olime-jp-custom.scm:269
 #: scm/canna-custom.scm:269 scm/google-cgiapi-jp-custom.scm:269
-#: scm/wnn-custom.scm:269
 msgid "Default kana input method"
 msgstr "標準のかな入力方式"
 
 #: scm/anthy-utf8-custom.scm:280 scm/skk-custom.scm:307
 #: scm/anthy-custom.scm:273 scm/baidu-olime-jp-custom.scm:278
 #: scm/canna-custom.scm:278 scm/google-cgiapi-jp-custom.scm:278
-#: scm/wnn-custom.scm:278
 msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
 #: scm/anthy-utf8-custom.scm:318 scm/anthy-custom.scm:311
 #: scm/baidu-olime-jp-custom.scm:359 scm/canna-custom.scm:420
-#: scm/google-cgiapi-jp-custom.scm:357 scm/wnn-custom.scm:358
+#: scm/google-cgiapi-jp-custom.scm:357
 msgid "Enable input prediction"
 msgstr "予測入力を有効にする"
 
 #: scm/anthy-utf8-custom.scm:324 scm/anthy-custom.scm:317
 #: scm/baidu-olime-jp-custom.scm:365 scm/canna-custom.scm:426
-#: scm/google-cgiapi-jp-custom.scm:363 scm/wnn-custom.scm:364
+#: scm/google-cgiapi-jp-custom.scm:363
 msgid "Select prediction candidate by numeral keys"
 msgstr "数字キーで予測候補を選択する"
 
 #: scm/anthy-utf8-custom.scm:330 scm/anthy-custom.scm:323
 #: scm/baidu-olime-jp-custom.scm:371 scm/canna-custom.scm:432
-#: scm/google-cgiapi-jp-custom.scm:369 scm/wnn-custom.scm:370
+#: scm/google-cgiapi-jp-custom.scm:369
 msgid "Show selected prediction candidate in preedit area"
 msgstr "編集領域内に選んだ予測候補を表示する"
 
 #: scm/anthy-utf8-custom.scm:336 scm/tutcode-custom.scm:427
 #: scm/anthy-custom.scm:329 scm/baidu-olime-jp-custom.scm:394
 #: scm/canna-custom.scm:444 scm/google-cgiapi-jp-custom.scm:392
-#: scm/wnn-custom.scm:382
 msgid "Character count to start input prediction"
 msgstr "予測入力が有効になる文字数"
 
 #: scm/anthy-utf8-custom.scm:368 scm/skk-custom.scm:593
 #: scm/tutcode-custom.scm:124 scm/anthy-custom.scm:361
 #: scm/baidu-olime-jp-custom.scm:340 scm/canna-custom.scm:401
-#: scm/google-cgiapi-jp-custom.scm:338 scm/wnn-custom.scm:345
+#: scm/google-cgiapi-jp-custom.scm:338
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
 
@@ -3390,7 +3351,7 @@ msgstr "句読点での自動変換を有効にする"
 
 #: scm/anthy-utf8-custom.scm:380 scm/anthy-custom.scm:373
 #: scm/baidu-olime-jp-custom.scm:352 scm/canna-custom.scm:413
-#: scm/google-cgiapi-jp-custom.scm:350 scm/wnn-custom.scm:351
+#: scm/google-cgiapi-jp-custom.scm:350
 msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr "直接入力モード(off状態)時も入力モード切り替えキーを有効にする"
 
@@ -3995,7 +3956,7 @@ msgstr "エラー応答"
 msgid "dict: Protocol error"
 msgstr "dict: プロトコルエラーです"
 
-#: scm/dict-socket.scm:104
+#: scm/dict-socket.scm:105
 msgid "dict: cannot connect server"
 msgstr "dict: サーバに接続できません"
 
@@ -4463,13 +4424,9 @@ msgstr "不明な予測方法"
 msgid "off"
 msgstr "オフ"
 
-#: scm/generic.scm:86 scm/m17nlib-custom.scm:53 scm/m17nlib.scm:63
+#: scm/generic.scm:84 scm/m17nlib-custom.scm:53 scm/m17nlib.scm:61
 msgid "on"
 msgstr "オン"
-
-#: scm/generic.scm:87 scm/m17nlib.scm:64
-msgid " Mode"
-msgstr " モード"
 
 #: scm/google-cgiapi-jp-key-custom.scm:35
 msgid "Google-CGIAPI-Jp key bindings 1"
@@ -7179,171 +7136,6 @@ msgstr "VIQR"
 msgid "VIetnamese Quoted-Readable"
 msgstr "VIetnamese Quoted-Readable"
 
-#: scm/wnn-key-custom.scm:35
-msgid "Wnn key bindings 1"
-msgstr "Wnn キー設定1"
-
-#: scm/wnn-key-custom.scm:39
-msgid "Wnn key bindings 2"
-msgstr "Wnn キー設定2"
-
-# Wnn
-#: scm/wnn-key-custom.scm:43
-msgid "Wnn key bindings 3"
-msgstr "Wnn キー設定3"
-
-#: scm/wnn-key-custom.scm:47
-msgid "Wnn key bindings 4"
-msgstr "Wnn キー設定4"
-
-#: scm/wnn-key-custom.scm:53
-msgid "[Wnn] next segment"
-msgstr "[Wnn] 次の文節"
-
-#: scm/wnn-key-custom.scm:59
-msgid "[Wnn] previous segment"
-msgstr "[Wnn] 前の文節"
-
-#: scm/wnn-key-custom.scm:65
-msgid "[Wnn] extend segment"
-msgstr "[Wnn] 文節を伸ばす"
-
-#: scm/wnn-key-custom.scm:71
-msgid "[Wnn] shrink segment"
-msgstr "[Wnn] 文節を縮める"
-
-#: scm/wnn-key-custom.scm:77
-msgid "[Wnn] convert to hiragana"
-msgstr "[Wnn] ひらがなに変換"
-
-#: scm/wnn-key-custom.scm:83
-msgid "[Wnn] convert to katakana"
-msgstr "[Wnn] カタカナに変換"
-
-#: scm/wnn-key-custom.scm:89
-msgid "[Wnn] convert to halfwidth katakana"
-msgstr "[Wnn] 半角カタカナに変換"
-
-#: scm/wnn-key-custom.scm:95
-msgid "[Wnn] convert to halfwidth alphanumeric"
-msgstr "[Wnn] 半角英数字に変換"
-
-#: scm/wnn-key-custom.scm:101
-msgid "[Wnn] convert to fullwidth alphanumeric"
-msgstr "[Wnn] 全角英数字に変換"
-
-#: scm/wnn-key-custom.scm:107
-msgid "[Wnn] commit as transposed kana"
-msgstr "[Wnn] かな/カナ反転確定"
-
-#: scm/wnn-key-custom.scm:116
-msgid "[Wnn] on"
-msgstr "[Wnn] オン"
-
-#: scm/wnn-key-custom.scm:123
-msgid "[Wnn] off"
-msgstr "[Wnn] オフ"
-
-#: scm/wnn-key-custom.scm:129
-msgid "[Wnn] begin conversion"
-msgstr "[Wnn] 変換開始"
-
-#: scm/wnn-key-custom.scm:135
-msgid "[Wnn] commit"
-msgstr "[Wnn] 確定"
-
-#: scm/wnn-key-custom.scm:141
-msgid "[Wnn] cancel"
-msgstr "[Wnn] キャンセル"
-
-#: scm/wnn-key-custom.scm:147
-msgid "[Wnn] next candidate"
-msgstr "[Wnn] 次候補"
-
-#: scm/wnn-key-custom.scm:153
-msgid "[Wnn] previous candidate"
-msgstr "[Wnn] 前候補"
-
-#: scm/wnn-key-custom.scm:159
-msgid "[Wnn] next page of candidate window"
-msgstr "[Wnn] 候補ウィンドウの次ページ"
-
-#: scm/wnn-key-custom.scm:165
-msgid "[Wnn] previous page of candidate window"
-msgstr "[Wnn] 候補ウィンドウの前ページ"
-
-#: scm/wnn-key-custom.scm:174
-msgid "[Wnn] beginning of preedit"
-msgstr "[Wnn] 編集領域の先頭"
-
-#: scm/wnn-key-custom.scm:180
-msgid "[Wnn] end of preedit"
-msgstr "[Wnn] 編集領域の末尾"
-
-#: scm/wnn-key-custom.scm:186
-msgid "[Wnn] erase after cursor"
-msgstr "[Wnn] カーソル以降を消去"
-
-#: scm/wnn-key-custom.scm:192
-msgid "[Wnn] erase before cursor"
-msgstr "[Wnn] カーソル以前を消去"
-
-#: scm/wnn-key-custom.scm:198
-msgid "[Wnn] backspace"
-msgstr "[Wnn] バックスペース"
-
-#: scm/wnn-key-custom.scm:204
-msgid "[Wnn] delete"
-msgstr "[Wnn] デリート"
-
-#: scm/wnn-key-custom.scm:210
-msgid "[Wnn] go left"
-msgstr "[Wnn] 左に移動"
-
-#: scm/wnn-key-custom.scm:216
-msgid "[Wnn] go right"
-msgstr "[Wnn] 右に移動"
-
-#: scm/wnn-key-custom.scm:222
-msgid "[Wnn] ESC keys on vi-cooperative mode"
-msgstr "[Wnn] vi協調モードでESCとして扱うキー"
-
-#: scm/wnn-key-custom.scm:232
-msgid "[Wnn] hiragana mode"
-msgstr "[Wnn] ひらがな入力モード"
-
-#: scm/wnn-key-custom.scm:238
-msgid "[Wnn] katakana mode"
-msgstr "[Wnn] カタカナ入力モード"
-
-#: scm/wnn-key-custom.scm:244
-msgid "[Wnn] halfwidth katakana mode"
-msgstr "[Wnn] 半角カタカナ入力モード"
-
-#: scm/wnn-key-custom.scm:250
-msgid "[Wnn] halfwidth alphanumeric mode"
-msgstr "[Wnn] 半角英数入力モード"
-
-#: scm/wnn-key-custom.scm:256
-msgid "[Wnn] fullwidth alphanumeric mode"
-msgstr "[Wnn] 全角英数入力モード"
-
-#: scm/wnn-key-custom.scm:262
-msgid "[Wnn] toggle hiragana/katakana mode"
-msgstr "[Wnn] ひらがな/カタカナ入力モードを反転"
-
-#: scm/wnn-key-custom.scm:268
-msgid "[Wnn] toggle kana/alphanumeric mode"
-msgstr "[Wnn] かな/英数入力モードを反転"
-
-#: scm/wnn-key-custom.scm:274
-msgid "[Wnn] Next prediction candidate"
-msgstr "[Wnn] 次予測候補"
-
-#: scm/wnn-key-custom.scm:280
-msgid "[Wnn] Previous prediction candidate"
-msgstr "[Wnn] 前予測候補"
-
 #: uim.desktop.in.in:3
 msgid "Input Method"
 msgstr "入力メソッド"
@@ -7565,15 +7357,6 @@ msgstr "eb_read_text : エラーが起きました"
 msgid "All functionality has been disabled to save user application data."
 msgstr "ユーザアプリケーションデータを保護するため、全機能を停止しました。"
 
-#: uim/wnnlib.c:3744 uim/wnnlib.c:3758
-#, c-format
-msgid ""
-"uim-wnn: \"%s\" is not exist. Please run uim-pref and set \"Wnn resource "
-"file\" (maybe file name is \"wnnenvrc\")."
-msgstr ""
-"uim-wnn: \"%s\"は存在しません。uim-prefを起動して、\"Wnn設定ファイル\"を設定"
-"してください(おそらくファイル名は\"wnnenvrc\"です)。"
-
 #: scm/baidu-olime-jp-custom.scm:35
 msgid "Baidu-OnlineIME-Jp"
 msgstr "Baidu-OnlineIME-Jp"
@@ -7595,7 +7378,7 @@ msgid "Use SSL"
 msgstr "SSLを使用"
 
 #: scm/baidu-olime-jp-custom.scm:388 scm/canna-custom.scm:438
-#: scm/google-cgiapi-jp-custom.scm:386 scm/wnn-custom.scm:376
+#: scm/google-cgiapi-jp-custom.scm:386
 msgid "Number of cache of prediction candidates"
 msgstr "予測候補キャッシュ数"
 
@@ -7686,27 +7469,3 @@ msgstr "漢字直接入力方式"
 #: scm/trycode.scm:1647
 msgid "Try-Code"
 msgstr "Try-Code"
-
-#: scm/wnn-custom.scm:35
-msgid "Wnn"
-msgstr "Wnn"
-
-#: scm/wnn-custom.scm:43
-msgid "Wnn server"
-msgstr "Wnn サーバ"
-
-#: scm/wnn-custom.scm:47
-msgid "Wnn (advanced)"
-msgstr "Wnn (高度)"
-
-#: scm/wnn-custom.scm:321
-msgid "Use remote Wnn server"
-msgstr "ローカルマシン以外のWnnサーバに接続する"
-
-#: scm/wnn-custom.scm:328
-msgid "Wnn server name"
-msgstr "Wnnサーバ名"
-
-#: scm/wnn-custom.scm:339
-msgid "Wnn resource file"
-msgstr "Wnn設定ファイル"

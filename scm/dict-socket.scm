@@ -101,10 +101,16 @@
   (let-optionals* args ((servname $DICT-DEFAULT-PORT))
     (let ((fd (tcp-connect hostname servname)))
       (if (not fd)
-          (uim-notify-fatal (N_ "dict: cannot connect server")))
-      (let ((port (open-file-port fd)))
-        (dict-server-parse-banner port)
-        port))))
+          (begin
+            (uim-notify-info (_ "dict: cannot connect server"))
+            #f)
+          (let ((port (open-file-port fd)))
+            (guard (err
+                    (#t
+                     (close-file-port port)
+                     (raise err)))
+              (dict-server-parse-banner port)
+              port))))))
 
 (define (dict-server-get-dictionary-list port)
   (file-display (dict-server-build-message "SHOW" "DB") port)

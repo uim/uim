@@ -35,6 +35,7 @@ qt4/switcher/qt4.cpp
 qt4/toolbar/common-quimhelpertoolbar.cpp
 scm/action.scm
 scm/annotation-custom.scm
+scm/annotation-dict.scm
 scm/annotation-filter.scm
 scm/annotation.scm
 scm/anthy-key-custom.scm
