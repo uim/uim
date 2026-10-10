@@ -41,34 +41,28 @@
 
 #include "uim.h"  /* for uim_bool */
 #include "uim-notify.h"
-#include "gettext.h"
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
-#define UGETTEXT(str)	(dgettext(GETTEXT_PACKAGE, (str)))
 
+/* uim_notify_info() and uim_notify_fatal() have translated BODY. */
 static uim_bool
 uim_libnotify_notify(int urgency, int timeout, const char *body)
 {
-  char body_short[256];
   NotifyNotification *notification;
   GError *error = NULL;
-  gboolean ret;
   gchar *gmsg;
-  gsize read, written;
+  gboolean shown;
 
-  strlcpy(body_short, UGETTEXT(body), sizeof(body_short));
-
-  fprintf(stderr, "libuim: %s\n", UGETTEXT(body));
-
-  gmsg = g_locale_to_utf8(body_short, -1, &read, &written, NULL);
-
-  if (!gmsg) {
-    fprintf(stderr, "libnotify: cannot convert to utf8\n");
-    return UIM_FALSE;
-  }
+  fprintf(stderr, "libuim: %s\n", body);
 
   if (!notify_is_initted()) {
     fprintf(stderr, "libnotify: libnotify is not initted\n");
+    return UIM_FALSE;
+  }
+
+  gmsg = g_locale_to_utf8(body, -1, NULL, NULL, NULL);
+  if (!gmsg) {
+    fprintf(stderr, "libnotify: cannot convert to utf8\n");
     return UIM_FALSE;
   }
 
@@ -79,6 +73,7 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
 #else
   notification = notify_notification_new("uim", gmsg, UIM_ICON, NULL);
 #endif
+  g_free(gmsg);
 
   if (!notification) {
     fprintf(stderr, "notify_notification_new: can not create notification object\n");
@@ -89,16 +84,15 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
 
   notify_notification_set_urgency(notification, urgency);
 
-  ret = notify_notification_show(notification, &error);
-  if (error) {
+  shown = notify_notification_show(notification, &error);
+  if (!shown) {
     fprintf(stderr, "notify_notification_show: %s\n", error->message);
-    return UIM_FALSE;
+    g_error_free(error);
   }
 
-  g_free(gmsg);
   g_object_unref(G_OBJECT(notification));
 
-  return UIM_TRUE;
+  return shown ? UIM_TRUE : UIM_FALSE;
 }
 
 /*
