@@ -1728,13 +1728,13 @@ AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC,
 # ****************************
 # *** Tests for uim-notify ***
 # ****************************
-notify_targets='stderr libnotify knotify3 knotify4 growl'
+notify_targets='stderr libnotify'
 
 AC_ARG_ENABLE(notify,
   AS_HELP_STRING([--enable-notify@<:@=agent-list@:>@ (HIGHLY EXPERIMENTAL)],
     [enable system message notification for users
      (specify comma separated notification agent list from
-      stderr, libnotify, knotify3, knotify4 and growl)]),
+      stderr and libnotify)]),
   [],
   [enable_notify=yes])
 
@@ -1761,80 +1761,12 @@ else
   AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING([whether knotify3 is requested])
-if test "x$au_enable_knotify3" = xyes; then
-  AC_MSG_RESULT([yes])
-  if test "x$with_qt4_immodule" = xyes; then
-    AC_MSG_WARN([knotify3 could not be used with qt4-immodule enabled])
-    use_knotify3=no
-  elif test "x$with_qt" = xyes; then
-    if test "x$KDE_CONFIG" != xno; then
-      KNOTIFY3_PREFIX=`kde-config --prefix`
-      KNOTIFY3_LIB_DIR=`kde-config --expandvars --install lib`
-      KNOTIFY3_DATA_DIR=`kde-config --expandvars --install data`
-      saved_cppflags="${CPPFLAGS}"
-      CPPFLAGS="-I${KNOTIFY3_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
-      AC_LANG_PUSH(C++)
-      AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/kde/knotifyclient.h],
-                      [use_knotify3=yes KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include/kde"], [use_knotify3=no])
-      if test "x$use_knotify3" = xno; then
-        CPPFLAGS="-I${KNOTIFY3_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
-        AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/knotifyclient.h],
-                        [use_knotify3=yes KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include"], [use_knotify3=no])
-      fi
-      CPPFLAGS="${saved_cppflags}"
-      AC_LANG_POP(C++)
-    else
-      use_knotify3=no
-    fi
-  else
-    use_knotify3=no
-  fi
-else
-  AC_MSG_RESULT(no)
-fi
-
-if test "x$use_knotify3" = xyes; then
-  AC_DEFINE(ENABLE_KNOTIFY3, 1, [set notify interface with knotify3])
-  AC_SUBST(KNOTIFY3_PREFIX)
-  AC_SUBST(KNOTIFY3_LIB_DIR)
-  AC_SUBST(KNOTIFY3_DATA_DIR)
-  AC_SUBST(KNOTIFY3_INCLUDE_DIR)
-  use_notify="${use_notify}knotify3 "
-fi
-
-AC_MSG_CHECKING([whether knotify4 is requested])
-if test "x$au_enable_knotify4" = xyes; then
-  if test "x$CMAKE" != xno; then
-    AC_MSG_RESULT([yes])
-    use_knotify4=yes
-    use_notify="${use_notify}knotify4 "
-  else
-    AC_MSG_WARN([no CMake found])
-    use_knotify4=no
-  fi
-else
-  AC_MSG_RESULT(no)
-fi
-
-AC_MSG_CHECKING([whether growl is requested])
-if test "x$au_enable_growl" = xyes; then
-  AC_MSG_RESULT([yes])
-  use_growl=yes
-  use_notify="${use_notify}growl "
-else
-  AC_MSG_RESULT(no)
-fi
-
 if test "x$use_notify" = x; then
   use_notify=none
 fi
 
 AM_CONDITIONAL(NOTIFY, test "x$enable_notify" != xno)
 AM_CONDITIONAL(LIBNOTIFY, test "x$use_libnotify" = xyes)
-AM_CONDITIONAL(KNOTIFY3, test "x$use_knotify3" = xyes)
-AM_CONDITIONAL(KNOTIFY4, test "x$use_knotify4" = xyes)
-AM_CONDITIONAL(GROWL, test "x$use_growl" = xyes)
 
 AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based error handlings])
 
@@ -2158,19 +2090,6 @@ if test "x$with_qt4_immodule" = xyes; then
     ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
     ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
-  set +e
-fi
-
-if test "x$use_knotify4" = xyes; then
-  set -e
-  # Generate a Makefile for KNotify plugin by cmake
-  mkdir -p ${ac_abs_top_builddir}/notify/build
-  cd ${ac_abs_top_builddir}/notify/build
-  # FIXME: move CMAKE_CXX_FLAGS into cmake_option
-  ${CMAKE} -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
-    -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
-    ${cmake_option} ${ac_abs_top_srcdir}/notify
-  cd -
   set +e
 fi
 
