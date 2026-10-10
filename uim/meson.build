@@ -70,11 +70,13 @@ libuim_sources = files(
   'uim-helper.c',
   'uim-ipc.c',
   'uim-key.c',
-  'uim-notify.c',
   'uim-posix.c',
   'uim-util.c',
   'uim.c',
 )
+if get_option('notify')
+  libuim_sources += files('uim-notify.c')
+endif
 libuim_c_args = [
   '-DPKGLIBDIR="@0@"'.format(prefix / pkglibdir),
   '-DPKGDATADIR="@0@"'.format(prefix / pkgdatadir),

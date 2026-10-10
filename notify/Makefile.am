@@ -17,3 +17,5 @@ libuimnotify_libnotify_la_CFLAGS = @LIBNOTIFY_CFLAGS@
 libuimnotify_libnotify_la_LDFLAGS  = -avoid-version -module
 libuimnotify_libnotify_la_LIBADD = @LIBNOTIFY_LIBS@
 endif
+
+EXTRA_DIST = meson.build
