@@ -34,10 +34,18 @@ option('libedit',
        type: 'feature',
        value: 'auto',
        description: 'build a plugin for libedit used by uim-sh')
+option('libnotify',
+       type: 'feature',
+       value: 'disabled',
+       description: 'build a uim-notify plugin for libnotify')
 option('m17nlib',
        type: 'feature',
        value: 'auto',
        description: 'build a plugin for m17n-lib')
+option('notify',
+       type: 'boolean',
+       value: true,
+       description: 'use uim-notify plugins for system message notification')
 option('openssl',
        type: 'feature',
        value: 'disabled',

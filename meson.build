@@ -371,12 +371,17 @@ endif
 
 # longjmp-based error handlings
 config_data.set('UIM_USE_ERROR_GUARD', 1)
-config_data.set('UIM_USE_NOTIFY_PLUGINS', 1)
+if get_option('notify')
+  config_data.set('UIM_USE_NOTIFY_PLUGINS', 1)
+endif
 
 
 subdir('replace')
 subdir('uim')
 subdir('scm')
+if get_option('notify')
+  subdir('notify')
+endif
 subdir('test2')
 subdir('pixmaps')
 subdir('byeoru-data')
@@ -398,7 +403,11 @@ pkgconfig.generate(libraries: [libuim_scm, libuim],
 summary({
           'Canna': get_option('canna'),
           'NLS': intl.found(),
+          'Notify': get_option('notify'),
           'SKK': get_option('skk'),
         },
         section: 'Features')
 summary(optional_plugins, section: 'Plugins')
+if get_option('notify')
+  summary(optional_notify_plugins, section: 'Notify plugins')
+endif
