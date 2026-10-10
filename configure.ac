@@ -1751,14 +1751,12 @@ fi
 AC_MSG_CHECKING([whether libnotify is requested])
 if test "x$au_enable_libnotify" = xyes; then
   AC_MSG_RESULT([yes])
-  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4,
-                    use_libnotify=yes, use_libnotify=no)
-  if test "x$use_libnotify" = xyes; then
-    AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
-    AC_SUBST(LIBNOTIFY_LIBS)
-    AC_SUBST(LIBNOTIFY_CFLAGS)
-    use_notify="${use_notify}libnotify "
-  fi
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4)
+  use_libnotify=yes
+  AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
+  AC_SUBST(LIBNOTIFY_LIBS)
+  AC_SUBST(LIBNOTIFY_CFLAGS)
+  use_notify="${use_notify}libnotify "
 else
   AC_MSG_RESULT(no)
 fi
