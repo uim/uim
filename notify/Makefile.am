@@ -15,7 +15,7 @@ uimnotify_plugin_LTLIBRARIES += libuimnotify-libnotify.la
 libuimnotify_libnotify_la_SOURCES = uim-libnotify.c
 libuimnotify_libnotify_la_CFLAGS = @LIBNOTIFY_CFLAGS@
 libuimnotify_libnotify_la_LDFLAGS  = -avoid-version -module
-libuimnotify_libnotify_la_LIBADD = @LIBNOTIFY_LIBS@ $(top_builddir)/replace/libreplace.la
+libuimnotify_libnotify_la_LIBADD = @LIBNOTIFY_LIBS@
 endif
 
 if KNOTIFY3
