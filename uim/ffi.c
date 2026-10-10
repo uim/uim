@@ -116,11 +116,10 @@ c_dlstrerr(void)
 static uim_lisp
 c_dlopen(uim_lisp path_, uim_lisp mode_)
 {
-  const char *s;
   void *handle = dlopen(REFER_C_STR(path_), C_INT(mode_));
 
-  if ((s = dlerror()) != NULL) {
-    ffi_strerr_ = s;
+  if (!handle) {
+    ffi_strerr_ = dlerror();
     return uim_scm_f();
   }
   ffi_strerr_ = NULL;
@@ -143,6 +142,9 @@ c_dlsym(uim_lisp handle_, uim_lisp symbol_)
   const char *s;
   void *fun;
 
+  /* dlsym() can return NULL for a symbol whose value is NULL, so
+   * dlerror() tells a failure. Clear what an earlier call left. */
+  dlerror();
   fun = dlsym(C_PTR(handle_), REFER_C_STR(symbol_));
   if ((s = dlerror()) != NULL) {
     ffi_strerr_ = s;
