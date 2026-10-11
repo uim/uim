@@ -186,9 +186,11 @@ intl_init_locale(void)
   }
 
   bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
-  /* bind_textdomain_codeset() should not be performed here. See
-     UIM_EVAL_STRING()
-  */
+  /* Messages translated in libuim such as ones for uim-notify are
+     UTF-8. Strings returned to clients aren't translated and clients
+     translate them by themselves. uim-custom, which returns translated
+     strings, converts them to the codeset of its client. */
+  bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 
 #if 0
   /* textdomain() must not be performed by a library because it masks

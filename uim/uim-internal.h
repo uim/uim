@@ -171,6 +171,7 @@ uim_bool uim_notify_fatal_raw(const char *msg);
 uim_bool uim_notify_info(const char *msg_fmt, ...);
 uim_bool uim_notify_fatal(const char *msg_fmt, ...);
 #endif
+void uim_puts_utf8_to_stderr(const char *msg);
 
 void uim_set_encoding(uim_context uc, const char *enc);
 #if HAVE_ISSETUGID

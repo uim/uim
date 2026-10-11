@@ -36,6 +36,10 @@
 ;;
 
 ;; WARNING: ugettext and _ should not be used for normal codes.
+;; Strings returned to clients aren't translated because clients use
+;; their own codesets. Messages for uim-notify are an exception
+;; because they aren't returned to clients. They are translated to
+;; UTF-8 because libuim binds its text domain to UTF-8.
 ;; convenience shorthand of runtime translation
 (define ugettext
   (if (provided? "nls")

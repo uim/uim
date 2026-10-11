@@ -33,11 +33,16 @@
 
 #include <config.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <limits.h>
 #include <wchar.h>
+#include <iconv.h>
+#if HAVE_LANGINFO_CODESET
+#include <langinfo.h>
+#endif
 
 #include "uim-internal.h"
 #include "uim-scm.h"
@@ -229,6 +234,38 @@ uim_get_language_code_from_language_name(const char *language_name)
   UIM_CATCH_ERROR_END();
 
   return name;
+}
+
+/* Writes UTF-8 MSG to stderr in the codeset of the locale. MSG is
+ * written as is when it can't be converted. A small buffer on the
+ * stack is used because this is also used on hard situations such as
+ * memory exhaustion. */
+void
+uim_puts_utf8_to_stderr(const char *msg)
+{
+#if HAVE_LANGINFO_CODESET
+  iconv_t cd;
+  char buf[1024];
+  ICONV_CONST char *in = (ICONV_CONST char *)msg;
+  char *out = buf;
+  size_t in_left = strlen(msg);
+  size_t out_left = sizeof(buf) - 1;
+  size_t converted;
+
+  cd = iconv_open(nl_langinfo(CODESET), "UTF-8");
+  if (cd != (iconv_t)-1) {
+    converted = iconv(cd, &in, &in_left, &out, &out_left);
+    if (converted != (size_t)-1)
+      converted = iconv(cd, NULL, NULL, &out, &out_left);
+    iconv_close(cd);
+    if (converted != (size_t)-1) {
+      *out = '\0';
+      fputs(buf, stderr);
+      return;
+    }
+  }
+#endif
+  fputs(msg, stderr);
 }
 
 void

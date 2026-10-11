@@ -50,12 +50,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#if HAVE_LANGINFO_CODESET
+#include <langinfo.h>
+#endif
 #include "gettext.h"
 
 #include "uim-scm.h"
 #include "uim-custom.h"
 #include "uim-internal.h"
 #include "uim-helper.h"
+#include "uim-util.h"
 
 #if 0
 /*
@@ -80,6 +84,9 @@
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
 
 #define UGETTEXT(str) (dgettext(GETTEXT_PACKAGE, (str)))
+
+/* Converts UTF-8 translations to the codeset of the client program. */
+static void *client_converter;
 
 /* we cannot use the variadic macro (i.e. __VA_ARGS__) because we
    should also support C89 compilers
@@ -472,12 +479,21 @@ uim_custom_get_str(const char *custom_sym, const char *proc)
 }
 
 static char *
+custom_translate(const char *str)
+{
+  char *translated;
+
+  translated = uim_iconv->convert(client_converter, UGETTEXT(str));
+  return translated ? translated : strdup(UGETTEXT(str));
+}
+
+static char *
 uim_custom_label(const char *custom_sym)
 {
   const char *str;
 
   str = uim_custom_get_str(custom_sym, "custom-label");
-  return strdup(UGETTEXT(str));
+  return custom_translate(str);
 }
 
 static char *
@@ -486,7 +502,7 @@ uim_custom_desc(const char *custom_sym)
   const char *str;
 
   str = uim_custom_get_str(custom_sym, "custom-desc");
-  return strdup(UGETTEXT(str));
+  return custom_translate(str);
 }
 
 /* pathname */
@@ -556,12 +572,12 @@ uim_custom_choice_get(const char *custom_sym, const char *choice_sym)
   UIM_EVAL_FSTRING2(NULL, "(custom-choice-label '%s '%s)",
 		    custom_sym, choice_sym);
   return_val = uim_scm_return_value();
-  c_choice->label = strdup(UGETTEXT(uim_scm_refer_c_str(return_val)));
+  c_choice->label = custom_translate(uim_scm_refer_c_str(return_val));
 
   UIM_EVAL_FSTRING2(NULL, "(custom-choice-desc '%s '%s)",
 		    custom_sym, choice_sym);
   return_val = uim_scm_return_value();
-  c_choice->desc = strdup(UGETTEXT(uim_scm_refer_c_str(return_val)));
+  c_choice->desc = custom_translate(uim_scm_refer_c_str(return_val));
 
   return c_choice;
 }
@@ -1081,10 +1097,16 @@ uim_custom_init(void)
   /* temporary solution to control key definition expantion */
   UIM_EVAL_STRING(NULL, "(define uim-custom-expand-key? #t)");
 
-  /* Assumes that bind_textdomain_codeset() is already called in client
-   * program. */
+  /* libuim translates to UTF-8. Labels are converted to the codeset
+   * that the client program uses for its text domain. Assumes that
+   * bind_textdomain_codeset() is already called in client program. */
   client_codeset = bind_textdomain_codeset(textdomain(NULL), NULL);
-  bind_textdomain_codeset(GETTEXT_PACKAGE, client_codeset);
+#if HAVE_LANGINFO_CODESET
+  if (!client_codeset)
+    client_codeset = nl_langinfo(CODESET);
+#endif
+  if (client_codeset)
+    client_converter = uim_iconv->create(client_codeset, "UTF-8");
 
   return UIM_TRUE;
 }
@@ -1104,6 +1126,11 @@ uim_custom_quit(void)
   uim_custom_cb_remove(NULL);
   uim_custom_group_cb_remove(NULL);
   uim_custom_global_cb_remove();
+
+  if (client_converter) {
+    uim_iconv->release(client_converter);
+    client_converter = NULL;
+  }
 
   return UIM_TRUE;
 }
@@ -1660,8 +1687,8 @@ uim_custom_group_get(const char *group_sym)
   desc = uim_custom_get_str(group_sym, "custom-group-desc");
 
   custom_group->symbol = strdup(group_sym);
-  custom_group->label = strdup(UGETTEXT(label));
-  custom_group->desc = strdup(UGETTEXT(desc));
+  custom_group->label = custom_translate(label);
+  custom_group->desc = custom_translate(desc);
 
   return custom_group;
 }

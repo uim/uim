@@ -44,7 +44,8 @@
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
 
-/* uim_notify_info() and uim_notify_fatal() have translated BODY. */
+/* uim_notify_info() and uim_notify_fatal() have translated UTF-8 BODY.
+ * g_printerr() converts it into the codeset of the locale. */
 static uim_bool
 uim_libnotify_notify(int urgency, int timeout, const char *body)
 {
@@ -53,18 +54,15 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
   gchar *gmsg;
   gboolean shown;
 
-  fprintf(stderr, "libuim: %s\n", body);
+  g_printerr("libuim: %s\n", body);
 
   if (!notify_is_initted()) {
-    fprintf(stderr, "libnotify: libnotify is not initted\n");
+    g_printerr("libnotify: libnotify is not initted\n");
     return UIM_FALSE;
   }
 
-  gmsg = g_locale_to_utf8(body, -1, NULL, NULL, NULL);
-  if (!gmsg) {
-    fprintf(stderr, "libnotify: cannot convert to utf8\n");
-    return UIM_FALSE;
-  }
+  /* D-Bus rejects invalid UTF-8 that may come from embedded values. */
+  gmsg = g_utf8_make_valid(body, -1);
 
 #ifdef NOTIFY_CHECK_VERSION
   /* libnotify 0.7.0 contains this API change
@@ -76,7 +74,7 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
   g_free(gmsg);
 
   if (!notification) {
-    fprintf(stderr, "notify_notification_new: can not create notification object\n");
+    g_printerr("notify_notification_new: can not create notification object\n");
     return UIM_FALSE;
   }
 
@@ -86,7 +84,7 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
 
   shown = notify_notification_show(notification, &error);
   if (!shown) {
-    fprintf(stderr, "notify_notification_show: %s\n", error->message);
+    g_printerr("notify_notification_show: %s\n", error->message);
     g_error_free(error);
   }
 

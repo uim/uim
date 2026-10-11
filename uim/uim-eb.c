@@ -119,14 +119,14 @@ uim_eb_new (const char *bookpath)
 
   err = eb_bind(&ueb->book, bookpath);
   if (err != EB_SUCCESS) {
-    uim_notify_fatal(N_("eb: wrong bookpath"));
+    uim_notify_fatal(_("eb: wrong bookpath"));
     free(ueb);
     return NULL;
   }
 
   err = eb_subbook_list(&ueb->book, ueb->subCodes, &ueb->subCount);
   if (err != EB_SUCCESS) {
-    uim_notify_fatal(N_("eb: eb_subbook_list() failed\n"));
+    uim_notify_fatal(_("eb: eb_subbook_list() failed\n"));
     free(ueb);
     return NULL;
   }
@@ -169,7 +169,7 @@ uim_eb_search_text (uim_eb *ueb, const char *key, const char *enc)
 
     /* specify subbook */
     if (eb_set_subbook(&ueb->book, ueb->subCodes[i]) != EB_SUCCESS) {
-      uim_notify_fatal(N_("eb: eb_set_subbook() failed")); continue;
+      uim_notify_fatal(_("eb: eb_set_subbook() failed")); continue;
     }
 
     eb_search_word(&ueb->book, text);
@@ -199,7 +199,7 @@ go_text_eb (uim_eb *ueb, EB_Position position, char **str, const char *enc)
   int i;
 
   if (eb_seek_text(&ueb->book, &position) != EB_SUCCESS) {
-    uim_notify_fatal(N_("eb: eb_seek_text error occurs"));
+    uim_notify_fatal(_("eb: eb_seek_text error occurs"));
     return;
   }
 
@@ -211,7 +211,7 @@ go_text_eb (uim_eb *ueb, EB_Position position, char **str, const char *enc)
     if (eb_read_text(&ueb->book, NULL, &hookset,
 		     NULL, MAX_TEXT, text, &text_length) != EB_SUCCESS) {
       bytes = 0;
-      uim_notify_fatal(N_("eb_read_text : an error occurs"));
+      uim_notify_fatal(_("eb_read_text : an error occurs"));
       return;
     }
 

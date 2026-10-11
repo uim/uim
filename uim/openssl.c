@@ -73,14 +73,14 @@ c_openssl_client_connect(uim_lisp fd_, uim_lisp hostname_)
 
   ctx = SSL_CTX_new(TLS_client_method());
   if (!ctx) {
-    uim_notify_fatal(N_("uim-openssl: SSL_CTX_new: %s"), openssl_error_string());
+    uim_notify_fatal(_("uim-openssl: SSL_CTX_new: %s"), openssl_error_string());
     return uim_scm_f();
   }
 
   SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION);
   SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
   if (!SSL_CTX_set_default_verify_paths(ctx)) {
-    uim_notify_fatal(N_("uim-openssl: SSL_CTX_set_default_verify_paths: %s"),
+    uim_notify_fatal(_("uim-openssl: SSL_CTX_set_default_verify_paths: %s"),
                      openssl_error_string());
     SSL_CTX_free(ctx);
     return uim_scm_f();
@@ -90,14 +90,14 @@ c_openssl_client_connect(uim_lisp fd_, uim_lisp hostname_)
   /* SSL_new() took its own reference; the SSL object now owns the context. */
   SSL_CTX_free(ctx);
   if (!ssl) {
-    uim_notify_fatal(N_("uim-openssl: SSL_new: %s"), openssl_error_string());
+    uim_notify_fatal(_("uim-openssl: SSL_new: %s"), openssl_error_string());
     return uim_scm_f();
   }
 
   if (!SSL_set_tlsext_host_name(ssl, hostname)
       || !X509_VERIFY_PARAM_set1_host(SSL_get0_param(ssl), hostname, 0)
       || !SSL_set_fd(ssl, fd)) {
-    uim_notify_fatal(N_("uim-openssl: cannot set up connection to %s: %s"),
+    uim_notify_fatal(_("uim-openssl: cannot set up connection to %s: %s"),
                      hostname, openssl_error_string());
     SSL_free(ssl);
     return uim_scm_f();
@@ -106,10 +106,10 @@ c_openssl_client_connect(uim_lisp fd_, uim_lisp hostname_)
   if (SSL_connect(ssl) != 1) {
     verify_result = SSL_get_verify_result(ssl);
     if (verify_result != X509_V_OK)
-      uim_notify_fatal(N_("uim-openssl: certificate verification failed for %s: %s"),
+      uim_notify_fatal(_("uim-openssl: certificate verification failed for %s: %s"),
                        hostname, X509_verify_cert_error_string(verify_result));
     else
-      uim_notify_fatal(N_("uim-openssl: SSL_connect to %s: %s"),
+      uim_notify_fatal(_("uim-openssl: SSL_connect to %s: %s"),
                        hostname, openssl_error_string());
     SSL_free(ssl);
     return uim_scm_f();

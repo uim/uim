@@ -740,15 +740,15 @@ uim_bool
 uim_notify_info(const char *msg_fmt, ...)
 {
   va_list args;
+  char msg[BUFSIZ];
   int ret;
-  const char *translated_msg_fmt;
 
-  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(args, msg_fmt);
-  fputs("libuim: [info] ", stderr);
-  ret = vfprintf(stderr, translated_msg_fmt, args);
-  fputs("\n", stderr);
+  ret = vsnprintf(msg, sizeof(msg), msg_fmt, args);
   va_end(args);
+  fputs("libuim: [info] ", stderr);
+  uim_puts_utf8_to_stderr(msg);
+  fputs("\n", stderr);
 
   return (ret >= 0);
 }
@@ -757,15 +757,15 @@ uim_bool
 uim_notify_fatal(const char *msg_fmt, ...)
 {
   va_list args;
+  char msg[BUFSIZ];
   int ret;
-  const char *translated_msg_fmt;
 
-  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(args, msg_fmt);
-  fputs("libuim: [fatal] ", stderr);
-  ret = vfprintf(stderr, translated_msg_fmt, args);
-  fputs("\n", stderr);
+  ret = vsnprintf(msg, sizeof(msg), msg_fmt, args);
   va_end(args);
+  fputs("libuim: [fatal] ", stderr);
+  uim_puts_utf8_to_stderr(msg);
+  fputs("\n", stderr);
 
   return (ret >= 0);
 }
@@ -781,7 +781,7 @@ notify_info(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
-  return MAKE_BOOL(uim_notify_info("%s", dgettext(GETTEXT_PACKAGE, msg)));
+  return MAKE_BOOL(uim_notify_info("%s", msg));
 }
 
 static uim_lisp
@@ -789,7 +789,7 @@ notify_fatal(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
-  return MAKE_BOOL(uim_notify_fatal("%s", dgettext(GETTEXT_PACKAGE, msg)));
+  return MAKE_BOOL(uim_notify_fatal("%s", msg));
 }
 
 void

@@ -76,7 +76,7 @@ static struct tutcode_bushu_index *tutcode_bushu_indexes;
 static void
 notify_dictionary_error(const char *filename, const char *message)
 {
-  uim_notify_info(N_("uim-tutcode: bushu dictionary %s: %s"),
+  uim_notify_info(_("uim-tutcode: bushu dictionary %s: %s"),
                   filename, message);
 }
 
@@ -87,13 +87,13 @@ notify_invalid_lines(const char *filename, const char *encoding,
 {
   if (no_valid_entries) {
     uim_notify_info(
-      N_("uim-tutcode: bushu dictionary %s (encoding: %s): no usable entries after "
+      _("uim-tutcode: bushu dictionary %s (encoding: %s): no usable entries after "
          "skipping %lu invalid lines (first at line %lu); check the encoding"),
       filename, encoding, (unsigned long)invalid_line_count,
       (unsigned long)first_invalid_line);
   } else {
     uim_notify_info(
-      N_("uim-tutcode: bushu dictionary %s (encoding: %s): skipped %lu invalid lines "
+      _("uim-tutcode: bushu dictionary %s (encoding: %s): skipped %lu invalid lines "
          "(first at line %lu)"),
       filename, encoding, (unsigned long)invalid_line_count,
       (unsigned long)first_invalid_line);
@@ -625,7 +625,7 @@ tutcode_bushu_indexed_search(uim_lisp filename_, uim_lisp encoding_,
   else if (strcmp(kind_name, "index2") == 0)
     kind = TUTCODE_BUSHU_INDEX2;
   else {
-    uim_notify_info(N_("uim-tutcode: unknown bushu dictionary kind: %s"),
+    uim_notify_info(_("uim-tutcode: unknown bushu dictionary kind: %s"),
                     kind_name);
     return uim_scm_f();
   }
@@ -637,7 +637,7 @@ tutcode_bushu_indexed_search(uim_lisp filename_, uim_lisp encoding_,
   if (kind == TUTCODE_BUSHU_INDEX2) {
     normalized_key = normalize_index2_key(key);
     if (!normalized_key) {
-      uim_notify_info(N_("uim-tutcode: invalid UTF-8 bushu lookup key"));
+      uim_notify_info(_("uim-tutcode: invalid UTF-8 bushu lookup key"));
       return uim_scm_f();
     }
     key = normalized_key;
