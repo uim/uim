@@ -256,7 +256,7 @@
   (if (and (not *canna-lib-socket*)
            (not (canna-lib-init canna-lib-cannaserver)))
       (begin
-        (uim-notify-fatal (N_ "Initialize failed."))
+        (uim-notify-fatal (_ "Initialize failed."))
         #f)
       (and-let* ((cic (canna-lib-context-new-internal))
                  (id (canna-lib-create-context *canna-lib-socket*))

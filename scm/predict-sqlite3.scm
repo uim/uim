@@ -83,7 +83,7 @@
       (if (create/check-directory! (format "~a/dict" config-path))
           (format "~a/dict/predict-~a.sqlite3" config-path im-name)
           (begin
-            (uim-notify-fatal (N_ "cannot create dictionary directory"))
+            (uim-notify-fatal (_ "cannot create dictionary directory"))
             #f)))))
 
 (class-set-method! predict-sqlite3 open

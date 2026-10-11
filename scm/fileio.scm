@@ -71,7 +71,7 @@
   (let loop ((c (file-read socket 1))
              (rest '()))
     (cond ((eof-object? c)
-           (uim-notify-fatal (N_ "unexpected terminate string."))
+           (uim-notify-fatal (_ "unexpected terminate string."))
            "")
           ((eq? (car c) term-char)
            (file-buf->string (reverse rest)))

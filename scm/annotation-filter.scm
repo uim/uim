@@ -66,7 +66,7 @@
                         ((eq? annotation-filter-server-setting? 'pipe)
                          (annotation-filter-open-with-pipe))
                         (else
-                         (uim-notify-fatal (N_ "Custom filter connection is not defined"))
+                         (uim-notify-fatal (_ "Custom filter connection is not defined"))
                          #f))))
          (if fds
            (set! annotation-filter-socket-pair (cons

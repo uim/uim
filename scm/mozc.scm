@@ -106,7 +106,7 @@
              (cond
               ((not (list? greeting))
                (uim-notify-fatal
-                (format (N_ "uim-mozc: broken greeting from ~a")
+                (format (_ "uim-mozc: broken greeting from ~a")
                         mozc-helper-command))
                (mozc-helper-close helper)
                #f)
@@ -119,7 +119,7 @@
                #f)
               ((not (mozc-alist-ref 'uim-mozc-helper greeting))
                (uim-notify-fatal
-                (format (N_ "uim-mozc: ~a isn't uim-mozc-helper")
+                (format (_ "uim-mozc: ~a isn't uim-mozc-helper")
                         mozc-helper-command))
                (mozc-helper-close helper)
                #f)
@@ -142,7 +142,7 @@
                  (begin
                    (set! mozc-helper-failed? #t)
                    (uim-notify-fatal
-                    (format (N_ "uim-mozc: cannot start ~a")
+                    (format (_ "uim-mozc: cannot start ~a")
                             mozc-helper-command))))
              helper))))
 
@@ -159,14 +159,14 @@
                               (string-append (write-to-string request) "\n"))
            0)
         (begin
-          (uim-notify-fatal (N_ "uim-mozc: uim-mozc-helper is gone"))
+          (uim-notify-fatal (_ "uim-mozc: uim-mozc-helper is gone"))
           (mozc-helper-close helper)
           #f)
         (let* ((line (mozc-helper-read-line helper))
                (response (and line (mozc-read-sexp line))))
           (cond
            ((not (list? response))
-            (uim-notify-fatal (N_ "uim-mozc: uim-mozc-helper is gone"))
+            (uim-notify-fatal (_ "uim-mozc: uim-mozc-helper is gone"))
             (mozc-helper-close helper)
             #f)
            ((mozc-alist-ref 'error response)
@@ -771,19 +771,19 @@
     (let ((pid (process-fork)))
       (cond ((< pid 0)
              (begin
-               (uim-notify-fatal (N_ "cannot fork"))
+               (uim-notify-fatal (_ "cannot fork"))
                #f))
             ((= 0 pid) ;; child
              (let ((pid2 (process-fork)))
                (cond ((< pid2 0)
                       (begin
-                        (uim-notify-fatal (N_ "cannot fork"))
+                        (uim-notify-fatal (_ "cannot fork"))
                         #f))
                      ((= 0 pid2)
                       (setenv "MALLOC_CHECK_" "0" 0)
                       (setenv "GTK_IM_MODULE" "gtk-im-context-simple" 0)
                       (if (= (process-execute file argv) -1)
-                        (uim-notify-fatal (format (N_ "cannot execute ~a") file)))
+                        (uim-notify-fatal (format (_ "cannot execute ~a") file)))
                       (_exit 0))
                      (else
                        (_exit 0)))))

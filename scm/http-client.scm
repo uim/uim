@@ -277,7 +277,7 @@
                                  (and (file-display request port)
                                       (http:read-response port)))))
             (cond ((not fd)
-                   (uim-notify-fatal (N_ "cannot connect server"))
+                   (uim-notify-fatal (_ "cannot connect server"))
                    #f)
                   (with-ssl?
                    ;; CONNECT is exchanged in plain text with the
