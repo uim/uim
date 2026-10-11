@@ -6,6 +6,7 @@ uim_tests = \
         test-template.scm \
         test-wlos.scm \
         util/test-list.scm \
+        util/test-r5rs.scm \
         util/test-srfi.scm \
         util/test-string.scm
 uim_optional_tests =
@@ -42,7 +43,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         util/test-character-predicate.scm \
         util/test-misc.scm \
         util/test-multi-segment.scm \
-        util/test-r5rs.scm \
         util/test-record.scm \
         util/test-rk.scm \
         util/test-uim.scm

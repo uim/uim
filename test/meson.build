@@ -11,6 +11,7 @@ foreach definition : [
   ['test-template.scm', false],
   ['test-wlos.scm', false],
   ['util/test-list.scm', false],
+  ['util/test-r5rs.scm', false],
   ['util/test-srfi.scm', false],
   ['util/test-string.scm', false],
 ]
