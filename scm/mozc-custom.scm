@@ -39,8 +39,8 @@
 (define mozc-im-short-desc (N_ "Mozc Japanese engine"))
 
 (define-custom-group 'mozc
-		     (ugettext mozc-im-name-label)
-		     (ugettext mozc-im-short-desc))
+		     mozc-im-name-label
+		     mozc-im-short-desc)
 
 ;;
 ;; segment separator
@@ -157,16 +157,16 @@
   '(mozc toolbar)
   (list 'ordered-list
 	(list 'widget_mozc_input_mode
-	      (_ "Input mode")
-	      (_ "Input mode"))
+	      (N_ "Input mode")
+	      (N_ "Input mode"))
 	(list 'widget_mozc_kana_input_method
-	      (_ "Kana input method")
-	      (_ "Kana input method"))
+	      (N_ "Kana input method")
+	      (N_ "Kana input method"))
 	(list 'widget_mozc_tool
-	      (_ "Mozc tool")
-	      (_ "Mozc tool")))
-  (_ "Enabled toolbar buttons")
-  (_ "long description will be here."))
+	      (N_ "Mozc tool")
+	      (N_ "Mozc tool")))
+  (N_ "Enabled toolbar buttons")
+  (N_ "long description will be here."))
 
 ;; dynamic reconfiguration
 ;; mozc-configure-widgets is not defined at this point. So wrapping
@@ -184,8 +184,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     mozc-input-mode-indication-alist))
-  (_ "Default input mode")
-  (_ "long description will be here."))
+  (N_ "Default input mode")
+  (N_ "long description will be here."))
 
 (define-custom 'mozc-input-mode-actions
 	       (map car mozc-input-mode-indication-alist)
@@ -193,8 +193,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     mozc-input-mode-indication-alist))
-  (_ "Input mode menu items")
-  (_ "long description will be here."))
+  (N_ "Input mode menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
