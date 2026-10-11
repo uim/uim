@@ -13,7 +13,8 @@ uim_tests = \
         util/test-record.scm \
         util/test-rk.scm \
         util/test-srfi.scm \
-        util/test-string.scm
+        util/test-string.scm \
+        util/test-uim.scm
 uim_optional_tests =
 uim_xfail_tests = test-fail.scm
 
@@ -44,7 +45,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         key/test-base.scm \
         key/test-predicate.scm \
         key/test-translator.scm \
-        util/test-multi-segment.scm \
-        util/test-uim.scm
+        util/test-multi-segment.scm
 
 DISTCLEANFILES = run.sh
