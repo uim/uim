@@ -1,4 +1,4 @@
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -27,158 +27,147 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.util.test-rk
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.util.test-rk)
+(define test-rk-rule '(((("a"). ()) ("あ" "ア" "ｱ"))
+                       ((("i"). ()) ("い" "イ" "ｲ"))
+                       ((("u"). ()) ("う" "ウ" "ｳ"))
+                       ((("e"). ()) ("え" "エ" "ｴ"))
+                       ((("o"). ()) ("お" "オ" "ｵ"))
 
-(define (setup)
-  (uim-test-setup)
-  (uim-eval
-   '(define test-rk-rule '(((("a"). ()) ("あ" "ア" "ｱ"))
-                           ((("i"). ()) ("い" "イ" "ｲ"))
-                           ((("u"). ()) ("う" "ウ" "ｳ"))
-                           ((("e"). ()) ("え" "エ" "ｴ"))
-                           ((("o"). ()) ("お" "オ" "ｵ"))
+                       ((("k" "a"). ()) ("か" "カ" "ｶ"))
+                       ((("k" "i"). ()) ("き" "キ" "ｷ"))
+                       ((("k" "u"). ()) ("く" "ク" "ｸ"))
+                       ((("k" "e"). ()) ("け" "ケ" "ｹ"))
+                       ((("k" "o"). ()) ("こ" "コ" "ｺ"))
+                       ((("k" "y" "a"). ()) ("きゃ" "キャ" "ｷｬ"))
+                       ((("k" "y" "i"). ()) ("きぃ" "キィ" "ｷｨ"))
+                       ((("k" "y" "u"). ()) ("きゅ" "キュ" "ｷｭ"))
+                       ((("k" "y" "e"). ()) ("きぇ" "キェ" "ｷｪ"))
+                       ((("k" "y" "o"). ()) ("きょ" "キョ" "ｷｮ"))
 
-                           ((("k" "a"). ()) ("か" "カ" "ｶ"))
-                           ((("k" "i"). ()) ("き" "キ" "ｷ"))
-                           ((("k" "u"). ()) ("く" "ク" "ｸ"))
-                           ((("k" "e"). ()) ("け" "ケ" "ｹ"))
-                           ((("k" "o"). ()) ("こ" "コ" "ｺ"))
-                           ((("k" "y" "a"). ()) ("きゃ" "キャ" "ｷｬ"))
-                           ((("k" "y" "i"). ()) ("きぃ" "キィ" "ｷｨ"))
-                           ((("k" "y" "u"). ()) ("きゅ" "キュ" "ｷｭ"))
-                           ((("k" "y" "e"). ()) ("きぇ" "キェ" "ｷｪ"))
-                           ((("k" "y" "o"). ()) ("きょ" "キョ" "ｷｮ"))
+                       ((("s" "s"). ("s")) ("っ" "ッ" "ｯ"))
+                       ((("s" "a"). ()) ("さ" "サ" "ｻ"))
+                       ((("s" "i"). ()) ("し" "シ" "ｼ"))
+                       ((("s" "u"). ()) ("す" "ス" "ｽ"))
+                       ((("s" "e"). ()) ("せ" "セ" "ｾ"))
+                       ((("s" "o"). ()) ("そ" "ソ" "ｿ"))
 
-                           ((("s" "s"). ("s")) ("っ" "ッ" "ｯ"))
-                           ((("s" "a"). ()) ("さ" "サ" "ｻ"))
-                           ((("s" "i"). ()) ("し" "シ" "ｼ"))
-                           ((("s" "u"). ()) ("す" "ス" "ｽ"))
-                           ((("s" "e"). ()) ("せ" "セ" "ｾ"))
-                           ((("s" "o"). ()) ("そ" "ソ" "ｿ"))
+                       ((("p" "p"). ("p")) ("っ" "ッ" "ｯ"))))
 
-                           ((("p" "p"). ("p")) ("っ" "ッ" "ｯ"))))))
+(test-begin "rk-lib-find-seq")
+;; non existence seq does not match
+(test-false (rk-lib-find-seq '() test-rk-rule))
+(test-false (rk-lib-find-seq '("") test-rk-rule))
 
-(define (teardown)
-  (uim-test-teardown))
+;; test first rule
+(test-equal '((("a"). ())("あ" "ア" "ｱ"))
+            (rk-lib-find-seq '("a") test-rk-rule))
 
-(define (test-rk-lib-find-seq)
-  ;; non existence seq does not match
-  (assert-uim-false '(rk-lib-find-seq () test-rk-rule))
-  (assert-uim-false '(rk-lib-find-seq '("") test-rk-rule))
+(test-equal '((("i"). ())("い" "イ" "ｲ"))
+            (rk-lib-find-seq '("i") test-rk-rule))
+(test-equal '((("o"). ())("お" "オ" "ｵ"))
+            (rk-lib-find-seq '("o") test-rk-rule))
+;; non existence seq does not match
+(test-false (rk-lib-find-seq '("z") test-rk-rule))
 
-  ;; test first rule
-  (assert-uim-equal '((("a"). ())("あ" "ア" "ｱ"))
-                    '(rk-lib-find-seq '("a") test-rk-rule))
+(test-equal '((("k" "y" "a"). ())("きゃ" "キャ" "ｷｬ"))
+            (rk-lib-find-seq '("k" "y" "a") test-rk-rule))
+(test-equal '((("k" "y" "i"). ())("きぃ" "キィ" "ｷｨ"))
+            (rk-lib-find-seq '("k" "y" "i") test-rk-rule))
+(test-equal '((("k" "y" "o"). ())("きょ" "キョ" "ｷｮ"))
+            (rk-lib-find-seq '("k" "y" "o") test-rk-rule))
+;; partial seq does not match
+(test-false (rk-lib-find-seq '("k" "y") test-rk-rule))
+(test-false (rk-lib-find-seq '("k" "y" "y") test-rk-rule))
 
-  (assert-uim-equal '((("i"). ())("い" "イ" "ｲ"))
-                    '(rk-lib-find-seq '("i") test-rk-rule))
-  (assert-uim-equal '((("o"). ())("お" "オ" "ｵ"))
-                    '(rk-lib-find-seq '("o") test-rk-rule))
-  ;; non existence seq does not match
-  (assert-uim-false '(rk-lib-find-seq '("z") test-rk-rule))
+(test-equal '((("s" "s"). ("s"))("っ" "ッ" "ｯ"))
+            (rk-lib-find-seq '("s" "s") test-rk-rule))
+;; partial seq does not match
+(test-false (rk-lib-find-seq '("s") test-rk-rule))
+(test-false (rk-lib-find-seq '("s" "s" "s") test-rk-rule))
 
-  (assert-uim-equal '((("k" "y" "a"). ())("きゃ" "キャ" "ｷｬ"))
-                    '(rk-lib-find-seq '("k" "y" "a") test-rk-rule))
-  (assert-uim-equal '((("k" "y" "i"). ())("きぃ" "キィ" "ｷｨ"))
-                    '(rk-lib-find-seq '("k" "y" "i") test-rk-rule))
-  (assert-uim-equal '((("k" "y" "o"). ())("きょ" "キョ" "ｷｮ"))
-                    '(rk-lib-find-seq '("k" "y" "o") test-rk-rule))
-  ;; partial seq does not match
-  (assert-uim-false '(rk-lib-find-seq '("k" "y") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-seq '("k" "y" "y") test-rk-rule))
+;; test last rule
+(test-equal '((("p" "p"). ("p"))("っ" "ッ" "ｯ"))
+            (rk-lib-find-seq '("p" "p") test-rk-rule))
+(test-false (rk-lib-find-seq '("p") test-rk-rule))
+(test-false (rk-lib-find-seq '("p" "p" "p") test-rk-rule))
+(test-end)
 
-  (assert-uim-equal '((("s" "s"). ("s"))("っ" "ッ" "ｯ"))
-                    '(rk-lib-find-seq '("s" "s") test-rk-rule))
-  ;; partial seq does not match
-  (assert-uim-false '(rk-lib-find-seq '("s") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-seq '("s" "s" "s") test-rk-rule))
+(test-begin "rk-lib-find-partial-seq")
+;; null sequence matches first rule
+(test-equal '((("a"). ())("あ" "ア" "ｱ"))
+            (rk-lib-find-partial-seq '() test-rk-rule))
+;; non existence seq does not match
+(test-false (rk-lib-find-partial-seq '("") test-rk-rule))
 
-  ;; test last rule
-  (assert-uim-equal '((("p" "p"). ("p"))("っ" "ッ" "ｯ"))
-                    '(rk-lib-find-seq '("p" "p") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-seq '("p") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-seq '("p" "p" "p") test-rk-rule))
-  #f)
+;; test first rule: exact key does not match
+(test-false (rk-lib-find-partial-seq '("a") test-rk-rule))
+(test-false (rk-lib-find-partial-seq '("i") test-rk-rule))
+(test-false (rk-lib-find-partial-seq '("o") test-rk-rule))
+;; non existence seq does not match
+(test-false (rk-lib-find-partial-seq '("z") test-rk-rule))
 
-(define (test-rk-lib-find-partial-seq)
-  ;; null sequence matches first rule
-  (assert-uim-equal '((("a"). ())("あ" "ア" "ｱ"))
-                    '(rk-lib-find-partial-seq () test-rk-rule))
-  ;; non existence seq does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("") test-rk-rule))
+;; exact key does not match
+(test-false (rk-lib-find-partial-seq '("k" "y" "a")
+                                           test-rk-rule))
+(test-false (rk-lib-find-partial-seq '("k" "y" "i")
+                                           test-rk-rule))
+(test-false (rk-lib-find-partial-seq '("k" "y" "o")
+                                           test-rk-rule))
+;; partial seq matches first entry
+(test-equal '((("k" "a"). ())("か" "カ" "ｶ"))
+            (rk-lib-find-partial-seq '("k") test-rk-rule))
+(test-equal '((("k" "y" "a"). ())("きゃ" "キャ" "ｷｬ"))
+            (rk-lib-find-partial-seq '("k" "y") test-rk-rule))
+;; non existence seq does not match
+(test-false (rk-lib-find-partial-seq '("k" "y" "y") test-rk-rule))
 
-  ;; test first rule: exact key does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("a") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-partial-seq '("i") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-partial-seq '("o") test-rk-rule))
-  ;; non existence seq does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("z") test-rk-rule))
+;; exact key does not match
+(test-false (rk-lib-find-partial-seq '("s" "s") test-rk-rule))
+;; partial match
+(test-equal '((("s" "s"). ("s"))("っ" "ッ" "ｯ"))
+            (rk-lib-find-partial-seq '("s") test-rk-rule))
+;; non existence seq does not match
+(test-false (rk-lib-find-partial-seq '("s" "s" "s")
+                                           test-rk-rule))
 
-  ;; exact key does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("k" "y" "a")
-                                                    test-rk-rule))
-  (assert-uim-false '(rk-lib-find-partial-seq '("k" "y" "i")
-                                                    test-rk-rule))
-  (assert-uim-false '(rk-lib-find-partial-seq '("k" "y" "o")
-                                                    test-rk-rule))
-  ;; partial seq matches first entry
-  (assert-uim-equal '((("k" "a"). ())("か" "カ" "ｶ"))
-                    '(rk-lib-find-partial-seq '("k") test-rk-rule))
-  (assert-uim-equal '((("k" "y" "a"). ())("きゃ" "キャ" "ｷｬ"))
-                    '(rk-lib-find-partial-seq '("k" "y") test-rk-rule))
-  ;; non existence seq does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("k" "y" "y") test-rk-rule))
+;; test last rule
+(test-false (rk-lib-find-partial-seq '("p" "p") test-rk-rule))
+(test-equal '((("p" "p"). ("p"))("っ" "ッ" "ｯ"))
+            (rk-lib-find-partial-seq '("p") test-rk-rule))
+(test-false (rk-lib-find-partial-seq '("p" "p" "p")
+                                           test-rk-rule))
+(test-end)
 
-  ;; exact key does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("s" "s") test-rk-rule))
-  ;; partial match
-  (assert-uim-equal '((("s" "s"). ("s"))("っ" "ッ" "ｯ"))
-                    '(rk-lib-find-partial-seq '("s") test-rk-rule))
-  ;; non existence seq does not match
-  (assert-uim-false '(rk-lib-find-partial-seq '("s" "s" "s")
-                                                    test-rk-rule))
+(test-begin "rk-lib-expect-seq")
+(test-equal '("p" "s" "s" "s" "s" "s" "s"
+             "k" "k" "k" "k" "k" "k" "k" "k" "k" "k"
+             "o" "e" "u" "i" "a")
+            (rk-lib-expect-seq '() test-rk-rule))
+(test-equal '("y" "y" "y" "y" "y" "o" "e" "u" "i" "a")
+            (rk-lib-expect-seq '("k") test-rk-rule))
+(test-equal '("o" "e" "u" "i" "a")
+            (rk-lib-expect-seq '("k" "y") test-rk-rule))
+(test-equal '("o" "e" "u" "i" "a")
+            (rk-lib-expect-seq '("k" "y") test-rk-rule))
+;; rk-lib-expect-seq returns null list on exact match
+(test-equal '()
+            (rk-lib-expect-seq '("k" "y" "a") test-rk-rule))
+;; rk-lib-expect-seq returns null list on fail
+(test-equal '()
+            (rk-lib-expect-seq '("k" "y" "a" "a") test-rk-rule))
+(test-equal '("o" "e" "u" "i" "a")
+            (rk-lib-expect-seq '("k" "y") test-rk-rule))
 
-  ;; test last rule
-  (assert-uim-false '(rk-lib-find-partial-seq '("p" "p") test-rk-rule))
-  (assert-uim-equal '((("p" "p"). ("p"))("っ" "ッ" "ｯ"))
-                    '(rk-lib-find-partial-seq '("p") test-rk-rule))
-  (assert-uim-false '(rk-lib-find-partial-seq '("p" "p" "p")
-                                                    test-rk-rule))
-  #f)
+(test-equal '("o" "e" "u" "i" "a" "s")
+            (rk-lib-expect-seq '("s") test-rk-rule))
+(test-equal '()
+            (rk-lib-expect-seq '("s" "s") test-rk-rule))
+(test-equal '("p")
+            (rk-lib-expect-seq '("p") test-rk-rule))
+(test-equal '()
+            (rk-lib-expect-seq '("p" "p") test-rk-rule))
+(test-end)
 
-(define (test-rk-lib-expect-seq)
-  (assert-uim-equal '("p" "s" "s" "s" "s" "s" "s"
-                  "k" "k" "k" "k" "k" "k" "k" "k" "k" "k"
-                  "o" "e" "u" "i" "a")
-                    '(rk-lib-expect-seq () test-rk-rule))
-  (assert-uim-equal '("y" "y" "y" "y" "y" "o" "e" "u" "i" "a")
-                    '(rk-lib-expect-seq '("k") test-rk-rule))
-  (assert-uim-equal '("o" "e" "u" "i" "a")
-                    '(rk-lib-expect-seq '("k" "y") test-rk-rule))
-  (assert-uim-equal '("o" "e" "u" "i" "a")
-                    '(rk-lib-expect-seq '("k" "y") test-rk-rule))
-  ;; rk-lib-expect-seq returns null list on exact match
-  (assert-uim-equal ()
-                    '(rk-lib-expect-seq '("k" "y" "a") test-rk-rule))
-  ;; rk-lib-expect-seq returns null list on fail
-  (assert-uim-equal ()
-                    '(rk-lib-expect-seq '("k" "y" "a" "a") test-rk-rule))
-  (assert-uim-equal '("o" "e" "u" "i" "a")
-                    '(rk-lib-expect-seq '("k" "y") test-rk-rule))
-
-  (assert-uim-equal '("o" "e" "u" "i" "a" "s")
-                    '(rk-lib-expect-seq '("s") test-rk-rule))
-  (assert-uim-equal ()
-                    '(rk-lib-expect-seq '("s" "s") test-rk-rule))
-  (assert-uim-equal '("p")
-                    '(rk-lib-expect-seq '("p") test-rk-rule))
-  (assert-uim-equal ()
-                    '(rk-lib-expect-seq '("p" "p") test-rk-rule))
-  #f)
-
-(provide "test/util/test-rk")
+(test-report-result)
