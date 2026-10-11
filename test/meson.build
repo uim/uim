@@ -11,6 +11,7 @@ foreach definition : [
   ['test-template.scm', false],
   ['test-wlos.scm', false],
   ['util/test-list.scm', false],
+  ['util/test-string.scm', false],
 ]
   # uim-sh loads absolute paths only.
   test(definition[0],

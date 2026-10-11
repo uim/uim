@@ -5,7 +5,8 @@ uim_tests = \
         test-light-record.scm \
         test-template.scm \
         test-wlos.scm \
-        util/test-list.scm
+        util/test-list.scm \
+        util/test-string.scm
 uim_optional_tests =
 uim_xfail_tests = test-fail.scm
 
@@ -44,7 +45,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         util/test-record.scm \
         util/test-rk.scm \
         util/test-srfi.scm \
-        util/test-string.scm \
         util/test-uim.scm
 
 DISTCLEANFILES = run.sh
