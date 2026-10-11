@@ -4,74 +4,50 @@ for developers.
 
 * Abstract
 
-  The testing framework can test *.scm written for uim. It consists of
-  the three components below.
+  The unit tests for *.scm written for uim are in test/. They are run
+  directly by uim-sh, using the SRFI-64 compatible unit testing
+  framework of SigScheme (subprojects/sigscheme/lib/unittest.scm).
 
-  - Gauche: a Scheme implementation
-  - GaUnit: an unit testing framework for Gauche
-  - uim-test-utils.scm: uim-sh to GaUnit adapter
+  Each test file is run by a separate uim-sh process with the
+  following environment variables, so that the tests use the scm
+  files and plugins in the source and build trees:
 
-  The framework runs on Gauche and evaluates the expression of tests
-  by sending it to uim-sh invoked as inferior process. So the
-  framework can test all uim-dependent codes, on the rich Scheme
-  environment.
+  - LIBUIM_SYSTEM_SCM_FILES: subprojects/sigscheme/lib
+  - LIBUIM_SCM_FILES: scm
+  - LIBUIM_PLUGIN_LIB_DIR: the directory that has the built plugins
 
-  uim-test-utils.scm was contributed by Kouhei Sutou, the author of
-  GaUnit. Thank you for the significant help.
-
-
-* Prerequisite
-
-  Install the following.
-
-  - Gauche 0.8.5 or higher
-
-    https://practical-scheme.net/gauche/
-
-  - GaUnit 0.1.6
-
-    http://www.cozmixng.org/~kou/download/index.html.en
-    http://www.cozmixng.org/~rwiki/index.rb?cmd=view;name=GaUnit%3A%3AREADME.en
+  test/ also has the old tests that are run from Gauche with GaUnit,
+  such as test/test-ustr.scm and test/util/. They aren't run anymore
+  and are being ported to the unittest framework of SigScheme.
 
 
 * Usage
 
-  1) cd top source/build directory of uim
+  Autotools:
 
-  2) Build uim
+    $ ./configure
+    $ make
+    $ make check
 
-  3) cd test/
+  Meson:
 
-  4) Run test as follows
+    $ meson setup build
+    $ meson compile -C build
+    $ meson test -C build
 
-     All tests:
-
-       $ ./run-test.scm
-
-     Selective:
-
-       $ ./run-test.scm test-foo.scm
-
-     With options:
-
-       $ ./run-test.scm test-util.scm -vv -c "list procedures"
-
-     Refer the document of GaUnit or specify -h to see all options.
+  Tests are enabled by default. They can be disabled by
+  --disable-tests (Autotools) or -Dtests=disabled (Meson).
 
 
 * Writing tests
 
-  1) touch test/test-foo.scm
+  1) Copy test/test-template.scm to test/test-foo.scm
 
-  2) chmod +x test/test-foo.scm
+  2) Write tests as described in test/test-template.scm. Each test
+     file is run in one uim-sh process, so make each test-begin block
+     independent from the side effects of the other blocks.
 
-  3) Insert test/template.scm into 1)
-
-  4) Write tests as described in test/test-example.scm
-
-  5) Add test-foo.scm into EXTRA_DIST of test/Makefile.am
-
-
-* Guidelines for uim project
-
-  FIXME: describe this
+  3) Add test-foo.scm to uim_tests in test/Makefile.am and to the
+     list in test/meson.build. Tests that are expected to fail are
+     also added to uim_xfail_tests in test/Makefile.am and marked as
+     true in test/meson.build.

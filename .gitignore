@@ -570,11 +570,7 @@
 # /test/
 /test/Makefile.in
 /test/Makefile
-
-# /test2/
-/test2/Makefile.in
-/test2/Makefile
-/test2/run-singletest.sh
+/test/run.sh
 
 # /tqt/
 /tqt/Makefile

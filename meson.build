@@ -395,7 +395,7 @@ if get_option('notify')
   subdir('notify')
 endif
 if get_option('tests').allowed()
-  subdir('test2')
+  subdir('test')
 endif
 subdir('pixmaps')
 subdir('byeoru-data')
