@@ -4,7 +4,8 @@ uim_tests = \
         test-fail.scm \
         test-light-record.scm \
         test-template.scm \
-        test-wlos.scm
+        test-wlos.scm \
+        util/test-list.scm
 uim_optional_tests =
 uim_xfail_tests = test-fail.scm
 
@@ -37,7 +38,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         key/test-translator.scm \
         util/test-character-conversion.scm \
         util/test-character-predicate.scm \
-        util/test-list.scm \
         util/test-misc.scm \
         util/test-multi-segment.scm \
         util/test-r5rs.scm \
