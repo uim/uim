@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-11 11:48+0000\n"
+"POT-Creation-Date: 2026-10-12 07:18+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -2698,24 +2698,23 @@ msgstr "カスタムフィルタサーバポート"
 msgid "Path of custom filter"
 msgstr "カスタムフィルタのパス"
 
-#: scm/annotation-dict.scm:45
-#, scheme-format
-msgid "dict: annotation initialization failed: ~a"
-msgstr "dict: 注釈辞書の初期化に失敗しました: ~a"
-
-#: scm/annotation-dict.scm:62
+#: scm/annotation-dict.scm:74
 #, scheme-format
 msgid "dict: annotation request failed: ~a"
 msgstr "dict: 注釈辞書への問い合わせに失敗しました: ~a"
 
-#: scm/annotation-dict.scm:91
+#: scm/annotation-dict.scm:106
 #, scheme-format
 msgid "dict: failed to close annotation connection: ~a"
 msgstr "dict: 注釈サーバへの接続を閉じられませんでした: ~a"
 
-#: scm/annotation-filter.scm:69
+#: scm/annotation-filter.scm:75
 msgid "Custom filter connection is not defined"
 msgstr "カスタムフィルタ通信が定義されていません"
+
+#: scm/annotation-filter.scm:86
+msgid "Custom filter initialization failed"
+msgstr "カスタムフィルタの初期化に失敗しました"
 
 #: scm/annotation.scm:72
 msgid "invalid annotation agent name"

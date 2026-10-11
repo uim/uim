@@ -80,7 +80,11 @@
                                                  (open-file-port (cdr fds))))
            (begin
              (set! annotation-filter-socket-pair #f)
-             (set! annotation-filter-disabled? #t)))
+             (set! annotation-filter-disabled? #t)
+             (and (memq annotation-filter-server-setting?
+                        '(unixdomain tcpserver pipe))
+                  (uim-notify-info (_ "Custom filter initialization failed")))
+             #f))
          annotation-filter-socket-pair)))
 
 (define (annotation-filter-read-message iport)
