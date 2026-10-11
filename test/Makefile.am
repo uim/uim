@@ -44,7 +44,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         i18n/test-language.scm \
         key/test-base.scm \
         key/test-predicate.scm \
-        key/test-translator.scm \
-        util/test-multi-segment.scm
+        key/test-translator.scm
 
 DISTCLEANFILES = run.sh
