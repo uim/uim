@@ -62,3 +62,7 @@ option('sqlite3',
        type: 'feature',
        value: 'auto',
        description: 'build a plugin for SQLite3')
+option('tests',
+       type: 'feature',
+       value: 'auto',
+       description: 'enable tests (enabled: fail when a program that the tests of an enabled component need is missing)')

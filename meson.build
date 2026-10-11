@@ -394,7 +394,9 @@ subdir('scm')
 if get_option('notify')
   subdir('notify')
 endif
-subdir('test2')
+if get_option('tests').allowed()
+  subdir('test2')
+endif
 subdir('pixmaps')
 subdir('byeoru-data')
 subdir('examples')

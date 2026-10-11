@@ -37,6 +37,7 @@ set -x
 # stops the build instead of quietly dropping ibus-engine-uim.
 /source/configure \
   --enable-maintainer-mode \
+  --enable-tests \
   --prefix=/tmp/local \
   --with-ibus
 set +x

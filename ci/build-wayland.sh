@@ -37,6 +37,7 @@ set -x
 # stops the build instead of quietly dropping uim-wayland.
 /source/configure \
   --enable-maintainer-mode \
+  --enable-tests \
   --prefix=/tmp/local \
   --with-wayland
 set +x

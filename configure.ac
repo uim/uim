@@ -837,6 +837,18 @@ if test "x$with_gtk4" = xyes; then
   AC_SUBST(GTK4_LIBDIR)
 fi
 
+dnl *************
+dnl *** Tests ***
+dnl *************
+AC_ARG_ENABLE(tests,
+  AC_HELP_STRING([--enable-tests],
+    [enable all tests of explicitly enabled components, failing
+     when a program they need isn't found
+     (default: enable the tests that can run)]),
+  [],
+  [enable_tests=auto])
+AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" != xno)
+
 dnl ***********************************************
 dnl *** Check for Wayland input method frontend ***
 dnl ***********************************************
@@ -845,6 +857,7 @@ AC_ARG_WITH(wayland,
     [build uim-wayland (zwp_input_method_v1 frontend) [default=auto]]),
   [],
   [with_wayland=auto])
+wayland_requested=$with_wayland
 
 if test "x$with_wayland" != xno; then
   PKG_CHECK_MODULES(WAYLAND,
@@ -888,8 +901,15 @@ if test "x$with_wayland" = xyes; then
   fi
 fi
 
+if test "x$wayland_requested" = xyes && test "x$enable_tests" = xyes; then
+  if test -z "$RUBY" || test -z "$WAYLAND_CORE_XML"; then
+    AC_MSG_ERROR([Ruby and wayland.xml are required to test uim-wayland])
+  fi
+fi
+
 AM_CONDITIONAL(WAYLAND, test "x$with_wayland" = xyes)
 AM_CONDITIONAL(WAYLAND_TEST,
+               test "x$enable_tests" != xno &&
                test -n "$RUBY" && test -n "$WAYLAND_CORE_XML")
 AC_SUBST(WAYLAND_PROTOCOLS_DIR)
 AC_SUBST(WAYLAND_SCANNER)
@@ -903,6 +923,7 @@ AC_ARG_WITH(ibus,
     [build ibus-engine-uim (IBus engine for GNOME and others) [default=auto]]),
   [],
   [with_ibus=auto])
+ibus_requested=$with_ibus
 
 if test "x$with_ibus" != xno; then
   PKG_CHECK_MODULES(IBUS, [ibus-1.0 >= 1.5.0],
@@ -927,8 +948,16 @@ if test "x$with_ibus" = xyes; then
   AC_PATH_PROG([DBUS_RUN_SESSION], [dbus-run-session])
 fi
 
+if test "x$ibus_requested" = xyes && test "x$enable_tests" = xyes; then
+  if test -z "$RUBY" || test -z "$IBUS_DAEMON" ||
+     test -z "$DBUS_RUN_SESSION"; then
+    AC_MSG_ERROR([Ruby, ibus-daemon and dbus-run-session are required to test ibus-engine-uim])
+  fi
+fi
+
 AM_CONDITIONAL(IBUS, test "x$with_ibus" = xyes)
 AM_CONDITIONAL(IBUS_TEST,
+               test "x$enable_tests" != xno &&
                test -n "$RUBY" && test -n "$IBUS_DAEMON" &&
                test -n "$DBUS_RUN_SESSION")
 
@@ -1378,16 +1407,23 @@ AC_ARG_ENABLE(emacs,
   AC_HELP_STRING([--disable-emacs],
     [disable uim.el]),
   [],
-  [enable_emacs=yes])
+  [enable_emacs=auto])
 
 if test "x$enable_emacs" != xno; then
   AM_PATH_LISPDIR
   AC_SUBST(UIMEL_LISP_DIR, $lispdir/uim-el)
+  if test "x$enable_emacs" = xyes && test "x$enable_tests" = xyes &&
+     test "x$EMACS" = xno; then
+    AC_MSG_ERROR([Emacs is required to test uim.el])
+  fi
+  enable_emacs=yes
 fi
 
 AM_CONDITIONAL(UIM_EL, test "x$enable_emacs" = xyes)
 AM_CONDITIONAL(UIM_EL_TEST,
-               test "x$enable_emacs" = xyes && test "x$EMACS" != xno)
+               test "x$enable_emacs" = xyes &&
+               test "x$enable_tests" != xno &&
+               test "x$EMACS" != xno)
 
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],
@@ -1870,7 +1906,9 @@ else
   AC_MSG_RESULT(no)
 fi
 AM_CONDITIONAL(DO_CHECK_IN_TEST,
-               test "x$have_gosh_and_gaunit" = xyes -a "x$enable_debug" = xyes)
+               test "x$have_gosh_and_gaunit" = xyes -a \
+                    "x$enable_debug" = xyes -a \
+                    "x$enable_tests" != xno)
 
 # Checks for system services
 
