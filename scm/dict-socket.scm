@@ -64,10 +64,14 @@
 (define (dict-server-get-1yz port)
   (let loop ((line (file-read-line port))
              (rest ""))
-    (if (string=? line ".\r")
-        (begin
-          (append (list rest) (dict-server-get-message port)))
-        (loop (file-read-line port) (string-append rest line)))))
+    (let* ((length (string-length line))
+           (line (if (and (> length 0)
+                          (eq? #\return (string-ref line (- length 1))))
+                     (substring line 0 (- length 1))
+                     line)))
+      (if (string=? line ".")
+          (append (list rest) (dict-server-get-message port))
+          (loop (file-read-line port) (string-append rest line "\n"))))))
 
 (define (dict-server-get-message port)
   (let* ((line (file-read-line port)))
