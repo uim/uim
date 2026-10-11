@@ -132,14 +132,7 @@
   (define-prefix-command 'uim-escape-map)
 
   ;; set default key-binds
-  (cond (uim-xemacs ;; XEmacs
-	 (set-keymap-default-binding uim-mode-map 'uim-process-input)
-	 (set-keymap-default-binding uim-preedit-map 'uim-process-input)
-	 (define-key uim-mode-map [escape] 'uim-process-input)
-	 (define-key uim-mode-map [(control ?\[)] 'uim-process-input)
-	 )
-
-	((and uim-emacs (= emacs-major-version 20)) ;;; GNU Emacs-20.7
+  (cond ((= emacs-major-version 20) ;;; GNU Emacs-20.7
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
@@ -152,7 +145,7 @@
 	     (define-key uim-mode-map [27] 'uim-process-input))
 	 )
 
-	((and uim-emacs (= emacs-major-version 21)) ;;; GNU Emacs-21.x 
+	((= emacs-major-version 21) ;;; GNU Emacs-21.x 
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
@@ -160,8 +153,7 @@
 	 )
 
         ;; GNU Emacs-22 and 23
-	((and uim-emacs
-              (= emacs-major-version 22)
+	((and (= emacs-major-version 22)
               (= emacs-major-version 23))
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
@@ -169,7 +161,7 @@
 	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
-	((and uim-emacs (>= emacs-major-version 24)) ;;; GNU Emacs-24 or later
+	((>= emacs-major-version 24) ;;; GNU Emacs-24 or later
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
@@ -182,14 +174,7 @@
 	)
 
 
-  (when uim-emacs
-    (uim-unbind-mouse-event)
-    )
-
-  (when uim-xemacs
-    (setq uim-toolbar-map (make-sparse-keymap))
-    (set-keymap-default-binding uim-toolbar-map 'ignore)
-    )
+  (uim-unbind-mouse-event)
   
   )
 
@@ -202,7 +187,7 @@
     (setq uim-minor-mode-map-alist minor-mode-map-alist)
     (setq minor-mode-map-alist (list (assq 'uim-mode minor-mode-map-alist)))
 
-    (when (and uim-emacs (>= emacs-major-version 22)) 
+    (when (>= emacs-major-version 22) 
       (setq uim-emulation-mode-map-alists emulation-mode-map-alists)
       (setq emulation-mode-map-alists nil)))
   )
@@ -212,7 +197,7 @@
     (setq minor-mode-map-alist uim-minor-mode-map-alist)
     (setq uim-minor-mode-map-alist nil)
 
-    (when (and uim-emacs (>= emacs-major-version 22)) 
+    (when (>= emacs-major-version 22) 
       (setq emulation-mode-map-alists uim-emulation-mode-map-alists)
       (setq uim-emulation-mode-map-alists nil)))
   )
@@ -255,12 +240,6 @@
     (setq uim-preedit-keymap-enabled t))
 
   (uim-set-keymap uim-preedit-map)
-
-    (when uim-xemacs
-      ;; disable toolbar and menubar
-      (make-variable-buffer-local 'toolbar-map)
-      (setq toolbar-map uim-toolbar-map)
-      (uim-xemacs-save-menubar))
     )
 
 ;;
@@ -273,11 +252,6 @@
 
   (uim-enable-other-minor-mode-map)
     (uim-enable-mode-keymap)
-
-    (when uim-xemacs
-      ;;enable toolbar and menubar
-      (kill-local-variable 'toolbar-map)
-      (uim-xemacs-restore-menubar))
   )
 
 

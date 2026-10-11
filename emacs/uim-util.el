@@ -93,8 +93,7 @@
 ;; My vertical-motion wrapper
 ;;
 (defun uim-vertical-motion (n)
-  (if (and uim-emacs
-	   (>= emacs-major-version 21))
+  (if (>= emacs-major-version 21)
       (uim-vertical-motion-exec n)
     (vertical-motion n)))
 
@@ -106,17 +105,16 @@
 ;; 
 (defun uim-pad-space (start end)
   (let (strtmp pad (cnt 0) wwidth)
-    (if (and uim-emacs
-             window-system
+    (if (and window-system
              (>= emacs-major-version 21))
         (setq wwidth (window-width))
       (setq wwidth (- (window-width) 1)))
 
     (save-excursion
-      (while (> (uim-string-width (setq strtmp (buffer-substring start end)))
+      (while (> (string-width (setq strtmp (buffer-substring start end)))
                 wwidth)
         (setq strtmp (truncate-string-to-width strtmp wwidth))
-        (setq pad (- wwidth (uim-string-width strtmp)))
+        (setq pad (- wwidth (string-width strtmp)))
         (setq cnt (+ cnt pad))
         (goto-char (+ start (length strtmp)))
 	(insert-before-markers (make-string pad 32))
@@ -136,13 +134,7 @@
       (goto-char start)
       (while (setq tpos (search-forward "\t" end 1))
 
-	(if uim-emacs
-	    (setq ofs (string-width (buffer-substring start (- tpos 1)))))
-	(if uim-xemacs
-	    (save-excursion
-	      (goto-char (- tpos 1))
-	      (vertical-motion 0)
-	      (setq ofs (string-width (buffer-substring (point) (- tpos 1))))))
+	(setq ofs (string-width (buffer-substring start (- tpos 1))))
 
 	(setq tabwidth (- tab-width (% ofs tab-width)))
 	(setq cnt (- (+ cnt tabwidth) 1))
@@ -186,34 +178,13 @@
 
 
 
-
-;;
-;; My string-width for XEmacs
-;;   XEmacs returns the displayed width of each tab
-;; 
-(defun uim-string-width (str)
-  (if (not uim-xemacs)
-      (string-width str)
-    (let ((start 0) (cnt 0))
-      (while (setq start (string-match "\n" str start))
-	(setq start (match-end 0))
-	(setq cnt (- cnt 1)))
-      (setq start 0)
-      (while (setq start (string-match "\t" str start))
-	(setq start (match-end 0))
-	(setq cnt (+ cnt (- tab-width 1))))
-      (+ (string-width str) cnt))))
-
-
-
-
 ;;
 ;; Add white spaces.
 ;;
 (defun uim-format-string (str width &optional right)
   (if right
-      (concat (make-string (- width (uim-string-width str)) 32) str)
-    (concat str (make-string (- width (uim-string-width str)) 32))))
+      (concat (make-string (- width (string-width str)) 32) str)
+    (concat str (make-string (- width (string-width str)) 32))))
 
 
 ;;

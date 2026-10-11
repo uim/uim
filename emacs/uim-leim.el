@@ -104,31 +104,12 @@
     (concat lang "-" im "-uim")))
 
 
-(defun uim-leim-xemacs-modeline-init ()
-  (unless (assq 'uim-leim-active mode-line-format)
-    (setq mode-line-format
-	  (append (list (list 'uim-leim-active 
-			      'current-input-method-title))
-		  mode-line-format))
-    ))
-
 (defun uim-leim-update-label ()
 
   (setq uim-leim-mode-line-string
 	(format "%s[%s]" uim-im-name-str uim-im-mode-str))
 
   (setq current-input-method-title uim-leim-mode-line-string)
-
-  (if uim-xemacs
-      (uim-leim-xemacs-modeline-init))
-  )
-
-(defun uim-leim-input-method-activate-hook ()
-  ;; Don't set input-method-title here.
-
-  ;; However, leave code fore xemacs since I cannot test with xemacs for now.
-  (if uim-xemacs
-      (uim-leim-xemacs-modeline-init))
   )
 
 (defun uim-leim-init ()
@@ -183,10 +164,6 @@
   (add-hook 'uim-update-label-hook
 	    (lambda ()
 	      (uim-leim-update-label)))
-
-  (add-hook 'input-method-activate-hook
-	    (lambda ()
-	      (uim-leim-input-method-activate-hook)))
 
   )
 

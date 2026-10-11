@@ -72,11 +72,6 @@
     ;; mark current-point
     (setq mark-base (point-marker))
 
-    ;; save font-lock face
-    (when uim-xemacs
-      (uim-overwrite-font-face uim-candidate-original-start
-			       uim-candidate-original-end))
-
     ;; save original string
     (setq uim-candidate-original-str
 	  (buffer-substring uim-candidate-original-start
@@ -103,7 +98,7 @@
     (save-excursion
       (uim-vertical-motion 0)
       (setq offset 
-	    (uim-string-width (buffer-substring (point) uim-candidate-start))))
+	    (string-width (buffer-substring (point) uim-candidate-start))))
 
     ;; if offset + maxwidth >= window-width then reduce offset
     (if (>= (+ offset maxwidth 2) (window-width))
@@ -196,10 +191,10 @@
 			;;
 			(let ((candwidth (+ maxwidth 2)))
 
-			  (if (>= (uim-string-width linetmp) (+ offset candwidth))
+			  (if (>= (string-width linetmp) (+ offset candwidth))
 			      (setq overflow 
 				    (truncate-string-to-width linetmp 
-							      (uim-string-width linetmp)
+							      (string-width linetmp)
 							      (+ offset candwidth) 32))
 			    (setq overflow "")))
 
@@ -207,20 +202,10 @@
 			(save-excursion
 			  (goto-char vhead)
 			  (delete-region vhead (+ vhead (length linetmp)))
-			
-			  (when uim-xemacs
-			    (insert " ")
-			    (remove-text-properties (- (point) 1) (point)
-						    '(face nil))
-			    (goto-char (- (point) 1)))
 
 			  (insert (concat padding 
 					  candstr
 					  overflow))
-
-			  (when uim-xemacs
-			    (delete-char 1))
-		      
 			  )
 		
 			(uim-set-candidate-face candidx candsel 
@@ -338,7 +323,6 @@
     (setq cands-tmp (concat page-label cands))
     
     (if (and uim-allow-resize-echo-region
-	     uim-emacs
 	     (>= emacs-major-version 21))
 	;; Emcas-21 or Emacs-22
 	(let (message-log-max)
@@ -362,7 +346,7 @@
 		(setq displayed t)))))
     
     (if (not displayed)
-	;; Emacs-20 or XEmacs or uim-allow-resize-echo-region is nil 
+	;; Emacs-20 or uim-allow-resize-echo-region is nil 
 	;; or too small frame
 	(let* ((trimmed "")
 	     (page-width (string-width page-label))

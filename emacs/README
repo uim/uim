@@ -23,9 +23,6 @@ Supported Emacs
 - GNU Emacs 20.x or later
   * Tested on 20.7.1, 21.4.1 and 22.1.1.
 
-- XEmacs 21.x 
-  * Tested on 21.4.20 (with sumo and mule-sumo).
-
   NOTE: Older version such as Mule-2.3 and Emacs-19.x are 
         unsupported.
   NOTE: Also, it might works on Emacs-23.x (CVS version).

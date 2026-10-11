@@ -37,9 +37,6 @@
 
 (require 'uim-var)
 (require 'uim-keymap)
-(when uim-xemacs
-  (require 'overlay)
-  (load "mule-util"))
 
 (require 'uim-debug)
 (require 'uim-util)
@@ -336,12 +333,8 @@
   (setq uim-context-id (uim-context-create))
 
   ;; redraw Uim related objects when window has been resized
-  (when uim-xemacs
-    (make-local-hook 'window-configuration-change-hook))
   (add-hook 'window-configuration-change-hook 'uim-window-changed nil 'local)
 
-  (when uim-xemacs
-    (make-local-hook 'kill-buffer-hook))
   (add-hook 'kill-buffer-hook 'uim-kill-buffer nil 'local)
 
   ;; hide candidate/preedit when buffer-save has been called
@@ -794,24 +787,6 @@
 	(uim-wait-recv serial))))
 
 
-;; for XEmacs
-(defun uim-overwrite-font-face (start end)
-  (let ((facelist '()) tail face)
-    (catch 'face-loop
-      (while t
-	(setq tail
-	      (next-single-property-change start 'face (current-buffer) end))
-	(if (setq face (get-text-property start 'face))
-	    (if (atom face)
-		(put-text-property start tail 'face 
-				   (cons face nil))))
-	(setq start tail)
-	(if (= start end)
-	    (throw 'face-loop t))))
-    )
-  )
-
-
 (defun uim-freeze-buffer ()
   (when (not uim-buffer-frozen)
     (setq uim-after-change-functions after-change-functions)
@@ -865,20 +840,17 @@
 		     last-input-event
 		     ))
 
-  (let (new-key-vector send-vector send-vector-raw issue-vector
+  (let (new-key-vector send-vector send-vector-raw
         send issue mouse wait discard
 	(critical t))
 
     (unwind-protect
 	(progn
 
-	  (if uim-xemacs
-	      (setq zmacs-region-stays nil))
-
 	  (if (not (or uim-translated-key-vector uim-untranslated-key-vector))
 	      (setq uim-keystroke-displaying nil))
 
-	  (setq new-key-vector (uim-this-command-keys-vector))
+	  (setq new-key-vector (this-command-keys-vector))
 
 	  (if (or current-prefix-arg
 		  uim-merge-next)
@@ -896,8 +868,7 @@
 		    (progn
 		      ;; normal
 		      (setq uim-prefix-arg current-prefix-arg)
-		      (if (and uim-emacs
-			       (not window-system)
+		      (if (and (not window-system)
 			       (<= emacs-major-version 21)
 			       (>= (length new-key-vector) 2))
 			  ;; workaround
@@ -909,9 +880,6 @@
 		  (setq uim-untranslated-key-vector nil))
 		
 		))
-
-	  (if uim-xemacs
-	      (setq uim-original-input-event (copy-event last-input-event)))
 
 	  (setq uim-untranslated-key-vector
 		(vconcat uim-untranslated-key-vector new-key-vector))
@@ -946,23 +914,14 @@
 	    (setq send-vector-raw (vconcat uim-translated-key-vector
 					   uim-untranslated-key-vector))
 
-	    (setq send-vector 
-		  (if uim-emacs 
-		      send-vector-raw
-		    (if uim-xemacs
-			(uim-convert-keystr-to-uimagent-vector (key-description send-vector-raw))
-		      nil)))
+	    (setq send-vector send-vector-raw)
 
 	    (cond (uim-merge-next
 		   (setq send nil))
 
-		  ((or (and uim-emacs 
-			    (eventp event)
-			    (memq (event-basic-type event) 
-				  '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
-		       (and uim-xemacs 
-			    (string-match "button\\(1\\|2\\|3\\|4\\|5\\)" 
-					  (key-description send-vector-raw))))
+		  ((and (eventp event)
+			(memq (event-basic-type event) 
+			      '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
 		   (setq send nil)
 		   (setq mouse t))
 
@@ -1003,27 +962,13 @@
 
 	    (setq uim-last-key-vector send-vector-raw)
 
-	    (when uim-emacs
-	      (cond ((equal send-vector [127])   (setq send-vector [backspace]))
-		    ((equal send-vector [27 27]) (setq send-vector [27]))
-		    ((equal send-vector [28])    (setq send-vector [C-\\]))
-		    ((equal send-vector [29])    (setq send-vector [C-\]]))
-		    ((equal send-vector [30])    (setq send-vector [C-~]))
-		    ((equal send-vector [31])    (setq send-vector [C-_]))
-		    ))
-	    
-	    (when uim-xemacs 
-
-	      (if (equal (make-vector 2 (uim-xemacs-make-event [(escape)]))
-			 send-vector-raw)
-		  (setq send-vector-raw
-			(vector (uim-xemacs-make-event [(escape)]))))
-
-	      (setq send-vector-raw (uim-translate-escape-meta send-vector-raw))
-
-	      (setq send-vector 
-		    (uim-convert-keystr-to-uimagent-vector 
-		     (key-description send-vector-raw))))
+	    (cond ((equal send-vector [127])   (setq send-vector [backspace]))
+		  ((equal send-vector [27 27]) (setq send-vector [27]))
+		  ((equal send-vector [28])    (setq send-vector [C-\\]))
+		  ((equal send-vector [29])    (setq send-vector [C-\]]))
+		  ((equal send-vector [30])    (setq send-vector [C-~]))
+		  ((equal send-vector [31])    (setq send-vector [C-_]))
+		  )
 
 	    (setq uim-wait-next-key nil)
 	    (uim-do-send-recv-cmd (format "%d %s" 
@@ -1042,13 +987,6 @@
 	      (setq issue-vector-raw (vconcat uim-translated-key-vector
 					      uim-untranslated-key-vector))
 	      
-	      (setq issue-vector 
-		    (if uim-emacs 
-			issue-vector-raw
-		      (if uim-xemacs
-			  (uim-convert-char-to-symbolvector 
-			   (key-description issue-vector-raw)))))
-	      
 	      (setq uim-last-key-vector issue-vector-raw)
       
 	      (setq wait
@@ -1066,37 +1004,25 @@
 		(setq uim-keystroke-displaying t))
 
 	    (if (not uim-keystroke-displaying)
-		(cond (uim-emacs
-		       (let (key)
-			 (when (setq key (with-timeout (echo-keystrokes nil)
-					   (read-key-sequence-vector nil)))
-			   (setq unread-command-events
-				 (nconc (listify-key-sequence key) 
-					unread-command-events)))
-			 
-			 (setq uim-keystroke-displaying (not key))))
-		      (uim-xemacs
-		       (setq uim-keystroke-displaying (sit-for echo-keystrokes)))))
+		(let (key)
+		  (when (setq key (with-timeout (echo-keystrokes nil)
+				    (read-key-sequence-vector nil)))
+		    (setq unread-command-events
+			  (nconc (listify-key-sequence key) 
+				 unread-command-events)))
+		  
+		  (setq uim-keystroke-displaying (not key))))
 
 	    ;; display "ESC-" or something
 	    (if uim-keystroke-displaying
 		(let (message-log-max)
 		  (message (concat (key-description 
 				    (vconcat uim-prefix-arg-vector
-					     (if uim-xemacs
-						 (uim-translate-escape-meta uim-translated-key-vector)
-					       uim-translated-key-vector)
-					     (if uim-xemacs
-						 (uim-translate-escape-meta uim-untranslated-key-vector)
-					       uim-untranslated-key-vector)))
-				   (if uim-xemacs " ")
+					     uim-translated-key-vector
+					     uim-untranslated-key-vector))
 				   "-"))))
 
-	    (if uim-emacs
-		(setq uim-deactivate-mark nil))
-
-	    (if uim-xemacs
-		(setq zmacs-region-stays t))
+	    (setq uim-deactivate-mark nil)
 	    )
 
 	  (when discard
@@ -1117,13 +1043,10 @@
 			(setq msg (concat msg
 					  (key-description (vector x)) " ")))
 		 
-		      (append (if uim-xemacs
-				  (uim-translate-escape-meta send-vector-raw)
-				uim-last-key-vector) nil))
+		      (append uim-last-key-vector nil))
 	      (message msg)))
 
-	  (if uim-emacs
-	      (setq deactivate-mark uim-deactivate-mark))
+	  (setq deactivate-mark uim-deactivate-mark)
 
 	  (setq critical nil))
 

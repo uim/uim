@@ -125,16 +125,12 @@ keeps the size of it when showing the candidates.")
 
 ;; Global Variables
 
-;; Type of Emacs
-(defconst uim-xemacs (featurep 'xemacs))
-(defconst uim-emacs (string-match "^GNU Emacs" (emacs-version)))
-
 ;; Supported languages and encodings
 ;; ("UIM-Language" "Emacs-Language" Emacs-encoding "UIM-Encoding")
 (defvar uim-lang-code-alist
   (list 
    '("Japanese"              "Japanese"     euc-jp      "EUC-JP")
-   (if (and uim-emacs (>= emacs-major-version 21))
+   (if (>= emacs-major-version 21)
      '("Korean"              "Korean"       utf-8       "UTF-8")
      '("Korean"              "Korean"       euc-kr      "EUC-KR"))
    '("Chinese (Simplified)"  "Chinese-GB"   gb2312      "GB2312")
@@ -150,7 +146,7 @@ keeps the size of it when showing the candidates.")
    '("Slovenian"             "Latin-2"      iso-8859-2  "ISO-8859-2")
    '("Serbian"               "Latin-2"      iso-8859-2  "ISO-8859-2")
    '("Russian"               "Cyrillic-ISO" iso-8859-5  "ISO-8859-5")
-   (if (and uim-emacs (>= emacs-major-version 21))
+   (if (>= emacs-major-version 21)
        '("Other"            "ASCII"        utf-8       "UTF-8")
      '("Other"              "ASCII"        iso-8859-1  "ISO-8859-1"))
    ))
@@ -164,9 +160,6 @@ keeps the size of it when showing the candidates.")
 
 (defvar uim-escape-map nil
   "Empty keymap for escape key handling.")
-
-(defvar uim-toolbar-map nil
-  "Empty keymap for preventing toolbar action on XEmacs.")
 
 (defvar uim-dummy-map nil
   "Dummy keymap to disable uim-mode keymap temporarily.")
@@ -274,7 +267,6 @@ keeps the size of it when showing the candidates.")
 
 ;; keep original last-input-event to process the event correctly after
 ;; removing Shift modifier
-(defvar uim-original-input-event nil)
 
 (defvar uim-local-var '())
 
@@ -421,9 +413,6 @@ keeps the size of it when showing the candidates.")
 (uim-deflocalvar uim-window-force-scrolled-original nil)
 
 (uim-deflocalvar uim-buffer-read-only nil)
-
-;; save current menubar temporally for XEmacs
-(uim-deflocalvar uim-menubar-temp nil)
 
 ;; save real deactivate-mark
 (uim-deflocalvar uim-deactivate-mark nil)

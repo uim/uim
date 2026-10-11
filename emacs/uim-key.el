@@ -37,29 +37,6 @@
 
 
 ;; 
-;; this-command-keys wrapper 
-;;
-(defun uim-this-command-keys-vector ()
-  (if uim-xemacs
-      (this-command-keys)
-    (this-command-keys-vector)))
-
-
-;;
-;; translate XEmacs style key name
-;;
-(defun uim-translate-xemacs-keyname (keyname)
-  (cond ((string= keyname "BS")  "backspace")
-	((string= keyname "TAB") "tab")
-	((string= keyname "LFD") "linefeed")
-	((string= keyname "RET") "return")
-	((string= keyname "ESC") "escape")
-	((string= keyname "DEL") "delete")
-	((string= keyname "SPC") "space")
-	(t keyname)))
-
-
-;; 
 ;; Get last one stroke from keyvector
 ;;
 (defun uim-last-onestroke-key (keyvec)
@@ -208,10 +185,6 @@
 	    (setq this-command uim-key-vector))
 
 
-	  (when uim-xemacs
-	    (setq last-input-event uim-original-input-event)
-	    (handle-pre-motion-command))
-
 	  (run-hooks 'pre-command-hook)
 
 	  (setq last-command-char 
@@ -220,18 +193,13 @@
 	  ;; backup current keymap of uim-mode
 	  (setq map (uim-disable-keymap))
 
-	  (if (or (and bind
-		       (eq bind 'digit-argument))	  
-		  (and uim-xemacs
-		       (not (eventp last-command-char))))
+	  (if (and bind
+		   (eq bind 'digit-argument))
 	      (command-execute uim-key-vector)
 	    (command-execute this-command))
 
 	  (setq last-command this-command)
 	  ;;(setq last-command-char (aref uim-key-vector 0))
-
-	  (if uim-xemacs
-	      (handle-post-motion-command))
 
 	  (if (eq bind 'self-insert-command)
 	      (uim-concat-undo)
@@ -258,17 +226,12 @@
 
 
 (defun uim-process-mouse-event (event)
-  (cond (uim-emacs
-	 (let* ((mouse-event (car event))
-		(bind (uim-key-binding (vector mouse-event))))
-	   (if (commandp bind)
-	       (call-interactively bind nil (vector event))
-	     (if (not (memq 'down (event-modifiers mouse-event)))
-		 (undefined)))))
-	(uim-xemacs
-	 (let* ((bind (uim-key-binding (vector event))))
-	   (if (commandp bind)
-	       (call-interactively bind nil (vector event))))))
+  (let* ((mouse-event (car event))
+	 (bind (uim-key-binding (vector mouse-event))))
+    (if (commandp bind)
+	(call-interactively bind nil (vector event))
+      (if (not (memq 'down (event-modifiers mouse-event)))
+	  (undefined))))
   )
 
 
@@ -283,9 +246,8 @@
 	continue
 	)
     
-    (if uim-emacs
-	;; for transient-mark-mode
-	(setq deactivate-mark nil))
+    ;; for transient-mark-mode
+    (setq deactivate-mark nil)
 
     (unwind-protect
 	(cond ((keymapp bind)
@@ -302,16 +264,9 @@
 		   (setq prefix-arg count))
 	       (uim-command-execute key-vector bind))
 
-	      ((or (and uim-emacs
-			(setq vtmp (aref (uim-last-onestroke-key key-vector) 0))
-			(integerp vtmp)
-			(equal help-char vtmp))
-		   (and uim-xemacs
-			(setq vtmp (aref (uim-last-onestroke-key key-vector) 0))
-			(equal (uim-xemacs-make-event 
-				(uim-convert-char-to-symbolvector 
-				 (key-description help-char)))
-			       vtmp)))
+	      ((and (setq vtmp (aref (uim-last-onestroke-key key-vector) 0))
+		    (integerp vtmp)
+		    (equal help-char vtmp))
 	       (uim-command-execute key-vector))
 
 	      (t
@@ -319,148 +274,25 @@
       
       (when undef
 	(uim-flush-concat-undo)
-	(if uim-xemacs
-	    (error 'undefined-keystroke-sequence 
-		   (uim-xemacs-make-event 
-		    (uim-convert-char-to-symbolvector 
-		     (key-description key-vector))))
-	  )
-	(when uim-emacs
-	  (undefined)
-	  (setq uim-keystroke-displaying nil)
-	  (if (>= emacs-major-version 22)
-	      (let (message-log-max)
-		(message "%s is undefined" (key-description undef)))
-	  )))
+	(undefined)
+	(setq uim-keystroke-displaying nil)
+	(if (>= emacs-major-version 22)
+	    (let (message-log-max)
+	      (message "%s is undefined" (key-description undef)))
+	  ))
 
-      (if uim-emacs
-	  (setq uim-deactivate-mark deactivate-mark))
+      (setq uim-deactivate-mark deactivate-mark)
       )
     continue
     ))
-
-
-(defun uim-xemacs-restore-menubar ()
-  (if uim-menubar-temp
-      (progn
-	(setq current-menubar uim-menubar-temp)
-	(setq uim-menubar-temp nil)
-	)
-    )
-  )
-
-(defun uim-xemacs-save-menubar ()
-  (if (not uim-menubar-temp)
-      (progn
-	(setq uim-menubar-temp current-menubar)
-	(setq current-menubar (mapcar (lambda (x)
-					(if x
-					    (list (car x) ["" nil :active nil])
-					  nil))
-				      current-menubar))
-	))
-  )
-
-
-
-;;
-;; convert keyvec to event for XEmacs
-;;
-(defun uim-xemacs-make-event (keyvec)
-  (let* (button 
-	 event
-	 (keylist-tmp (aref keyvec 0))
-	 (keylist (if (listp keylist-tmp) keylist-tmp
-		    (list keylist-tmp)))
-	 (lastkey (nth (- (length keylist) 1) keylist)))
-    (cond ((setq button
-		 (assoc lastkey
-			'((button1 . 1) (button2 . 2) 
-			  (button3 . 3) (button4 . 4)
-			  (button5 . 5))))
-	   ;; mouse press
-	   (delq lastkey keylist)
-	   (setq event 
-		 (make-event 'button-press 
-			     (list 'button (cdr button) 'modifiers keylist)))
-	   )
-	  ((setq button
-		 (assoc lastkey
-			'((button1up . 1) (button2up . 2) 
-			  (button3up . 3) (button4up . 4)
-			  (button5up . 5))))
-	   ;; mouse up
-	   (delq lastkey keylist)
-	   (setq event 
-		 (make-event 'button-release
-			     (list 'button (cdr button) 'modifiers keylist)))
-	   )
-	  (t
-	   ;; key
-	   (setq keylist (nbutlast keylist))
-	   (setq event 
-		 (make-event 'key-press (list 'key lastkey 'modifiers keylist)))
-	   )
-	  )
-    event))
-
-;;
-;; convert XEmacs style key sequence to symbol list
-;;
-(defun uim-convert-char-to-symbolvector (keychar)
-  (let (symbol-vector keys ofs)
-    (while keychar
-      (if (setq ofs (string-match " " keychar))
-	  (progn
-	    (setq keys (substring keychar 0 ofs))
-	    (setq keychar (substring keychar (+ ofs 1))))
-	(setq keys keychar)
-	(setq keychar nil))
-
-      (let (symbol-list)
-	(progn
-	  (while (string-match "^\\(C\\|M\\|S\\|H\\|A\\|Sh\\)-" keys)
-	    (let ((mod (match-string 0 keys)))
-	      (cond ((string= mod "C-")
-		     (setq symbol-list (cons 'control symbol-list)))
-		    ((string= mod "M-")
-		     (setq symbol-list (cons 'meta symbol-list)))
-		    ((string= mod "S-")
-		     (setq symbol-list (cons 'super symbol-list)))
-		    ((string= mod "H-")
-		     (setq symbol-list (cons 'hyper symbol-list)))
-		    ((string= mod "A-")
-		     (setq symbol-list (cons 'alt symbol-list)))
-		    ((string= mod "Sh-")
-		     (setq symbol-list (cons 'shift symbol-list)))))
-	    (setq keys (substring keys (match-end 0))))
-
-	  (setq keys (uim-translate-xemacs-keyname keys))
-
-
-	  (setq symbol-list 
-		(append symbol-list (list 
-				     (if (= (length keys) 1)
-					 (string-to-char keys)
-				       (read keys)))))
-	  )
-	(setq symbol-vector (vconcat symbol-vector (vector symbol-list)))
-	))
-    symbol-vector
-    ))
-
 
 
 (defun uim-check-shift (input-vector)
   (eval (cons 'or
 	      (mapcar
 	       (lambda (x)
-		 (or (and uim-emacs
-			  (or (and (integerp x) (/= (logand (lsh 1 25) x) 0))
-			      (string-match "S-" (format "%s" x))))
-		     (and uim-xemacs
-			  (string-match "Sh-"
-					(key-description input-vector)))))
+		 (or (and (integerp x) (/= (logand (lsh 1 25) x) 0))
+		     (string-match "S-" (format "%s" x))))
 	       (append input-vector nil)))))
 
 
@@ -470,119 +302,31 @@
 (defun uim-remove-shift (input-vector)
   (vconcat (mapcar 
 	   (lambda (x)
-	     (cond (uim-emacs
-		    (if (and (integerp x)
-			     (/= (logand (lsh 1 25) x) 0))
-			(logand (lognot (lsh 1 25)) x)
-		      (let ((key-str (format "%s" x)))
-			(if (string-match "S-" key-str)
-			    (read (replace-match "" nil nil
-						 key-str))
-			  x))))
-		   (uim-xemacs
-		    (let ((key-str
-			   (key-description input-vector)))
-		      (if (string-match "Sh-" key-str)
-			  (uim-xemacs-make-event
-			   (uim-convert-char-to-symbolvector
-			    (replace-match "" nil nil key-str)))
-			x)))))
+	     (if (and (integerp x)
+		      (/= (logand (lsh 1 25) x) 0))
+		 (logand (lognot (lsh 1 25)) x)
+	       (let ((key-str (format "%s" x)))
+		 (if (string-match "S-" key-str)
+		     (read (replace-match "" nil nil
+					  key-str))
+		   x))))
 	   (append input-vector nil))))
 
 
-;;
-;; convert XEmacs style key sequence to FSF key vector
-;;
-(defun uim-convert-keystr-to-uimagent-vector (keystr)
-  (let (symbol-vector keys ofs)
-    (while keystr
-      (if (setq ofs (string-match " " keystr))
-	  (progn
-	    (setq keys (substring keystr 0 ofs))
-	    (setq keystr (substring keystr (+ ofs 1))))
-	(setq keys keystr)
-	(setq keystr nil))
-
-      (let (symbol-str 
-	    (symbol-val 0))
-	(progn
-	  (while (string-match "^\\(C\\|M\\|S\\|H\\|A\\|Sh\\)-" keys)
-	    (let ((mod (match-string 0 keys)))
-	      (cond ((string= mod "C-")
-		     (setq symbol-val (+ symbol-val (lsh 1 26)))
-		     (setq symbol-str (concat "C-" symbol-str)))
-		    ((string= mod "M-")
-		     (setq symbol-val (+ symbol-val (lsh 1 27)))
-		     (setq symbol-str (concat "M-" symbol-str)))
-		    ((string= mod "S-") 
-		     ;; super
-		     (setq symbol-val (+ symbol-val (lsh 1 23)))
-		     (setq symbol-str (concat "s-" symbol-str)))
-		    ((string= mod "H-")
-		     (setq symbol-val (+ symbol-val (lsh 1 24)))
-		     (setq symbol-str (concat "H-" symbol-str)))
-		    ((string= mod "A-")
-		     (setq symbol-val (+ symbol-val (lsh 1 22)))
-		     (setq symbol-str (concat "A-" symbol-str)))
-		    ((string= mod "Sh-")
-		     ;; shift
-		     (setq symbol-val (+ symbol-val (lsh 1 25)))
-		     (setq symbol-str (concat "S-" symbol-str)))))
-
-	    (setq keys (substring keys (match-end 0))))
-
-	  (setq keys (uim-translate-xemacs-keyname keys))
-
-	  (if (= (length keys) 1)
-	      (if (not symbol-str)
-		  (setq symbol-str (format "%d" (string-to-char keys)))
-		(setq symbol-str (format "%d" (+ symbol-val
-						 (string-to-char keys)))))
-	    (setq symbol-str (concat symbol-str keys)))
-
-	  (setq symbol-vector (vconcat symbol-vector 
-				       (vector (read symbol-str))))
-	  )))
-    symbol-vector
-    ))
-
-
 (defun uim-is-single-escape (keyvec)
-  (cond (uim-emacs
-	 (or (equal keyvec [27])
-	     (equal keyvec [escape])))
-	(uim-xemacs
-	 (or (equal keyvec (vector (uim-xemacs-make-event [escape])))
-	     (and (eq (global-key-binding keyvec) esc-map)
-		  (keymapp (uim-key-binding keyvec)))))
-	))
+  (or (equal keyvec [27])
+      (equal keyvec [escape])))
 	 
 
 (defun uim-is-start-with-escape (keyvec)
-  (cond (uim-emacs
-	 (uim-is-single-escape (vector (aref keyvec 0))))
-	(uim-xemacs
-	 (or (memq 'meta (aref (uim-convert-char-to-symbolvector (key-description keyvec)) 0))
-	     (uim-is-single-escape (vector (aref keyvec 0)))))))
+  (uim-is-single-escape (vector (aref keyvec 0))))
 
 
 (defun uim-is-escape (keyvec)
-  (cond (uim-emacs
-	 (if (or window-system
-		 (and (not window-system) uim-use-single-escape-on-terminal))
-	     (uim-is-single-escape keyvec)
-	   (equal keyvec [27 27]))
-	 )
-	(uim-xemacs
-	 (if (or window-system
-		 (and (not window-system) 
-		      uim-use-single-escape-on-terminal))
-	     (uim-is-single-escape keyvec)
-	   (or (equal keyvec 
-		      (make-vector 2 (uim-xemacs-make-event [(escape)])))
-	       (equal keyvec 
-		      (vector (uim-xemacs-make-event [(meta escape)]))))
-	   ))))
+  (if (or window-system
+	  (and (not window-system) uim-use-single-escape-on-terminal))
+      (uim-is-single-escape keyvec)
+    (equal keyvec [27 27])))
 
 (defun uim-separate-prefix-vector (key-vector)
   (let (key-vector-prefix key-vector-main)
@@ -694,24 +438,6 @@
   )
 
 
-
-;; Replate [escape escape] with [M-escape] on XEmacs
-;;   Some special keys cannot be used with escape key on terminal
-(defun uim-translate-escape-meta (input-vector)
-  (if (and uim-xemacs
-	   (>= (length input-vector) 2)
-	   (equal (aref input-vector 0)
-		  (uim-xemacs-make-event [(escape)])))
-      ;; append meta
-      (vconcat 
-       (vector 
-	(uim-xemacs-make-event 
-	 (vector (cons 'meta (aref (uim-convert-char-to-symbolvector
-				   (key-description (uim-vector-cdr 
-						     input-vector))) 0)
-		      ))))
-       (uim-cut-vector-from-head input-vector 2))
-    input-vector))
 
 (provide 'uim-key)
 
