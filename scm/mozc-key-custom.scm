@@ -35,8 +35,8 @@
 (require "i18n.scm")
 
 (define-custom-group 'mozc-keys
-		     (_ "Mozc key bindings")
-		     (_ "long description will be here."))
+		     (N_ "Mozc key bindings")
+		     (N_ "long description will be here."))
 
 ;;
 ;; overriding generic keys
@@ -44,35 +44,35 @@
 (define-custom 'mozc-on-key '(generic-on-key)
                '(mozc-keys)
 	       '(key)
-	       (_ "[Mozc] on")
-	       (_ "long description will be here"))
+	       (N_ "[Mozc] on")
+	       (N_ "long description will be here"))
 
 (define-custom 'mozc-off-key '(generic-off-key)
                '(mozc-keys)
 	       '(key)
-	       (_ "[Mozc] off")
-	       (_ "long description will be here"))
+	       (N_ "[Mozc] off")
+	       (N_ "long description will be here"))
 
 (define-custom 'mozc-kana-toggle-key '()
                '(mozc-keys)
 	       '(key)
-	       (_ "[Mozc] toggle hiragana/katakana mode")
-	       (_ "long description will be here"))
+	       (N_ "[Mozc] toggle hiragana/katakana mode")
+	       (N_ "long description will be here"))
 
 ;;(define-custom 'mozc-cancel-key '(generic-cancel-key)
 ;;               '(mozc-keys)
 ;;	       '(key)
-;;	       (_ "[Mozc] cancel")
-;;	       (_ "long description will be here"))
+;;	       (N_ "[Mozc] cancel")
+;;	       (N_ "long description will be here"))
 ;;
 ;;(define-custom 'mozc-prev-segment-key '(generic-go-left-key)
 ;;               '(mozc-keys)
 ;;	       '(key)
-;;	       (_ "[Mozc] previous segment")
-;;	       (_ "long description will be here"))
+;;	       (N_ "[Mozc] previous segment")
+;;	       (N_ "long description will be here"))
 
 (define-custom 'mozc-vi-escape-key '("escape" "<Control>[")
                '(mozc-keys)
 	       '(key)
-	       (_ "[Mozc] ESC keys on vi-cooperative mode")
-	       (_ "long description will be here"))
+	       (N_ "[Mozc] ESC keys on vi-cooperative mode")
+	       (N_ "long description will be here"))

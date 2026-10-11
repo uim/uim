@@ -68,6 +68,9 @@ scm/look-custom.scm
 scm/look.scm
 scm/m17nlib-custom.scm
 scm/m17nlib.scm
+scm/mozc-custom.scm
+scm/mozc-key-custom.scm
+scm/mozc.scm
 scm/predict-custom.scm
 scm/predict-sqlite3.scm
 scm/process.scm
