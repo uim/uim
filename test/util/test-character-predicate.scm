@@ -1,5 +1,3 @@
-#!/usr/bin/env gosh
-
 ;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
@@ -29,199 +27,188 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.util.test-character-predicate
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.util.test-character-predicate)
+(test-begin "ichar-control?")
+(test-false (ichar-control? 'symbol))
+(test-false (ichar-control? "string"))
+(test-false (ichar-control? '(0 1 2)))
+(test-false (ichar-control? car))
+(test-eq #t (ichar-control? 0))    ; NUL
+(test-eq #t (ichar-control? 1))    ; SOH
+(test-eq #t (ichar-control? 31))   ; US
+(test-false (ichar-control? 32))   ; SPACE
+(test-false (ichar-control? 33))   ; !
+(test-false (ichar-control? 47))   ; /
+(test-false (ichar-control? 48))   ; 0
+(test-false (ichar-control? 57))   ; 9
+(test-false (ichar-control? 58))   ; :
+(test-false (ichar-control? 64))   ; @
+(test-false (ichar-control? 65))   ; A
+(test-false (ichar-control? 90))   ; Z
+(test-false (ichar-control? 91))   ; [
+(test-false (ichar-control? 96))   ; `
+(test-false (ichar-control? 97))   ; a
+(test-false (ichar-control? 122))  ; z
+(test-false (ichar-control? 123))  ; {
+(test-false (ichar-control? 126))  ; ~
+(test-eq #t (ichar-control? 127))  ; DEL
+(test-end)
 
-(define (setup)
-  (uim-test-setup))
+(test-begin "ichar-upper-case?")
+(test-false (ichar-upper-case? 'symbol))
+(test-false (ichar-upper-case? "string"))
+(test-false (ichar-upper-case? '(0 1 2)))
+(test-false (ichar-upper-case? car))
+(test-false (ichar-upper-case? 0))   ; NUL
+(test-false (ichar-upper-case? 1))   ; SOH
+(test-false (ichar-upper-case? 31))  ; US
+(test-false (ichar-upper-case? 32))  ; SPACE
+(test-false (ichar-upper-case? 33))  ; !
+(test-false (ichar-upper-case? 47))  ; /
+(test-false (ichar-upper-case? 48))  ; 0
+(test-false (ichar-upper-case? 57))  ; 9
+(test-false (ichar-upper-case? 58))  ; :
+(test-false (ichar-upper-case? 64))  ; @
+(test-eq #t (ichar-upper-case? 65))  ; A
+(test-eq #t (ichar-upper-case? 90))  ; Z
+(test-false (ichar-upper-case? 91))  ; [
+(test-false (ichar-upper-case? 96))  ; `
+(test-false (ichar-upper-case? 97))  ; a
+(test-false (ichar-upper-case? 122)) ; z
+(test-false (ichar-upper-case? 123)) ; {
+(test-false (ichar-upper-case? 126)) ; ~
+(test-false (ichar-upper-case? 127)) ; DEL
+(test-end)
 
-(define (teardown)
-  (uim-test-teardown))
+(test-begin "ichar-lower-case?")
+(test-false (ichar-lower-case? 'symbol))
+(test-false (ichar-lower-case? "string"))
+(test-false (ichar-lower-case? '(0 1 2)))
+(test-false (ichar-lower-case? car))
+(test-false (ichar-lower-case? 0))   ; NUL
+(test-false (ichar-lower-case? 1))   ; SOH
+(test-false (ichar-lower-case? 31))  ; US
+(test-false (ichar-lower-case? 32))  ; SPACE
+(test-false (ichar-lower-case? 33))  ; !
+(test-false (ichar-lower-case? 47))  ; /
+(test-false (ichar-lower-case? 48))  ; 0
+(test-false (ichar-lower-case? 57))  ; 9
+(test-false (ichar-lower-case? 58))  ; :
+(test-false (ichar-lower-case? 64))  ; @
+(test-false (ichar-lower-case? 65))  ; A
+(test-false (ichar-lower-case? 90))  ; Z
+(test-false (ichar-lower-case? 91))  ; [
+(test-false (ichar-lower-case? 96))  ; `
+(test-eq #t (ichar-lower-case? 97))  ; a
+(test-eq #t (ichar-lower-case? 122)) ; z
+(test-false (ichar-lower-case? 123)) ; {
+(test-false (ichar-lower-case? 126)) ; ~
+(test-false (ichar-lower-case? 127)) ; DEL
+(test-end)
 
-(define (test-ichar-control?)
-  (assert-uim-false '(ichar-control? 'symbol))
-  (assert-uim-false '(ichar-control? "string"))
-  (assert-uim-false '(ichar-control? '(0 1 2)))
-  (assert-uim-false '(ichar-control? car))
-  (assert-uim-true  '(ichar-control? 0))    ; NUL
-  (assert-uim-true  '(ichar-control? 1))    ; SOH
-  (assert-uim-true  '(ichar-control? 31))   ; US
-  (assert-uim-false '(ichar-control? 32))   ; SPACE
-  (assert-uim-false '(ichar-control? 33))   ; !
-  (assert-uim-false '(ichar-control? 47))   ; /
-  (assert-uim-false '(ichar-control? 48))   ; 0
-  (assert-uim-false '(ichar-control? 57))   ; 9
-  (assert-uim-false '(ichar-control? 58))   ; :
-  (assert-uim-false '(ichar-control? 64))   ; @
-  (assert-uim-false '(ichar-control? 65))   ; A
-  (assert-uim-false '(ichar-control? 90))   ; Z
-  (assert-uim-false '(ichar-control? 91))   ; [
-  (assert-uim-false '(ichar-control? 96))   ; `
-  (assert-uim-false '(ichar-control? 97))   ; a
-  (assert-uim-false '(ichar-control? 122))  ; z
-  (assert-uim-false '(ichar-control? 123))  ; {
-  (assert-uim-false '(ichar-control? 126))  ; ~
-  (assert-uim-true  '(ichar-control? 127))  ; DEL
-  #f)
+(test-begin "ichar-alphabetic?")
+(test-false (ichar-alphabetic? 'symbol))
+(test-false (ichar-alphabetic? "string"))
+(test-false (ichar-alphabetic? '(0 1 2)))
+(test-false (ichar-alphabetic? car))
+(test-false (ichar-alphabetic? 0))   ; NUL
+(test-false (ichar-alphabetic? 1))   ; SOH
+(test-false (ichar-alphabetic? 31))  ; US
+(test-false (ichar-alphabetic? 32))  ; SPACE
+(test-false (ichar-alphabetic? 33))  ; !
+(test-false (ichar-alphabetic? 47))  ; /
+(test-false (ichar-alphabetic? 48))  ; 0
+(test-false (ichar-alphabetic? 57))  ; 9
+(test-false (ichar-alphabetic? 58))  ; :
+(test-false (ichar-alphabetic? 64))  ; @
+(test-eq #t (ichar-alphabetic? 65))  ; A
+(test-eq #t (ichar-alphabetic? 90))  ; Z
+(test-false (ichar-alphabetic? 91))  ; [
+(test-false (ichar-alphabetic? 96))  ; `
+(test-eq #t (ichar-alphabetic? 97))  ; a
+(test-eq #t (ichar-alphabetic? 122)) ; z
+(test-false (ichar-alphabetic? 123)) ; {
+(test-false (ichar-alphabetic? 126)) ; ~
+(test-false (ichar-alphabetic? 127)) ; DEL
+(test-end)
 
-(define (test-ichar-upper-case?)
-  (assert-uim-false '(ichar-upper-case? 'symbol))
-  (assert-uim-false '(ichar-upper-case? "string"))
-  (assert-uim-false '(ichar-upper-case? '(0 1 2)))
-  (assert-uim-false '(ichar-upper-case? car))
-  (assert-uim-false '(ichar-upper-case? 0))   ; NUL
-  (assert-uim-false '(ichar-upper-case? 1))   ; SOH
-  (assert-uim-false '(ichar-upper-case? 31))  ; US
-  (assert-uim-false '(ichar-upper-case? 32))  ; SPACE
-  (assert-uim-false '(ichar-upper-case? 33))  ; !
-  (assert-uim-false '(ichar-upper-case? 47))  ; /
-  (assert-uim-false '(ichar-upper-case? 48))  ; 0
-  (assert-uim-false '(ichar-upper-case? 57))  ; 9
-  (assert-uim-false '(ichar-upper-case? 58))  ; :
-  (assert-uim-false '(ichar-upper-case? 64))  ; @
-  (assert-uim-true  '(ichar-upper-case? 65))  ; A
-  (assert-uim-true  '(ichar-upper-case? 90))  ; Z
-  (assert-uim-false '(ichar-upper-case? 91))  ; [
-  (assert-uim-false '(ichar-upper-case? 96))  ; `
-  (assert-uim-false '(ichar-upper-case? 97))  ; a
-  (assert-uim-false '(ichar-upper-case? 122)) ; z
-  (assert-uim-false '(ichar-upper-case? 123)) ; {
-  (assert-uim-false '(ichar-upper-case? 126)) ; ~
-  (assert-uim-false '(ichar-upper-case? 127)) ; DEL
-  #f)
+(test-begin "ichar-numeric?")
+(test-false (ichar-numeric? 'symbol))
+(test-false (ichar-numeric? "string"))
+(test-false (ichar-numeric? '(0 1 2)))
+(test-false (ichar-numeric? car))
+(test-false (ichar-numeric? 0))        ; NUL
+(test-false (ichar-numeric? 1))        ; SOH
+(test-false (ichar-numeric? 31))       ; US
+(test-false (ichar-numeric? 32)) ; SPACE
+(test-false (ichar-numeric? 33)) ; !
+(test-false (ichar-numeric? 47)) ; /
+(test-eq #t (ichar-numeric? 48)) ; 0
+(test-eq #t (ichar-numeric? 57)) ; 9
+(test-false (ichar-numeric? 58)) ; :
+(test-false (ichar-numeric? 64)) ; @
+(test-false (ichar-numeric? 65)) ; A
+(test-false (ichar-numeric? 90)) ; Z
+(test-false (ichar-numeric? 91)) ; [
+(test-false (ichar-numeric? 96)) ; `
+(test-false (ichar-numeric? 97)) ; a
+(test-false (ichar-numeric? 122))        ; z
+(test-false (ichar-numeric? 123))        ; {
+(test-false (ichar-numeric? 126))        ; ~
+(test-false (ichar-numeric? 127)) ; DEL
+(test-end)
 
-(define (test-ichar-lower-case?)
-  (assert-uim-false '(ichar-lower-case? 'symbol))
-  (assert-uim-false '(ichar-lower-case? "string"))
-  (assert-uim-false '(ichar-lower-case? '(0 1 2)))
-  (assert-uim-false '(ichar-lower-case? car))
-  (assert-uim-false '(ichar-lower-case? 0))   ; NUL
-  (assert-uim-false '(ichar-lower-case? 1))   ; SOH
-  (assert-uim-false '(ichar-lower-case? 31))  ; US
-  (assert-uim-false '(ichar-lower-case? 32))  ; SPACE
-  (assert-uim-false '(ichar-lower-case? 33))  ; !
-  (assert-uim-false '(ichar-lower-case? 47))  ; /
-  (assert-uim-false '(ichar-lower-case? 48))  ; 0
-  (assert-uim-false '(ichar-lower-case? 57))  ; 9
-  (assert-uim-false '(ichar-lower-case? 58))  ; :
-  (assert-uim-false '(ichar-lower-case? 64))  ; @
-  (assert-uim-false '(ichar-lower-case? 65))  ; A
-  (assert-uim-false '(ichar-lower-case? 90))  ; Z
-  (assert-uim-false '(ichar-lower-case? 91))  ; [
-  (assert-uim-false '(ichar-lower-case? 96))  ; `
-  (assert-uim-true  '(ichar-lower-case? 97))  ; a
-  (assert-uim-true  '(ichar-lower-case? 122)) ; z
-  (assert-uim-false '(ichar-lower-case? 123)) ; {
-  (assert-uim-false '(ichar-lower-case? 126)) ; ~
-  (assert-uim-false '(ichar-lower-case? 127)) ; DEL
-  #f)
+(test-begin "ichar-printable?")
+(test-false (ichar-printable? 'symbol))
+(test-false (ichar-printable? "string"))
+(test-false (ichar-printable? '(0 1 2)))
+(test-false (ichar-printable? car))
+(test-false (ichar-printable? 0))    ; NUL
+(test-false (ichar-printable? 1))    ; SOH
+(test-false (ichar-printable? 31))   ; US
+(test-eq #t (ichar-printable? 32))   ; SPACE
+(test-eq #t (ichar-printable? 33))   ; !
+(test-eq #t (ichar-printable? 47))   ; /
+(test-eq #t (ichar-printable? 48))   ; 0
+(test-eq #t (ichar-printable? 57))   ; 9
+(test-eq #t (ichar-printable? 58))   ; :
+(test-eq #t (ichar-printable? 64))   ; @
+(test-eq #t (ichar-printable? 65))   ; A
+(test-eq #t (ichar-printable? 90))   ; Z
+(test-eq #t (ichar-printable? 91))   ; [
+(test-eq #t (ichar-printable? 96))   ; `
+(test-eq #t (ichar-printable? 97))   ; a
+(test-eq #t (ichar-printable? 122))  ; z
+(test-eq #t (ichar-printable? 123))  ; {
+(test-eq #t (ichar-printable? 126))  ; ~
+(test-false (ichar-printable? 127))  ; DEL
+(test-end)
 
-(define (test-ichar-alphabetic?)
-  (assert-uim-false '(ichar-alphabetic? 'symbol))
-  (assert-uim-false '(ichar-alphabetic? "string"))
-  (assert-uim-false '(ichar-alphabetic? '(0 1 2)))
-  (assert-uim-false '(ichar-alphabetic? car))
-  (assert-uim-false '(ichar-alphabetic? 0))   ; NUL
-  (assert-uim-false '(ichar-alphabetic? 1))   ; SOH
-  (assert-uim-false '(ichar-alphabetic? 31))  ; US
-  (assert-uim-false '(ichar-alphabetic? 32))  ; SPACE
-  (assert-uim-false '(ichar-alphabetic? 33))  ; !
-  (assert-uim-false '(ichar-alphabetic? 47))  ; /
-  (assert-uim-false '(ichar-alphabetic? 48))  ; 0
-  (assert-uim-false '(ichar-alphabetic? 57))  ; 9
-  (assert-uim-false '(ichar-alphabetic? 58))  ; :
-  (assert-uim-false '(ichar-alphabetic? 64))  ; @
-  (assert-uim-true  '(ichar-alphabetic? 65))  ; A
-  (assert-uim-true  '(ichar-alphabetic? 90))  ; Z
-  (assert-uim-false '(ichar-alphabetic? 91))  ; [
-  (assert-uim-false '(ichar-alphabetic? 96))  ; `
-  (assert-uim-true  '(ichar-alphabetic? 97))  ; a
-  (assert-uim-true  '(ichar-alphabetic? 122)) ; z
-  (assert-uim-false '(ichar-alphabetic? 123)) ; {
-  (assert-uim-false '(ichar-alphabetic? 126)) ; ~
-  (assert-uim-false '(ichar-alphabetic? 127)) ; DEL
-  #f)
+(test-begin "ichar-graphic?")
+(test-false (ichar-graphic? 'symbol))
+(test-false (ichar-graphic? "string"))
+(test-false (ichar-graphic? '(0 1 2)))
+(test-false (ichar-graphic? car))
+(test-false (ichar-graphic? 0))    ; NUL
+(test-false (ichar-graphic? 1))    ; SOH
+(test-false (ichar-graphic? 31))   ; US
+(test-false (ichar-graphic? 32))   ; SPACE
+(test-eq #t (ichar-graphic? 33))   ; !
+(test-eq #t (ichar-graphic? 47))   ; /
+(test-eq #t (ichar-graphic? 48))   ; 0
+(test-eq #t (ichar-graphic? 57))   ; 9
+(test-eq #t (ichar-graphic? 58))   ; :
+(test-eq #t (ichar-graphic? 64))   ; @
+(test-eq #t (ichar-graphic? 65))   ; A
+(test-eq #t (ichar-graphic? 90))   ; Z
+(test-eq #t (ichar-graphic? 91))   ; [
+(test-eq #t (ichar-graphic? 96))   ; `
+(test-eq #t (ichar-graphic? 97))   ; a
+(test-eq #t (ichar-graphic? 122))  ; z
+(test-eq #t (ichar-graphic? 123))  ; {
+(test-eq #t (ichar-graphic? 126))  ; ~
+(test-false (ichar-graphic? 127))  ; DEL
+(test-end)
 
-(define (test-ichar-numeric?)
-  (assert-uim-false '(ichar-numeric? 'symbol))
-  (assert-uim-false '(ichar-numeric? "string"))
-  (assert-uim-false '(ichar-numeric? '(0 1 2)))
-  (assert-uim-false '(ichar-numeric? car))
-  (assert-uim-false '(ichar-numeric? 0))        ; NUL
-  (assert-uim-false '(ichar-numeric? 1))        ; SOH
-  (assert-uim-false '(ichar-numeric? 31))       ; US
-  (assert-uim-false '(ichar-numeric? 32)) ; SPACE
-  (assert-uim-false '(ichar-numeric? 33)) ; !
-  (assert-uim-false '(ichar-numeric? 47)) ; /
-  (assert-uim-true  '(ichar-numeric? 48)) ; 0
-  (assert-uim-true  '(ichar-numeric? 57)) ; 9
-  (assert-uim-false '(ichar-numeric? 58)) ; :
-  (assert-uim-false '(ichar-numeric? 64)) ; @
-  (assert-uim-false '(ichar-numeric? 65)) ; A
-  (assert-uim-false '(ichar-numeric? 90)) ; Z
-  (assert-uim-false '(ichar-numeric? 91)) ; [
-  (assert-uim-false '(ichar-numeric? 96)) ; `
-  (assert-uim-false '(ichar-numeric? 97)) ; a
-  (assert-uim-false '(ichar-numeric? 122))        ; z
-  (assert-uim-false '(ichar-numeric? 123))        ; {
-  (assert-uim-false '(ichar-numeric? 126))        ; ~
-  (assert-uim-false '(ichar-numeric? 127)) ; DEL
-  #f)
-
-(define (test-ichar-printable?)
-  (assert-uim-false '(ichar-printable? 'symbol))
-  (assert-uim-false '(ichar-printable? "string"))
-  (assert-uim-false '(ichar-printable? '(0 1 2)))
-  (assert-uim-false '(ichar-printable? car))
-  (assert-uim-false '(ichar-printable? 0))    ; NUL
-  (assert-uim-false '(ichar-printable? 1))    ; SOH
-  (assert-uim-false '(ichar-printable? 31))   ; US
-  (assert-uim-true  '(ichar-printable? 32))   ; SPACE
-  (assert-uim-true  '(ichar-printable? 33))   ; !
-  (assert-uim-true  '(ichar-printable? 47))   ; /
-  (assert-uim-true  '(ichar-printable? 48))   ; 0
-  (assert-uim-true  '(ichar-printable? 57))   ; 9
-  (assert-uim-true  '(ichar-printable? 58))   ; :
-  (assert-uim-true  '(ichar-printable? 64))   ; @
-  (assert-uim-true  '(ichar-printable? 65))   ; A
-  (assert-uim-true  '(ichar-printable? 90))   ; Z
-  (assert-uim-true  '(ichar-printable? 91))   ; [
-  (assert-uim-true  '(ichar-printable? 96))   ; `
-  (assert-uim-true  '(ichar-printable? 97))   ; a
-  (assert-uim-true  '(ichar-printable? 122))  ; z
-  (assert-uim-true  '(ichar-printable? 123))  ; {
-  (assert-uim-true  '(ichar-printable? 126))  ; ~
-  (assert-uim-false '(ichar-printable? 127))  ; DEL
-  #f)
-
-(define (test-ichar-graphic?)
-  (assert-uim-false '(ichar-graphic? 'symbol))
-  (assert-uim-false '(ichar-graphic? "string"))
-  (assert-uim-false '(ichar-graphic? '(0 1 2)))
-  (assert-uim-false '(ichar-graphic? car))
-  (assert-uim-false '(ichar-graphic? 0))    ; NUL
-  (assert-uim-false '(ichar-graphic? 1))    ; SOH
-  (assert-uim-false '(ichar-graphic? 31))   ; US
-  (assert-uim-false '(ichar-graphic? 32))   ; SPACE
-  (assert-uim-true  '(ichar-graphic? 33))   ; !
-  (assert-uim-true  '(ichar-graphic? 47))   ; /
-  (assert-uim-true  '(ichar-graphic? 48))   ; 0
-  (assert-uim-true  '(ichar-graphic? 57))   ; 9
-  (assert-uim-true  '(ichar-graphic? 58))   ; :
-  (assert-uim-true  '(ichar-graphic? 64))   ; @
-  (assert-uim-true  '(ichar-graphic? 65))   ; A
-  (assert-uim-true  '(ichar-graphic? 90))   ; Z
-  (assert-uim-true  '(ichar-graphic? 91))   ; [
-  (assert-uim-true  '(ichar-graphic? 96))   ; `
-  (assert-uim-true  '(ichar-graphic? 97))   ; a
-  (assert-uim-true  '(ichar-graphic? 122))  ; z
-  (assert-uim-true  '(ichar-graphic? 123))  ; {
-  (assert-uim-true  '(ichar-graphic? 126))  ; ~
-  (assert-uim-false '(ichar-graphic? 127))  ; DEL
-  #f)
-
-(provide "test/util/test-character-predicate")
+(test-report-result)
