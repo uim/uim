@@ -400,6 +400,9 @@ endif
 subdir('pixmaps')
 subdir('byeoru-data')
 subdir('examples')
+if get_option('emacs').allowed()
+  subdir('emacs')
+endif
 if curses.found()
   subdir('fep')
 endif
@@ -419,6 +422,7 @@ pkgconfig.generate(libraries: [libuim_scm, libuim],
 
 summary({
           'Canna': get_option('canna'),
+          'Emacs': get_option('emacs').allowed(),
           'FEP': curses.found(),
           'NLS': intl.found(),
           'Notify': get_option('notify'),

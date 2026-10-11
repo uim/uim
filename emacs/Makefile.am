@@ -1,5 +1,6 @@
 EXTRA_DIST =			\
 	README.ja		\
+	meson.build		\
 	test/candidates.scm	\
 	test/run.el		\
 	test/test-uim-leim.el	\

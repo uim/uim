@@ -22,6 +22,10 @@ option('eb',
        type: 'feature',
        value: 'disabled',
        description: 'build a plugin for EB Library')
+option('emacs',
+       type: 'feature',
+       value: 'auto',
+       description: 'build uim.el and its agents for Emacs')
 option('expat',
        type: 'feature',
        value: 'disabled',
