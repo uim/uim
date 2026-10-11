@@ -933,7 +933,7 @@
       (begin
         (if (symbol-bound? 'uim-notify-info)
           (uim-notify-info
-            (N_ "libuim-skk.so is not available. Mazegaki conversion is disabled")))
+            (_ "libuim-skk.so is not available. Mazegaki conversion is disabled")))
         (set! tutcode-use-recursive-learning? #f)
         (set! tutcode-enable-mazegaki-learning? #f))
       (begin

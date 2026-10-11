@@ -69,7 +69,7 @@
             (annotation-agent-reset)
             (if (and name
                      (not (string=? name "im")))
-              (uim-notify-info (N_ "invalid annotation agent name"))))))))
+              (uim-notify-info (_ "invalid annotation agent name"))))))))
 
 (define annotation-unload
   (lambda ()

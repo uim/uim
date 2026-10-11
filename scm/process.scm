@@ -59,7 +59,7 @@
             (ret 0))
         (cond ((< pid 0)
                (begin
-                 (uim-notify-fatal (N_ "cannot fork"))
+                 (uim-notify-fatal (_ "cannot fork"))
                  (file-close pin-in)
                  (file-close pin-out)
                  (file-close pout-in)
@@ -76,7 +76,7 @@
                  (begin
                    (if (< (duplicate-fileno pin-in 0) 0)
                      (begin
-                       (uim-notify-fatal (N_ "cannot duplicate stdin"))
+                       (uim-notify-fatal (_ "cannot duplicate stdin"))
                        (set! ret (bitwise-ior ret process-dup2-failed))))
                    (file-close pin-in)))
 
@@ -85,7 +85,7 @@
                  (begin
                    (if (< (duplicate-fileno pout-out 1) 0)
                      (begin
-                       (uim-notify-fatal (N_ "cannot duplicate stdout"))
+                       (uim-notify-fatal (_ "cannot duplicate stdout"))
                        (set! ret (bitwise-ior ret process-dup2-failed))))
                    (file-close pout-out)))
 
@@ -114,7 +114,7 @@
     (let ((pid (process-fork)))
       (cond ((< pid 0)
              (begin
-               (uim-notify-fatal (N_ "cannot fork"))
+               (uim-notify-fatal (_ "cannot fork"))
                #f))
             ((= 0 pid) ;; child
              (daemon 0 1)

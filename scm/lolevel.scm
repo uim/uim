@@ -50,7 +50,7 @@
                       ((eq? (car f) 'u16list)
                        (apply append (map (lambda (x) (u16->u8list x)) (cadr f))))
                       (else
-                       (uim-notify-fatal (N_ "unknown byte operator")))))
+                       (uim-notify-fatal (_ "unknown byte operator")))))
               (zip fmt args))))
 
 (define (u8list-unpack fmt arg)
@@ -81,7 +81,7 @@
           ((eq? 'u8list (car fmt))
            (loop (cdr fmt) '() (cons arg rest)))
           (else
-           (uim-notify-fatal (N_ "unknown byte operator"))))))
+           (uim-notify-fatal (_ "unknown byte operator"))))))
 
 (define (call-with-u8list-unpack fmt arg thunk)
   (apply thunk (u8list-unpack fmt arg)))

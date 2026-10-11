@@ -137,7 +137,7 @@
 		    (read (open-input-string (symbol->string name))))))
 	(begin
 	  (if (symbol-bound? 'uim-notify-fatal)
-	      (uim-notify-fatal (N_ "invalid IM name")))
+	      (uim-notify-fatal (_ "invalid IM name")))
 	  (error "invalid IM name")))
     (and (or (null? enabled-im-list)  ;; bootstrap
 	     (memq name enabled-im-list)
