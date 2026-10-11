@@ -27,249 +27,201 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.util.test-misc
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.util.test-misc)
+(test-begin "string-escape")
+;; empty string
+(test-equal "\"\""
+            (string-escape ""))
+;; single character
+;; R5RS
+(test-equal "\"\\\"\""
+            (string-escape "\""))
+(test-equal "\"\\\\\""
+            (string-escape "\\"))
 
-(define (setup)
-  (uim-test-setup))
+;; R6RS(SRFI-75) and C89 (uim-sh)
+(test-equal "\"\\t\""
+            (string-escape "\t")) ;; #\tab
+(test-equal "\"\\n\""
+            (string-escape "\n")) ;; #\linefeed
+(test-equal "\"\\f\""
+            (string-escape "\f")) ;; #\page
+(test-equal "\"\\r\""
+            (string-escape "\r")) ;; #\return
+(test-equal "\"\\a\""
+            (string-escape "\a"))  ;; #\alarm
+(test-equal "\"\\b\""
+            (string-escape "\b"))  ;; #\backspace
+(test-equal "\"\\v\""
+            (string-escape "\v"))  ;; #\vtab
 
-(define (teardown)
-  (uim-test-teardown))
+;; R5RS
+(test-equal "\"a\""
+            (string-escape "a"))
+(test-equal "\"b\""
+            (string-escape "b"))
+(test-equal "\"c\""
+            (string-escape "c"))
+(test-equal "\"A\""
+            (string-escape "A"))
+(test-equal "\"B\""
+            (string-escape "B"))
+(test-equal "\"C\""
+            (string-escape "C"))
+;; 2 characters
+(test-equal "\"\\\"\\\"\""
+            (string-escape "\"\""))
+(test-equal "\"\\\\\\\"\""
+            (string-escape "\\\""))
+(test-equal "\"\\\\\\\\\""
+            (string-escape "\\\\"))
+(test-equal "\"\\r\\n\""
+            (string-escape "\r\n"))
+(test-equal "\"aB\""
+            (string-escape "aB"))
+;; complex
+(test-equal "\"\\\"a string\\\" in two-line\\nstring\\n\""
+            (string-escape "\"a string\" in two-line\nstring\n"))
+(test-end)
 
-(define (test-gauche-supported-escape-sequences)
-  "R6RS(SRFI-75) and C89 compliant escape sequences of Gauche"
-  (assert-not-equal "t" "\t")  ;; #\tab
-  (assert-not-equal "n" "\n")  ;; #\linefeed
-  (assert-not-equal "f" "\f")  ;; #\page
-  (assert-not-equal "r" "\r")  ;; #\return
-  #f)
+(test-begin "compose")
+(define test-list '(0 1 2 3 4 5))
+(test-eq #t (procedure? (compose)))
+(test-eq #t (procedure? (compose car)))
+(test-eq #t (procedure? (compose car cdr)))
+(test-eq #t (procedure? (compose car cdr list)))
+(test-equal '(0 1 2 3 4 5)
+            ((compose) test-list))
+(test-equal 0
+            ((compose car) test-list))
+(test-equal 1
+            ((compose car cdr) test-list))
+(test-equal 2
+            ((compose car cdr cdr) test-list))
+(test-equal 4
+            ((compose car cdr reverse) test-list))
+(test-equal 3
+            ((compose car cdr cdr reverse) test-list))
+(test-end)
 
-(define (test-gauche-unsupported-escape-sequences)
-  "This test will fail after Gauche supports all of "
-  "R6RS(SRFI-75) and C89 compliant escape sequences"
-  (assert-equal "a" "\a")  ;; #\alarm
-  (assert-equal "b" "\b")  ;; #\backspace
-  (assert-equal "v" "\v")  ;; #\vtab
-  #f)
+(test-begin "safe-car")
+(test-equal 1
+            (safe-car '(1 2)))
+(test-equal 1
+            (safe-car '(1 . 2)))
+(test-false (safe-car '()))
+(test-false (safe-car 1))
+(test-end)
 
-(define (test-string-escape)
-  ;; empty string
-  (assert-uim-equal "\"\""
-                    '(string-escape ""))
-  ;; single character
-  ;; R5RS
-  (assert-uim-equal "\"\\\"\""
-                    '(string-escape "\""))
-  (assert-uim-equal "\"\\\\\""
-                    '(string-escape "\\"))
+(test-begin "safe-cdr")
+(test-equal '(2)
+            (safe-cdr '(1 2)))
+(test-equal 2
+            (safe-cdr '(1 . 2)))
+(test-false (safe-cdr '()))
+(test-false (safe-cdr 1))
+(test-end)
 
-  ;; R6RS(SRFI-75) and C89 (uim-sh)
-  (assert-uim-equal "\"\\t\""
-                    '(string-escape "\t")) ;; #\tab
-  (assert-uim-equal "\"\\n\""
-                    '(string-escape "\n")) ;; #\linefeed
-  (assert-uim-equal "\"\\f\""
-                    '(string-escape "\f")) ;; #\page
-  (assert-uim-equal "\"\\r\""
-                    '(string-escape "\r")) ;; #\return
+(test-begin "assq-cdr")
+(test-equal '(2)
+            (assq-cdr 1 '((1 2))))
+(test-equal 2
+            (assq-cdr 1 '((1 . 2))))
+(test-false (assq-cdr 2 '((1 2))))
+(test-false (assq-cdr 2 '((1 . 2))))
+(test-equal '(2)
+            (assq-cdr 1 '((3 4) (1 2))))
+(test-equal 2
+            (assq-cdr 1 '((3 . 4) (1 . 2))))
+(test-equal '(4)
+            (assq-cdr 3 '((3 4) (1 2))))
+(test-equal 4
+            (assq-cdr 3 '((3 . 4) (1 . 2))))
+(test-false (assq-cdr 1 '()))
+(test-error (assq-cdr 1 1))
+(test-end)
 
-  ;; R6RS(SRFI-75) and C89 (uim-sh), but Gauche isn't
-  ;; supported escape sequences. We can replace uim-raw with
-  ;; uim after "test-gauche-unsupported-escape-sequences"
-  ;; test fails which means Gauche supports them.
-  (assert-uim-equal-raw "\"\\a\""
-                        "(string-escape \"\\a\")")  ;; #\alarm
-  (assert-uim-equal-raw "\"\\b\""
-                        "(string-escape \"\\b\")")  ;; #\backspace
-  (assert-uim-equal-raw "\"\\v\""
-                        "(string-escape \"\\v\")")  ;; #\vtab
+(test-begin "clamp")
+(test-equal 0  (clamp -2 0 -1))
+(test-equal 0  (clamp -1 0 -1))
+(test-equal 0  (clamp 0  0 -1))
+(test-equal 0  (clamp 1  0 -1))
+(test-equal 0  (clamp 2  0 -1))
+(test-equal 0  (clamp 10 0 -1))
 
-  ;; R5RS
-  (assert-uim-equal "\"a\""
-                    '(string-escape "a"))
-  (assert-uim-equal "\"b\""
-                    '(string-escape "b"))
-  (assert-uim-equal "\"c\""
-                    '(string-escape "c"))
-  (assert-uim-equal "\"a\""
-                    '(string-escape "\a"))
-  (assert-uim-equal "\"b\""
-                    '(string-escape "\b"))
-  (assert-uim-equal "\"c\""
-                    '(string-escape "\c"))
-  (assert-uim-equal "\"A\""
-                    '(string-escape "A"))
-  (assert-uim-equal "\"B\""
-                    '(string-escape "B"))
-  (assert-uim-equal "\"C\""
-                    '(string-escape "C"))
-  (assert-uim-equal "\"A\""
-                    '(string-escape "\A"))
-  (assert-uim-equal "\"B\""
-                    '(string-escape "\B"))
-  (assert-uim-equal "\"C\""
-                    '(string-escape "\C"))
-  ;; 2 characters
-  (assert-uim-equal "\"\\\"\\\"\""
-                    '(string-escape "\"\""))
-  (assert-uim-equal "\"\\\\\\\"\""
-                    '(string-escape "\\\""))
-  (assert-uim-equal "\"\\\\\\\\\""
-                    '(string-escape "\\\\"))
-  (assert-uim-equal "\"\\r\\n\""
-                    '(string-escape "\r\n"))
-  (assert-uim-equal "\"aB\""
-                    '(string-escape "aB"))
-  (assert-uim-equal "\"aB\""
-                    '(string-escape "a\B"))
-  (assert-uim-equal "\"aB\""
-                    '(string-escape "\a\B"))
-  ;; complex
-  (assert-uim-equal "\"\\\"a string\\\" in two-line\\nstring\\n\""
-                    '(string-escape "\"a string\" in two-line\nstring\n"))
-  #f)
+(test-equal -2 (clamp -2 -2 0))
+(test-equal -1 (clamp -1 -2 0))
+(test-equal 0  (clamp 0  -2 0))
+(test-equal 0  (clamp 1  -2 0))
+(test-equal 0  (clamp 2  -2 0))
+(test-equal 0  (clamp 10 -2 0))
 
-(define (test-compose)
-  (uim '(define test-list '(0 1 2 3 4 5)))
-  (assert-uim-true  '(procedure? (compose)))
-  (assert-uim-true  '(procedure? (compose car)))
-  (assert-uim-true  '(procedure? (compose car cdr)))
-  (assert-uim-true  '(procedure? (compose car cdr list)))
-  (assert-uim-equal '(0 1 2 3 4 5)
-                    '((compose) test-list))
-  (assert-uim-equal 0
-                    '((compose car) test-list))
-  (assert-uim-equal 1
-                    '((compose car cdr) test-list))
-  (assert-uim-equal 2
-                    '((compose car cdr cdr) test-list))
-  (assert-uim-equal 4
-                    '((compose car cdr reverse) test-list))
-  (assert-uim-equal 3
-                    '((compose car cdr cdr reverse) test-list))
-  #f)
+(test-equal -1 (clamp -2 -1 0))
+(test-equal -1 (clamp -1 -1 0))
+(test-equal 0  (clamp 0  -1 0))
+(test-equal 0  (clamp 1  -1 0))
+(test-equal 0  (clamp 2  -1 0))
+(test-equal 0  (clamp 10 -1 0))
 
-(define (test-safe-car)
-  (assert-uim-equal 1
-                    '(safe-car '(1 2)))
-  (assert-uim-equal 1
-                    '(safe-car '(1 . 2)))
-  (assert-uim-false '(safe-car '()))
-  (assert-uim-false '(safe-car 1))
-  #f)
+(test-equal 0  (clamp -2 0 0))
+(test-equal 0  (clamp -1 0 0))
+(test-equal 0  (clamp 0  0 0))
+(test-equal 0  (clamp 1  0 0))
+(test-equal 0  (clamp 2  0 0))
+(test-equal 0  (clamp 10 0 0))
 
-(define (test-safe-cdr)
-  (assert-uim-equal '(2)
-                    '(safe-cdr '(1 2)))
-  (assert-uim-equal 2
-                    '(safe-cdr '(1 . 2)))
-  (assert-uim-false '(safe-cdr '()))
-  (assert-uim-false '(safe-cdr 1))
-  #f)
+(test-equal 0  (clamp -2 0 1))
+(test-equal 0  (clamp -1 0 1))
+(test-equal 0  (clamp 0  0 1))
+(test-equal 1  (clamp 1  0 1))
+(test-equal 1  (clamp 2  0 1))
+(test-equal 1  (clamp 10 0 1))
 
-(define (test-assq-cdr)
-  (assert-uim-equal '(2)
-                    '(assq-cdr 1 '((1 2))))
-  (assert-uim-equal 2
-                    '(assq-cdr 1 '((1 . 2))))
-  (assert-uim-false '(assq-cdr 2 '((1 2))))
-  (assert-uim-false '(assq-cdr 2 '((1 . 2))))
-  (assert-uim-equal '(2)
-                    '(assq-cdr 1 '((3 4) (1 2))))
-  (assert-uim-equal 2
-                    '(assq-cdr 1 '((3 . 4) (1 . 2))))
-  (assert-uim-equal '(4)
-                    '(assq-cdr 3 '((3 4) (1 2))))
-  (assert-uim-equal 4
-                    '(assq-cdr 3 '((3 . 4) (1 . 2))))
-  (assert-uim-false '(assq-cdr 1 '()))
-  (assert-uim-error '(assq-cdr 1 1))
-  #f)
+(test-equal 0  (clamp -2 0 2))
+(test-equal 0  (clamp -1 0 2))
+(test-equal 0  (clamp 0  0 2))
+(test-equal 1  (clamp 1  0 2))
+(test-equal 2  (clamp 2  0 2))
+(test-equal 2  (clamp 10 0 2))
 
-(define (test-clamp)
-  (assert-uim-equal 0  '(clamp -2 0 -1))
-  (assert-uim-equal 0  '(clamp -1 0 -1))
-  (assert-uim-equal 0  '(clamp 0  0 -1))
-  (assert-uim-equal 0  '(clamp 1  0 -1))
-  (assert-uim-equal 0  '(clamp 2  0 -1))
-  (assert-uim-equal 0  '(clamp 10 0 -1))
+(test-equal 0  (clamp -2 0 3))
+(test-equal 0  (clamp -1 0 3))
+(test-equal 0  (clamp 0  0 3))
+(test-equal 1  (clamp 1  0 3))
+(test-equal 2  (clamp 2  0 3))
+(test-equal 3  (clamp 10 0 3))
 
-  (assert-uim-equal -2 '(clamp -2 -2 0))
-  (assert-uim-equal -1 '(clamp -1 -2 0))
-  (assert-uim-equal 0  '(clamp 0  -2 0))
-  (assert-uim-equal 0  '(clamp 1  -2 0))
-  (assert-uim-equal 0  '(clamp 2  -2 0))
-  (assert-uim-equal 0  '(clamp 10 -2 0))
+(test-equal 1  (clamp -2 1 3))
+(test-equal 1  (clamp -1 1 3))
+(test-equal 1  (clamp 0  1 3))
+(test-equal 1  (clamp 1  1 3))
+(test-equal 2  (clamp 2  1 3))
+(test-equal 3  (clamp 10 1 3))
 
-  (assert-uim-equal -1 '(clamp -2 -1 0))
-  (assert-uim-equal -1 '(clamp -1 -1 0))
-  (assert-uim-equal 0  '(clamp 0  -1 0))
-  (assert-uim-equal 0  '(clamp 1  -1 0))
-  (assert-uim-equal 0  '(clamp 2  -1 0))
-  (assert-uim-equal 0  '(clamp 10 -1 0))
+(test-equal -1 (clamp -2 -1 3))
+(test-equal -1 (clamp -1 -1 3))
+(test-equal 0  (clamp 0  -1 3))
+(test-equal 1  (clamp 1  -1 3))
+(test-equal 2  (clamp 2  -1 3))
+(test-equal 3  (clamp 10 -1 3))
 
-  (assert-uim-equal 0  '(clamp -2 0 0))
-  (assert-uim-equal 0  '(clamp -1 0 0))
-  (assert-uim-equal 0  '(clamp 0  0 0))
-  (assert-uim-equal 0  '(clamp 1  0 0))
-  (assert-uim-equal 0  '(clamp 2  0 0))
-  (assert-uim-equal 0  '(clamp 10 0 0))
+(test-equal -2 (clamp -2 -5 5))
+(test-equal -1 (clamp -1 -5 5))
+(test-equal 0  (clamp 0  -5 5))
+(test-equal 1  (clamp 1  -5 5))
+(test-equal 2  (clamp 2  -5 5))
+(test-equal 5  (clamp 10 -5 5))
+(test-end)
 
-  (assert-uim-equal 0  '(clamp -2 0 1))
-  (assert-uim-equal 0  '(clamp -1 0 1))
-  (assert-uim-equal 0  '(clamp 0  0 1))
-  (assert-uim-equal 1  '(clamp 1  0 1))
-  (assert-uim-equal 1  '(clamp 2  0 1))
-  (assert-uim-equal 1  '(clamp 10 0 1))
+(test-begin "try-load")
+(test-true (try-load "anthy.scm"))
+(test-false (try-load "nonexistent.scm"))
+(test-end)
 
-  (assert-uim-equal 0  '(clamp -2 0 2))
-  (assert-uim-equal 0  '(clamp -1 0 2))
-  (assert-uim-equal 0  '(clamp 0  0 2))
-  (assert-uim-equal 1  '(clamp 1  0 2))
-  (assert-uim-equal 2  '(clamp 2  0 2))
-  (assert-uim-equal 2  '(clamp 10 0 2))
+(test-begin "try-require")
+(test-true (try-require "anthy.scm"))
+(test-false (try-require "nonexistent.scm"))
+(test-end)
 
-  (assert-uim-equal 0  '(clamp -2 0 3))
-  (assert-uim-equal 0  '(clamp -1 0 3))
-  (assert-uim-equal 0  '(clamp 0  0 3))
-  (assert-uim-equal 1  '(clamp 1  0 3))
-  (assert-uim-equal 2  '(clamp 2  0 3))
-  (assert-uim-equal 3  '(clamp 10 0 3))
-
-  (assert-uim-equal 1  '(clamp -2 1 3))
-  (assert-uim-equal 1  '(clamp -1 1 3))
-  (assert-uim-equal 1  '(clamp 0  1 3))
-  (assert-uim-equal 1  '(clamp 1  1 3))
-  (assert-uim-equal 2  '(clamp 2  1 3))
-  (assert-uim-equal 3  '(clamp 10 1 3))
-
-  (assert-uim-equal -1 '(clamp -2 -1 3))
-  (assert-uim-equal -1 '(clamp -1 -1 3))
-  (assert-uim-equal 0  '(clamp 0  -1 3))
-  (assert-uim-equal 1  '(clamp 1  -1 3))
-  (assert-uim-equal 2  '(clamp 2  -1 3))
-  (assert-uim-equal 3  '(clamp 10 -1 3))
-
-  (assert-uim-equal -2 '(clamp -2 -5 5))
-  (assert-uim-equal -1 '(clamp -1 -5 5))
-  (assert-uim-equal 0  '(clamp 0  -5 5))
-  (assert-uim-equal 1  '(clamp 1  -5 5))
-  (assert-uim-equal 2  '(clamp 2  -5 5))
-  (assert-uim-equal 5  '(clamp 10 -5 5))
-  #f)
-
-(define (test-try-load)
-  (assert-uim-true-value '(try-load "anthy.scm"))
-  (assert-uim-false '(try-load "nonexistent.scm"))
-  #f)
-
-(define (test-try-require)
-  (assert-uim-true-value '(try-require "anthy.scm"))
-  (assert-uim-false '(try-require "nonexistent.scm"))
-  #f)
-
-(provide "test/util/test-misc")
+(test-report-result)
