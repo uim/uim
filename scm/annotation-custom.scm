@@ -144,7 +144,7 @@
   (N_ "long description will be here."))
 
 (define-custom 'annotation-dict-database
-  "web1913"
+  "gcide"
   '(annotation dict)
   '(string ".*")
   (N_ "Database name of dict")

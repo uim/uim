@@ -436,7 +436,7 @@
                  (= 0 lines))
              (list->string (reverse rest)))
             ((eq? #\newline (car l))
-           (loop (cdr l) (- lines 1) (cons #\space rest)))
+             (loop (cdr l) (- lines 1) (cons #\space rest)))
             (else
              (loop (cdr l) lines (cons (car l) rest))))))
   (let ((candidates (look-context-candidates lc)))
