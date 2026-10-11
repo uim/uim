@@ -10,6 +10,7 @@ foreach definition : [
   ['test-light-record.scm', false],
   ['test-template.scm', false],
   ['test-wlos.scm', false],
+  ['util/test-character-conversion.scm', false],
   ['util/test-character-predicate.scm', false],
   ['util/test-list.scm', false],
   ['util/test-misc.scm', false],

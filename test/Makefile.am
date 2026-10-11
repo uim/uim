@@ -5,6 +5,7 @@ uim_tests = \
         test-light-record.scm \
         test-template.scm \
         test-wlos.scm \
+        util/test-character-conversion.scm \
         util/test-character-predicate.scm \
         util/test-list.scm \
         util/test-misc.scm \
@@ -41,7 +42,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         key/test-base.scm \
         key/test-predicate.scm \
         key/test-translator.scm \
-        util/test-character-conversion.scm \
         util/test-multi-segment.scm \
         util/test-record.scm \
         util/test-rk.scm \
