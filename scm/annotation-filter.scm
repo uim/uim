@@ -44,6 +44,7 @@
 ;;
 
 (define annotation-filter-socket-pair #f)
+(define annotation-filter-disabled? #f)
 
 (define (annotation-filter-open-with-unix-domain-socket)
   (and-let* ((fd (unix-domain-socket-connect annotation-filter-unix-domain-socket-path)))
@@ -58,7 +59,12 @@
   (process-io annotation-filter-command))
 
 (define (annotation-filter-init)
-  (and (not (string=? "" annotation-filter-command))
+  (set! annotation-filter-disabled? #f)
+  #t)
+
+(define (annotation-filter-open)
+  (and (not annotation-filter-disabled?)
+       (not (string=? "" annotation-filter-command))
        (let ((fds (cond ((eq? annotation-filter-server-setting? 'unixdomain)
                          (annotation-filter-open-with-unix-domain-socket))
                         ((eq? annotation-filter-server-setting? 'tcpserver)
@@ -72,7 +78,10 @@
            (set! annotation-filter-socket-pair (cons
                                                  (open-file-port (car fds))
                                                  (open-file-port (cdr fds))))
-           (set! annotation-filter-socket-pair #f)))))
+           (begin
+             (set! annotation-filter-socket-pair #f)
+             (set! annotation-filter-disabled? #t)))
+         annotation-filter-socket-pair)))
 
 (define (annotation-filter-read-message iport)
   (let loop ((line (file-read-line iport))
@@ -84,7 +93,8 @@
         (loop (file-read-line iport) (string-append rest line)))))
 
 (define (annotation-filter-get-text text enc)
-  (or (and annotation-filter-socket-pair
+  (or (and (or annotation-filter-socket-pair
+               (annotation-filter-open))
            (and-let* ((iport (car annotation-filter-socket-pair))
                       (oport (cdr annotation-filter-socket-pair)))
              (file-display (format "GET\t~a\t~a\n" text enc) oport)
@@ -99,4 +109,6 @@
          (if (not (equal? iport oport))
              (close-file-port oport))
          (close-file-port iport)))
+  (set! annotation-filter-socket-pair #f)
+  (set! annotation-filter-disabled? #t)
   #t)
