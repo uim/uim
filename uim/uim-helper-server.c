@@ -1,7 +1,7 @@
 /*
   uim-helper-server.c: This file will be renamed uim-helper-messagebus.c later.
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -77,6 +77,37 @@ static int s_max_fd;
 static int nr_client_slots;
 static struct client *clients;
 static char read_buf[BUFFER_SIZE];
+
+/* Locks PATH.lock while this server is running so that only one server
+ * uses the socket PATH. The lock is released when this process exits
+ * even if it crashes. Returns UIM_FALSE when another server holds the
+ * lock or the lock can't be used. */
+static uim_bool
+lock_server(const char *path)
+{
+  char lock_path[MAXPATHLEN];
+  struct flock lock;
+  int fd;
+
+  if (strlcpy(lock_path, path, sizeof(lock_path)) >= sizeof(lock_path) ||
+      strlcat(lock_path, ".lock", sizeof(lock_path)) >= sizeof(lock_path))
+    return UIM_FALSE;
+
+  fd = open(lock_path, O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
+  if (fd < 0)
+    return UIM_FALSE;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_WRLCK;
+  lock.l_whence = SEEK_SET;
+  if (fcntl(fd, F_SETLK, &lock) < 0) {
+    close(fd);
+    return UIM_FALSE;
+  }
+
+  /* Keep FD open to keep the lock. */
+  return UIM_TRUE;
+}
 
 static int
 init_server_fd(char *path)
@@ -386,6 +417,12 @@ main(int argc, char **argv)
   if (!uim_helper_get_pathname(path, sizeof(path)))
     return 0;
 
+  /* Another server is running or the lock can't be used. The client
+   * that started this server retries connecting. */
+  if (!lock_server(path))
+    return 0;
+
+  /* No other server is running. So the socket is stale if it exists. */
   unlink(path);
 
   clients = NULL;
