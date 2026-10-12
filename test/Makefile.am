@@ -4,6 +4,7 @@ uim_tests = \
         test-fail.scm \
         test-light-record.scm \
         test-template.scm \
+        test-ustr.scm \
         test-wlos.scm \
         i18n/test-base.scm \
         i18n/test-language.scm \
@@ -42,7 +43,7 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         test-action.scm test-custom-rt.scm test-custom.scm \
         test-im.scm test-intl.scm \
         test-lazy-load.scm test-plugin.scm \
-        test-uim-test-utils.scm test-ustr.scm \
+        test-uim-test-utils.scm \
         test-example.scm \
         test-anthy.scm
 
