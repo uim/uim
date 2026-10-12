@@ -12,6 +12,7 @@ foreach definition : [
   ['test-wlos.scm', false],
   ['key/test-base.scm', false],
   ['key/test-predicate.scm', false],
+  ['key/test-translator.scm', false],
   ['util/test-character-conversion.scm', false],
   ['util/test-character-predicate.scm', false],
   ['util/test-list.scm', false],

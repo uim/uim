@@ -7,6 +7,7 @@ uim_tests = \
         test-wlos.scm \
         key/test-base.scm \
         key/test-predicate.scm \
+        key/test-translator.scm \
         util/test-character-conversion.scm \
         util/test-character-predicate.scm \
         util/test-list.scm \
@@ -43,7 +44,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         test-example.scm \
         test-anthy.scm \
         i18n/test-base.scm \
-        i18n/test-language.scm \
-        key/test-translator.scm
+        i18n/test-language.scm
 
 DISTCLEANFILES = run.sh
