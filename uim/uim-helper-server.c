@@ -237,6 +237,11 @@ accept_new_connection(int server_fd)
     return UIM_FALSE;
   }
 
+  if (new_fd >= FD_SETSIZE) {
+    close(new_fd);
+    return UIM_FALSE;
+  }
+
   if ((flag = fcntl(new_fd, F_GETFL)) < 0) {
     close(new_fd);
     return UIM_FALSE;
@@ -333,6 +338,7 @@ static void
 uim_helper_server_process_connection(int server_fd)
 {
   int i;
+  uim_bool session_started = UIM_FALSE;
   fd_set readfds, writefds;
 
   while (1) {
@@ -350,24 +356,20 @@ uim_helper_server_process_connection(int server_fd)
 
     /* for accept new connection */
     if (FD_ISSET(server_fd, &readfds)) {
-      uim_bool accepted;
-      accepted = accept_new_connection(server_fd);
-      if (accepted == UIM_FALSE) {
-	/* acception failed, go next loop without message processing. */
-	continue;
-      }
-    } else {
-      /* check data to write and from clients reached */
-      for (i = 0; i < nr_client_slots; i++) {
-	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &writefds))
-	  write_message(&clients[i]);
-
-	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds))
-	  read_message(&clients[i]);
-      }
+      if (accept_new_connection(server_fd))
+        session_started = UIM_TRUE;
     }
 
-    if (!check_session_alive())
+    /* check data to write and from clients reached */
+    for (i = 0; i < nr_client_slots; i++) {
+      if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &writefds))
+        write_message(&clients[i]);
+
+      if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds))
+        read_message(&clients[i]);
+    }
+
+    if (session_started && !check_session_alive())
       return;
   }
 }
