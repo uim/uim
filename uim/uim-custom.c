@@ -88,9 +88,6 @@
 /* Converts UTF-8 translations to the codeset of the client program. */
 static void *client_converter;
 
-/* we cannot use the variadic macro (i.e. __VA_ARGS__) because we
-   should also support C89 compilers
-*/
 #define UIM_EVAL_STRING_INTERNAL(uc, sexp_str) \
   (uim_scm_last_val = uim_scm_eval_c_string(sexp_str))
 
@@ -481,10 +478,16 @@ uim_custom_get_str(const char *custom_sym, const char *proc)
 static char *
 custom_translate(const char *str)
 {
+  const char *text = UGETTEXT(str);
   char *translated;
 
-  translated = uim_iconv->convert(client_converter, UGETTEXT(str));
-  return translated ? translated : strdup(UGETTEXT(str));
+  translated = uim_iconv->convert(client_converter, text);
+  if (uim_code_conversion_failed(text, translated)) {
+    free(translated);
+    translated = strdup(text);
+  }
+
+  return translated;
 }
 
 static char *

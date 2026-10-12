@@ -73,6 +73,7 @@ Changes:
   (changed) uim_notify_fatal()
   (changed) uim-notify-info
   (changed) uim-notify-fatal
+  (changed) posix-error-string
 Description:
   libuim binds its "uim" text domain to UTF-8. Clients that translate
   strings with the "uim" text domain get UTF-8 translations.
@@ -81,6 +82,8 @@ Description:
   including format strings by _() and make them UTF-8 before passing
   them to uim_notify_info(), uim_notify_fatal(), uim-notify-info and
   uim-notify-fatal. They don't translate nor convert messages.
+  Embedded values such as file names and messages of strerror() must
+  be UTF-8 too. posix-error-string returns UTF-8 for it.
   Notification plugins receive UTF-8 messages and convert them for
   their notification agents. The builtin stderr agent writes them in
   the codeset of the locale.

@@ -422,7 +422,8 @@ c_sleep(uim_lisp seconds_)
 static uim_lisp
 c_error_string()
 {
-  return MAKE_STR(strerror(errno));
+  /* UTF-8 for uim-notify. */
+  return MAKE_STR_DIRECTLY(uim_locale_to_utf8(strerror(errno)));
 }
 
 void

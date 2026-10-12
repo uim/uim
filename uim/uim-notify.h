@@ -40,9 +40,11 @@
  * Messages are UTF-8. Callers translate messages including format
  * strings and make them UTF-8 before passing them to uim_notify_info()
  * and uim_notify_fatal() because they don't translate nor convert
- * messages. libuim binds its text domain to UTF-8 so that _() returns
- * UTF-8. It is notification plugin's responsibility to convert messages
- * into encoding suitable for the notification agents.
+ * messages. Embedded values such as file names and messages of
+ * strerror() must be UTF-8 too. libuim binds its text domain to UTF-8
+ * so that _() returns UTF-8. It is notification plugin's
+ * responsibility to convert messages into encoding suitable for the
+ * notification agents.
  */
 
 #ifndef UIM_NOTIFY_H

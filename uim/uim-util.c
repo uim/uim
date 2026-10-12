@@ -268,6 +268,29 @@ uim_puts_utf8_to_stderr(const char *msg)
   fputs(msg, stderr);
 }
 
+/* Converts STR in the codeset of the locale such as a message of
+ * strerror() to UTF-8 for uim-notify. Returns a copy of STR when it
+ * can't be converted. The caller frees the result. */
+char *
+uim_locale_to_utf8(const char *str)
+{
+  void *converter = NULL;
+  char *utf8;
+
+#if HAVE_LANGINFO_CODESET
+  converter = uim_iconv->create("UTF-8", nl_langinfo(CODESET));
+#endif
+  utf8 = uim_iconv->convert(converter, str);
+  if (converter)
+    uim_iconv->release(converter);
+  if (uim_code_conversion_failed(str, utf8)) {
+    free(utf8);
+    utf8 = uim_strdup(str);
+  }
+
+  return utf8;
+}
+
 void
 uim_init_util_subrs(void)
 {

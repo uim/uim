@@ -172,6 +172,15 @@ uim_bool uim_notify_info(const char *msg_fmt, ...);
 uim_bool uim_notify_fatal(const char *msg_fmt, ...);
 #endif
 void uim_puts_utf8_to_stderr(const char *msg);
+char *uim_locale_to_utf8(const char *str);
+
+/* Returns UIM_TRUE when the convert() of struct uim_code_converter
+ * failed to convert STR to CONVERTED. convert() returns "" on error. */
+static inline uim_bool
+uim_code_conversion_failed(const char *str, const char *converted)
+{
+  return !converted || (str[0] != '\0' && converted[0] == '\0');
+}
 
 void uim_set_encoding(uim_context uc, const char *enc);
 #if HAVE_ISSETUGID
