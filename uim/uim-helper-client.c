@@ -73,13 +73,87 @@ get_server_command(void)
   return UIM_LIBEXECDIR "/uim-helper-server";
 }
 
+static int
+create_client_socket(void)
+{
+  int fd;
+
+#ifdef SOCK_CLOEXEC
+  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
+  fd = socket(PF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  if (fd == -1 && errno == EINVAL)
+    /* fallback to plain SOCK_TYPE on older kernel */
+#endif
+  fd = socket(PF_UNIX, SOCK_STREAM, 0);
+  if (fd < 0)
+    return -1;
+
+  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
+
+#if !defined(HAVE_GETPEEREID) && defined(LOCAL_CREDS)
+  /* Set the socket to receive credentials on the next message */
+  {
+    int on = 1;
+    setsockopt(fd, 0, LOCAL_CREDS, &on, sizeof(on));
+  }
+#endif
+
+  return fd;
+}
+
+static int
+acquire_server_start_lock(const char *socket_path)
+{
+  char lock_path[MAXPATHLEN];
+  struct flock lock;
+  int lock_fd;
+  int result;
+
+  if (strlcpy(lock_path, socket_path, sizeof(lock_path)) >= sizeof(lock_path) ||
+      strlcat(lock_path, ".lock", sizeof(lock_path)) >= sizeof(lock_path)) {
+    errno = ENAMETOOLONG;
+    return -1;
+  }
+
+  lock_fd = open(lock_path, O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
+  if (lock_fd < 0)
+    return -1;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_WRLCK;
+  lock.l_whence = SEEK_SET;
+  result = fcntl(lock_fd, F_SETLKW, &lock);
+  if (result < 0) {
+    close(lock_fd);
+    return -1;
+  }
+
+  return lock_fd;
+}
+
+static void
+release_server_start_lock(int lock_fd)
+{
+  struct flock lock;
+
+  if (lock_fd < 0)
+    return;
+
+  memset(&lock, 0, sizeof(lock));
+  lock.l_type = F_UNLCK;
+  lock.l_whence = SEEK_SET;
+  fcntl(lock_fd, F_SETLK, &lock);
+  close(lock_fd);
+}
+
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
   struct sockaddr_un server;
   char path[MAXPATHLEN];
   FILE *serv_r = NULL, *serv_w = NULL;
   int fd = -1;
-  
+  int server_start_lock_fd = -1;
+
   uim_fd = -1;
 
   if (!uim_helper_get_pathname(path, sizeof(path)))
@@ -89,32 +163,40 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
-#ifdef SOCK_CLOEXEC
-  /* linux-2.6.27+ variant that prevents racing on concurrent fork & exec in other thread */
-  fd = socket(PF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
-  if (fd == -1 && errno == EINVAL)
-    /* fallback to plain SOCK_TYPE on older kernel */
-#endif
-  fd = socket(PF_UNIX, SOCK_STREAM, 0);
+  fd = create_client_socket();
   if (fd < 0) {
     perror("fail to create socket");
     goto error;
   }
-  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
-  
-#if !defined(HAVE_GETPEEREID) && defined(LOCAL_CREDS)
-  /* Set the socket to receive credentials on the next message */
-  {
-    int on = 1;
-    setsockopt(fd, 0, LOCAL_CREDS, &on, sizeof(on));
-  }
-#endif
 
-
-  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
+  if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
     pid_t serv_pid = 0;
     char buf[128];
-    
+
+    close(fd);
+    fd = -1;
+
+    server_start_lock_fd = acquire_server_start_lock(path);
+    if (server_start_lock_fd < 0) {
+      perror("uim-helper: cannot acquire server start lock");
+      goto error;
+    }
+
+    fd = create_client_socket();
+    if (fd < 0) {
+      perror("fail to create socket");
+      goto error;
+    }
+
+    if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == 0) {
+      release_server_start_lock(server_start_lock_fd);
+      server_start_lock_fd = -1;
+      goto connected;
+    }
+
+    close(fd);
+    fd = -1;
+
     serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w,
 				    get_server_command());
 
@@ -125,11 +207,28 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
       if (strcmp( buf, "\n" ) == 0)
 	break;
     }
-    
-    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0)
+
+    if (serv_r) {
+      fclose(serv_r);
+      serv_r = NULL;
+    }
+    if (serv_w) {
+      fclose(serv_w);
+      serv_w = NULL;
+    }
+
+    fd = create_client_socket();
+    if (fd < 0)
       goto error;
+
+    if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0)
+      goto error;
+
+    release_server_start_lock(server_start_lock_fd);
+    server_start_lock_fd = -1;
   }
 
+connected:
   if (uim_helper_check_connection_fd(fd))
     goto error;
 
@@ -141,6 +240,8 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   return fd;
 
 error:
+  release_server_start_lock(server_start_lock_fd);
+
   if (fd != -1)
     close(fd);
 
