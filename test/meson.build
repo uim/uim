@@ -8,6 +8,7 @@ test_environment = environment({
 # [test, should_fail]
 foreach definition : [
   ['test-action.scm', false],
+  ['test-anthy.scm', false],
   ['test-custom-rt.scm', false],
   ['test-custom.scm', false],
   ['test-fail.scm', true],
@@ -16,6 +17,7 @@ foreach definition : [
   ['test-lazy-load.scm', false],
   ['test-light-record.scm', false],
   ['test-plugin.scm', false],
+  ['test-skk-custom.scm', false],
   ['test-template.scm', false],
   ['test-ustr.scm', false],
   ['test-wlos.scm', false],

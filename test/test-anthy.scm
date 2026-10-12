@@ -1,6 +1,4 @@
-#!/usr/bin/env gosh
-
-;;; Copyright (c) 2007-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2007-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -29,23 +27,19 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(use test.unit)
+(require "anthy.scm")
 
-(require "test/uim-test-utils")
+(test-begin "anthy-version->major.minor")
+(test-equal '("-1" . "")
+	    (anthy-version->major.minor "(unknown)"))
+(test-equal '("7100" . "b")
+	    (anthy-version->major.minor "7100b"))
+(test-equal '("8158" . "memm")
+	    (anthy-version->major.minor "8158memm"))
+(test-equal '("9100" . "")
+	    (anthy-version->major.minor "9100"))
+(test-end)
 
-(define-uim-test-case "testcase anthy"
-  (setup
-   (lambda ()
-    (uim '(require-module "anthy"))))
-
-  ("test anthy-version"
-   (assert-equal '("-1" . "")
-		 (uim '(anthy-version->major.minor "(unknown)")))
-   (assert-equal '("7100" . "b")
-		 (uim '(anthy-version->major.minor "7100b")))
-   (assert-equal '("8158" . "memm")
-		 (uim '(anthy-version->major.minor "8158memm")))
-   (assert-equal '("9100" . "")
-		 (uim '(anthy-version->major.minor "9100")))))
+(test-report-result)

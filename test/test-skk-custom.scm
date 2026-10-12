@@ -27,47 +27,41 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-(use test.unit)
+(require-extension (unittest))
 
-(require "test/uim-test-utils")
+;; im-custom.scm requires stub-im-list defined in loader.scm but
+;; loader.scm isn't loaded with LIBUIM_VANILLA=1.
+(define stub-im-list '())
+(require "custom.scm")
+(require "skk-custom.scm")
 
-(define-uim-test-case "testcase skk skkserv encoding"
-  (setup
-   (lambda ()
-     (uim '(load-enabled-modules))
-     (uim '(require "custom.scm"))
-     (uim '(require "skk-custom.scm"))))
+(test-begin "skkserv encoding default and activity")
+(test-eq    'euc-jp skk-skkserv-encoding)
+(test-true  (custom-valid? 'skk-skkserv-encoding 'euc-jp))
+(test-true  (custom-valid? 'skk-skkserv-encoding 'utf-8))
+(test-false (custom-active? 'skk-skkserv-encoding))
+(test-true  (custom-set-value! 'skk-use-skkserv? #t))
+(test-true  (custom-active? 'skk-skkserv-encoding))
+(test-true  (custom-set-value! 'skk-skkserv-encoding 'utf-8))
+(test-eq    'utf-8 skk-skkserv-encoding)
+(test-true  (custom-set-value! 'skk-skkserv-encoding 'euc-jp))
+(test-eq    'euc-jp skk-skkserv-encoding)
+(test-end)
 
-  ("test skkserv encoding default and activity"
-   (assert-equal 'euc-jp (uim 'skk-skkserv-encoding))
-   (assert-true  (uim-bool '(custom-valid? 'skk-skkserv-encoding 'euc-jp)))
-   (assert-true  (uim-bool '(custom-valid? 'skk-skkserv-encoding 'utf-8)))
-   (assert-false (uim-bool '(custom-active? 'skk-skkserv-encoding)))
-   (assert-true  (uim-bool '(custom-set-value! 'skk-use-skkserv? #t)))
-   (assert-true  (uim-bool '(custom-active? 'skk-skkserv-encoding)))
-   (assert-true  (uim-bool '(custom-set-value! 'skk-skkserv-encoding 'utf-8)))
-   (assert-equal 'utf-8 (uim 'skk-skkserv-encoding))
-   (assert-true  (uim-bool '(custom-set-value! 'skk-skkserv-encoding 'euc-jp)))
-   (assert-equal 'euc-jp (uim 'skk-skkserv-encoding))))
+(test-begin "dictionary encoding defaults and choices")
+(test-eq    'euc-jp skk-dic-file-encoding)
+(test-eq    'euc-jp skk-personal-dic-encoding)
+(test-eq    'euc-jp skk-uim-personal-dic-encoding)
+(test-true  (custom-valid? 'skk-dic-file-encoding 'euc-jp))
+(test-true  (custom-valid? 'skk-dic-file-encoding 'utf-8))
+(test-true  (custom-valid? 'skk-personal-dic-encoding 'euc-jp))
+(test-true  (custom-valid? 'skk-personal-dic-encoding 'utf-8))
+(test-true  (custom-valid? 'skk-uim-personal-dic-encoding 'euc-jp))
+(test-true  (custom-valid? 'skk-uim-personal-dic-encoding 'utf-8))
+(test-true  (custom-set-value! 'skk-use-skkserv? #f))
+(test-true  (custom-active? 'skk-dic-file-encoding))
+(test-true  (custom-set-value! 'skk-use-skkserv? #t))
+(test-false (custom-active? 'skk-dic-file-encoding))
+(test-end)
 
-(define-uim-test-case "testcase skk dictionary encoding"
-  (setup
-   (lambda ()
-     (uim '(load-enabled-modules))
-     (uim '(require "custom.scm"))
-     (uim '(require "skk-custom.scm"))))
-
-  ("test dictionary encoding defaults and choices"
-   (assert-equal 'euc-jp (uim 'skk-dic-file-encoding))
-   (assert-equal 'euc-jp (uim 'skk-personal-dic-encoding))
-   (assert-equal 'euc-jp (uim 'skk-uim-personal-dic-encoding))
-   (assert-true (uim-bool '(custom-valid? 'skk-dic-file-encoding 'euc-jp)))
-   (assert-true (uim-bool '(custom-valid? 'skk-dic-file-encoding 'utf-8)))
-   (assert-true (uim-bool '(custom-valid? 'skk-personal-dic-encoding 'euc-jp)))
-   (assert-true (uim-bool '(custom-valid? 'skk-personal-dic-encoding 'utf-8)))
-   (assert-true (uim-bool '(custom-valid? 'skk-uim-personal-dic-encoding 'euc-jp)))
-   (assert-true (uim-bool '(custom-valid? 'skk-uim-personal-dic-encoding 'utf-8)))
-   (assert-true (uim-bool '(custom-set-value! 'skk-use-skkserv? #f)))
-   (assert-true (uim-bool '(custom-active? 'skk-dic-file-encoding)))
-   (assert-true (uim-bool '(custom-set-value! 'skk-use-skkserv? #t)))
-   (assert-false (uim-bool '(custom-active? 'skk-dic-file-encoding)))))
+(test-report-result)
