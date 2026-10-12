@@ -169,7 +169,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
     goto error;
   }
 
-  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
+  if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
     pid_t serv_pid = 0;
     char buf[128];
 
@@ -221,7 +221,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
     if (fd < 0)
       goto error;
 
-    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0)
+    if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0)
       goto error;
 
     release_server_start_lock(server_start_lock_fd);
