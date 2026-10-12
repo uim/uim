@@ -1,4 +1,4 @@
-;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -27,246 +27,214 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.test-foo
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.test-foo)
+(require "lazy-load.scm")
 
-(define (setup)
-  (uim-test-setup)
-  ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
-  (uim-eval '(set! enable-lazy-loading? #t))
-  (uim-eval '(load-enabled-modules))
-  (uim-define-siod-compatible-require)
-  (uim-eval '(require "lazy-load.scm")))
+;; Only the IMs in enabled-im-list are registered. It's defined in
+;; loader.scm but loader.scm may not be available because it's generated
+;; at build time.
+(set! enabled-im-list '(direct latin py pyunihan pinyin-big5))
 
-(define (teardown)
-  (uim-test-teardown))
+(define setup
+  (lambda ()
+    (set! im-list ())))
 
-(define (test-stub-im-generate-init-handler)
-  (uim-eval
-   '(begin
-      (set! im-list ())
-      (undefine *pyload.scm-loaded*)))
-  (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
+;; require-module doesn't load a module that is already loaded. So the
+;; tests for stub-im-generate-stub-im-list and
+;; stub-im-generate-all-stub-im-list must be run before the other tests
+;; load the modules.
+(test-begin "stub-im-generate-stub-im-list")
+(setup)
+(set! installed-im-module-list '("latin" "pyload"))
 
-  (uim-eval
-   '(define init-handler
-      (stub-im-generate-init-handler 'py "pyload")))
-  (assert-uim-true  '(procedure? init-handler))
-  (assert-uim-false '(retrieve-im 'py))
-  (uim-eval
-   '(define test-context
-      (init-handler 0 #f #f)))
-  (assert-uim-equal 'py
-                    '(im-name (retrieve-im 'py)))
-  (assert-uim-equal "pyload"
-                    '(im-module-name (retrieve-im 'py)))
-  (assert-uim-equal 'py
-                    '(im-name (context-im test-context)))
-  (assert-uim-equal "pyload"
-                    '(im-module-name (context-im test-context)))
-  #f)
+(test-false (retrieve-im 'latin))
+(test-false (retrieve-im 'py))
+(test-false (retrieve-im 'pyunihan))
 
-(define (test-register-stub-im)
-  (uim-eval
-   '(begin
-      (set! im-list ())
-      (undefine *pyload.scm-loaded*)))
-  (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
+(test-equal '()
+	    (stub-im-generate-stub-im-list '()))
+(test-equal (list
+	     (string-append
+	      "    (py\n"
+	      "     \"zh_CN\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"New Pinyin (Simplified)\"\n"
+	      "     \"Pinyin input method (Simplified Chinese version)\"\n"
+	      "     \"pyload\")\n"))
+	    (stub-im-generate-stub-im-list '(py)))
+(test-equal (list
+	     (string-append
+	      "    (pyunihan\n"
+	      "     \"zh\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Pinyin (Unicode)\"\n"
+	      "     \"Pinyin input method (Unicode version)\"\n"
+	      "     \"pyload\")\n"))
+	    (stub-im-generate-stub-im-list '(pyunihan)))
+(test-equal (list
+	     (string-append
+	      "    (latin\n"
+	      "     \"\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Latin characters\"\n"
+	      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
+	      "     \"latin\")\n"))
+	    (stub-im-generate-stub-im-list '(latin)))
 
-  (uim-eval
-   '(begin
-      (register-stub-im
-       'py
-       "zh_CN"
-       "UTF-8"
-       "New Pinyin (Simplified)"
-       "Pinyin input method (Simplified Chinese version)"
-       "pyload")
-      (define init-handler (im-init-handler (retrieve-im 'py)))
-      (im-set-init-handler! (retrieve-im 'py) 'init)))
-  (assert-uim-equal '(py
-                      "zh_CN"
-                      "UTF-8"
-                      "New Pinyin (Simplified)"
-                      "Pinyin input method (Simplified Chinese version)"
-                      ;; replace () with #f for R5RS compliant interpreter
-                      #f ;; arg
-                      init
-                      #f ;; release-handler
-                      #f ;; mode-handler
-                      #f ;; press-key-handler
-                      #f ;; release-key-handler
-                      #f ;; reset-handler
-                      #f ;; get-candidate-handler
-                      #f ;; set-candidate-index-handler
-                      #f ;; prop-activate-handler
-                      #f ;; input-string-handler
-                      #f ;; focus-in-handler
-                      #f ;; focus-out-handler
-                      #f ;; place-handler
-                      #f ;; displace-handler
-                      "pyload"
-                      #f) ;; delay-activating-handler
-                    '(retrieve-im 'py))
-  (uim-eval '(im-set-init-handler! (retrieve-im 'py) init-handler))
+(test-equal (list
+	     (string-append
+	      "    (py\n"
+	      "     \"zh_CN\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"New Pinyin (Simplified)\"\n"
+	      "     \"Pinyin input method (Simplified Chinese version)\"\n"
+	      "     \"pyload\")\n")
+	     (string-append
+	      "    (latin\n"
+	      "     \"\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Latin characters\"\n"
+	      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
+	      "     \"latin\")\n")
+	     (string-append
+	      "    (pyunihan\n"
+	      "     \"zh\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Pinyin (Unicode)\"\n"
+	      "     \"Pinyin input method (Unicode version)\"\n"
+	      "     \"pyload\")\n"))
+	    (stub-im-generate-stub-im-list '(py latin pyunihan)))
+(test-end)
 
-  (assert-uim-true  '(procedure? (im-init-handler
-                                  (retrieve-im 'py))))
-  ;; to prevent SEGV on create-context
-  (uim-eval
-   '(begin
-      (define im-set-encoding (lambda arg #f))
-      (define im-clear-preedit (lambda arg #f))
-      (define im-pushback-preedit (lambda arg #f))
-      (define im-update-preedit (lambda arg #f))
-      (define im-update-prop-list (lambda arg #f))
-      (define im-clear-mode-list (lambda arg #f))
-      (define im-pushback-mode-list (lambda arg #f))
-      (define im-update-mode-list (lambda arg #f))
-      (define im-update-mode (lambda arg #f))
-      (create-context 0 #f 'py)
+(test-begin "stub-im-generate-all-stub-im-list")
+;; Use the IMs registered by the previous test because the modules are
+;; already loaded.
+(set! installed-im-module-list '("latin" "pyload"))
+(test-equal (list
+	     (string-append
+	      "    (latin\n"
+	      "     \"\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Latin characters\"\n"
+	      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
+	      "     \"latin\")\n")
+	     (string-append
+	      "    (py\n"
+	      "     \"zh_CN\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"New Pinyin (Simplified)\"\n"
+	      "     \"Pinyin input method (Simplified Chinese version)\"\n"
+	      "     \"pyload\")\n")
+	     (string-append
+	      "    (pyunihan\n"
+	      "     \"zh\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Pinyin (Unicode)\"\n"
+	      "     \"Pinyin input method (Unicode version)\"\n"
+	      "     \"pyload\")\n")
+	     (string-append
+	      "    (pinyin-big5\n"
+	      "     \"zh_TW:zh_HK\"\n"
+	      "     \"UTF-8\"\n"
+	      "     \"Pinyin (Traditional)\"\n"
+	      "     \"Pinyin input method (Traditional Chinese version)\"\n"
+	      "     \"pyload\")\n"))
+	    (stub-im-generate-all-stub-im-list))
 
-      (define test-context (assv 0 context-list))))
+(setup)
+(set! installed-im-module-list '())
+(test-equal '()
+	    (stub-im-generate-all-stub-im-list))
+(test-end)
 
-  (assert-uim-equal 'py
-                    '(im-name (context-im test-context)))
-  (assert-uim-equal "pyload"
-                    '(im-module-name (context-im test-context)))
-  (uim-eval '(define test-py (retrieve-im 'py)))
-  (assert-uim-equal 'py
-                    '(im-name test-py))
-  (assert-uim-equal "pyload"
-                    '(im-module-name test-py))
-  (assert-uim-true  '(procedure? (im-init-handler test-py)))
-  (assert-uim-false '(procedure? (im-release-handler test-py)))
-  (assert-uim-true  '(procedure? (im-mode-handler test-py)))
-  (assert-uim-true  '(procedure? (im-key-press-handler test-py)))
-  (assert-uim-true  '(procedure? (im-key-release-handler test-py)))
-  (assert-uim-true  '(procedure? (im-reset-handler test-py)))
-  (assert-uim-true  '(procedure? (im-get-candidate-handler test-py)))
-  (assert-uim-true  '(procedure? (im-set-candidate-index-handler test-py)))
-  (assert-uim-true  '(procedure? (im-prop-activate-handler test-py)))
-  #f)
+(test-begin "stub-im-generate-init-handler")
+(setup)
+(define init-handler
+  (stub-im-generate-init-handler 'py "pyload"))
+(test-true  (procedure? init-handler))
+(test-false (retrieve-im 'py))
+(define test-context
+  (init-handler 0 #f #f))
+(test-eq    'py
+	    (im-name (retrieve-im 'py)))
+(test-equal "pyload"
+	    (im-module-name (retrieve-im 'py)))
+(test-eq    'py
+	    (im-name (context-im test-context)))
+(test-equal "pyload"
+	    (im-module-name (context-im test-context)))
+(test-end)
 
-(define (test-stub-im-generate-stub-im-list)
-  (uim-eval
-   '(begin
-      (set! im-list ())
-      (undefine *latin.scm-loaded*)
-      (undefine *pyload.scm-loaded*)
-      (set! installed-im-module-list '("latin" "pyload"))))
-  (assert-uim-false '(symbol-bound? '*latin.scm-loaded*))
-  (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
+(test-begin "register-stub-im")
+(setup)
+(register-stub-im
+ 'py
+ "zh_CN"
+ "UTF-8"
+ "New Pinyin (Simplified)"
+ "Pinyin input method (Simplified Chinese version)"
+ "pyload")
+(define init-handler (im-init-handler (retrieve-im 'py)))
+(im-set-init-handler! (retrieve-im 'py) 'init)
+(test-equal '(py
+	      "zh_CN"
+	      "UTF-8"
+	      "New Pinyin (Simplified)"
+	      "Pinyin input method (Simplified Chinese version)"
+	      #f ;; arg
+	      init
+	      #f ;; release-handler
+	      #f ;; mode-handler
+	      #f ;; press-key-handler
+	      #f ;; release-key-handler
+	      #f ;; reset-handler
+	      #f ;; get-candidate-handler
+	      #f ;; set-candidate-index-handler
+	      #f ;; prop-activate-handler
+	      #f ;; input-string-handler
+	      #f ;; focus-in-handler
+	      #f ;; focus-out-handler
+	      #f ;; place-handler
+	      #f ;; displace-handler
+	      "pyload"
+	      #f) ;; delay-activating-handler
+	    (retrieve-im 'py))
+(im-set-init-handler! (retrieve-im 'py) init-handler)
 
-  (assert-uim-false '(retrieve-im 'latin))
-  (assert-uim-false '(retrieve-im 'py))
-  (assert-uim-false '(retrieve-im 'pyunihan))
+(test-true  (procedure? (im-init-handler
+			 (retrieve-im 'py))))
+;; to prevent SEGV on create-context
+(define im-set-encoding (lambda arg #f))
+(define im-clear-preedit (lambda arg #f))
+(define im-pushback-preedit (lambda arg #f))
+(define im-update-preedit (lambda arg #f))
+(define im-update-prop-list (lambda arg #f))
+(define im-clear-mode-list (lambda arg #f))
+(define im-pushback-mode-list (lambda arg #f))
+(define im-update-mode-list (lambda arg #f))
+(define im-update-mode (lambda arg #f))
+(create-context 0 #f 'py)
+(define test-context (assv 0 context-list))
 
-  (assert-uim-equal ()
-                    '(stub-im-generate-stub-im-list ()))
-  (assert-uim-equal (list
-                     (string-append
-                      "    (py\n"
-                      "     \"zh_CN\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"New Pinyin (Simplified)\"\n"
-                      "     \"Pinyin input method (Simplified Chinese version)\"\n"
-                      "     \"pyload\")\n"))
-                    '(stub-im-generate-stub-im-list '(py)))
-  (assert-uim-equal (list
-                     (string-append
-                      "    (pyunihan\n"
-                      "     \"zh\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Pinyin (Unicode)\"\n"
-                      "     \"Pinyin input method (Unicode version)\"\n"
-                      "     \"pyload\")\n"))
-                    '(stub-im-generate-stub-im-list '(pyunihan)))
-  (assert-uim-equal (list
-                     (string-append
-                      "    (latin\n"
-                      "     \"\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Latin characters\"\n"
-                      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
-                      "     \"latin\")\n"))
-                    '(stub-im-generate-stub-im-list '(latin)))
+(test-eq    'py
+	    (im-name (context-im test-context)))
+(test-equal "pyload"
+	    (im-module-name (context-im test-context)))
+(define test-py (retrieve-im 'py))
+(test-eq    'py
+	    (im-name test-py))
+(test-equal "pyload"
+	    (im-module-name test-py))
+(test-true  (procedure? (im-init-handler test-py)))
+(test-false (procedure? (im-release-handler test-py)))
+(test-true  (procedure? (im-mode-handler test-py)))
+(test-true  (procedure? (im-key-press-handler test-py)))
+(test-true  (procedure? (im-key-release-handler test-py)))
+(test-true  (procedure? (im-reset-handler test-py)))
+(test-true  (procedure? (im-get-candidate-handler test-py)))
+(test-true  (procedure? (im-set-candidate-index-handler test-py)))
+(test-true  (procedure? (im-prop-activate-handler test-py)))
+(test-end)
 
-  (assert-uim-equal (list
-                     (string-append
-                      "    (py\n"
-                      "     \"zh_CN\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"New Pinyin (Simplified)\"\n"
-                      "     \"Pinyin input method (Simplified Chinese version)\"\n"
-                      "     \"pyload\")\n")
-                     (string-append
-                      "    (latin\n"
-                      "     \"\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Latin characters\"\n"
-                      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
-                      "     \"latin\")\n")
-                     (string-append
-                      "    (pyunihan\n"
-                      "     \"zh\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Pinyin (Unicode)\"\n"
-                      "     \"Pinyin input method (Unicode version)\"\n"
-                      "     \"pyload\")\n"))
-                    '(stub-im-generate-stub-im-list '(py latin pyunihan)))
-  #f)
-
-(define (test-stub-im-generate-all-stub-im-list)
-  (uim-eval
-   '(begin
-      (set! im-list ())
-      (undefine *latin.scm-loaded*)
-      (undefine *pyload.scm-loaded*)
-      (set! installed-im-module-list '("latin" "pyload"))))
-  (assert-uim-equal (list
-                     (string-append
-                      "    (latin\n"
-                      "     \"\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Latin characters\"\n"
-                      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
-                      "     \"latin\")\n")
-                     (string-append
-                      "    (py\n"
-                      "     \"zh_CN\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"New Pinyin (Simplified)\"\n"
-                      "     \"Pinyin input method (Simplified Chinese version)\"\n"
-                      "     \"pyload\")\n")
-                     (string-append
-                      "    (pyunihan\n"
-                      "     \"zh\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Pinyin (Unicode)\"\n"
-                      "     \"Pinyin input method (Unicode version)\"\n"
-                      "     \"pyload\")\n")
-                     (string-append
-                      "    (pinyin-big5\n"
-                      "     \"zh_TW:zh_HK\"\n"
-                      "     \"UTF-8\"\n"
-                      "     \"Pinyin (Traditional)\"\n"
-                      "     \"Pinyin input method (Traditional Chinese version)\"\n"
-                      "     \"pyload\")\n"))
-                    '(stub-im-generate-all-stub-im-list))
-
-  (uim-eval
-   '(begin
-      (set! im-list ())
-      (undefine *latin.scm-loaded*)
-      (undefine *pyload.scm-loaded*)
-      (set! installed-im-module-list '())))
-  (assert-uim-equal ()
-                    '(stub-im-generate-all-stub-im-list))
-  #f)
-
-(provide "test/test-lazy-load")
+(test-report-result)

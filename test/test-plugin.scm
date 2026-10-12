@@ -1,4 +1,4 @@
-;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -27,59 +27,40 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 6605 (new repository)
+;; TODO: test load-plugin (requires complete unload-plugin
+;; implementation)
 
-(define-module test.test-plugin
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.test-plugin)
+(require-extension (unittest))
 
-(define (setup)
-  (uim-test-setup)
-  (uim-define-siod-compatible-require))
+;; Only the IMs in enabled-im-list are registered. It's defined in
+;; loader.scm but loader.scm may not be available because it's generated
+;; at build time.
+(set! enabled-im-list '(direct latin py))
 
-(define (teardown)
-  (uim-test-teardown))
+(test-begin "require-module")
+(test-false (retrieve-im 'latin))
+(test-false (retrieve-im 'py))
+;; im-module-name == im-name
+(test-true  (require-module "latin"))
+(test-equal 'latin
+	    (im-name (retrieve-im 'latin)))
+(test-equal "latin"
+	    (im-module-name (retrieve-im 'latin)))
+;; im-module-name != im-name
+(test-true  (require-module "pyload"))
+(test-equal 'py
+	    (im-name (retrieve-im 'py)))
+(test-equal "pyload"
+	    (im-module-name (retrieve-im 'py)))
+;; raw require does not set im-module-name
+(set! im-list ())
+(test-false (retrieve-im 'latin))
+(test-true  (require "latin.scm"))
+(test-equal 'latin
+	    (im-name (retrieve-im 'latin)))
+(test-false (im-module-name (retrieve-im 'latin)))
+;; nonexistent module
+(test-false (require-module "nonexistent"))
+(test-end)
 
-(define (test-require-module)
-   (uim-eval
-    '(begin
-       (set! im-list ())
-       (undefine *latin.scm-loaded*)
-       (undefine *pyload.scm-loaded*)))
-   (assert-uim-false '(symbol-bound? '*latin.scm-loaded*))
-   (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
-   (assert-uim-false '(retrieve-im 'latin))
-   (assert-uim-false '(retrieve-im 'py))
-   ;; im-module-name == im-name
-   (assert-uim-true-value  '(require-module "latin"))
-   (assert-uim-equal 'latin
-		     '(im-name (retrieve-im 'latin)))
-   (assert-uim-equal "latin"
-		     '(im-module-name (retrieve-im 'latin)))
-   ;; im-module-name != im-name
-   (assert-uim-true-value  '(require-module "pyload"))
-   (assert-uim-equal 'py
-		     '(im-name (retrieve-im 'py)))
-   (assert-uim-equal "pyload"
-		     '(im-module-name (retrieve-im 'py)))
-   ;; raw require does not set im-module-name
-   (uim-eval '(set! im-list ()))
-
-   (uim-eval '(undefine *latin.scm-loaded*))
-   (assert-uim-false '(symbol-bound? '*latin.scm-loaded*))
-   (assert-uim-false '(retrieve-im 'latin))
-   (assert-uim-true-value  '(require "latin.scm"))
-
-   (assert-uim-equal 'latin
-		     '(im-name (retrieve-im 'latin)))
-   (assert-uim-false '(im-module-name (retrieve-im 'latin)))
-
-   ;; nonexistent module
-   (assert-uim-false '(require-module "nonexistent"))
-
-   ;; TODO: test load-plugin (requires complete unload-plugin
-   ;; implementation)
-   )
-
-(provide "test/test-plugin")
+(test-report-result)
