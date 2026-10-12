@@ -282,15 +282,20 @@ write_message(struct client *cl)
 	fprintf(stderr, "EAGAIN: fd = %d\n", cl->fd);
 #endif
       } else {
-	perror("uim-helper_server write(2) failed");
-	if (errno == EPIPE) {
-	  fprintf(stderr, "fd = %d\n", cl->fd);
-	  FD_CLR(cl->fd, &s_fdset_read);
-	  FD_CLR(cl->fd, &s_fdset_write);
-	  if (cl->fd == s_max_fd)
-	    s_max_fd--;
-	  close_client(cl);
-	}
+        if (errno == EPIPE || errno == ECONNRESET) {
+          /*
+           * A client may disconnect before a queued broadcast is written.
+           * Treat this expected disconnect without logging it; the kernel
+           * reports the disconnect as EPIPE or ECONNRESET depending on timing.
+           */
+          FD_CLR(cl->fd, &s_fdset_read);
+          FD_CLR(cl->fd, &s_fdset_write);
+          if (cl->fd == s_max_fd)
+            s_max_fd--;
+          close_client(cl);
+        } else {
+          perror("uim-helper_server write(2) failed");
+        }
       }
       break;
     } else {
