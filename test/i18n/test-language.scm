@@ -1,6 +1,6 @@
 ;;; -*- coding: utf-8 -*-
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -29,39 +29,19 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.i18n.language
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.i18n.language)
+;; Messages aren't translated when LANGUAGE is "C" regardless of the
+;; locale.
+(setenv "LANGUAGE" "C" #t)
 
-(define (teardown)
-  (uim-test-teardown))
+(test-begin "lang-code->lang-name-in-en-locale")
+(test-equal "Japanese"
+            (_ (lang-code->lang-name "ja")))
+(test-equal "English"
+            (_ (lang-code->lang-name "en")))
+(test-equal "Chinese"
+            (_ (lang-code->lang-name "zh")))
+(test-end)
 
-(define (test-lang-code->lang-name-in-en-locale)
-  (uim-test-with-environment-variables
-   '(("LC_ALL" . "C"))
-   uim-test-setup)
-  (assert-uim-equal "Japanese"
-                    '(_ (lang-code->lang-name "ja")))
-  (assert-uim-equal "English"
-                    '(_ (lang-code->lang-name "en")))
-  (assert-uim-equal "Chinese"
-                    '(_ (lang-code->lang-name "zh")))
-  #f)
-
-;; Temporally disabled as these tests require mo file installed
-;;(define (test-lang-code->lang-name-in-ja_JP-locale)
-;;  (uim-test-with-environment-variables
-;;   '(("LC_ALL" . "ja_JP.UTF-8"))
-;;   uim-test-setup)
-;;  (assert-uim-equal "日本語"
-;;                    '(_ (lang-code->lang-name "ja")))
-;;  (assert-uim-equal "英語"
-;;                    '(_ (lang-code->lang-name "en")))
-;;  (assert-uim-equal "中国語"
-;;                    '(_ (lang-code->lang-name "zh")))
-;;  #f)
-
-(provide "test/i18n/test-language")
+(test-report-result)
