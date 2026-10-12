@@ -6,6 +6,7 @@ test_environment = environment({
 })
 # [test, should_fail]
 foreach definition : [
+  ['test-action.scm', false],
   ['test-fail.scm', true],
   ['test-light-record.scm', false],
   ['test-template.scm', false],
