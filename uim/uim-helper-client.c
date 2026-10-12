@@ -115,7 +115,7 @@ acquire_server_start_lock(const char *socket_path)
     return -1;
   }
 
-  lock_fd = open(lock_path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+  lock_fd = open(lock_path, O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
   if (lock_fd < 0)
     return -1;
 
