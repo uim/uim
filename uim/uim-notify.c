@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -364,7 +364,7 @@ static uim_bool
 uim_notify_stderr_info(const char *msg)
 {
   fputs("libuim: [info] ", stderr);
-  uim_puts_utf8_to_stderr(msg);
+  uim_fputs_utf8_to_stderr(msg);
   fputs("\n", stderr);
 
   return UIM_TRUE;
@@ -377,7 +377,7 @@ uim_notify_stderr_fatal(const char *msg)
    * exhaustion, printf()s with indirect directives are intentionally
    * avoided here.  -- YamaKen 2008-02-11 */
   fputs("libuim: [fatal] ", stderr);
-  uim_puts_utf8_to_stderr(msg);
+  uim_fputs_utf8_to_stderr(msg);
   fputs("\n", stderr);
 
   return UIM_TRUE;

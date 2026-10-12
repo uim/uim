@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -747,7 +747,7 @@ uim_notify_info(const char *msg_fmt, ...)
   ret = vsnprintf(msg, sizeof(msg), msg_fmt, args);
   va_end(args);
   fputs("libuim: [info] ", stderr);
-  uim_puts_utf8_to_stderr(msg);
+  uim_fputs_utf8_to_stderr(msg);
   fputs("\n", stderr);
 
   return (ret >= 0);
@@ -764,7 +764,7 @@ uim_notify_fatal(const char *msg_fmt, ...)
   ret = vsnprintf(msg, sizeof(msg), msg_fmt, args);
   va_end(args);
   fputs("libuim: [fatal] ", stderr);
-  uim_puts_utf8_to_stderr(msg);
+  uim_fputs_utf8_to_stderr(msg);
   fputs("\n", stderr);
 
   return (ret >= 0);

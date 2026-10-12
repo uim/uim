@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -171,7 +171,7 @@ uim_bool uim_notify_fatal_raw(const char *msg);
 uim_bool uim_notify_info(const char *msg_fmt, ...);
 uim_bool uim_notify_fatal(const char *msg_fmt, ...);
 #endif
-void uim_puts_utf8_to_stderr(const char *msg);
+void uim_fputs_utf8_to_stderr(const char *msg);
 char *uim_locale_to_utf8(const char *str);
 
 /* Returns UIM_TRUE when the convert() of struct uim_code_converter

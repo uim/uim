@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -241,7 +241,7 @@ uim_get_language_code_from_language_name(const char *language_name)
  * stack is used because this is also used on hard situations such as
  * memory exhaustion. */
 void
-uim_puts_utf8_to_stderr(const char *msg)
+uim_fputs_utf8_to_stderr(const char *msg)
 {
 #if HAVE_LANGINFO_CODESET
   iconv_t cd;
