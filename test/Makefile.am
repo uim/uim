@@ -33,7 +33,8 @@ uim_xfail_tests = test-fail.scm
 TESTS_ENVIRONMENT = \
 	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/subprojects/sigscheme/lib" \
 	LIBUIM_SCM_FILES="$(abs_top_srcdir)/scm" \
-	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs"
+	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs" \
+	LIBUIM_VANILLA=1
 LOG_COMPILER = $(SH)
 LOG_FLAGS = run.sh
 if ENABLE_TESTS
