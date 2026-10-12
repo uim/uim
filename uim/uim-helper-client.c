@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -45,6 +45,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
@@ -102,49 +103,28 @@ create_client_socket(void)
 }
 
 static int
-acquire_server_start_lock(const char *socket_path)
+connect_server(const struct sockaddr_un *server)
 {
-  char lock_path[MAXPATHLEN];
-  struct flock lock;
-  int lock_fd;
-  int result;
+  int fd;
 
-  if (strlcpy(lock_path, socket_path, sizeof(lock_path)) >= sizeof(lock_path) ||
-      strlcat(lock_path, ".lock", sizeof(lock_path)) >= sizeof(lock_path)) {
-    errno = ENAMETOOLONG;
+  fd = create_client_socket();
+  if (fd < 0)
+    return -1;
+
+  if (connect(fd, (const struct sockaddr *)server, sizeof(*server)) < 0) {
+    close(fd);
     return -1;
   }
 
-  lock_fd = open(lock_path, O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
-  if (lock_fd < 0)
-    return -1;
-
-  memset(&lock, 0, sizeof(lock));
-  lock.l_type = F_WRLCK;
-  lock.l_whence = SEEK_SET;
-  result = fcntl(lock_fd, F_SETLKW, &lock);
-  if (result < 0) {
-    close(lock_fd);
-    return -1;
-  }
-
-  return lock_fd;
+  return fd;
 }
 
-static void
-release_server_start_lock(int lock_fd)
-{
-  struct flock lock;
-
-  if (lock_fd < 0)
-    return;
-
-  memset(&lock, 0, sizeof(lock));
-  lock.l_type = F_UNLCK;
-  lock.l_whence = SEEK_SET;
-  fcntl(lock_fd, F_SETLK, &lock);
-  close(lock_fd);
-}
+/* A started uim-helper-server exits without listening when another
+ * server is running. The running server may have just been started by
+ * another client and may not be listening yet. So the client retries
+ * connecting for a while. */
+#define CONNECT_RETRY_COUNT 200
+#define CONNECT_RETRY_INTERVAL_NSEC (10 * 1000 * 1000)
 
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
@@ -152,7 +132,6 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   char path[MAXPATHLEN];
   FILE *serv_r = NULL, *serv_w = NULL;
   int fd = -1;
-  int server_start_lock_fd = -1;
 
   uim_fd = -1;
 
@@ -163,39 +142,11 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
-  fd = create_client_socket();
+  fd = connect_server(&server);
   if (fd < 0) {
-    perror("fail to create socket");
-    goto error;
-  }
-
-  if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
     pid_t serv_pid = 0;
     char buf[128];
-
-    close(fd);
-    fd = -1;
-
-    server_start_lock_fd = acquire_server_start_lock(path);
-    if (server_start_lock_fd < 0) {
-      perror("uim-helper: cannot acquire server start lock");
-      goto error;
-    }
-
-    fd = create_client_socket();
-    if (fd < 0) {
-      perror("fail to create socket");
-      goto error;
-    }
-
-    if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == 0) {
-      release_server_start_lock(server_start_lock_fd);
-      server_start_lock_fd = -1;
-      goto connected;
-    }
-
-    close(fd);
-    fd = -1;
+    int i;
 
     serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w,
 				    get_server_command());
@@ -208,27 +159,23 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 	break;
     }
 
-    if (serv_r) {
-      fclose(serv_r);
-      serv_r = NULL;
-    }
-    if (serv_w) {
-      fclose(serv_w);
-      serv_w = NULL;
-    }
+    fclose(serv_r);
+    serv_r = NULL;
+    fclose(serv_w);
+    serv_w = NULL;
 
-    fd = create_client_socket();
+    for (i = 0; i < CONNECT_RETRY_COUNT; i++) {
+      struct timespec interval = {0, CONNECT_RETRY_INTERVAL_NSEC};
+
+      fd = connect_server(&server);
+      if (fd >= 0)
+	break;
+      nanosleep(&interval, NULL);
+    }
     if (fd < 0)
       goto error;
-
-    if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0)
-      goto error;
-
-    release_server_start_lock(server_start_lock_fd);
-    server_start_lock_fd = -1;
   }
 
-connected:
   if (uim_helper_check_connection_fd(fd))
     goto error;
 
@@ -240,8 +187,6 @@ connected:
   return fd;
 
 error:
-  release_server_start_lock(server_start_lock_fd);
-
   if (fd != -1)
     close(fd);
 
