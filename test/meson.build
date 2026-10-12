@@ -8,6 +8,7 @@ test_environment = environment({
 foreach definition : [
   ['test-action.scm', false],
   ['test-fail.scm', true],
+  ['test-im.scm', false],
   ['test-light-record.scm', false],
   ['test-template.scm', false],
   ['test-ustr.scm', false],
