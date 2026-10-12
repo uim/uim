@@ -5,6 +5,8 @@ uim_tests = \
         test-light-record.scm \
         test-template.scm \
         test-wlos.scm \
+        i18n/test-base.scm \
+        i18n/test-language.scm \
         key/test-base.scm \
         key/test-predicate.scm \
         key/test-translator.scm \
@@ -42,8 +44,6 @@ EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         test-lazy-load.scm test-plugin.scm \
         test-uim-test-utils.scm test-ustr.scm \
         test-example.scm \
-        test-anthy.scm \
-        i18n/test-base.scm \
-        i18n/test-language.scm
+        test-anthy.scm
 
 DISTCLEANFILES = run.sh

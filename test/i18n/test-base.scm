@@ -1,4 +1,4 @@
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -27,312 +27,301 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.i18n.test-base
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.i18n.test-base)
-
-(define (setup)
-  (uim-test-setup))
-
-(define (teardown)
-  (uim-test-teardown))
-
-(define (test-locale-new)
-  ;; full format
-  (assert-uim-equal '("ja" "JP" "EUC-JP")
-                    '(locale-new "ja_JP.EUC-JP"))
-  ;; codeset can be omitted
-  (assert-uim-equal '("ja" "JP" "")
-                    '(locale-new "ja_JP"))
-  ;; territory can also be omitted
-  (assert-uim-equal '("ja" "" "")
-                    '(locale-new "ja"))
-  ;; codeset without territory is a valid format
-  (assert-uim-equal '("ja" "" "EUC-JP")
-                    '(locale-new "ja.EUC-JP"))
-  ;; #f, "C" and "POSIX" is interpreted as "en" locale
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new #f))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new "C"))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new "POSIX"))
-  ;; invalid locale strings are rejected
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "d_DE"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "deu_DE"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "de_de_DE"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "de_D"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "de_DEU"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "de_de_DEU"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "_DE"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "_DE."))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "_DE.UTF-8"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "de_.UTF-8"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new "_.UTF-8"))
-  (assert-uim-equal '("" "" "")
-                    '(locale-new ".UTF-8"))
-  #f)
+(test-begin "locale-new")
+;; full format
+(test-equal '("ja" "JP" "EUC-JP")
+            (locale-new "ja_JP.EUC-JP"))
+;; codeset can be omitted
+(test-equal '("ja" "JP" "")
+            (locale-new "ja_JP"))
+;; territory can also be omitted
+(test-equal '("ja" "" "")
+            (locale-new "ja"))
+;; codeset without territory is a valid format
+(test-equal '("ja" "" "EUC-JP")
+            (locale-new "ja.EUC-JP"))
+;; #f, "C" and "POSIX" is interpreted as "en" locale
+(test-equal '("en" "" "")
+            (locale-new #f))
+(test-equal '("en" "" "")
+            (locale-new "C"))
+(test-equal '("en" "" "")
+            (locale-new "POSIX"))
+;; invalid locale strings are rejected
+(test-equal '("" "" "")
+            (locale-new "d_DE"))
+(test-equal '("" "" "")
+            (locale-new "deu_DE"))
+(test-equal '("" "" "")
+            (locale-new "de_de_DE"))
+(test-equal '("" "" "")
+            (locale-new "de_D"))
+(test-equal '("" "" "")
+            (locale-new "de_DEU"))
+(test-equal '("" "" "")
+            (locale-new "de_de_DEU"))
+(test-equal '("" "" "")
+            (locale-new "_DE"))
+(test-equal '("" "" "")
+            (locale-new "_DE."))
+(test-equal '("" "" "")
+            (locale-new "_DE.UTF-8"))
+(test-equal '("" "" "")
+            (locale-new "de_.UTF-8"))
+(test-equal '("" "" "")
+            (locale-new "_.UTF-8"))
+(test-equal '("" "" "")
+            (locale-new ".UTF-8"))
+(test-end)
 
 ;; empty locale is instructs to use the locale of native environment
-(define (test-locale-new-native-environment)
-  ;; it fallbacks to "en" if neither LC_ALL nor LANG defined
-  (uim-eval '(unsetenv  "LC_ALL"))
-  (uim-eval '(unsetenv  "LANG"))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new ""))
-  ;; it looks both LC_ALL and LANG
-  (uim-eval '(setenv  "LC_ALL" "ja_JP.EUC-JP" #t))
-  (uim-eval '(unsetenv  "LANG"))
-  (assert-uim-equal '("ja" "JP" "EUC-JP")
-                    '(locale-new ""))
-  (uim-eval '(unsetenv  "LC_ALL"))
-  (uim-eval '(setenv  "LANG" "ja_JP.EUC-JP" #t))
-  (assert-uim-equal '("ja" "JP" "EUC-JP")
-                    '(locale-new ""))
-  ;; LC_ALL precedes LANG
-  (uim-eval '(setenv  "LC_ALL" "de_DE.UTF-8" #t))
-  (uim-eval '(setenv  "LANG" "ja_JP.EUC-JP" #t))
-  (assert-uim-equal '("de" "DE" "UTF-8")
-                    '(locale-new ""))
-  ;; special locale name from the variables
-  (uim-eval '(setenv  "LC_ALL" "C" #t))
-  (uim-eval '(unsetenv  "LANG"))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new ""))
-  (uim-eval '(setenv  "LC_ALL" "POSIX" #t))
-  (uim-eval '(unsetenv  "LANG"))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new ""))
-  (uim-eval '(unsetenv  "LC_ALL"))
-  (uim-eval '(setenv  "LANG" "C" #t))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new ""))
-  (uim-eval '(unsetenv  "LC_ALL"))
-  (uim-eval '(setenv  "LANG" "POSIX" #t))
-  (assert-uim-equal '("en" "" "")
-                    '(locale-new ""))
-  #f)
+(test-begin "locale-new-native-environment")
+;; it fallbacks to "en" if neither LC_ALL nor LANG defined
+(unsetenv  "LC_ALL")
+(unsetenv  "LANG")
+(test-equal '("en" "" "")
+            (locale-new ""))
+;; it looks both LC_ALL and LANG
+(setenv  "LC_ALL" "ja_JP.EUC-JP" #t)
+(unsetenv  "LANG")
+(test-equal '("ja" "JP" "EUC-JP")
+            (locale-new ""))
+(unsetenv  "LC_ALL")
+(setenv  "LANG" "ja_JP.EUC-JP" #t)
+(test-equal '("ja" "JP" "EUC-JP")
+            (locale-new ""))
+;; LC_ALL precedes LANG
+(setenv  "LC_ALL" "de_DE.UTF-8" #t)
+(setenv  "LANG" "ja_JP.EUC-JP" #t)
+(test-equal '("de" "DE" "UTF-8")
+            (locale-new ""))
+;; special locale name from the variables
+(setenv  "LC_ALL" "C" #t)
+(unsetenv  "LANG")
+(test-equal '("en" "" "")
+            (locale-new ""))
+(setenv  "LC_ALL" "POSIX" #t)
+(unsetenv  "LANG")
+(test-equal '("en" "" "")
+            (locale-new ""))
+(unsetenv  "LC_ALL")
+(setenv  "LANG" "C" #t)
+(test-equal '("en" "" "")
+            (locale-new ""))
+(unsetenv  "LC_ALL")
+(setenv  "LANG" "POSIX" #t)
+(test-equal '("en" "" "")
+            (locale-new ""))
+(test-end)
 
-(define (test-locale-set-lang!)
-  (assert-uim-equal ""
-                    '(locale-set-lang! (locale-new "en") ""))
-  ;; valid langs
-  (assert-uim-equal "ja"
-                    '(locale-set-lang! (locale-new "") "ja"))
-  (assert-uim-equal "zh"
-                    '(locale-set-lang! (locale-new "") "zh"))
-  (assert-uim-equal "de"
-                    '(locale-set-lang! (locale-new "") "de"))
-  ;; locale-set-lang! only accepts two-letter language codes
-  (assert-uim-equal ""
-                    '(locale-set-lang! (locale-new "") "jpn"))
-  (assert-uim-equal ""
-                    '(locale-set-lang! (locale-new "") "zh_CN"))
-  (assert-uim-equal ""
-                    '(locale-set-lang! (locale-new "") "d"))
-  #f)
+(test-begin "locale-set-lang!")
+(test-equal ""
+            (locale-set-lang! (locale-new "en") ""))
+;; valid langs
+(test-equal "ja"
+            (locale-set-lang! (locale-new "") "ja"))
+(test-equal "zh"
+            (locale-set-lang! (locale-new "") "zh"))
+(test-equal "de"
+            (locale-set-lang! (locale-new "") "de"))
+;; locale-set-lang! only accepts two-letter language codes
+(test-equal ""
+            (locale-set-lang! (locale-new "") "jpn"))
+(test-equal ""
+            (locale-set-lang! (locale-new "") "zh_CN"))
+(test-equal ""
+            (locale-set-lang! (locale-new "") "d"))
+(test-end)
 
-(define (test-locale-set-territory!)
-  (assert-uim-equal ""
-                    '(locale-set-territory! (locale-new "en") ""))
-  ;; valid territories
-  (assert-uim-equal "JP"
-                    '(locale-set-territory! (locale-new "") "JP"))
-  (assert-uim-equal "CN"
-                    '(locale-set-territory! (locale-new "") "CN"))
-  (assert-uim-equal "DE"
-                    '(locale-set-territory! (locale-new "") "DE"))
-  ;; locale-set-territory! only accepts two-letter country codes
-  (assert-uim-equal ""
-                    '(locale-set-territory! (locale-new "") "Japan"))
-  (assert-uim-equal ""
-                    '(locale-set-territory! (locale-new "") "zh_CN"))
-  (assert-uim-equal ""
-                    '(locale-set-territory! (locale-new "") "ger"))
-  #f)
+(test-begin "locale-set-territory!")
+(test-equal ""
+            (locale-set-territory! (locale-new "en") ""))
+;; valid territories
+(test-equal "JP"
+            (locale-set-territory! (locale-new "") "JP"))
+(test-equal "CN"
+            (locale-set-territory! (locale-new "") "CN"))
+(test-equal "DE"
+            (locale-set-territory! (locale-new "") "DE"))
+;; locale-set-territory! only accepts two-letter country codes
+(test-equal ""
+            (locale-set-territory! (locale-new "") "Japan"))
+(test-equal ""
+            (locale-set-territory! (locale-new "") "zh_CN"))
+(test-equal ""
+            (locale-set-territory! (locale-new "") "ger"))
+(test-end)
 
-(define (test-locale-lang-territory-str)
-  (assert-uim-equal ""
-                    '(locale-lang-territory-str (locale-new "invalid_IN.")))
-  (assert-uim-equal "ja_JP"
-                    '(locale-lang-territory-str (locale-new "ja_JP.EUC-JP")))
-  (assert-uim-equal "ja_JP"
-                    '(locale-lang-territory-str (locale-new "ja_JP")))
-  (assert-uim-equal "ja"
-                    '(locale-lang-territory-str (locale-new "ja")))
-  (assert-uim-equal "ja"
-                    '(locale-lang-territory-str (locale-new "ja.EUC-JP")))
-  (assert-uim-equal "zh_CN"
-                    '(locale-lang-territory-str (locale-new "zh_CN.UTF-8")))
-  (assert-uim-equal "zh_CN"
-                    '(locale-lang-territory-str (locale-new "zh_CN")))
-  (assert-uim-equal "zh"
-                    '(locale-lang-territory-str (locale-new "zh")))
-  (assert-uim-equal "zh"
-                    '(locale-lang-territory-str (locale-new "zh.UTF-8")))
-  #f)
+(test-begin "locale-lang-territory-str")
+(test-equal ""
+            (locale-lang-territory-str (locale-new "invalid_IN.")))
+(test-equal "ja_JP"
+            (locale-lang-territory-str (locale-new "ja_JP.EUC-JP")))
+(test-equal "ja_JP"
+            (locale-lang-territory-str (locale-new "ja_JP")))
+(test-equal "ja"
+            (locale-lang-territory-str (locale-new "ja")))
+(test-equal "ja"
+            (locale-lang-territory-str (locale-new "ja.EUC-JP")))
+(test-equal "zh_CN"
+            (locale-lang-territory-str (locale-new "zh_CN.UTF-8")))
+(test-equal "zh_CN"
+            (locale-lang-territory-str (locale-new "zh_CN")))
+(test-equal "zh"
+            (locale-lang-territory-str (locale-new "zh")))
+(test-equal "zh"
+            (locale-lang-territory-str (locale-new "zh.UTF-8")))
+(test-end)
 
-(define (test-locale-str)
-  (assert-uim-equal ""
-                    '(locale-str (locale-new "invalid_IN.")))
-  (assert-uim-equal "ja_JP.EUC-JP"
-                    '(locale-str (locale-new "ja_JP.EUC-JP")))
-  (assert-uim-equal "ja_JP"
-                    '(locale-str (locale-new "ja_JP")))
-  (assert-uim-equal "ja"
-                    '(locale-str (locale-new "ja")))
-  (assert-uim-equal "ja.EUC-JP"
-                    '(locale-str (locale-new "ja.EUC-JP")))
-  (assert-uim-equal "zh_CN.UTF-8"
-                    '(locale-str (locale-new "zh_CN.UTF-8")))
-  (assert-uim-equal "zh_CN"
-                    '(locale-str (locale-new "zh_CN")))
-  (assert-uim-equal "zh"
-                    '(locale-str (locale-new "zh")))
-  (assert-uim-equal "zh.UTF-8"
-                    '(locale-str (locale-new "zh.UTF-8")))
-  #f)
+(test-begin "locale-str")
+(test-equal ""
+            (locale-str (locale-new "invalid_IN.")))
+(test-equal "ja_JP.EUC-JP"
+            (locale-str (locale-new "ja_JP.EUC-JP")))
+(test-equal "ja_JP"
+            (locale-str (locale-new "ja_JP")))
+(test-equal "ja"
+            (locale-str (locale-new "ja")))
+(test-equal "ja.EUC-JP"
+            (locale-str (locale-new "ja.EUC-JP")))
+(test-equal "zh_CN.UTF-8"
+            (locale-str (locale-new "zh_CN.UTF-8")))
+(test-equal "zh_CN"
+            (locale-str (locale-new "zh_CN")))
+(test-equal "zh"
+            (locale-str (locale-new "zh")))
+(test-equal "zh.UTF-8"
+            (locale-str (locale-new "zh.UTF-8")))
+(test-end)
 
-(define (test-locale-zh-awared-lang)
-  (assert-uim-equal ""
-                    '(locale-zh-awared-lang (locale-new "invalid_IN.")))
-  (assert-uim-equal "ja"
-                    '(locale-zh-awared-lang (locale-new "ja_JP.EUC-JP")))
-  (assert-uim-equal "ja"
-                    '(locale-zh-awared-lang (locale-new "ja_JP")))
-  (assert-uim-equal "ja"
-                    '(locale-zh-awared-lang (locale-new "ja")))
-  (assert-uim-equal "ja"
-                    '(locale-zh-awared-lang (locale-new "ja.EUC-JP")))
-  (assert-uim-equal "en"
-                    '(locale-zh-awared-lang (locale-new "en_US.UTF-8")))
-  (assert-uim-equal "en"
-                    '(locale-zh-awared-lang (locale-new "en_US")))
-  (assert-uim-equal "en"
-                    '(locale-zh-awared-lang (locale-new "en")))
-  (assert-uim-equal "en"
-                    '(locale-zh-awared-lang (locale-new "en.UTF-8")))
-  ;; returns "zh_XX" form if lang part is "zh"
-  (assert-uim-equal "zh_CN"
-                    '(locale-zh-awared-lang (locale-new "zh_CN.UTF-8")))
-  (assert-uim-equal "zh_CN"
-                    '(locale-zh-awared-lang (locale-new "zh_CN")))
-  (assert-uim-equal "zh"
-                    '(locale-zh-awared-lang (locale-new "zh")))
-  (assert-uim-equal "zh"
-                    '(locale-zh-awared-lang (locale-new "zh.UTF-8")))
-  (assert-uim-equal "zh_TW"
-                    '(locale-zh-awared-lang (locale-new "zh_TW.UTF-8")))
-  (assert-uim-equal "zh_TW"
-                    '(locale-zh-awared-lang (locale-new "zh_TW")))
-  (assert-uim-equal "zh"
-                    '(locale-zh-awared-lang (locale-new "zh")))
-  (assert-uim-equal "zh"
-                    '(locale-zh-awared-lang (locale-new "zh.UTF-8")))
-  (assert-uim-equal "zh_HK"
-                    '(locale-zh-awared-lang (locale-new "zh_HK.UTF-8")))
-  (assert-uim-equal "zh_HK"
-                    '(locale-zh-awared-lang (locale-new "zh_HK")))
-  (assert-uim-equal "zh"
-                    '(locale-zh-awared-lang (locale-new "zh")))
-  (assert-uim-equal "zh"
-                    '(locale-zh-awared-lang (locale-new "zh.UTF-8")))
-  #f)
+(test-begin "locale-zh-awared-lang")
+(test-equal ""
+            (locale-zh-awared-lang (locale-new "invalid_IN.")))
+(test-equal "ja"
+            (locale-zh-awared-lang (locale-new "ja_JP.EUC-JP")))
+(test-equal "ja"
+            (locale-zh-awared-lang (locale-new "ja_JP")))
+(test-equal "ja"
+            (locale-zh-awared-lang (locale-new "ja")))
+(test-equal "ja"
+            (locale-zh-awared-lang (locale-new "ja.EUC-JP")))
+(test-equal "en"
+            (locale-zh-awared-lang (locale-new "en_US.UTF-8")))
+(test-equal "en"
+            (locale-zh-awared-lang (locale-new "en_US")))
+(test-equal "en"
+            (locale-zh-awared-lang (locale-new "en")))
+(test-equal "en"
+            (locale-zh-awared-lang (locale-new "en.UTF-8")))
+;; returns "zh_XX" form if lang part is "zh"
+(test-equal "zh_CN"
+            (locale-zh-awared-lang (locale-new "zh_CN.UTF-8")))
+(test-equal "zh_CN"
+            (locale-zh-awared-lang (locale-new "zh_CN")))
+(test-equal "zh"
+            (locale-zh-awared-lang (locale-new "zh")))
+(test-equal "zh"
+            (locale-zh-awared-lang (locale-new "zh.UTF-8")))
+(test-equal "zh_TW"
+            (locale-zh-awared-lang (locale-new "zh_TW.UTF-8")))
+(test-equal "zh_TW"
+            (locale-zh-awared-lang (locale-new "zh_TW")))
+(test-equal "zh"
+            (locale-zh-awared-lang (locale-new "zh")))
+(test-equal "zh"
+            (locale-zh-awared-lang (locale-new "zh.UTF-8")))
+(test-equal "zh_HK"
+            (locale-zh-awared-lang (locale-new "zh_HK.UTF-8")))
+(test-equal "zh_HK"
+            (locale-zh-awared-lang (locale-new "zh_HK")))
+(test-equal "zh"
+            (locale-zh-awared-lang (locale-new "zh")))
+(test-equal "zh"
+            (locale-zh-awared-lang (locale-new "zh.UTF-8")))
+(test-end)
 
-(define (test-langgroup-covers?)
-  ;; exact match
-  (assert-uim-equal '("ja")
-                    '(langgroup-covers? "ja" "ja"))
-  (assert-uim-equal '("en")
-                    '(langgroup-covers? "en" "en"))
-  (assert-uim-equal '("de")
-                    '(langgroup-covers? "de" "de"))
-  (assert-uim-equal '("fr")
-                    '(langgroup-covers? "fr" "fr"))
-  (assert-uim-equal '("zh")
-                    '(langgroup-covers? "zh" "zh"))
-  (assert-uim-equal '("zh_CN")
-                    '(langgroup-covers? "zh_CN" "zh_CN"))
-  (assert-uim-equal '("zh_TW")
-                    '(langgroup-covers? "zh_TW" "zh_TW"))
-  (assert-uim-equal '("zh_HK")
-                    '(langgroup-covers? "zh_HK" "zh_HK"))
-  (assert-uim-false '(langgroup-covers? "de" "ja"))
-  (assert-uim-false '(langgroup-covers? "de" "en"))
-  (assert-uim-false '(langgroup-covers? "de" "fr"))
-  (assert-uim-false '(langgroup-covers? "de" "zh"))
-  (assert-uim-false '(langgroup-covers? "de" "zh_CN"))
-  (assert-uim-false '(langgroup-covers? "de" "zh_TW"))
-  (assert-uim-false '(langgroup-covers? "de" "zh_HK"))
-  ;; group match
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "ja"))
-  (assert-uim-equal '("en" "fr")
-                    '(langgroup-covers? "de:en:fr" "en"))
-  (assert-uim-equal '("de" "en" "fr")
-                    '(langgroup-covers? "de:en:fr" "de"))
-  (assert-uim-equal '("fr")
-                    '(langgroup-covers? "de:en:fr" "fr"))
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "zh"))
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "zh_CN"))
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "zh_TW"))
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "zh_HK"))
-  ;; group expression is only allowed for first arg
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "de:en"))
-  (assert-uim-false '(langgroup-covers? "de:en:fr" "de:en:fr"))
-  ;; wildcard
-  (assert-uim-true  '(langgroup-covers? "*" "ja"))
-  (assert-uim-true  '(langgroup-covers? "*" "en"))
-  (assert-uim-true  '(langgroup-covers? "*" "de"))
-  (assert-uim-true  '(langgroup-covers? "*" "fr"))
-  (assert-uim-true  '(langgroup-covers? "*" "zh"))
-  (assert-uim-true  '(langgroup-covers? "*" "zh_CN"))
-  (assert-uim-true  '(langgroup-covers? "*" "zh_TW"))
-  (assert-uim-true  '(langgroup-covers? "*" "zh_HK"))
-  ;; wildcard is only allowed for first arg
-  (assert-uim-false '(langgroup-covers? "en" "*"))
-  ;; 'nothing'
-  (assert-uim-false '(langgroup-covers? "" "ja"))
-  (assert-uim-false '(langgroup-covers? "" "en"))
-  (assert-uim-false '(langgroup-covers? "" "de"))
-  (assert-uim-false '(langgroup-covers? "" "fr"))
-  (assert-uim-false '(langgroup-covers? "" "zh"))
-  (assert-uim-false '(langgroup-covers? "" "zh_CN"))
-  (assert-uim-false '(langgroup-covers? "" "zh_TW"))
-  (assert-uim-false '(langgroup-covers? "" "zh_HK"))
-  (assert-uim-false '(langgroup-covers? "" "*"))
-  (assert-uim-false '(langgroup-covers? "" ""))
-  ;; no special handling for Chinese
-  (assert-uim-false '(langgroup-covers? "zh" "zh_CN"))
-  (assert-uim-false '(langgroup-covers? "zh" "zh_TW"))
-  (assert-uim-false '(langgroup-covers? "zh" "zh_HK"))
-  (assert-uim-false '(langgroup-covers? "zh_CN" "zh"))
-  (assert-uim-false '(langgroup-covers? "zh_TW" "zh"))
-  (assert-uim-false '(langgroup-covers? "zh_HK" "zh"))
-  (assert-uim-false '(langgroup-covers? "zh_CN" "zh_TW"))
-  (assert-uim-false '(langgroup-covers? "zh_CN" "zh_HK"))
-  (assert-uim-false '(langgroup-covers? "zh_HK" "zh_CN"))
-  (assert-uim-false '(langgroup-covers? "zh_HK" "zh_TW"))
-  (assert-uim-equal '("zh_TW" "zh_HK")
-                    '(langgroup-covers? "zh_TW:zh_HK" "zh_TW"))
-  (assert-uim-equal '("zh_HK")
-                    '(langgroup-covers? "zh_TW:zh_HK" "zh_HK"))
-  (assert-uim-false '(langgroup-covers? "zh_TW:zh_HK" "zh_CN"))
-  (assert-uim-false '(langgroup-covers? "zh_TW:zh_HK" "zh"))
-  (assert-uim-false '(langgroup-covers? "zh_CN:zh_TW:zh_HK" "zh"))
-  #f)
+(test-begin "langgroup-covers?")
+;; exact match
+(test-equal '("ja")
+            (langgroup-covers? "ja" "ja"))
+(test-equal '("en")
+            (langgroup-covers? "en" "en"))
+(test-equal '("de")
+            (langgroup-covers? "de" "de"))
+(test-equal '("fr")
+            (langgroup-covers? "fr" "fr"))
+(test-equal '("zh")
+            (langgroup-covers? "zh" "zh"))
+(test-equal '("zh_CN")
+            (langgroup-covers? "zh_CN" "zh_CN"))
+(test-equal '("zh_TW")
+            (langgroup-covers? "zh_TW" "zh_TW"))
+(test-equal '("zh_HK")
+            (langgroup-covers? "zh_HK" "zh_HK"))
+(test-false (langgroup-covers? "de" "ja"))
+(test-false (langgroup-covers? "de" "en"))
+(test-false (langgroup-covers? "de" "fr"))
+(test-false (langgroup-covers? "de" "zh"))
+(test-false (langgroup-covers? "de" "zh_CN"))
+(test-false (langgroup-covers? "de" "zh_TW"))
+(test-false (langgroup-covers? "de" "zh_HK"))
+;; group match
+(test-false (langgroup-covers? "de:en:fr" "ja"))
+(test-equal '("en" "fr")
+            (langgroup-covers? "de:en:fr" "en"))
+(test-equal '("de" "en" "fr")
+            (langgroup-covers? "de:en:fr" "de"))
+(test-equal '("fr")
+            (langgroup-covers? "de:en:fr" "fr"))
+(test-false (langgroup-covers? "de:en:fr" "zh"))
+(test-false (langgroup-covers? "de:en:fr" "zh_CN"))
+(test-false (langgroup-covers? "de:en:fr" "zh_TW"))
+(test-false (langgroup-covers? "de:en:fr" "zh_HK"))
+;; group expression is only allowed for first arg
+(test-false (langgroup-covers? "de:en:fr" "de:en"))
+(test-false (langgroup-covers? "de:en:fr" "de:en:fr"))
+;; wildcard
+(test-eq #t (langgroup-covers? "*" "ja"))
+(test-eq #t (langgroup-covers? "*" "en"))
+(test-eq #t (langgroup-covers? "*" "de"))
+(test-eq #t (langgroup-covers? "*" "fr"))
+(test-eq #t (langgroup-covers? "*" "zh"))
+(test-eq #t (langgroup-covers? "*" "zh_CN"))
+(test-eq #t (langgroup-covers? "*" "zh_TW"))
+(test-eq #t (langgroup-covers? "*" "zh_HK"))
+;; wildcard is only allowed for first arg
+(test-false (langgroup-covers? "en" "*"))
+;; 'nothing'
+(test-false (langgroup-covers? "" "ja"))
+(test-false (langgroup-covers? "" "en"))
+(test-false (langgroup-covers? "" "de"))
+(test-false (langgroup-covers? "" "fr"))
+(test-false (langgroup-covers? "" "zh"))
+(test-false (langgroup-covers? "" "zh_CN"))
+(test-false (langgroup-covers? "" "zh_TW"))
+(test-false (langgroup-covers? "" "zh_HK"))
+(test-false (langgroup-covers? "" "*"))
+(test-false (langgroup-covers? "" ""))
+;; no special handling for Chinese
+(test-false (langgroup-covers? "zh" "zh_CN"))
+(test-false (langgroup-covers? "zh" "zh_TW"))
+(test-false (langgroup-covers? "zh" "zh_HK"))
+(test-false (langgroup-covers? "zh_CN" "zh"))
+(test-false (langgroup-covers? "zh_TW" "zh"))
+(test-false (langgroup-covers? "zh_HK" "zh"))
+(test-false (langgroup-covers? "zh_CN" "zh_TW"))
+(test-false (langgroup-covers? "zh_CN" "zh_HK"))
+(test-false (langgroup-covers? "zh_HK" "zh_CN"))
+(test-false (langgroup-covers? "zh_HK" "zh_TW"))
+(test-equal '("zh_TW" "zh_HK")
+            (langgroup-covers? "zh_TW:zh_HK" "zh_TW"))
+(test-equal '("zh_HK")
+            (langgroup-covers? "zh_TW:zh_HK" "zh_HK"))
+(test-false (langgroup-covers? "zh_TW:zh_HK" "zh_CN"))
+(test-false (langgroup-covers? "zh_TW:zh_HK" "zh"))
+(test-false (langgroup-covers? "zh_CN:zh_TW:zh_HK" "zh"))
+(test-end)
 
-(provide "test/i18n/test-base")
+(test-report-result)
