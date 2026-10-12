@@ -1,6 +1,4 @@
-#!/usr/bin/env gosh
-
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -33,294 +31,310 @@
 ;;
 ;; custom-reload-customs
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(use test.unit)
+;; define-custom doesn't change the value of an existing variable. So
+;; the variables defined by the tests are removed before each test case.
+(define setup
+  (lambda ()
+    (for-each (lambda (sym)
+                (eval (list 'undefine sym) (interaction-environment)))
+              '(test-style test-available-ims
+                test-cancel-key test-cancel-key?
+                test-foo-key test-foo-key?
+                test-bar-key test-bar-key?
+                test-baz-key test-baz-key?
+                test-use-candidate-window? test-nr-candidate-max
+                test-string test-dic-file-name))))
 
-(require "test/uim-test-utils")
+(test-begin "define-custom (choice)")
+(setup)
+(test-false (symbol-bound? 'test-style))
 
-(define-uim-test-case "testcase custom define-custom"
-  (setup
-   (lambda ()
-     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
-     (uim '(load-enabled-modules))
+(define-custom 'test-style 'test-style-ddskk
+  '(global)
+  '(choice
+    (test-style-uim "uim" "uim native")
+    (test-style-ddskk "ddskk like" "Similar to ddskk")
+    (test-style-canna "canna like" "Similar to canna"))
+  "Test style"
+  "long description will be here.")
 
-     (uim '(require "custom.scm"))))
+(test-true (symbol-bound? 'test-style))
+(test-equal 'test-style-ddskk
+            test-style)
+(test-end)
 
-  ("test define-custom (choice)"
-   (assert-false (uim-bool '(symbol-bound? 'test-style)))
+(test-begin "define-custom (choice) #2")
+(setup)
+(define test-style 'test-style-uim)
 
-   (uim '(define-custom 'test-style 'test-style-ddskk
-	   '(global)
-	   '(choice
-	     (test-style-uim "uim" "uim native")
-	     (test-style-ddskk "ddskk like" "Similar to ddskk")
-	     (test-style-canna "canna like" "Similar to canna"))
-	   "Test style"
-	   "long description will be here."))
+(define-custom 'test-style 'test-style-ddskk
+  '(global)
+  '(choice
+    (test-style-uim "uim" "uim native")
+    (test-style-ddskk "ddskk like" "Similar to ddskk")
+    (test-style-canna "canna like" "Similar to canna"))
+  "Test style"
+  "long description will be here.")
 
-   (assert-true (uim-bool '(symbol-bound? 'test-style)))
-   (assert-equal 'test-style-ddskk
-		 (uim 'test-style)))
+(test-true  (symbol-bound? 'test-style))
+;; preexisting value is not overridden
+(test-equal 'test-style-uim
+            test-style)
+(test-end)
 
-  ("test define-custom (choice) #2"
-   (uim '(define test-style 'test-style-uim))
+(test-begin "define-custom (key)")
+(setup)
+;; single key str
+(test-false (symbol-bound? 'test-foo-key))
+(test-false (symbol-bound? 'test-foo-key?))
 
-   (uim '(define-custom 'test-style 'test-style-ddskk
-	   '(global)
-	   '(choice
-	     (test-style-uim "uim" "uim native")
-	     (test-style-ddskk "ddskk like" "Similar to ddskk")
-	     (test-style-canna "canna like" "Similar to canna"))
-	   "Test style"
-	   "long description will be here."))
+(define-custom 'test-foo-key '("a")
+  '(global)
+  '(key)
+  "test foo key"
+  "long description will be here")
 
-   (assert-true  (uim-bool '(symbol-bound? 'test-style)))
-   ;; preexisting value is not overridden
-   (assert-equal 'test-style-uim
-		 (uim 'test-style)))
+(test-true  (symbol-bound? 'test-foo-key))
+(test-equal '("a")
+            test-foo-key)
+(test-true  (symbol-bound? 'test-foo-key?))
+(test-true  (test-foo-key? (string->charcode "a") 0))
 
-  ("test define-custom (key)"
-   ;; single key str
-   (assert-false (uim-bool '(symbol-bound? 'test-foo-key)))
-   (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))
+;; key reference + key str
+(test-false (symbol-bound? 'test-bar-key))
+(test-false (symbol-bound? 'test-bar-key?))
 
-   (uim '(define-custom 'test-foo-key '("a")
-	   '(global)
-	   '(key)
-	   "test foo key"
-	   "long description will be here"))
+(define-custom 'test-bar-key '(test-foo-key "b")
+  '(global)
+  '(key)
+  "test bar key"
+  "long description will be here")
 
-   (assert-true  (uim-bool '(symbol-bound? 'test-foo-key)))
-   (assert-equal '("a")
-		 (uim 'test-foo-key))
-   (assert-true  (uim-bool '(symbol-bound? 'test-foo-key?)))
-   (assert-true  (uim-bool '(test-foo-key? (string->charcode "a") 0)))
+(test-true  (symbol-bound? 'test-bar-key))
+(test-equal '(test-foo-key "b")
+            test-bar-key)
+(test-true  (symbol-bound? 'test-bar-key?))
+(test-true  (test-bar-key? (string->charcode "a") 0))
+(test-true  (test-bar-key? (string->charcode "b") 0))
+(test-end)
 
-   ;; key reference + key str
-   (assert-false (uim-bool '(symbol-bound? 'test-bar-key)))
-   (assert-false (uim-bool '(symbol-bound? 'test-bar-key?)))
+(test-begin "define-custom (key) #2")
+(setup)
+(define test-foo-key '("b"))
+(test-false (symbol-bound? 'test-foo-key?))
 
-   (uim '(define-custom 'test-bar-key '(test-foo-key "b")
-	   '(global)
-	   '(key)
-	   "test bar key"
-	   "long description will be here"))
+(define-custom 'test-foo-key '("a")
+  '(global)
+  '(key)
+  "test foo key"
+  "long description will be here")
 
-   (assert-true  (uim-bool '(symbol-bound? 'test-bar-key)))
-   (assert-equal '(test-foo-key "b")
-		 (uim 'test-bar-key))
-   (assert-true  (uim-bool '(symbol-bound? 'test-bar-key?)))
-   (assert-true  (uim-bool '(test-bar-key? (string->charcode "a") 0)))
-   (assert-true  (uim-bool '(test-bar-key? (string->charcode "b") 0))))
+;; preexisting value is not overridden
+(test-equal '("b")
+            test-foo-key)
+;; key predicate is not defined since custom-set-value! is not
+;; invoked
+(test-false (symbol-bound? 'test-foo-key?))
+(test-end)
 
-  ("test define-custom (key) #2"
-   (uim '(define test-foo-key '("b")))
-   (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))
+(define setup-methods
+  (lambda ()
+    (setup)
 
-   (uim '(define-custom 'test-foo-key '("a")
-	   '(global)
-	   '(key)
-	   "test foo key"
-	   "long description will be here"))
+    (define-custom 'test-style 'test-style-ddskk
+      '(global)
+      '(choice
+        (test-style-uim "uim" "uim native")
+        (test-style-ddskk "ddskk like" "Similar to ddskk")
+        (test-style-canna "canna like" "Similar to canna"))
+      "Test style"
+      "long description will be here.")
+    (define-custom 'test-available-ims '(anthy canna skk)
+      '(global)
+      '(ordered-list
+        (anthy "Anthy" "Anthy")
+        (canna "Cannd" "Canna")
+        (skk "SKK" "SKK"))
+      "Test avalilable IMs"
+      "long description will be here.")
+    (define-custom 'test-cancel-key '("<Control>g" "escape")
+      '(global)
+      '(key)
+      "test cancel key"
+      "long description will be here.")
+    (define-custom 'test-foo-key '("a" test-cancel-key)
+      '(global)
+      '(key)
+      "test foo key"
+      "long description will be here.")
+    (define-custom 'test-bar-key '("b")
+      '(global)
+      '(key)
+      "test bar key"
+      "long description will be here.")
+    (define-custom 'test-use-candidate-window? #t
+      '(test ui)
+      '(boolean)
+      "Use candidate window"
+      "long description will be here.")
+    (define-custom 'test-nr-candidate-max 10
+      '(test advanced ui)
+      '(integer 1 20)
+      "Number of candidates in candidate window at a time"
+      "long description will be here.")
+    (define-custom 'test-string "a string"
+      '(test)
+      '(string ".+")
+      "A string for testing purpose"
+      "long description will be here.")
+    (define-custom 'test-dic-file-name "/usr/share/skk/SKK-JISYO.L"
+      '(test)
+      '(pathname)
+      "Dictionary file"
+      "long description will be here.")))
 
-   ;; preexisting value is not overridden
-   (assert-equal '("b")
-		 (uim 'test-foo-key))
-   ;; key predicate is not defined since custom-set-value! is not
-   ;; invoked
-   (assert-false (uim-bool '(symbol-bound? 'test-foo-key?)))))
+(test-begin "custom-key-exist?")
+(setup-methods)
+(test-true  (custom-key-exist? 'test-cancel-key))
+(test-false (custom-key-exist? 'test-baz-key))
+(define-key test-baz-key? '("z"))
+(test-false (custom-key-exist? 'test-baz-key))
+(define-custom 'test-baz-key '("z")
+  '(global)
+  '(key)
+  "test foo key"
+  "long description will be here.")
+(test-true  (custom-key-exist? 'test-baz-key))
+(test-end)
 
-(define-uim-test-case "testcase custom methods"
-  (setup
-   (lambda ()
-     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
-     (uim '(load-enabled-modules))
+(test-begin "custom-value")
+(setup-methods)
+(test-equal 'test-style-ddskk
+            (custom-value 'test-style))
+(test-equal '(anthy canna skk)
+            (custom-value 'test-available-ims))
+(test-equal '("<Control>g" "escape")
+            (custom-value 'test-cancel-key))
+(test-true  (custom-value 'test-use-candidate-window?))
+(test-equal 10
+            (custom-value 'test-nr-candidate-max))
+(test-equal "a string"
+            (custom-value 'test-string))
+(test-equal "/usr/share/skk/SKK-JISYO.L"
+            (custom-value 'test-dic-file-name))
+(test-end)
 
-     (uim '(define-custom 'test-style 'test-style-ddskk
-	     '(global)
-	     '(choice
-	       (test-style-uim "uim" "uim native")
-	       (test-style-ddskk "ddskk like" "Similar to ddskk")
-	       (test-style-canna "canna like" "Similar to canna"))
-	     "Test style"
-	     "long description will be here."))
-     (uim '(define-custom 'test-available-ims '(anthy canna skk)
-	     '(global)
-	     '(ordered-list
-	       (anthy "Anthy" "Anthy")
-	       (canna "Cannd" "Canna")
-	       (skk "SKK" "SKK"))
-	     "Test avalilable IMs"
-	     "long description will be here."))
-     (uim '(define-custom 'test-cancel-key '("<Control>g" "escape")
-	   '(global)
-	   '(key)
-	   "test cancel key"
-	   "long description will be here."))
-     (uim '(define-custom 'test-foo-key '("a" test-cancel-key)
-	     '(global)
-	     '(key)
-	     "test foo key"
-	     "long description will be here."))
-     (uim '(define-custom 'test-bar-key '("b")
-	   '(global)
-	   '(key)
-	   "test bar key"
-	   "long description will be here."))
-     (uim '(define-custom 'test-use-candidate-window? #t
-	     '(test ui)
-	     '(boolean)
-	     "Use candidate window"
-	     "long description will be here."))
-     (uim '(define-custom 'test-nr-candidate-max 10
-	     '(test advanced ui)
-	     '(integer 1 20)
-	     "Number of candidates in candidate window at a time"
-	     "long description will be here."))
-     (uim '(define-custom 'test-string "a string"
-	     '(test)
-	     '(string ".+")
-	     "A string for testing purpose"
-	     "long description will be here."))
-     (uim '(define-custom 'test-dic-file-name "/usr/share/skk/SKK-JISYO.L"
-	     '(test)
-	     '(pathname)
-	     "Dictionary file"
-	     "long description will be here."))))
+(test-begin "custom-set-value!")
+(setup-methods)
+;;; choice
+;; default value
+(test-equal 'test-style-ddskk
+            (custom-value 'test-style))
+;; valid value
+(test-true  (custom-set-value! 'test-style 'test-style-uim))
+(test-equal 'test-style-uim
+            (custom-value 'test-style))
+;; invalid value is also accepted
+(test-true  (custom-set-value! 'test-style 'test-style-invalid))
+(test-equal 'test-style-invalid
+            (custom-value 'test-style))
 
-  ("test custom-key-exist?"
-   (assert-true  (uim-bool '(custom-key-exist? 'test-cancel-key)))
-   (assert-false (uim-bool '(custom-key-exist? 'test-baz-key)))
-   (uim '(define-key test-baz-key? '("z")))
-   (assert-false (uim-bool '(custom-key-exist? 'test-baz-key)))
-     (uim '(define-custom 'test-baz-key '("z")
-	   '(global)
-	   '(key)
-	   "test foo key"
-	   "long description will be here."))
-   (assert-true  (uim-bool '(custom-key-exist? 'test-baz-key))))
+;;; ordered-list
+;; default value
+(test-equal '(anthy canna skk)
+            (custom-value 'test-available-ims))
+;; valid value
+(test-true  (custom-set-value! 'test-available-ims
+                               '()))
+(test-equal '()
+            (custom-value 'test-available-ims))
+(test-true  (custom-set-value! 'test-available-ims
+                               '(anthy)))
+(test-equal '(anthy)
+            (custom-value 'test-available-ims))
+(test-true  (custom-set-value! 'test-available-ims
+                               '(anthy skk)))
+(test-equal '(anthy skk)
+            (custom-value 'test-available-ims))
+(test-true  (custom-set-value! 'test-available-ims
+                               '(skk anthy)))
+(test-equal '(skk anthy)
+            (custom-value 'test-available-ims))
+(test-true  (custom-set-value! 'test-available-ims
+                               '(skk anthy canna)))
+(test-equal '(skk anthy canna)
+            (custom-value 'test-available-ims))
+;; invalid value is also accepted
+(test-true  (custom-set-value! 'test-available-ims
+                               '(nonexistent)))
+(test-equal '(nonexistent)
+            (custom-value 'test-available-ims))
 
-  ("test custom-value"
-   (assert-equal 'test-style-ddskk
-		 (uim '(custom-value 'test-style)))
-   (assert-equal '(anthy canna skk)
-		 (uim '(custom-value 'test-available-ims)))
-   (assert-equal '("<Control>g" "escape")
-		 (uim '(custom-value 'test-cancel-key)))
-   (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
-   (assert-equal 10
-		 (uim '(custom-value 'test-nr-candidate-max)))
-   (assert-equal "a string"
-		 (uim '(custom-value 'test-string)))
-   (assert-equal "/usr/share/skk/SKK-JISYO.L"
-		 (uim '(custom-value 'test-dic-file-name))))
+;;; key
+;; default value
+(test-equal '("<Control>g" "escape")
+            (custom-value 'test-cancel-key))
+;; valid value
+(test-true  (custom-set-value! 'test-cancel-key '("a")))
+(test-equal '("a")
+            (custom-value 'test-cancel-key))
+(test-true  (procedure? test-cancel-key?))
+;; invalid value is also accepted
+(test-true  (custom-set-value! 'test-cancel-key
+                               '(test-nonexistent "a")))
+(test-equal '(test-nonexistent "a")
+            (custom-value 'test-cancel-key))
+(test-true  (procedure? test-cancel-key?))
 
-  ("test custom-set-value!"
-   ;;; choice
-   ;; default value
-   (assert-equal 'test-style-ddskk
-		 (uim '(custom-value 'test-style)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-uim)))
-   (assert-equal 'test-style-uim
-		 (uim '(custom-value 'test-style)))
-   ;; invalid value is also accepted
-   (assert-true  (uim-bool '(custom-set-value! 'test-style 'test-style-invalid)))
-   (assert-equal 'test-style-invalid
-		 (uim '(custom-value 'test-style)))
+;;; boolean
+;; default value
+(test-true  (custom-value 'test-use-candidate-window?))
+;; valid value
+(test-true  (custom-set-value! 'test-use-candidate-window? #f))
+(test-false (custom-value 'test-use-candidate-window?))
+;; boolean regards all non-#f value as true
+(test-true (custom-set-value! 'test-use-candidate-window? 10))
+(test-true (custom-value 'test-use-candidate-window?))
 
-   ;;; ordered-list
-   ;; default value
-   (assert-equal '(anthy canna skk)
-		 (uim '(custom-value 'test-available-ims)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
-					       ())))
-   (assert-equal ()
-		 (uim '(custom-value 'test-available-ims)))
-   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
-					       '(anthy))))
-   (assert-equal '(anthy)
-		 (uim '(custom-value 'test-available-ims)))
-   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
-					       '(anthy skk))))
-   (assert-equal '(anthy skk)
-		 (uim '(custom-value 'test-available-ims)))
-   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
-					       '(skk anthy))))
-   (assert-equal '(skk anthy)
-		 (uim '(custom-value 'test-available-ims)))
-   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
-					       '(skk anthy canna))))
-   (assert-equal '(skk anthy canna)
-		 (uim '(custom-value 'test-available-ims)))
-   ;; invalid value is also accepted
-   (assert-true  (uim-bool '(custom-set-value! 'test-available-ims
-					       '(nonexistent))))
-   (assert-equal '(nonexistent)
-		 (uim '(custom-value 'test-available-ims)))
+;;; integer
+;; default value
+(test-equal 10
+            (custom-value 'test-nr-candidate-max))
+;; valid value
+(test-true  (custom-set-value! 'test-nr-candidate-max 5))
+(test-equal 5
+            (custom-value 'test-nr-candidate-max))
+;; invalid value is also accepted
+(test-true  (custom-set-value! 'test-nr-candidate-max 25))
+(test-equal 25
+            (custom-value 'test-nr-candidate-max))
 
-   ;;; key
-   ;; default value
-   (assert-equal '("<Control>g" "escape")
-		 (uim '(custom-value 'test-cancel-key)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-cancel-key '("a"))))
-   (assert-equal '("a")
-		 (uim '(custom-value 'test-cancel-key)))
-   (assert-true  (uim-bool '(procedure? test-cancel-key?)))
-   ;; invalid value is also accepted
-   (assert-true  (uim-bool '(custom-set-value! 'test-cancel-key
-					  '(test-nonexistent "a"))))
-   (assert-equal '(test-nonexistent "a")
-		 (uim '(custom-value 'test-cancel-key)))
-   (assert-true  (uim-bool '(procedure? test-cancel-key?)))
+;;; string
+;; default value
+(test-equal "a string"
+            (custom-value 'test-string))
+;; valid value
+(test-true  (custom-set-value! 'test-string "a altered string"))
+(test-equal "a altered string"
+            (custom-value 'test-string))
+;; invalid value is also accepted
+(test-true  (custom-set-value! 'test-string #f))
+(test-false (custom-value 'test-string))
 
-   ;;; boolean
-   ;; default value
-   (assert-true  (uim-bool '(custom-value 'test-use-candidate-window?)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-use-candidate-window? #f)))
-   (assert-false (uim-bool '(custom-value 'test-use-candidate-window?)))
-   ;; boolean regards all non-#f value as true
-   (assert-true (uim-bool '(custom-set-value! 'test-use-candidate-window? 10)))
-   (assert-true (uim-bool '(custom-value 'test-use-candidate-window?)))
+;;; pathname
+;; default value
+(test-equal "/usr/share/skk/SKK-JISYO.L"
+            (custom-value 'test-dic-file-name))
+;; valid value
+(test-true  (custom-set-value! 'test-dic-file-name
+                               "/usr/local/share/skk/SKK-JISYO.ML"))
+(test-equal "/usr/local/share/skk/SKK-JISYO.ML"
+            (custom-value 'test-dic-file-name))
+;; invalid value is also accepted
+(test-true  (custom-set-value! 'test-dic-file-name #f))
+(test-false (custom-value 'test-dic-file-name))
+(test-end)
 
-   ;;; integer
-   ;; default value
-   (assert-equal 10
-		 (uim '(custom-value 'test-nr-candidate-max)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 5)))
-   (assert-equal 5
-		 (uim '(custom-value 'test-nr-candidate-max)))
-   ;; invalid value is also accepted
-   (assert-true  (uim-bool '(custom-set-value! 'test-nr-candidate-max 25)))
-   (assert-equal 25
-		 (uim '(custom-value 'test-nr-candidate-max)))
-
-   ;;; string
-   ;; default value
-   (assert-equal "a string"
-		 (uim '(custom-value 'test-string)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-string "a altered string")))
-   (assert-equal "a altered string"
-		 (uim '(custom-value 'test-string)))
-   ;; invalid value is also accepted
-   (assert-true  (uim-bool '(custom-set-value! 'test-string #f)))
-   (assert-false (uim-bool '(custom-value 'test-string)))
-
-   ;;; pathname
-   ;; default value
-   (assert-equal "/usr/share/skk/SKK-JISYO.L"
-		 (uim '(custom-value 'test-dic-file-name)))
-   ;; valid value
-   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name
-					 "/usr/local/share/skk/SKK-JISYO.ML")))
-   (assert-equal "/usr/local/share/skk/SKK-JISYO.ML"
-		 (uim '(custom-value 'test-dic-file-name)))
-   ;; invalid value is also accepted
-   (assert-true  (uim-bool '(custom-set-value! 'test-dic-file-name #f)))
-   (assert-false (uim-bool '(custom-value 'test-dic-file-name)))))
+(test-report-result)
