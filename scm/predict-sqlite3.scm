@@ -156,7 +156,7 @@
 (define (make-predict-sqlite3-with-custom)
   (if (not (provided? "sqlite3"))
       (begin
-        (uim-notify-info "uim-sqlite3 is not installed.")
+        (uim-notify-info (_ "uim-sqlite3 is not installed."))
         (make-predict))
       (let ((obj (make-predict-sqlite3)))
         (predict-sqlite3-set-limit! obj predict-custom-sqlite3-candidates-max)

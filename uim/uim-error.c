@@ -104,7 +104,7 @@ print_caught_error(void)
     /* XXX: stderr messges will be duplicated */
     if (fatal_errored) {
       uim_notify_fatal_raw(err_msg);
-      uim_notify_fatal_raw(ERRMSG_UIM_HAS_BEEN_DISABLED);
+      uim_notify_fatal_raw(_(ERRMSG_UIM_HAS_BEEN_DISABLED));
     } else {
       uim_notify_info(err_msg);
     }

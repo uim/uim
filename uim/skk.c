@@ -368,7 +368,7 @@ get_encoding_value(uim_lisp encoding_,
   else if (!strcasecmp(encoding_name, "euc-jp"))
     *encoding = SKK_DICTIONARY_ENCODING_EUC_JP;
   else
-    uim_notify_info(N_("unknown encoding for %s: %s"),
+    uim_notify_info(_("unknown encoding for %s: %s"),
                     symbol_name, encoding_name);
 
 out:
@@ -455,7 +455,7 @@ convert_skkserv_buffer(enum skk_dictionary_encoding to_encoding,
   size_t outlen;
 
   if (!convert_dictionary_buffer(to_encoding, from_encoding, inbuf, outbuf, &outlen)) {
-    uim_notify_info(N_("uim-skk: failed to convert skkserv data from %s to %s"),
+    uim_notify_info(_("uim-skk: failed to convert skkserv data from %s to %s"),
                     skk_encoding_name(from_encoding),
                     skk_encoding_name(to_encoding));
     return 0;
@@ -518,14 +518,14 @@ notify_invalid_unicode_sort_index_lines(const char *filename,
                                        int no_usable_entries)
 {
   if (no_usable_entries) {
-    uim_notify_info(N_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
+    uim_notify_info(_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
                        "no usable entries after skipping %lu invalid lines "
                        "(first at line %lu); check the encoding"),
                     filename, skk_encoding_name(encoding),
                     (unsigned long)invalid_line_count,
                     (unsigned long)first_invalid_line);
   } else {
-    uim_notify_info(N_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
+    uim_notify_info(_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
                        "skipped %lu invalid lines (first at line %lu)"),
                     filename, skk_encoding_name(encoding),
                     (unsigned long)invalid_line_count,
@@ -683,7 +683,7 @@ build_unicode_sort_index(dic_info *di, const char *filename)
 
 error:
   free_unicode_sort_index(di);
-  uim_notify_info(N_("failed to build a Unicode-sorted index for system dictionary: %s"),
+  uim_notify_info(_("failed to build a Unicode-sorted index for system dictionary: %s"),
                   filename);
   return 0;
 }
@@ -1489,7 +1489,7 @@ search_line_from_file(dic_info *di, const char *s, char okuri_head)
   converted_line = convert_dictionary_line(di->encoding, line);
   free(line);
   if (!converted_line) {
-    uim_notify_info(N_("failed to convert system dictionary data from %s to %s"),
+    uim_notify_info(_("failed to convert system dictionary data from %s to %s"),
                     skk_encoding_name(di->encoding),
                     skk_encoding_name(SKK_DICTIONARY_ENCODING_UTF8));
     return NULL;
@@ -1653,7 +1653,7 @@ expand_str(const char *p)
     	  p++;
     	  c = *p;
     	  if (*p == '\0') {
-	    uim_notify_fatal(N_("error in expand_str"));
+	    uim_notify_fatal(_("error in expand_str"));
 	    return NULL;
 	  }
 	  if (c >= '0' && c <= '7') {
@@ -1668,7 +1668,7 @@ expand_str(const char *p)
       }
     }
     if ((i + 1) >= BUFSIZ) {
-      uim_notify_fatal(N_("too long word"));
+      uim_notify_fatal(_("too long word"));
       return NULL;
     }
     buf[i] = c;
@@ -2580,7 +2580,7 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
     skkserv_disconnected(di);
     return ca;
   } else if (ret == 0) {
-    uim_notify_info(N_("SKK server without completion capability\n"));
+    uim_notify_info(_("SKK server without completion capability\n"));
     /* don't try server completion further any more */
     di->skkserv_state &= ~SKK_SERV_TRY_COMPLETION;
     return ca;
@@ -3814,7 +3814,7 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
               free_skk_line(sl);
               sl = next;
             }
-            uim_notify_info(N_("invalid %s dictionary: %s"),
+            uim_notify_info(_("invalid %s dictionary: %s"),
                             skk_encoding_name(encoding), fn);
             fclose(fp);
             close_lock(lock_fd);
@@ -4135,7 +4135,7 @@ skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
 
   for (sl = skk_dic->head.next; sl; sl = sl->next) {
     if ((sl->state & SKK_LINE_NEED_SAVE) && !write_out_line(fp, encoding, sl)) {
-      uim_notify_info(N_("cannot encode personal dictionary as %s"),
+      uim_notify_info(_("cannot encode personal dictionary as %s"),
                       skk_encoding_name(encoding));
       goto error;
     }

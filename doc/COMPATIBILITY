@@ -57,6 +57,37 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: UTF-8 text domain and notification messages
+Affects: Bridge developers, Helper program developers, Notification
+         plugin developers, IM developers
+Updates: C API, Scheme API
+Version: 2.0.0
+Revision:
+Date: 2026-10-12
+Modifier: Sutou Kouhei
+Related:
+URL:
+Changes:
+  (changed) codeset of the "uim" text domain
+  (changed) uim_notify_info()
+  (changed) uim_notify_fatal()
+  (changed) uim-notify-info
+  (changed) uim-notify-fatal
+Description:
+  libuim binds its "uim" text domain to UTF-8. Clients that translate
+  strings with the "uim" text domain get UTF-8 translations.
+
+  Messages for uim-notify are UTF-8. Callers translate messages
+  including format strings by _() and make them UTF-8 before passing
+  them to uim_notify_info(), uim_notify_fatal(), uim-notify-info and
+  uim-notify-fatal. They don't translate nor convert messages.
+  Notification plugins receive UTF-8 messages and convert them for
+  their notification agents. The builtin stderr agent writes them in
+  the codeset of the locale.
+
+  The uim-custom API still returns strings translated to the codeset
+  that the client uses for its text domain.
+------------------------------------------------------------------------------
 Summary: New API for delay showing candidate window
 Affects: IM developers, Bridge developers
 Updates: C API, Scheme API

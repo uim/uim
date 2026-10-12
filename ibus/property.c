@@ -89,16 +89,9 @@ new_leaf(char **cols)
                       NULL);
 }
 
-/* libuim binds its text domain but leaves the codeset to the locale. */
-static char *
-translated(const char *text)
-{
-  char *utf8 = g_locale_to_utf8(text, -1, NULL, NULL, NULL);
-
-  return utf8 ? utf8 : g_strdup(text);
-}
-
-/* uim leaves the labels to be translated, as its toolbars do. Only
+/* libuim binds its text domain to UTF-8, which IBus needs.
+ *
+ * uim leaves the labels to be translated, as its toolbars do. Only
  * ASCII ones can be msgids: some input methods give theirs in their
  * own language. "" would give the header of the catalog. */
 static void
@@ -111,7 +104,7 @@ translate_cols(char **cols, guint from, guint to)
 
     if (!*cols[i] || !g_str_is_ascii(cols[i]))
       continue;
-    text = translated(g_dgettext(GETTEXT_PACKAGE, cols[i]));
+    text = g_strdup(g_dgettext(GETTEXT_PACKAGE, cols[i]));
     g_free(cols[i]);
     cols[i] = text;
   }
@@ -157,10 +150,10 @@ new_menu(char **cols, IBusPropList *leaves, gboolean *has_input_mode)
 
   if (g_str_has_prefix(action, IM_SWITCHER_ACTION_PREFIX)) {
     key = g_strconcat(WIDGET_KEY_PREFIX, action, NULL);
-    name = translated(_("Input method"));
+    name = g_strdup(_("Input method"));
   } else if (!*has_input_mode) {
     key = g_strdup(INPUT_MODE_KEY);
-    name = translated(_("Input mode"));
+    name = g_strdup(_("Input mode"));
     *has_input_mode = TRUE;
   } else {
     key = g_strconcat(WIDGET_KEY_PREFIX, action, NULL);

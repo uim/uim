@@ -50,7 +50,6 @@
 #include "uim-scm-abbrev.h"
 #include "uim-internal.h"
 #include "uim-notify.h"
-#include "gettext.h"
 
 #define NOTIFY_PLUGIN_PATH PKGLIBDIR "/notify"
 #define NOTIFY_PLUGIN_PREFIX "libuimnotify-"
@@ -186,11 +185,9 @@ uim_notify_info(const char *msg_fmt, ...)
 {
   va_list ap;
   char msg[BUFSIZ];
-  const char *translated_msg_fmt;
 
-  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(ap, msg_fmt);
-  vsnprintf(msg, sizeof(msg), translated_msg_fmt, ap);
+  vsnprintf(msg, sizeof(msg), msg_fmt, ap);
   va_end(ap);
 
   return agent->notify_info(msg);
@@ -201,11 +198,9 @@ uim_notify_fatal(const char *msg_fmt, ...)
 {
   va_list ap;
   char msg[BUFSIZ];
-  const char *translated_msg_fmt;
 
-  translated_msg_fmt = dgettext(GETTEXT_PACKAGE, msg_fmt);
   va_start(ap, msg_fmt);
-  vsnprintf(msg, sizeof(msg), translated_msg_fmt, ap);
+  vsnprintf(msg, sizeof(msg), msg_fmt, ap);
   va_end(ap);
 
   return agent->notify_fatal(msg);
@@ -369,7 +364,7 @@ static uim_bool
 uim_notify_stderr_info(const char *msg)
 {
   fputs("libuim: [info] ", stderr);
-  fputs(dgettext(GETTEXT_PACKAGE, msg), stderr);
+  uim_puts_utf8_to_stderr(msg);
   fputs("\n", stderr);
 
   return UIM_TRUE;
@@ -382,7 +377,7 @@ uim_notify_stderr_fatal(const char *msg)
    * exhaustion, printf()s with indirect directives are intentionally
    * avoided here.  -- YamaKen 2008-02-11 */
   fputs("libuim: [fatal] ", stderr);
-  fputs(dgettext(GETTEXT_PACKAGE, msg), stderr);
+  uim_puts_utf8_to_stderr(msg);
   fputs("\n", stderr);
 
   return UIM_TRUE;
