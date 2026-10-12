@@ -188,7 +188,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
       goto error;
     }
 
-    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == 0) {
+    if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == 0) {
       release_server_start_lock(server_start_lock_fd);
       server_start_lock_fd = -1;
       goto connected;
