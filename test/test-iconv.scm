@@ -1,6 +1,6 @@
 ;;; -*- coding: utf-8 -*-
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -29,31 +29,16 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-;; These tests are passed at revision 6605 (new repository)
+(require-extension (unittest))
 
-(define-module test.iconv
-  (use gauche.charconv)
-  (use test.unit.test-case)
-  (use test.uim-test))
-(select-module test.iconv)
+(test-begin "iconv-code-conv")
+(define to-euc-jp (iconv-open "eucJP" "utf-8"))
+(define to-utf-8 (iconv-open "utf-8" "eucJP"))
+(test-equal "あいうえお"
+	    (iconv-code-conv to-utf-8
+			     (iconv-code-conv to-euc-jp "あいうえお")))
+(iconv-release to-euc-jp)
+(iconv-release to-utf-8)
+(test-end)
 
-(define (setup)
-  (uim-test-setup)
-  (uim-eval '(define iconv #f)))
-
-(define (teardown)
-  (uim-eval '(if iconv
-                  (iconv-release iconv)))
-  (uim-test-teardown))
-
-(define (test-conv)
-  (assert-equal "あいうえお"
-                (uim-read-from-string
-                 (ces-convert
-                  (uim-eval '(begin
-                               (set! iconv (iconv-open "eucJP" "utf-8"))
-                               (iconv-code-conv iconv "あいうえお")))
-                  "eucJP" "utf-8")))
-  #f)
-
-(provide "test/iconv")
+(test-report-result)
