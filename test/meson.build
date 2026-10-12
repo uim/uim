@@ -3,6 +3,7 @@ test_environment = environment({
   'LIBUIM_SCM_FILES': meson.project_source_root() / 'scm',
   'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
                               'subprojects' / 'sigscheme' / 'lib'),
+  'LIBUIM_VANILLA': '1',
 })
 # [test, should_fail]
 foreach definition : [

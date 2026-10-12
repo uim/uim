@@ -32,8 +32,7 @@
 (require "lazy-load.scm")
 
 ;; Only the IMs in enabled-im-list are registered. It's defined in
-;; loader.scm but loader.scm may not be available because it's generated
-;; at build time.
+;; loader.scm but loader.scm isn't loaded with LIBUIM_VANILLA=1.
 (set! enabled-im-list '(direct latin py pyunihan pinyin-big5))
 
 (define setup
