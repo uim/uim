@@ -36,6 +36,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <dlfcn.h>
 
 #include "uim.h"
@@ -146,7 +147,9 @@ dynlib_bind_internal(uim_lisp name)
   library = dlopen(REFER_C_STR(name), RTLD_NOW);
 
   if (library == NULL) {
-    uim_notify_fatal(_("dynlib: %s: Load failed."), dlerror());
+    char *error = uim_locale_to_utf8(dlerror());
+    uim_notify_fatal(_("dynlib: %s: Load failed."), error);
+    free(error);
     return uim_scm_f();
   }
 

@@ -67,6 +67,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
+#include "uim-internal.h"
 #include "dynlib.h"
 #include "uim-notify.h"
 #include "gettext.h"
@@ -299,7 +300,7 @@ convert_dictionary_buffer(enum skk_dictionary_encoding to_encoding,
 
   converted = uim_iconv->convert(cache->converter, inbuf);
 
-  if (!converted || (inbuf[0] != '\0' && converted[0] == '\0')) {
+  if (uim_code_conversion_failed(inbuf, converted)) {
     free(converted);
     if (cache) {
       uim_iconv->release(cache->converter);
@@ -517,20 +518,23 @@ notify_invalid_unicode_sort_index_lines(const char *filename,
                                        size_t first_invalid_line,
                                        int no_usable_entries)
 {
+  char *filename_utf8 = uim_locale_to_utf8(filename);
+
   if (no_usable_entries) {
     uim_notify_info(_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
                        "no usable entries after skipping %lu invalid lines "
                        "(first at line %lu); check the encoding"),
-                    filename, skk_encoding_name(encoding),
+                    filename_utf8, skk_encoding_name(encoding),
                     (unsigned long)invalid_line_count,
                     (unsigned long)first_invalid_line);
   } else {
     uim_notify_info(_("uim-tutcode: mazegaki dictionary %s (encoding: %s): "
                        "skipped %lu invalid lines (first at line %lu)"),
-                    filename, skk_encoding_name(encoding),
+                    filename_utf8, skk_encoding_name(encoding),
                     (unsigned long)invalid_line_count,
                     (unsigned long)first_invalid_line);
   }
+  free(filename_utf8);
 }
 
 static void
@@ -683,8 +687,12 @@ build_unicode_sort_index(dic_info *di, const char *filename)
 
 error:
   free_unicode_sort_index(di);
-  uim_notify_info(_("failed to build a Unicode-sorted index for system dictionary: %s"),
-                  filename);
+  {
+    char *filename_utf8 = uim_locale_to_utf8(filename);
+    uim_notify_info(_("failed to build a Unicode-sorted index for system dictionary: %s"),
+                    filename_utf8);
+    free(filename_utf8);
+  }
   return 0;
 }
 
@@ -3814,8 +3822,10 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
               free_skk_line(sl);
               sl = next;
             }
+            char *fn_utf8 = uim_locale_to_utf8(fn);
             uim_notify_info(_("invalid %s dictionary: %s"),
-                            skk_encoding_name(encoding), fn);
+                            skk_encoding_name(encoding), fn_utf8);
+            free(fn_utf8);
             fclose(fp);
             close_lock(lock_fd);
             return 0;
@@ -4497,7 +4507,9 @@ open_skkserv(const char *hostname, int portnum, int family)
   hints.ai_socktype = SOCK_STREAM;
 
   if ((error = getaddrinfo(hostname, port, &hints, &aitop))) {
-    uim_notify_fatal("uim-skk: %s", gai_strerror(error));
+    char *errstr = uim_locale_to_utf8(gai_strerror(error));
+    uim_notify_fatal("uim-skk: %s", errstr);
+    free(errstr);
     return 0;
   }
 

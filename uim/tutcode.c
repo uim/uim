@@ -43,6 +43,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
+#include "uim-internal.h"
 
 enum tutcode_bushu_index_kind {
   TUTCODE_BUSHU_EXPAND,
@@ -76,8 +77,11 @@ static struct tutcode_bushu_index *tutcode_bushu_indexes;
 static void
 notify_dictionary_error(const char *filename, const char *message)
 {
+  char *filename_utf8 = uim_locale_to_utf8(filename);
+
   uim_notify_info(_("uim-tutcode: bushu dictionary %s: %s"),
-                  filename, message);
+                  filename_utf8, message);
+  free(filename_utf8);
 }
 
 static void
@@ -85,19 +89,22 @@ notify_invalid_lines(const char *filename, const char *encoding,
                      size_t invalid_line_count, size_t first_invalid_line,
                      int no_valid_entries)
 {
+  char *filename_utf8 = uim_locale_to_utf8(filename);
+
   if (no_valid_entries) {
     uim_notify_info(
       _("uim-tutcode: bushu dictionary %s (encoding: %s): no usable entries after "
          "skipping %lu invalid lines (first at line %lu); check the encoding"),
-      filename, encoding, (unsigned long)invalid_line_count,
+      filename_utf8, encoding, (unsigned long)invalid_line_count,
       (unsigned long)first_invalid_line);
   } else {
     uim_notify_info(
       _("uim-tutcode: bushu dictionary %s (encoding: %s): skipped %lu invalid lines "
          "(first at line %lu)"),
-      filename, encoding, (unsigned long)invalid_line_count,
+      filename_utf8, encoding, (unsigned long)invalid_line_count,
       (unsigned long)first_invalid_line);
   }
+  free(filename_utf8);
 }
 
 static char *
@@ -456,9 +463,10 @@ build_index(const char *filename, const char *encoding,
   fp = fopen(filename, "rb");
   if (!fp) {
     char message[256];
+    char *error = uim_locale_to_utf8(strerror(errno));
 
-    snprintf(message, sizeof(message), _("cannot open file: %s"),
-             strerror(errno));
+    snprintf(message, sizeof(message), _("cannot open file: %s"), error);
+    free(error);
     notify_dictionary_error(filename, message);
     return NULL;
   }
@@ -478,13 +486,14 @@ build_index(const char *filename, const char *encoding,
 
   while ((line = read_dictionary_line(fp, &read_error)) != NULL) {
     char *utf8_line, *key, *value;
-    int line_nonempty = line[0] != '\0';
+    uim_bool convert_failed;
     int parse_status;
 
     line_number++;
     utf8_line = uim_iconv->convert(converter, line);
+    convert_failed = uim_code_conversion_failed(line, utf8_line);
     free(line);
-    if (!utf8_line || (line_nonempty && utf8_line[0] == '\0')) {
+    if (convert_failed) {
       free(utf8_line);
       if (!invalid_line_count)
         first_invalid_line = line_number;

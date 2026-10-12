@@ -254,8 +254,9 @@ c_getaddrinfo(uim_lisp hostname_, uim_lisp servname_, uim_lisp hint_)
     hostname = REFER_C_STR(hostname_);
   error = getaddrinfo(hostname, servname, hints, &res0);
   if (error) {
-    const char *errstr = gai_strerror(error);
+    char *errstr = uim_locale_to_utf8(gai_strerror(error));
     uim_notify_fatal("getaddrinfo: %s", errstr);
+    free(errstr);
     free(servname);
     return uim_scm_f();
   }
