@@ -18,6 +18,10 @@ option('canna',
        type: 'boolean',
        value: false,
        description: 'use Canna')
+option('dict',
+       type: 'feature',
+       value: 'disabled',
+       description: 'build a GTK 3 dictionary utility for Anthy and Canna')
 option('eb',
        type: 'feature',
        value: 'disabled',
