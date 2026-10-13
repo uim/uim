@@ -87,6 +87,8 @@ build_xim = (xext.found() and
              add_languages('cpp', native: false, required: xim_option))
 xft = dependency('xft', required: false)
 
+gtk3 = dependency('gtk+-3.0', required: get_option('gtk3'))
+
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
                      version: '>=1.3.1')
@@ -432,6 +434,9 @@ endif
 if build_xim
   subdir('xim')
 endif
+if gtk3.found()
+  subdir('gtk3')
+endif
 if intl.found()
   subdir('po')
 endif
@@ -450,6 +455,7 @@ summary({
           'Canna': get_option('canna'),
           'Emacs': get_option('emacs').allowed(),
           'FEP': curses.found(),
+          'GTK 3': gtk3.found(),
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'SKK': get_option('skk'),
