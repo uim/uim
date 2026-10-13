@@ -1,5 +1,9 @@
 # The sources include config.h only when HAVE_CONFIG_H is defined as
 # Autotools does.
+xim_cpp_args = ['-DHAVE_CONFIG_H']
+if gtk3.found()
+  xim_cpp_args += ['-DUSE_GTK3_CANDWIN']
+endif
 executable('uim-xim',
            'canddisp.cpp',
            'compose.cpp',
@@ -14,7 +18,7 @@ executable('uim-xim',
            'ximpacket.cpp',
            'ximserver.cpp',
            'ximtrans.cpp',
-           cpp_args: ['-DHAVE_CONFIG_H'],
+           cpp_args: xim_cpp_args,
            dependencies: [x11, xext, xft],
            include_directories: uim_include_directories,
            install: true,

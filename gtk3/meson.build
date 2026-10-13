@@ -1,1 +1,2 @@
+subdir('candwin')
 subdir('immodule')
