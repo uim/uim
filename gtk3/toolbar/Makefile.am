@@ -1,4 +1,5 @@
-EXTRA_DIST = UimApplet.panel-applet.desktop.in.in \
+EXTRA_DIST = meson.build \
+	     UimApplet.panel-applet.desktop.in.in \
 	     uim-applet-menu.xml
 
 AM_CPPFLAGS =					\
