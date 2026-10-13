@@ -91,6 +91,8 @@ xft = dependency('xft', required: false)
 gtk3 = dependency('gtk+-3.0',
                   required: get_option('gtk3').require(
                     x11.found(), error_message: 'X11 is needed'))
+build_pref = get_option('pref').require(
+  gtk3.found(), error_message: 'GTK 3 is needed').allowed()
 
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
@@ -461,6 +463,7 @@ summary({
           'GTK 3': gtk3.found(),
           'NLS': intl.found(),
           'Notify': get_option('notify'),
+          'Pref': build_pref,
           'SKK': get_option('skk'),
           'XIM': build_xim,
         },

@@ -62,6 +62,10 @@ option('openssl',
        type: 'feature',
        value: 'disabled',
        description: 'build a plugin for OpenSSL')
+option('pref',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a graphical utility to edit user settings')
 option('skk',
        type: 'boolean',
        value: true,
