@@ -1,10 +1,6 @@
 gtk3_immodule_dir = (libdir / 'gtk-3.0' /
                      gtk3.get_variable(pkgconfig: 'gtk_binary_version') /
                      'immodules')
-gtk3_immodule_link_with = [libuim_scm, libuim, libuim_counted_init]
-if x11.found()
-  gtk3_immodule_link_with += [libuim_x_util]
-endif
 shared_module('im-uim',
               'caret-state-indicator.c',
               'compose.c',
@@ -19,7 +15,10 @@ shared_module('im-uim',
               include_directories: uim_include_directories,
               install: true,
               install_dir: gtk3_immodule_dir,
-              link_with: gtk3_immodule_link_with,
+              link_with: [libuim_scm,
+                          libuim,
+                          libuim_counted_init,
+                          libuim_x_util],
               name_prefix: '')
 
 # GTK finds immodules in its libdir without GTK_PATH.
