@@ -2,6 +2,7 @@
 
 uim_tests = \
         test-action.scm \
+        test-anthy.scm \
         test-custom-rt.scm \
         test-custom.scm \
         test-fail.scm \
@@ -10,6 +11,7 @@ uim_tests = \
         test-lazy-load.scm \
         test-light-record.scm \
         test-plugin.scm \
+        test-skk-custom.scm \
         test-template.scm \
         test-ustr.scm \
         test-wlos.scm \
@@ -49,7 +51,6 @@ EXTRA_DIST = run.sh.in $(uim_tests) meson.build
 EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
         uim-test.scm uim-test-utils-new.scm uim-assertions.scm \
         test-uim-test-utils.scm \
-        test-example.scm \
-        test-anthy.scm
+        test-example.scm
 
 DISTCLEANFILES = run.sh
