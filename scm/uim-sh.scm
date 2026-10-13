@@ -1,7 +1,7 @@
 ;;; uim-sh.scm: uim interactive shell for debugging, batch processing
 ;;;             and serving as generic inferior process
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -130,8 +130,8 @@
 		 (writeln res))
 	     (uim-sh-loop my-read))))))
 
-;; Loop even if error has been occurred. This is required to run
-;; GaUnit-based unit test for uim.
+;; Keep reading expressions from stdin after an error so that an
+;; error doesn't terminate the session.
 (define uim-sh
   (lambda (args)
     (let* ((file.args (uim-sh-parse-args uim-sh-option-table

@@ -15,10 +15,8 @@ for developers.
   - LIBUIM_SYSTEM_SCM_FILES: subprojects/sigscheme/lib
   - LIBUIM_SCM_FILES: scm
   - LIBUIM_PLUGIN_LIB_DIR: the directory that has the built plugins
-
-  test/ also has the old tests that are run from Gauche with GaUnit,
-  such as test/test-ustr.scm and test/util/. They aren't run anymore
-  and are being ported to the unittest framework of SigScheme.
+  - LIBUIM_VANILLA: 1 to load neither the user configuration nor the
+    IM modules on start up
 
 
 * Usage
