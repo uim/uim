@@ -87,7 +87,10 @@ build_xim = (xext.found() and
              add_languages('cpp', native: false, required: xim_option))
 xft = dependency('xft', required: false)
 
-gtk3 = dependency('gtk+-3.0', required: get_option('gtk3'))
+# The immodule uses X11 for the Compose file and key handling.
+gtk3 = dependency('gtk+-3.0',
+                  required: get_option('gtk3').require(
+                    x11.found(), error_message: 'X11 is needed'))
 
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
