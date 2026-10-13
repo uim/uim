@@ -1,2 +1,5 @@
 subdir('candwin')
 subdir('immodule')
+subdir('pad')
+subdir('switcher')
+subdir('toolbar')

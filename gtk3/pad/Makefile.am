@@ -1,3 +1,5 @@
+EXTRA_DIST = meson.build
+
 if GTK3
 AM_CPPFLAGS =					\
 	-I$(top_builddir)/uim			\
