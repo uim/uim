@@ -70,3 +70,11 @@ option('tests',
        type: 'feature',
        value: 'auto',
        description: 'enable tests (enabled: fail when a program that the tests of an enabled component need is missing)')
+option('x11',
+       type: 'feature',
+       value: 'auto',
+       description: 'use X11 for a plugin for X Keyboard Extension and X frontends')
+option('xim',
+       type: 'feature',
+       value: 'auto',
+       description: 'build uim-xim')

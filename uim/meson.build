@@ -119,6 +119,15 @@ libuim_bsdlook = static_library('uim-bsdlook',
                                 include_directories: uim_include_directories,
                                 pic: true)
 
+if x11.found()
+  libuim_x_util = static_library('uim-x-util',
+                                 'uim-x-util.c',
+                                 'uim-x-kana-input-hack.c',
+                                 dependencies: x11,
+                                 include_directories: uim_include_directories,
+                                 pic: true)
+endif
+
 optional_plugins = {}
 # [name, sources, extra link_with, extra dependencies]
 plugin_definitions = [
@@ -143,6 +152,10 @@ foreach definition : anthy_definitions
   endif
   optional_plugins += {definition[0]: definition[1].found()}
 endforeach
+if have_xkb
+  plugin_definitions += [['xkb', ['uim-xkb.c'], [libuim_x_util], [x11]]]
+endif
+optional_plugins += {'xkb': have_xkb}
 if m17nlib.found()
   plugin_definitions += [['m17nlib', ['m17nlib.c'], [], [m17nlib]]]
 endif

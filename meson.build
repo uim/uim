@@ -77,6 +77,16 @@ endif
 
 curses = dependency('curses', required: get_option('fep'))
 
+x11 = dependency('x11', method: 'pkg-config', required: get_option('x11'))
+have_xkb = x11.found() and cc.has_header('X11/XKBlib.h', dependencies: x11)
+
+xim_option = get_option('xim').require(x11.found(),
+                                       error_message: 'X11 is needed')
+xext = dependency('xext', required: xim_option)
+build_xim = (xext.found() and
+             add_languages('cpp', native: false, required: xim_option))
+xft = dependency('xft', required: false)
+
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
                      version: '>=1.3.1')
@@ -381,6 +391,19 @@ if anthy_utf8_capable
   config_data.set('LIBANTHY_UTF8_CAPABLE', 1)
 endif
 
+if have_xkb
+  config_data.set('HAVE_XKB', 1)
+endif
+# For the Compose file.
+if x11.found()
+  config_data.set_quoted('XLIB_DIR',
+                         x11.get_variable(pkgconfig: 'prefix') / 'share')
+endif
+if build_xim and xft.found()
+  config_data.set('WITH_XFT', 1)
+  config_data.set('HAVE_XFT_UTF8_STRING', 1)
+endif
+
 # longjmp-based error handlings
 config_data.set('UIM_USE_ERROR_GUARD', 1)
 if get_option('notify')
@@ -406,6 +429,9 @@ endif
 if curses.found()
   subdir('fep')
 endif
+if build_xim
+  subdir('xim')
+endif
 if intl.found()
   subdir('po')
 endif
@@ -427,6 +453,7 @@ summary({
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'SKK': get_option('skk'),
+          'XIM': build_xim,
         },
         section: 'Features')
 summary(optional_plugins, section: 'Plugins')
