@@ -1,3 +1,5 @@
+EXTRA_DIST = meson.build
+
 if GTK3
 if PREF
 AM_CPPFLAGS =					\
