@@ -1,4 +1,4 @@
-EXTRA_DIST = uim-xim.1
+EXTRA_DIST = uim-xim.1 meson.build
 
 if XIM
 
