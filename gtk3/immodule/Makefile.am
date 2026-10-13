@@ -1,3 +1,5 @@
+EXTRA_DIST = meson.build update-immodules-cache.sh
+
 uim_gtk3_im_module_path = $(libdir)/gtk-3.0
 
 moduledir = $(uim_gtk3_im_module_path)/@GTK3_BINARY_VERSION@/immodules
@@ -44,41 +46,15 @@ IM_UIM_SOURCES = \
 
 QUERY_COMMAND = gtk-query-immodules-3.0
 
-install-data-hook:
-	if test -z $(DESTDIR); then \
-	  if test $(libdir) = $(GTK3_LIBDIR); then \
-	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
-	      $(QUERY_COMMAND) --update-cache; \
-	    else \
-	      echo "********************** Warning ***********************"; \
-	      echo " $(QUERY_COMMAND) not found"; \
-	      echo "******************************************************"; \
-	    fi \
-	  else \
-	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
-	      GTK_PATH=$(uim_gtk3_im_module_path) $(QUERY_COMMAND) --update-cache; \
-	    else \
-	      echo "********************** Warning ***********************"; \
-	      echo " $(QUERY_COMMAND) not found"; \
-	      echo " Please make sure to update"; \
-	      echo " immodules.cache"; \
-	      echo " manually, and set"; \
-	      echo " GTK_IM_MODULE_FILE=PATH_TO/immodule.cache"; \
-	      echo " environment variable to use this module."; \
-	      echo "******************************************************"; \
-	    fi \
-	  fi \
-	fi
-uninstall-hook:
-	if test -z $(DESTDIR); then \
-	  if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
-	    if test $(libdir) = $(GTK3_LIBDIR); then \
-	      $(QUERY_COMMAND) --update-cache; \
-	    else \
-	      GTK_PATH=$(uim_gtk3_im_module_path) $(QUERY_COMMAND) --update-cache; \
-	    fi \
-	  fi \
-	fi
+# GTK finds immodules in its libdir without GTK_PATH.
+install-data-hook uninstall-hook:
+	if test "$(libdir)" = "$(GTK3_LIBDIR)"; then \
+	  gtk_path=; \
+	else \
+	  gtk_path="$(uim_gtk3_im_module_path)"; \
+	fi; \
+	DESTDIR="$(DESTDIR)" $(SHELL) $(srcdir)/update-immodules-cache.sh \
+	  $(QUERY_COMMAND) "$$gtk_path"
 else
 install-data-hook:
 

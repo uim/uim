@@ -119,6 +119,12 @@ libuim_bsdlook = static_library('uim-bsdlook',
                                 include_directories: uim_include_directories,
                                 pic: true)
 
+# For immodules.
+libuim_counted_init = static_library('uim-counted-init',
+                                     'counted-init.c',
+                                     include_directories: uim_include_directories,
+                                     pic: true)
+
 if x11.found()
   libuim_x_util = static_library('uim-x-util',
                                  'uim-x-util.c',

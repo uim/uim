@@ -38,6 +38,10 @@ option('ffi',
        type: 'feature',
        value: 'disabled',
        description: 'build a plugin for libffi')
+option('gtk3',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a GTK 3 immodule')
 option('libedit',
        type: 'feature',
        value: 'auto',
