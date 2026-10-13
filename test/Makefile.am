@@ -46,11 +46,5 @@ XFAIL_TESTS = $(uim_xfail_tests)
 endif
 
 EXTRA_DIST = run.sh.in $(uim_tests) meson.build
-# The old tests for Gauche and GaUnit. They are being ported to the
-# unittest framework of SigScheme.
-EXTRA_DIST += uim-test-utils.scm run-test.scm template.scm \
-        uim-test.scm uim-test-utils-new.scm uim-assertions.scm \
-        test-uim-test-utils.scm \
-        test-example.scm
 
 DISTCLEANFILES = run.sh
