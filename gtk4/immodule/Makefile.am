@@ -1,3 +1,5 @@
+EXTRA_DIST = meson.build
+
 uim_gtk4_im_module_path = $(libdir)/gtk-4.0
 
 moduledir = $(uim_gtk4_im_module_path)/@GTK4_BINARY_VERSION@/immodules

@@ -46,6 +46,10 @@ option('gtk3',
        type: 'feature',
        value: 'auto',
        description: 'build a GTK 3 immodule')
+option('gtk4',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a GTK 4 immodule')
 option('libedit',
        type: 'feature',
        value: 'auto',
