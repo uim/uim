@@ -1,4 +1,5 @@
 EXTRA_DIST =				\
+	meson.build			\
 	test/candidates.scm		\
 	test/run.rb			\
 	test/surrounding-text.scm	\
@@ -37,8 +38,8 @@ uim.xml: uim.xml.in
 	    -e 's|@uim_pixmapsdir[@]|$(uim_pixmapsdir)|g' $< > $@
 
 # An ibus-daemon of the test's own, driven through libibus as GNOME
-# Shell drives it. It needs no display and no desktop, but Ruby/GObject
-# Introspection and the IBus typelib.
+# Shell drives it. It needs no display and no desktop, but
+# Ruby/GObjectIntrospection and the IBus typelib.
 if IBUS_TEST
 
 TESTS_ENVIRONMENT = \
