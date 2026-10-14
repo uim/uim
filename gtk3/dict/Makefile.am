@@ -1,5 +1,5 @@
 
-EXTRA_DIST = uim-dict-ui.xml.in
+EXTRA_DIST = uim-dict-ui.xml.in meson.build
 
 if GTK3
 if DICT

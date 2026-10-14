@@ -94,6 +94,18 @@ gtk3 = dependency('gtk+-3.0',
 build_pref = get_option('pref').require(
   gtk3.found(), error_message: 'GTK 3 is needed').allowed()
 
+# The dictionary utility uses Anthy (EUC-JP) if available as Autotools
+# does.
+dict_option = get_option('dict').require(gtk3.found(),
+                                         error_message: 'GTK 3 is needed')
+dict_anthy = anthy.found() ? anthy : anthy_utf8
+dict_canna = cc.find_library('canna',
+                             has_headers: ['canna/RK.h'],
+                             required: false)
+build_dict = dict_option.require(
+  dict_anthy.found() or dict_canna.found(),
+  error_message: 'Anthy or Canna is needed').allowed()
+
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
                      version: '>=1.3.1')
@@ -458,6 +470,7 @@ pkgconfig.generate(libraries: [libuim_scm, libuim],
 
 summary({
           'Canna': get_option('canna'),
+          'Dict': build_dict,
           'Emacs': get_option('emacs').allowed(),
           'FEP': curses.found(),
           'GTK 3': gtk3.found(),
