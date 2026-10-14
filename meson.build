@@ -91,6 +91,8 @@ xft = dependency('xft', required: false)
 gtk3 = dependency('gtk+-3.0',
                   required: get_option('gtk3').require(
                     x11.found(), error_message: 'X11 is needed'))
+gtk4 = dependency('gtk4', required: get_option('gtk4'))
+
 build_pref = get_option('pref').require(
   gtk3.found(), error_message: 'GTK 3 is needed').allowed()
 
@@ -454,6 +456,9 @@ endif
 if gtk3.found()
   subdir('gtk3')
 endif
+if gtk4.found()
+  subdir('gtk4')
+endif
 if intl.found()
   subdir('po')
 endif
@@ -474,6 +479,7 @@ summary({
           'Emacs': get_option('emacs').allowed(),
           'FEP': curses.found(),
           'GTK 3': gtk3.found(),
+          'GTK 4': gtk4.found(),
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'Pref': build_pref,
