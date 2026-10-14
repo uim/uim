@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-12 07:18+0900\n"
+"POT-Creation-Date: 2026-10-14 00:55+0000\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -601,8 +601,7 @@ msgstr "向き"
 msgid "The orientation of the tray."
 msgstr "トレイの向き"
 
-#: gtk3/toolbar/common-gtk.c:87 gtk3/toolbar/uim-applet-menu.xml:3
-#: qt3/toolbar/common-quimhelpertoolbar.cpp:78
+#: gtk3/toolbar/common-gtk.c:85 qt3/toolbar/common-quimhelpertoolbar.cpp:78
 #: qt3/toolbar/common-quimhelpertoolbar.cpp:140
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:109
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:186
@@ -611,8 +610,7 @@ msgstr "トレイの向き"
 msgid "Switch input method"
 msgstr "入力方式の切り換え"
 
-#: gtk3/toolbar/common-gtk.c:96 gtk3/toolbar/uim-applet-menu.xml:7
-#: qt3/toolbar/common-quimhelpertoolbar.cpp:79
+#: gtk3/toolbar/common-gtk.c:94 qt3/toolbar/common-quimhelpertoolbar.cpp:79
 #: qt3/toolbar/common-quimhelpertoolbar.cpp:165
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:111
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:212
@@ -621,8 +619,7 @@ msgstr "入力方式の切り換え"
 msgid "Preference"
 msgstr "設定"
 
-#: gtk3/toolbar/common-gtk.c:105 gtk3/toolbar/uim-applet-menu.xml:11
-#: qt3/toolbar/common-quimhelpertoolbar.cpp:80
+#: gtk3/toolbar/common-gtk.c:103 qt3/toolbar/common-quimhelpertoolbar.cpp:80
 #: qt3/toolbar/common-quimhelpertoolbar.cpp:189
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:113
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:237
@@ -631,8 +628,7 @@ msgstr "設定"
 msgid "Japanese dictionary editor"
 msgstr "日本語辞書ツール"
 
-#: gtk3/toolbar/common-gtk.c:114 gtk3/toolbar/uim-applet-menu.xml:15
-#: qt3/toolbar/common-quimhelpertoolbar.cpp:81
+#: gtk3/toolbar/common-gtk.c:112 qt3/toolbar/common-quimhelpertoolbar.cpp:81
 #: qt3/toolbar/common-quimhelpertoolbar.cpp:213
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:115
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:262
@@ -641,8 +637,7 @@ msgstr "日本語辞書ツール"
 msgid "Input pad"
 msgstr "入力パッド"
 
-#: gtk3/toolbar/common-gtk.c:123 gtk3/toolbar/uim-applet-menu.xml:19
-#: qt3/toolbar/common-quimhelpertoolbar.cpp:82
+#: gtk3/toolbar/common-gtk.c:121 qt3/toolbar/common-quimhelpertoolbar.cpp:82
 #: qt3/toolbar/common-quimhelpertoolbar.cpp:237
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:117
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:287
@@ -651,8 +646,7 @@ msgstr "入力パッド"
 msgid "Handwriting input pad"
 msgstr "手書き入力パッド"
 
-#: gtk3/toolbar/common-gtk.c:132 gtk3/toolbar/uim-applet-menu.xml:23
-#: qt3/toolbar/common-quimhelpertoolbar.cpp:83
+#: gtk3/toolbar/common-gtk.c:130 qt3/toolbar/common-quimhelpertoolbar.cpp:83
 #: qt3/toolbar/common-quimhelpertoolbar.cpp:260
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:119
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:311 scm/im-custom.scm:142
@@ -661,12 +655,12 @@ msgstr "手書き入力パッド"
 msgid "Help"
 msgstr "ヘルプ"
 
-#: gtk3/toolbar/common-gtk.c:289 gtk3/toolbar/common-gtk.c:545
+#: gtk3/toolbar/common-gtk.c:277 gtk3/toolbar/common-gtk.c:527
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr "'%s' を起動できません。"
 
-#: gtk3/toolbar/common-gtk.c:967 qt3/toolbar/common-quimhelpertoolbar.cpp:85
+#: gtk3/toolbar/common-gtk.c:949 qt3/toolbar/common-quimhelpertoolbar.cpp:85
 #: qt4/toolbar/common-quimhelpertoolbar.cpp:122
 #: tqt/toolbar/common-quimhelpertoolbar.cpp:99
 msgid "Quit this toolbar"
@@ -677,48 +671,11 @@ msgstr "終了"
 msgid "Unable to parse the geometry string '%s'"
 msgstr "ジオメトリ文字列 '%s' を解析できません"
 
-#: gtk3/toolbar/UimApplet.panel-applet.desktop.in.in:5
-msgid "uim Applet Factory"
-msgstr "uimアプレット・ファクトリ"
-
-#: gtk3/toolbar/UimApplet.panel-applet.desktop.in.in:6
-msgid "uim applet factory"
-msgstr "uimアプレット・ファクトリ"
-
-# 「表示器」は他のGNOMEアプレットの訳語に従った
-#: gtk3/toolbar/UimApplet.panel-applet.desktop.in.in:9
-msgid "Input Method Indicator"
-msgstr "入力メソッド表示器"
-
-# 他のGNOMEアプレットのですます調に合わせた
-#: gtk3/toolbar/UimApplet.panel-applet.desktop.in.in:10
-msgid "Indicates and controls the state of input method (for uim)"
-msgstr "入力メソッド (uim) の状態を表示・制御します"
-
-#: gtk3/toolbar/applet-gnome3.c:111
-msgid "TRANSLATORS"
-msgstr ""
-"TOKUNAGA Hiroyuki <tkng@xem.jp>\n"
-"Daichi Kawahata <daichik@users.sourceforge.net>"
-
-#: gtk3/toolbar/applet-gnome3.c:115
-msgid "uim Applet"
-msgstr "uimアプレット"
-
-#: gtk3/toolbar/applet-gnome3.c:118
-msgid "Applet for indicating uim's status"
-msgstr "uimの状態を示すアプレット"
-
-#: gtk3/toolbar/uim-applet-menu.xml:27 scm/mozc-custom.scm:128
-#: scm/mozc-custom.scm:129
-msgid "About"
-msgstr "このプログラムについて"
-
-#: ibus/property.c:160
+#: ibus/property.c:153
 msgid "Input method"
 msgstr "入力方式"
 
-#: ibus/property.c:163 scm/anthy-utf8-custom.scm:196
+#: ibus/property.c:156 scm/anthy-utf8-custom.scm:196
 #: scm/anthy-utf8-custom.scm:197 scm/m17nlib-custom.scm:62
 #: scm/m17nlib-custom.scm:63 scm/mozc-custom.scm:160 scm/mozc-custom.scm:161
 #: scm/skk-custom.scm:234 scm/skk-custom.scm:235 scm/anthy-custom.scm:189
@@ -5764,6 +5721,10 @@ msgstr "Mozc 日本語変換エンジン"
 msgid "MozcTool selector"
 msgstr "MozcTool の選択"
 
+#: scm/mozc-custom.scm:128 scm/mozc-custom.scm:129
+msgid "About"
+msgstr "このプログラムについて"
+
 #: scm/mozc-custom.scm:133 scm/mozc-custom.scm:134
 msgid "Config dialog"
 msgstr "設定ダイアログ"
@@ -6021,6 +5982,10 @@ msgstr "Googleサジェストとの通信にSSLを利用する"
 #: scm/predict-sqlite3.scm:86
 msgid "cannot create dictionary directory"
 msgstr "辞書ディレクトリを作成できません"
+
+#: scm/predict-sqlite3.scm:159
+msgid "uim-sqlite3 is not installed."
+msgstr ""
 
 #: scm/process.scm:79
 msgid "cannot duplicate stdin"
@@ -7317,12 +7282,12 @@ msgstr "m17nライブラリ IMオープンエラー"
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
-#: uim/dynlib.c:149
+#: uim/dynlib.c:151
 #, c-format
 msgid "dynlib: %s: Load failed."
 msgstr "dynlib: %s: ロードに失敗しました。"
 
-#: uim/dynlib.c:158
+#: uim/dynlib.c:161
 #, c-format
 msgid "dynlib: %s: Initialization failed."
 msgstr "dynlib: %s: 初期化に失敗しました。"
@@ -7357,17 +7322,17 @@ msgstr "uim-openssl: %sの証明書検証に失敗しました: %s"
 msgid "uim-openssl: SSL_connect to %s: %s"
 msgstr "uim-openssl: %sへのSSL_connect: %s"
 
-#: uim/skk.c:371
+#: uim/skk.c:372
 #, c-format
 msgid "unknown encoding for %s: %s"
 msgstr "%sの文字コード%sは不明です"
 
-#: uim/skk.c:458
+#: uim/skk.c:459
 #, c-format
 msgid "uim-skk: failed to convert skkserv data from %s to %s"
 msgstr "uim-skk: skkservのデータを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:521
+#: uim/skk.c:524
 #, c-format
 msgid ""
 "uim-tutcode: mazegaki dictionary %s (encoding: %s): no usable entries after "
@@ -7377,7 +7342,7 @@ msgstr ""
 "果、有効な項目がありません (最初の不正行: %lu行目)。文字コード設定を確認して"
 "ください"
 
-#: uim/skk.c:528
+#: uim/skk.c:531
 #, c-format
 msgid ""
 "uim-tutcode: mazegaki dictionary %s (encoding: %s): skipped %lu invalid "
@@ -7386,49 +7351,49 @@ msgstr ""
 "uim-tutcode: 交ぜ書き辞書 %s (文字コード: %s): 不正な行を%lu行スキップしまし"
 "た (最初の不正行: %lu行目)"
 
-#: uim/skk.c:686
+#: uim/skk.c:692
 #, c-format
 msgid "failed to build a Unicode-sorted index for system dictionary: %s"
 msgstr "システム辞書のユニコード順インデックスの構築に失敗しました: %s"
 
-#: uim/skk.c:1492
+#: uim/skk.c:1500
 #, c-format
 msgid "failed to convert system dictionary data from %s to %s"
 msgstr "システム辞書データを%sから%sへ変換できませんでした"
 
-#: uim/skk.c:1656
+#: uim/skk.c:1664
 msgid "error in expand_str"
 msgstr "expand_strでエラー"
 
-#: uim/skk.c:1671
+#: uim/skk.c:1679
 msgid "too long word"
 msgstr "語が長すぎます"
 
-#: uim/skk.c:2583
+#: uim/skk.c:2591
 msgid "SKK server without completion capability\n"
 msgstr "補完機能がないSKKサーバ\n"
 
-#: uim/skk.c:3817
+#: uim/skk.c:3826
 #, c-format
 msgid "invalid %s dictionary: %s"
 msgstr "不正な%sの辞書です: %s"
 
-#: uim/skk.c:4138
+#: uim/skk.c:4148
 #, c-format
 msgid "cannot encode personal dictionary as %s"
 msgstr "個人辞書を%sとしてエンコードできません"
 
-#: uim/skk.c:4521
+#: uim/skk.c:4533
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: %sのポート%sへ接続できませんでした"
 
-#: uim/tutcode.c:79
+#: uim/tutcode.c:82
 #, c-format
 msgid "uim-tutcode: bushu dictionary %s: %s"
 msgstr "uim-tutcode: 部首辞書 %s: %s"
 
-#: uim/tutcode.c:90
+#: uim/tutcode.c:96
 #, c-format
 msgid ""
 "uim-tutcode: bushu dictionary %s (encoding: %s): no usable entries after "
@@ -7438,7 +7403,7 @@ msgstr ""
 "有効な項目がありません (最初の不正行: %lu行目)。文字コード設定を確認してくだ"
 "さい"
 
-#: uim/tutcode.c:96
+#: uim/tutcode.c:102
 #, c-format
 msgid ""
 "uim-tutcode: bushu dictionary %s (encoding: %s): skipped %lu invalid lines "
@@ -7447,37 +7412,37 @@ msgstr ""
 "uim-tutcode: 部首辞書 %s (文字コード: %s): 不正な行を%lu行スキップしました "
 "(最初の不正行: %lu行目)"
 
-#: uim/tutcode.c:460
+#: uim/tutcode.c:468
 #, c-format
 msgid "cannot open file: %s"
 msgstr "ファイルを開けません: %s"
 
-#: uim/tutcode.c:468 uim/tutcode.c:496
+#: uim/tutcode.c:476 uim/tutcode.c:505
 msgid "cannot create character converter"
 msgstr "文字コード変換器を作成できません"
 
-#: uim/tutcode.c:515
+#: uim/tutcode.c:524
 msgid "index is too large"
 msgstr "インデックスが大きすぎます"
 
-#: uim/tutcode.c:521
+#: uim/tutcode.c:530
 msgid "failed while reading file"
 msgstr "ファイルの読み込み中にエラーが発生しました"
 
-#: uim/tutcode.c:526
+#: uim/tutcode.c:535
 msgid "failed while closing file"
 msgstr "ファイルを閉じる際にエラーが発生しました"
 
-#: uim/tutcode.c:539
+#: uim/tutcode.c:548
 msgid "failed to finalize index"
 msgstr "インデックスの確定に失敗しました"
 
-#: uim/tutcode.c:628
+#: uim/tutcode.c:637
 #, c-format
 msgid "uim-tutcode: unknown bushu dictionary kind: %s"
 msgstr "uim-tutcode: 不明な部首辞書の種類です: %s"
 
-#: uim/tutcode.c:640
+#: uim/tutcode.c:649
 msgid "uim-tutcode: invalid UTF-8 bushu lookup key"
 msgstr "uim-tutcode: 部首検索キーが不正なUTF-8文字列です"
 

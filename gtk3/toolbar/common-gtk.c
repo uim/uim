@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -55,7 +55,6 @@
 /* exported functions */
 GtkWidget *uim_toolbar_standalone_new(void);
 GtkWidget *uim_toolbar_trayicon_new(void);
-GtkWidget *uim_toolbar_applet_new(void);
 void uim_toolbar_check_helper_connection(GtkWidget *widget);
 void uim_toolbar_get_im_list(void);
 void uim_toolbar_launch_helper_application(const char *command);
@@ -63,7 +62,6 @@ void uim_toolbar_launch_helper_application(const char *command);
 
 enum {
   TYPE_STANDALONE,
-  TYPE_APPLET,
   TYPE_ICON
 };
 
@@ -180,13 +178,6 @@ set_button_style(GtkWidget *button, gint type)
                                         " padding-right: 5px;\n"
                                         "}\n", -1, NULL);
 	break;
-    case TYPE_APPLET:
-         gtk_css_provider_load_from_data(provider,
-                                        "#uim-applet-button {\n"
-                                        " padding-left: 2px;\n"
-                                        " padding-right: 2px;\n"
-                                        "}\n", -1, NULL);
-	break;
    }
     gtk_style_context_add_provider(context,
                                    GTK_STYLE_PROVIDER(provider),
@@ -198,9 +189,6 @@ set_button_style(GtkWidget *button, gint type)
 	break;
     case TYPE_STANDALONE:
         gtk_widget_set_name(button, "uim-toolbar-button");
-	break;
-    case TYPE_APPLET:
-        gtk_widget_set_name(button, "uim-applet-button");
 	break;
     }
 }
@@ -487,17 +475,11 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 static gboolean
 button_pressed(GtkButton *button, GdkEventButton *event, GtkWidget *widget)
 {
-  gint toolbar_type, button_type;
+  gint button_type;
 
   switch (event->button) {
   case 3:
-    toolbar_type = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
-			    OBJECT_DATA_TOOLBAR_TYPE));
-    if (toolbar_type == TYPE_APPLET)
-      gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(button)),
-		      				(GdkEvent *)event);
-    else
-      right_button_pressed(button, event, widget);
+    right_button_pressed(button, event, widget);
     break;
   case 2:
     gtk_propagate_event(gtk_widget_get_parent(GTK_WIDGET(button)),
@@ -1121,12 +1103,6 @@ GtkWidget *
 uim_toolbar_standalone_new(void)
 {
   return toolbar_new(TYPE_STANDALONE);
-}
-
-GtkWidget *
-uim_toolbar_applet_new(void)
-{
-  return toolbar_new(TYPE_APPLET);
 }
 
 GtkWidget *

@@ -22,18 +22,13 @@ xgettext=$5
 msgmerge=$6
 msgattrib=$7
 
-# GETTEXTDATADIRS lets xgettext find its/*.loc, which describe how to
-# extract strings from our GMenu XML files.
-# --keyword=Description: an extra key to extract from
-# gtk3/toolbar/UimApplet.panel-applet.desktop.in.in.
 xgettext_run() {
-  GETTEXTDATADIRS="${source_dir}/po" "${xgettext}" \
+  "${xgettext}" \
     --default-domain=uim \
     --add-comments=TRANSLATORS: \
     --keyword=_ \
     --keyword=N_ \
     --keyword=NC_:1c,2 \
-    --keyword=Description \
     --package-name=uim \
     --package-version="${version}" \
     --copyright-holder='uim Developers' \
