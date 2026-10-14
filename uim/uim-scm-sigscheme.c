@@ -128,6 +128,8 @@ struct cons_args {
   uim_lisp cdr;
 };
 static void *uim_scm_cons_internal(struct cons_args *args);
+static ScmObj uim_scm_p_symbol_value(ScmObj var);
+static ScmObj uim_scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
 
 
 void
@@ -1282,6 +1284,29 @@ uim_scm_init_proc5(const char *name,
   scm_register_func(name, (ScmFuncType)func, SCM_PROCEDURE_FIXED_5);
 }
 
+/* uim's Scheme code and users' configurations use symbol-value and
+ * set-symbol-value!. SigScheme provides them only with its SIOD
+ * compatibility. */
+static ScmObj
+uim_scm_p_symbol_value(ScmObj var)
+{
+  if (!SCM_SYMBOLP(var))
+    scm_error_obj("symbol-value", "symbol required but got", var);
+
+  return scm_symbol_value(var, SCM_INTERACTION_ENV);
+}
+
+static ScmObj
+uim_scm_p_set_symbol_valuex(ScmObj var, ScmObj val)
+{
+  if (!SCM_SYMBOLP(var))
+    scm_error_obj("set-symbol-value!", "symbol required but got", var);
+
+  SCM_SYMBOL_SET_VCELL(var, val);
+
+  return val;
+}
+
 void
 uim_scm_init(const char *system_load_path)
 {
@@ -1330,6 +1355,13 @@ uim_scm_init(const char *system_load_path)
 #endif
 
   scm_require_module("srfi-34");
+
+  scm_register_func("symbol-value",
+                    (ScmFuncType)uim_scm_p_symbol_value,
+                    SCM_PROCEDURE_FIXED_1);
+  scm_register_func("set-symbol-value!",
+                    (ScmFuncType)uim_scm_p_set_symbol_valuex,
+                    SCM_PROCEDURE_FIXED_2);
 }
 
 void
