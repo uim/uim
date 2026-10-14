@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -503,7 +503,7 @@ uim_scm_symbol_value_internal(const char *symbol_str)
 
   symbol = scm_intern(symbol_str);
   if (SCM_TRUEP(scm_p_symbol_boundp(symbol, SCM_NULL))) {
-    return (void *)(uim_lisp)scm_p_symbol_value(symbol);
+    return (void *)(uim_lisp)scm_symbol_value(symbol, SCM_INTERACTION_ENV);
   } else {
     return (void *)uim_scm_f();
   }
