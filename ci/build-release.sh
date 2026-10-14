@@ -22,7 +22,6 @@ echo "::group::configure"
 set -x
 ~/source/configure \
   --enable-dict \
-  --enable-gnome3-applet \
   --enable-kde-applet \
   --enable-kde4-applet \
   --enable-maintainer-mode \

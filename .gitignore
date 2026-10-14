@@ -148,11 +148,6 @@
 /gtk3/toolbar/.libs/
 /gtk3/toolbar/Makefile
 /gtk3/toolbar/Makefile.in
-/gtk3/toolbar/UimApplet.panel-applet
-/gtk3/toolbar/UimApplet.panel-applet.in
-/gtk3/toolbar/UimApplet.panel-applet.in.tmp
-/gtk3/toolbar/org.gnome.panel.applet.UimAppletFactory.service
-/gtk3/toolbar/uim-toolbar-applet-gnome3
 /gtk3/toolbar/uim-toolbar-gtk3
 /gtk3/toolbar/uim-toolbar-gtk3-systray
 /gtk3/toolbar/*.o

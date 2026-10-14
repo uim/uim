@@ -16,7 +16,6 @@ EUCJP_POTFILES = $(shell sed -e '/^\#/d' -e 's|^|$(top_srcdir)/|' \
 
 EXTRA_DIST = LINGUAS POTFILES.in POTFILES.eucjp.in \
 	meson.build update-po.sh \
-	its/uim-gmenu.its its/uim-gmenu.loc \
 	$(LINGUAS:%=%.po)
 CLEANFILES = $(GMOFILES) $(DOMAIN).pot eucjp.pot
 SUFFIXES = .po .gmo

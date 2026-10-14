@@ -793,27 +793,6 @@ if test "x$with_gtk3" = xyes; then
   AC_SUBST(GTK3_LIBDIR)
 fi
 
-AC_ARG_ENABLE(gnome3-applet,
-  AC_HELP_STRING([--disable-gnome3-applet],
-    [disable uim applet for GNOME3 panel]),
-  [],
-  [enable_gnome3_applet=yes])
-
-if test "x$enable_gnome3_applet" != xno; then
-  PKG_CHECK_MODULES(GNOME3_APPLET, libpanel-applet,
-                    enable_gnome3_applet=yes, enable_gnome3_applet=no)
-fi
-
-AM_CONDITIONAL(GNOME3_APPLET, test "x$enable_gnome3_applet" = xyes)
-
-if test "x$enable_gnome3_applet" = xyes; then
-  AC_ARG_WITH([libpanel-applet-dir], [], [LIBPANEL_APPLET_DIR=$withval], [LIBPANEL_APPLET_DIR=""])
-  if test "$LIBPANEL_APPLET_DIR" = ""; then
-    LIBPANEL_APPLET_DIR=`$PKG_CONFIG --variable=libpanel_applet_dir libpanel-applet`
-  fi
-  AC_SUBST(LIBPANEL_APPLET_DIR)
-fi
-
 dnl *******************************
 dnl *** Check for GTK 4 Library ***
 dnl *******************************
@@ -2156,7 +2135,6 @@ Configure Result :
    SQLite3         : ${with_sqlite3}
    ffi             : ${with_ffi}
    GTK+3           : ${with_gtk3}
-   GNOME3 Applet   : ${enable_gnome3_applet}
    GTK4            : ${with_gtk4}
    Wayland IM      : ${with_wayland}
    IBus engine     : ${with_ibus}

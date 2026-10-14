@@ -5,7 +5,6 @@ set -eu
 echo "::group::configure"
 set -x
 /source/configure \
-  --enable-gnome3-applet \
   --enable-maintainer-mode \
   --prefix=/tmp/local \
   --with-gtk3
