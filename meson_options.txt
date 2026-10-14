@@ -50,6 +50,10 @@ option('gtk4',
        type: 'feature',
        value: 'auto',
        description: 'build a GTK 4 immodule')
+option('ibus',
+       type: 'feature',
+       value: 'auto',
+       description: 'build ibus-engine-uim')
 option('libedit',
        type: 'feature',
        value: 'auto',

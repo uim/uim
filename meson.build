@@ -93,6 +93,8 @@ gtk3 = dependency('gtk+-3.0',
                     x11.found(), error_message: 'X11 is needed'))
 gtk4 = dependency('gtk4', required: get_option('gtk4'))
 
+ibus = dependency('ibus-1.0', version: '>=1.5.0', required: get_option('ibus'))
+
 build_pref = get_option('pref').require(
   gtk3.found(), error_message: 'GTK 3 is needed').allowed()
 
@@ -459,6 +461,9 @@ endif
 if gtk4.found()
   subdir('gtk4')
 endif
+if ibus.found()
+  subdir('ibus')
+endif
 if intl.found()
   subdir('po')
 endif
@@ -480,6 +485,7 @@ summary({
           'FEP': curses.found(),
           'GTK 3': gtk3.found(),
           'GTK 4': gtk4.found(),
+          'IBus': ibus.found(),
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'Pref': build_pref,
