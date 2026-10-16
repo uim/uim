@@ -130,6 +130,7 @@ struct cons_args {
 static void *uim_scm_cons_internal(struct cons_args *args);
 static ScmObj uim_scm_p_symbol_value(ScmObj var);
 static ScmObj uim_scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
+static ScmObj uim_scm_p_verbose(ScmObj args);
 
 
 void
@@ -1307,6 +1308,47 @@ uim_scm_p_set_symbol_valuex(ScmObj var, ScmObj val)
   return val;
 }
 
+/* uim uses the verbose level of SIOD to control the debug messages.
+ * SigScheme provides it only with its SIOD compatibility. */
+static long verbose_level;
+
+static ScmObj
+uim_scm_p_verbose(ScmObj args)
+{
+  /* Each level adds a category. */
+  static const enum ScmDebugCategory categories[] = {
+    SCM_DBG_ERRMSG,
+    SCM_DBG_BACKTRACE,
+    SCM_DBG_FILE,
+    SCM_DBG_GC,
+    SCM_DBG_READ,
+  };
+  ScmObj level;
+  enum ScmDebugCategory category = SCM_DBG_NONE;
+  size_t i;
+
+  if (!SCM_NULLP(args)) {
+    level = SCM_CAR(args);
+    if (!SCM_NULLP(SCM_CDR(args)))
+      scm_error_obj("verbose", "superfluous argument(s)", SCM_CDR(args));
+    if (!SCM_INTP(level) || SCM_INT_VALUE(level) < 0)
+      scm_error_obj("verbose", "non-negative integer required but got",
+                    level);
+
+    verbose_level = SCM_INT_VALUE(level);
+    for (i = 0;
+         i < sizeof(categories) / sizeof(categories[0])
+           && i < (size_t)verbose_level;
+         i++)
+      category |= categories[i];
+    if (verbose_level >= 2)
+      category |= scm_predefined_debug_categories();
+    scm_set_debug_categories(category);
+  }
+
+  return SCM_MAKE_INT(verbose_level);
+}
+
 void
 uim_scm_init(const char *system_load_path)
 {
@@ -1344,6 +1386,8 @@ uim_scm_init(const char *system_load_path)
   storage_conf.n_heaps_init         = 1;
   storage_conf.symbol_hash_size     = 1024;
   scm_initialize(&storage_conf, (const char *const *)&argv);
+  /* The default debug categories of SigScheme. */
+  verbose_level = 2;
   initialized = UIM_TRUE;  /* init here for uim_scm_gc_protect() */
 
   protected = (uim_lisp)SCM_FALSE;
@@ -1362,6 +1406,9 @@ uim_scm_init(const char *system_load_path)
   scm_register_func("set-symbol-value!",
                     (ScmFuncType)uim_scm_p_set_symbol_valuex,
                     SCM_PROCEDURE_FIXED_2);
+  scm_register_func("verbose",
+                    (ScmFuncType)uim_scm_p_verbose,
+                    SCM_PROCEDURE_VARIADIC_0);
 }
 
 void
