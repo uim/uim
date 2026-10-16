@@ -119,6 +119,9 @@ m17nlib = dependency('m17n-shell',
 sigscheme_combined = dependency('sigscheme-combined',
                                 fallback: 'sigscheme',
                                 default_options: [
+                                  # uim provides the SIOD compatible
+                                  # procedures that it uses.
+                                  'compat_siod=false',
                                   'conf=uim',
                                   'libsscm=false',
                                   'master_pkg=uim',

@@ -29,9 +29,17 @@ libuim accepts some enviroment variables mainly for debugging purpose.
 
 - LIBUIM_VERBOSE
 
-  This variable takes a number as a value. 0-10 can be specified. If
-  LIBUIM_VERBOSE is greater than or equal to 5, uim shows backtrace
-  when error occurred if --enable-backtrace is set by configure.
+  This variable takes a non-negative integer as a value. It's the
+  verbose level that controls the debug messages of the Scheme
+  interpreter. Each level shows the following messages in addition to
+  the ones of the lower levels. The default is 2.
+
+  * 0 : nothing
+  * 1 : error messages
+  * 2 : backtraces of errors
+  * 3 : file loading
+  * 4 : garbage collection
+  * 5 : parsed expressions
 
 - LIBUIM_VANILLA
 
