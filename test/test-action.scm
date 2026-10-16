@@ -43,7 +43,7 @@
   ;; propagation procedures. Reset them for the following tests.
   (for-each (lambda (sym)
               (if (symbol-bound? sym)
-                  (eval (list 'undefine sym) (interaction-environment))))
+                  (%%undefine sym)))
             '(default-widget_test_input_mode
               default-widget_test_kana_input_method))
   (set! context-propagate-widget-configuration

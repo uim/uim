@@ -131,6 +131,7 @@ static void *uim_scm_cons_internal(struct cons_args *args);
 static ScmObj uim_scm_p_symbol_value(ScmObj var);
 static ScmObj uim_scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
 static ScmObj uim_scm_p_verbose(ScmObj args);
+static ScmObj uim_scm_p_undefine(ScmObj var);
 
 
 void
@@ -1308,6 +1309,21 @@ uim_scm_p_set_symbol_valuex(ScmObj var, ScmObj val)
   return val;
 }
 
+/* This is only for tests. Some procedures such as define-custom behave
+ * differently whether a variable is bound or not. Tests use this to unbind
+ * the variables that they define. SigScheme provides undefine only with
+ * its SIOD compatibility. */
+static ScmObj
+uim_scm_p_undefine(ScmObj var)
+{
+  if (!SCM_SYMBOLP(var))
+    scm_error_obj("%%undefine", "symbol required but got", var);
+
+  SCM_SYMBOL_SET_VCELL(var, SCM_UNBOUND);
+
+  return SCM_FALSE;
+}
+
 /* uim uses the verbose level of SIOD to control the debug messages.
  * SigScheme provides it only with its SIOD compatibility. */
 static long verbose_level;
@@ -1409,6 +1425,9 @@ uim_scm_init(const char *system_load_path)
   scm_register_func("verbose",
                     (ScmFuncType)uim_scm_p_verbose,
                     SCM_PROCEDURE_VARIADIC_0);
+  scm_register_func("%%undefine",
+                    (ScmFuncType)uim_scm_p_undefine,
+                    SCM_PROCEDURE_FIXED_1);
 }
 
 void

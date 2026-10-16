@@ -37,8 +37,7 @@
 ;; the variables defined by the tests are removed before each test case.
 (define setup
   (lambda ()
-    (for-each (lambda (sym)
-                (eval (list 'undefine sym) (interaction-environment)))
+    (for-each %%undefine
               '(test-style test-available-ims
                 test-cancel-key test-cancel-key?
                 test-foo-key test-foo-key?
