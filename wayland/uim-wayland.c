@@ -590,7 +590,8 @@ registry_global(void *data,
 {
   struct uim_wayland *uw = data;
 
-  if (uim_wayland_v1_bind(uw, registry, name, interface))
+  if (uim_wayland_v1_bind(uw, registry, name, interface) ||
+      uim_wayland_v2_offer(uw, name, interface))
     return;
   if (strcmp(interface, wl_compositor_interface.name) == 0) {
     if (version > UIM_WAYLAND_COMPOSITOR_VERSION)
@@ -706,8 +707,9 @@ usage(FILE *stream)
           "Usage: %s [-h|--help] [-v|--version]\n"
           "\n"
           "Input method for Wayland compositors that implement\n"
-          "zwp_input_method_v1, such as KWin and Weston. The compositor\n"
-          "starts this program itself; see doc/uim-wayland.md.\n",
+          "zwp_input_method_v1, such as KWin and Weston, which start this\n"
+          "program themselves, or zwp_input_method_v2, such as Sway; see\n"
+          "doc/uim-wayland.md.\n",
           UIM_WAYLAND_PROGRAM_NAME);
 }
 
@@ -792,12 +794,17 @@ main(int argc, char **argv)
   uw->registry = wl_display_get_registry(uw->display);
   wl_registry_add_listener(uw->registry, &registry_listener, uw);
   wl_display_roundtrip(uw->display);
+  /* zwp_input_method_v1 is offered only to the input method the
+   * compositor started, which is what it is meant for. */
+  if (!uw->input_method)
+    uim_wayland_v2_start(uw);
 
   if (!uw->input_method) {
     fprintf(stderr,
-            "%s: the compositor doesn't offer zwp_input_method_v1 to this\n"
-            "process. The compositor must start %s itself as its input\n"
-            "method; see doc/uim-wayland.md.\n",
+            "%s: the compositor offers this process neither\n"
+            "zwp_input_method_v1 nor zwp_input_method_v2 with\n"
+            "zwp_virtual_keyboard_v1. KWin and Weston must start %s\n"
+            "themselves as their input method; see doc/uim-wayland.md.\n",
             UIM_WAYLAND_PROGRAM_NAME, UIM_WAYLAND_PROGRAM_NAME);
     return EXIT_FAILURE;
   }

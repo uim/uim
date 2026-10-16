@@ -1,7 +1,8 @@
 # uim-wayland
 
 `uim-wayland` is an input method for Wayland compositors that implement
-`zwp_input_method_v1`: KWin (Plasma) and Weston. It makes uim usable in
+`zwp_input_method_v1`, KWin (Plasma) and Weston, or
+`zwp_input_method_v2`, Sway for instance. It makes uim usable in
 applications that talk to the compositor with `text-input` instead of
 loading a GTK or Qt input module, for example Chromium and Electron
 applications running natively on Wayland.
@@ -78,6 +79,22 @@ path=/usr/bin/uim-wayland
 Weston only implements `text-input-unstable-v1` on the application
 side, so use `weston-editor` to test.
 
+## Sway
+
+Compositors that implement `zwp_input_method_v2`, such as Sway, don't
+start the input method, so start it in the session, for instance in
+the Sway configuration:
+
+```
+exec uim-wayland
+```
+
+The compositor also has to implement `zwp_virtual_keyboard_v1`: the
+keys uim doesn't consume go to the focused application through a
+virtual keyboard. Only one input method can run on a seat. A
+compositor that offers both protocols, such as Mir with both enabled,
+gets `zwp_input_method_v1`.
+
 ## Debugging
 
 `UIM_WAYLAND_DEBUG=1` in the environment of `uim-wayland` logs
@@ -102,6 +119,9 @@ The messages `uim-wayland` prints go to the stderr of the compositor.
 If the input method doesn't start, look there first.
 
 ## Limitations
+
+- With `zwp_input_method_v2`, candidates aren't shown yet, and uim
+  isn't told the text around the cursor or what a field takes.
 
 - A pending preedit is dropped when the text field loses focus.
   Applications differ in what they do with it (Chromium commits it),
