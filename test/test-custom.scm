@@ -45,12 +45,6 @@
                     symbols)
                string<?))))
 
-(define test-undefine!
-  (lambda (syms)
-    (for-each (lambda (sym)
-                (eval (list 'undefine sym) (interaction-environment)))
-              syms)))
-
 ;; Each test case expects the state just after loading custom.scm.
 ;; define-custom doesn't change the value of an existing variable. So
 ;; the fixture variables are also removed.
@@ -97,7 +91,7 @@
                 (set-symbol-value! (car pair)
                                    (test-custom-copy-alist (cdr pair))))
               test-custom-initial-state)
-    (test-undefine! test-custom-fixture-symbols)))
+    (for-each %%undefine test-custom-fixture-symbols)))
 
 (define setup-validators
   (lambda ()
