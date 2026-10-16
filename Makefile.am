@@ -10,7 +10,7 @@ if USE_NLS
   SUBDIRS += po
 endif
 
-EXTRA_DIST = RELNOTE Rakefile autogen.sh setup.sh \
+EXTRA_DIST = .editorconfig RELNOTE Rakefile autogen.sh setup.sh \
 	uim.pc.in uim.desktop \
 	meson.build meson_options.txt
 
