@@ -12,6 +12,7 @@ foreach definition : [
   ['test-custom-rt.scm', false],
   ['test-custom.scm', false],
   ['test-fail.scm', true],
+  ['test-hangul.scm', false],
   ['test-iconv.scm', false],
   ['test-im.scm', false],
   ['test-lazy-load.scm', false],
