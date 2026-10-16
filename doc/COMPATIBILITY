@@ -57,6 +57,50 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: SIOD compatibility of SigScheme is disabled
+Affects: IM developers, uim developers
+Updates: Scheme API
+Version: 2.0.0
+Revision:
+Date: 2026-10-17
+Modifier: Sutou Kouhei
+Related:
+URL:
+Changes:
+  (removed) undefine
+  (removed) %%closure-code
+  (removed) %%siod=
+  (removed) eof-val
+  (removed) the-environment
+  (removed) bit-and
+  (removed) bit-or
+  (removed) bit-xor
+  (removed) bit-not
+  (removed) %%enclose-another-env
+  (changed) verbose
+  (changed) require
+  (changed) set-car!
+  (changed) set-cdr!
+Description:
+  uim doesn't use SIOD compatibility of SigScheme anymore. uim
+  provides symbol-value, set-symbol-value! and verbose that it uses
+  by itself.
+
+  The SIOD compatible procedures and syntaxes that uim doesn't use are
+  unavailable. Use %%current-environment instead of the-environment.
+  Use logand, logior, logxor and lognot of SRFI 60 instead of
+  bit-and, bit-or, bit-xor and bit-not. They have been undefined by
+  init.scm.
+
+  %%enclose-another-env that used %%closure-code has been removed.
+
+  verbose doesn't suppress normal output such as display at level 0.
+  It only suppresses the debug messages of the Scheme interpreter.
+
+  require returns #t instead of the *FILE-loaded* symbol and doesn't
+  define the symbol. set-car! and set-cdr! return an unspecified value
+  instead of the given value.
+------------------------------------------------------------------------------
 Summary: UTF-8 text domain and notification messages
 Affects: Bridge developers, Helper program developers, Notification
          plugin developers, IM developers

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -34,19 +34,12 @@
 ;; configuration for special platforms such as embedded environments
 ;;   -- YamaKen 2005-01-29
 
-(require-extension (srfi 23 34 60) (siod))
+(require-extension (srfi 23 34 60))
 
 ;; FIXME: Temporary workaround to resolve circular dependency of
 ;; util.scm, deprecated-util.scm and light-record.scm. Record users
 ;; should explicitly require light-record.scm.  -- YamaKen 2008-04-29
 (require "light-record.scm")
-
-;; Disable SIOD compatibilities.
-(undefine the-environment)
-(undefine bit-and)
-(undefine bit-or)
-(undefine bit-xor)
-(undefine bit-not)
 
 (let ((vlevel (getenv "LIBUIM_VERBOSE")))
   (if (and vlevel

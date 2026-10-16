@@ -116,42 +116,51 @@
             (locale-new ""))
 (test-end)
 
+;; The setters return unspecified values. Check the set values instead.
+(define (test-set-lang! locale lang)
+  (locale-set-lang! locale lang)
+  (locale-lang locale))
+
+(define (test-set-territory! locale territory)
+  (locale-set-territory! locale territory)
+  (locale-territory locale))
+
 (test-begin "locale-set-lang!")
 (test-equal ""
-            (locale-set-lang! (locale-new "en") ""))
+            (test-set-lang! (locale-new "en") ""))
 ;; valid langs
 (test-equal "ja"
-            (locale-set-lang! (locale-new "") "ja"))
+            (test-set-lang! (locale-new "") "ja"))
 (test-equal "zh"
-            (locale-set-lang! (locale-new "") "zh"))
+            (test-set-lang! (locale-new "") "zh"))
 (test-equal "de"
-            (locale-set-lang! (locale-new "") "de"))
+            (test-set-lang! (locale-new "") "de"))
 ;; locale-set-lang! only accepts two-letter language codes
 (test-equal ""
-            (locale-set-lang! (locale-new "") "jpn"))
+            (test-set-lang! (locale-new "") "jpn"))
 (test-equal ""
-            (locale-set-lang! (locale-new "") "zh_CN"))
+            (test-set-lang! (locale-new "") "zh_CN"))
 (test-equal ""
-            (locale-set-lang! (locale-new "") "d"))
+            (test-set-lang! (locale-new "") "d"))
 (test-end)
 
 (test-begin "locale-set-territory!")
 (test-equal ""
-            (locale-set-territory! (locale-new "en") ""))
+            (test-set-territory! (locale-new "en") ""))
 ;; valid territories
 (test-equal "JP"
-            (locale-set-territory! (locale-new "") "JP"))
+            (test-set-territory! (locale-new "") "JP"))
 (test-equal "CN"
-            (locale-set-territory! (locale-new "") "CN"))
+            (test-set-territory! (locale-new "") "CN"))
 (test-equal "DE"
-            (locale-set-territory! (locale-new "") "DE"))
+            (test-set-territory! (locale-new "") "DE"))
 ;; locale-set-territory! only accepts two-letter country codes
 (test-equal ""
-            (locale-set-territory! (locale-new "") "Japan"))
+            (test-set-territory! (locale-new "") "Japan"))
 (test-equal ""
-            (locale-set-territory! (locale-new "") "zh_CN"))
+            (test-set-territory! (locale-new "") "zh_CN"))
 (test-equal ""
-            (locale-set-territory! (locale-new "") "ger"))
+            (test-set-territory! (locale-new "") "ger"))
 (test-end)
 
 (test-begin "locale-lang-territory-str")
