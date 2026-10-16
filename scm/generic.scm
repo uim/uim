@@ -215,7 +215,13 @@
      (else
       #t))))
 
-(define generic-proc-input-state-with-preedit
+;; This is only for generic-key-press-handler-new. Don't use this from
+;; other files because this may be changed. The key predicates are used
+;; while there is preedit. #f means the global one. It's looked up for
+;; each key so that changes by the custom API are used.
+(define (generic-proc-input-state-with-preedit-new prev-candidate-key?
+                                                   next-candidate-key?
+                                                   commit-key?)
   (lambda (pc key state rkc)
     (cond
      ((generic-off-key? key state)
@@ -233,10 +239,10 @@
 		(generic-context-flush pc)))
 	(generic-context-set-on! pc #f)
 	#f))
-     ((generic-prev-candidate-key? key state)
+     (((or prev-candidate-key? generic-prev-candidate-key?) key state)
       (generic-handle-convert-key pc key state)
       #f)
-     ((generic-next-candidate-key? key state)
+     (((or next-candidate-key? generic-next-candidate-key?) key state)
       (generic-handle-convert-key pc key state)
       #f)
      ((generic-backspace-key? key state)
@@ -245,7 +251,7 @@
       (generic-update-input-state-cands pc key state
 					rkc (rk-context-seq rkc) #f)
       #f)
-     ((generic-commit-key? key state)
+     (((or commit-key? generic-commit-key?) key state)
       (generic-commit pc)
       #f)
      ((generic-cancel-key? key state)
@@ -340,15 +346,17 @@
                     (generic-context-set-candidate-op-count! pc (+ 1 (generic-context-candidate-op-count pc)))))
                 (generic-context-set-multi-cand-input! pc #t)))))))))
 
-(define generic-proc-input-state
+;; This is only for generic-key-press-handler-new. Don't use this from
+;; other files because this may be changed.
+(define (generic-proc-input-state-new proc-input-state-with-preedit)
   (lambda (pc key state)
     (let* ((rkc (generic-context-rk-context pc))
-    	   (seq (rk-context-seq rkc))
+           (seq (rk-context-seq rkc))
 	   (res #f))
       (and
        (if (string=? (rk-pending rkc) "")
 	   (generic-proc-input-state-without-preedit pc key state rkc)
-	   (generic-proc-input-state-with-preedit pc key state rkc))
+           (proc-input-state-with-preedit pc key state rkc))
        (begin
 	 (set! res
 	       (rk-push-key!
@@ -632,17 +640,28 @@
      ;;
      (generic-commit-raw pc))))
 
+;; The arguments are the same as generic-proc-input-state-with-preedit-new.
+(define (generic-key-press-handler-new prev-candidate-key?
+                                       next-candidate-key?
+                                       commit-key?)
+  (let ((proc-input-state
+         (generic-proc-input-state-new
+          (generic-proc-input-state-with-preedit-new prev-candidate-key?
+                                                     next-candidate-key?
+                                                     commit-key?))))
+    (lambda (pc key state)
+      (if (ichar-control? key)
+          (im-commit-raw pc)
+          (if (generic-context-on pc)
+            (if (generic-context-multi-cand-input pc)
+              (generic-proc-multi-cand-input-state pc key state)
+              (proc-input-state pc key state))
+            (generic-proc-off-mode pc key state)))
+      (generic-update-preedit pc)
+      ())))
+
 (define generic-key-press-handler
-  (lambda (pc key state)
-    (if (ichar-control? key)
-	(im-commit-raw pc)
-	(if (generic-context-on pc)
-          (if (generic-context-multi-cand-input pc)
-            (generic-proc-multi-cand-input-state pc key state)
-            (generic-proc-input-state pc key state))
-          (generic-proc-off-mode pc key state)))
-    (generic-update-preedit pc)
-    ()))
+  (generic-key-press-handler-new #f #f #f))
 
 (define generic-key-release-handler
   (lambda (pc key state)
@@ -686,29 +705,38 @@
   (lambda (id im init-handler)
     (init-handler id im #f)))
 
+;; OPTIONS are names and values alternately. 'prev-candidate-key?,
+;; 'next-candidate-key? and 'commit-key? are the key predicates used
+;; while there is preedit instead of the global ones.
 (define generic-register-im
-  (lambda (name lang code name-label short-desc init-arg)
-    (register-im
-     name
-     lang
-     code
-     name-label
-     short-desc
-     init-arg
-     generic-init-handler
-     #f  ;; release-handler
-     context-mode-handler
-     generic-key-press-handler
-     generic-key-release-handler
-     generic-reset-handler
-     generic-get-candidate-handler
-     generic-set-candidate-index-handler
-     context-prop-activate-handler
-     #f
-     generic-focus-in-handler
-     generic-focus-out-handler
-     generic-place-handler
-     generic-displace-handler
-     )))
+  (lambda (name lang code name-label short-desc init-arg . options)
+    (let ((option (lambda (option-name)
+                    (let ((rest (memq option-name options)))
+                      (and rest
+                           (cadr rest))))))
+      (register-im
+       name
+       lang
+       code
+       name-label
+       short-desc
+       init-arg
+       generic-init-handler
+       #f  ;; release-handler
+       context-mode-handler
+       (generic-key-press-handler-new (option 'prev-candidate-key?)
+                                      (option 'next-candidate-key?)
+                                      (option 'commit-key?))
+       generic-key-release-handler
+       generic-reset-handler
+       generic-get-candidate-handler
+       generic-set-candidate-index-handler
+       context-prop-activate-handler
+       #f
+       generic-focus-in-handler
+       generic-focus-out-handler
+       generic-place-handler
+       generic-displace-handler
+       ))))
 
 (generic-configure-widgets)

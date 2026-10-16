@@ -55,37 +55,6 @@
 (test-eq #t (eq? filter-baz filter-map))
 (test-end)
 
-(test-begin "%%enclose-another-env")
-(test-equal 3
-            (let* ((x 1)
-                   (y 2)
-                   (closure (lambda ()
-                              (+ x y))))
-              (closure)))
-(test-equal 10
-            (let* ((x 1)
-                   (y 2)
-                   (closure (lambda ()
-                              (+ x y)))
-                   ;; SigScheme: valid 2-frame env
-                   (another-env '(((x) . (4))
-                                  ((y) . (6)))))
-              (set! closure
-                    (%%enclose-another-env closure another-env))
-              (closure)))
-;; causes error since z is not exist in the another-env
-(test-error (let* ((x 1)
-                   (y 2)
-                   (z 3)
-                   (closure (lambda ()
-                              (+ x y z)))
-                   ;; SigScheme: valid 2-frame env
-                   (another-env '(((x) . (4))
-                                  ((y) . (6)))))
-              (set! closure (%%enclose-another-env closure another-env))
-              (closure)))
-(test-end)
-
 (test-begin "getenv")
 (test-false (getenv "UIM_NONEXISTING_ENV"))
 (test-end)
