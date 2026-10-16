@@ -1,6 +1,6 @@
 ;;; util.scm: Utility functions for uim.
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -296,15 +296,6 @@
                  (if (not (null? rest))
                    (loop (car rest) (cdr rest))
                    #f)))))))
-
-;; used for dynamic environment substitution of closure
-(define %%enclose-another-env
-  (lambda (closure another-env)
-    (let* ((code (%%closure-code closure))
-	   (args (car code))
-	   (body (cdr code))
-	   (definition (list 'lambda args body)))
-      (eval definition another-env))))
 
 ;; for direct candidate selection
 (define number->candidate-index

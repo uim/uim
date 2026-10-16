@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -33,62 +33,13 @@
 ;; Hangul IMs requires some generic-keys disabled. See the post "A
 ;; question about the space bar" in uim@pdx.freedesktop.org
 ;; mailinglist from David Oftedal at Fri, 02 Apr 2004 22:55:25 +0200
-(define hangul-proc-on-mode-with-preedit
-  (let* ((non-existent-key? (make-single-key-predicate ""))
-	 (generic-next-candidate-key? non-existent-key?)
-	 (generic-prev-candidate-key? non-existent-key?)
-	 (generic-commit-key? non-existent-key?)
-	 (generic-proc-input-state-with-preedit-with-this-env
-	  (%%enclose-another-env generic-proc-input-state-with-preedit
-				 (%%current-environment))))
-    (lambda (gc key state rkc)  ;; "gc" stands for "generic-context"
-      (generic-proc-input-state-with-preedit-with-this-env gc key state rkc))))
+(define (hangul-register-im name lang code name-label short-desc init-arg)
+  (let ((non-existent-key? (make-single-key-predicate "")))
+    (generic-register-im name lang code name-label short-desc init-arg
+                         'prev-candidate-key? non-existent-key?
+                         'next-candidate-key? non-existent-key?
+                         'commit-key? non-existent-key?)))
 
-(define hangul-proc-on-mode
-  (let* ((non-existent-key? (make-single-key-predicate ""))
-	 (generic-next-candidate-key? non-existent-key?)
-	 (generic-prev-candidate-key? non-existent-key?)
-	 (generic-commit-key? non-existent-key?)
-	 (generic-proc-input-state-with-preedit
-	  hangul-proc-on-mode-with-preedit)
-	 (generic-proc-input-state-with-this-env
-	  (%%enclose-another-env generic-proc-input-state (%%current-environment))))
-    (lambda (gc key state)  ;; "gc" stands for "generic-context"
-      (generic-proc-input-state-with-this-env gc key state))))
-
-;; 'let*' is required rather than 'let'
-(define hangul-key-press-handler
-  (let* ((generic-proc-input-state hangul-proc-on-mode)
-	 (generic-key-press-handler-with-this-env
-	  (%%enclose-another-env generic-key-press-handler (%%current-environment))))
-    (lambda (gc key state)
-      (generic-key-press-handler-with-this-env gc key state))))
-
-(define hangul-register-im
-  (lambda (name lang code name-label short-desc init-arg)
-    (register-im
-     name
-     lang
-     code
-     name-label
-     short-desc
-     init-arg
-     generic-init-handler
-     #f ;; release-handler
-     context-mode-handler
-     hangul-key-press-handler
-     generic-key-release-handler
-     generic-reset-handler
-     generic-get-candidate-handler
-     generic-set-candidate-index-handler
-     context-prop-activate-handler
-     #f
-     generic-focus-in-handler
-     generic-focus-out-handler
-     generic-place-handler
-     generic-displace-handler
-     )))
-    
 (define hangul2-init-handler
   (lambda (id im arg)
     (require "hangul2.scm")
