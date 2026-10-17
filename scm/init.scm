@@ -77,7 +77,13 @@
 	    (if (>= (verbose)
 		    1)
 		(verbose 1))
-	    (let ((succeeded (try-load file)))
+	    (let ((succeeded
+                    (try-load file
+                      (lambda (err)
+                        (uim-notify-info
+                          (string-append
+                            (_ "Failed to load user configuration file: ")
+                            file ": " (write-to-string err)))))))
 	      (verbose orig-verbose)
 	      succeeded))))))
 

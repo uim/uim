@@ -265,11 +265,15 @@
         (let ((paths (string-split (load-path) ":")))
           (map (lambda (x) (string-append x "/" file)) paths)))))
 
-;; returns succeeded or not
+;; returns succeeded or not; an optional handler receives load exceptions
 (define try-load
-  (lambda (file)
+  (lambda (file . error-handler)
     (guard (err
-             (else #f))
+             (else
+               (if (and (pair? error-handler)
+                        (procedure? (car error-handler)))
+                 ((car error-handler) err))
+               #f))
            (let ((paths (make-scm-pathname file)))
              (let loop ((path (car paths))
                         (rest (cdr paths)))
