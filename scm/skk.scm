@@ -1663,12 +1663,18 @@
 	  (skk-context-set-state! csc 'skk-state-latin))
       (skk-set-rule! csc input-rule))))
 
+(define skk-normalized-candidate-op-count
+  (lambda ()
+    (if (eq? skk-candidate-selection-style 'ddskk-like)
+        (max skk-candidate-op-count 1)
+        skk-candidate-op-count)))
+
 (define skk-check-candidate-window-begin
   (lambda (sc)
     (if (and
 	 (not (skk-context-candidate-window sc))
 	 skk-use-candidate-window?
-	 (> (skk-context-nth sc) (- skk-candidate-op-count 2)))
+	 (> (skk-context-nth sc) (- (skk-normalized-candidate-op-count) 2)))
 	(begin
 	  (skk-context-set-candidate-window! sc #t)
 	  (skk-context-set-nr-candidates!
@@ -1686,7 +1692,7 @@
 		  (skk-context-nr-candidates sc))
 	    ((eq? skk-candidate-selection-style 'ddskk-like)
 		  (- (skk-context-nr-candidates sc)
-		     (- skk-candidate-op-count 1))))
+		     (- (skk-normalized-candidate-op-count) 1))))
 	   skk-nr-candidate-max)))))
 
 (define skk-commit-by-label-key
@@ -1700,7 +1706,7 @@
 				      skk-nr-candidate-max))
 			 ((eq? skk-candidate-selection-style 'ddskk-like)
 			    (quotient (- (skk-context-nth sc)
-					 (- skk-candidate-op-count 1))
+					 (- (skk-normalized-candidate-op-count) 1))
 				      skk-nr-candidate-max)))))
 	  (idx -1)
 	  (res #f))
@@ -1721,7 +1727,7 @@
 	  (if (or (< num skk-nr-candidate-max)
 		  (= skk-nr-candidate-max 0))
 	      (set! idx (+ (* cur-page skk-nr-candidate-max)
-			   num (- skk-candidate-op-count 1)))))))
+			   num (- (skk-normalized-candidate-op-count) 1)))))))
       (if (and (>= idx 0)
 	       (< idx nr))
 	  (begin
@@ -1735,7 +1741,7 @@
      ((eq? skk-candidate-selection-style 'uim)
       (skk-context-set-nth! sc (+ 1 (skk-context-nth sc))))
      ((eq? skk-candidate-selection-style 'ddskk-like)
-      (if (> (+ (skk-context-nth sc) 1) (- skk-candidate-op-count 1))
+      (if (> (+ (skk-context-nth sc) 1) (- (skk-normalized-candidate-op-count) 1))
           (let ((old-nth (skk-context-nth sc)))
             ;; Shift to the next page and detect wrapping at the end.
             (im-shift-page-candidate sc #t)
@@ -1769,7 +1775,7 @@
 		  #t)))))
      ((eq? skk-candidate-selection-style 'ddskk-like)
       (if (> (skk-context-nth sc)
-	     (+ skk-nr-candidate-max (- skk-candidate-op-count 2)))
+	     (+ skk-nr-candidate-max (- (skk-normalized-candidate-op-count) 2)))
 	  (begin
 	    (im-shift-page-candidate sc #f)
 	    #t)
@@ -1778,11 +1784,11 @@
 		(skk-back-to-kanji-state sc)
 		#f)
 	      (begin
-		(if (= (skk-context-nth sc) (- skk-candidate-op-count 1))
+		(if (= (skk-context-nth sc) (- (skk-normalized-candidate-op-count) 1))
 		    (begin
 		      (skk-reset-candidate-window sc)
 		      (skk-context-set-nth! sc
-					    (- skk-candidate-op-count 1))))
+					    (- (skk-normalized-candidate-op-count) 1))))
 		(skk-context-set-nth! sc (- (skk-context-nth sc) 1))
 		#t)))))))
 
@@ -1814,7 +1820,7 @@
 		  ((eq? skk-candidate-selection-style 'ddskk-like)
 		   (im-select-candidate
 		    sc
-		    (- (skk-context-nth sc) (- skk-candidate-op-count 1))))))
+		    (- (skk-context-nth sc) (- (skk-normalized-candidate-op-count) 1))))))
 	     #t)
 	   #t))
       #f)))
@@ -1861,7 +1867,7 @@
 	 ((eq? skk-candidate-selection-style 'ddskk-like)
 	  (im-select-candidate
 	   sc
-	   (- (skk-context-nth sc) (- skk-candidate-op-count 1))))))
+	   (- (skk-context-nth sc) (- (skk-normalized-candidate-op-count) 1))))))
     (skk-context-set-state! sc 'skk-state-converting)))
 
 (define skk-change-completion-index
@@ -2285,7 +2291,7 @@
 		    ((eq? skk-candidate-selection-style 'uim)
 		       idx)
 		    ((eq? skk-candidate-selection-style 'ddskk-like)
-		       (+ idx (- skk-candidate-op-count 1)))))))
+		       (+ idx (- (skk-normalized-candidate-op-count) 1)))))))
 	   (okuri (skk-context-okuri dcsc)))
       (list
        (if (and
@@ -2325,7 +2331,7 @@
 	     ((eq? skk-candidate-selection-style 'uim)
 	      (skk-context-set-nth! sc idx))
 	     ((eq? skk-candidate-selection-style 'ddskk-like)
-	      (skk-context-set-nth! sc (+ idx (- skk-candidate-op-count 1)))))
+	      (skk-context-set-nth! sc (+ idx (- (skk-normalized-candidate-op-count) 1)))))
 	    (skk-update-preedit sc))))))
 
 (skk-configure-widgets)
