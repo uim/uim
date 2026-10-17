@@ -54,6 +54,7 @@ static char *path;
 
 enum Action {
   Register,
+  RegisterOnly,
   UnRegister,
   UnRegisterAll,
   None
@@ -61,6 +62,7 @@ enum Action {
 
 char *action_command[] = {
   "register-modules",
+  "register-only-modules",
   "unregister-modules",
   "unregister-all-modules",
   NULL
@@ -100,6 +102,8 @@ print_usage(void)
   printf("  uim-module-manager [options]\n\n");
   printf("Options:\n");
   printf("  --register <modules>   Register the modules\n");
+  printf("  --register-only <modules>\n");
+  printf("                         Replace the module list with these modules\n");
   printf("  --unregister <modules> Unregister the modules\n");
   printf("  --path <path>          Target path where installed-modules.scm\n");
   printf("                         and loader.scm to be installed\n");
@@ -200,12 +204,15 @@ main_internal(struct main_args *args)
   argv = args->argv;
   module_names = uim_scm_null();
   for (i = 0; i < argc; i++) {
-    if (strcmp(argv[i], "--register") == 0) {
+    if (strcmp(argv[i], "--register") == 0 ||
+        strcmp(argv[i], "--register-only") == 0) {
       if (action != None) {
 	action = None;
 	break;
       }
-      action = Register; i++;
+      action = (strcmp(argv[i], "--register-only") == 0) ?
+        RegisterOnly : Register;
+      i++;
       while (argv[i] && strncmp(argv[i], "--", 2)) {
 	module_names = append_module_names(module_names, argv[i]);
 	i++;
