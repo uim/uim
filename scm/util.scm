@@ -28,7 +28,7 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 
-(require-extension (srfi 1 6 34))
+(require-extension (srfi 1 6 34 48))
 
 (require "ichar.scm")
 (require "deprecated-util.scm")
@@ -265,37 +265,32 @@
         (let ((paths (string-split (load-path) ":")))
           (map (lambda (x) (string-append x "/" file)) paths)))))
 
+;; Calls PROC with the path of FILE in the load paths. A missing file is
+;; ignored silently but errors in the file are notified.
+(define (%try-scm-file file proc)
+  ;; to suppress error message, check file existence first
+  (let ((path (and file
+                   (find file-readable? (make-scm-pathname file)))))
+    (and path
+         (guard (err
+                 (else
+                  (uim-notify-info
+                   (format (_ "Failed to load ~a: ~a") path err))
+                  #f))
+           (proc path)))))
+
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
-    (guard (err
-             (else #f))
-           (let ((paths (make-scm-pathname file)))
-             (let loop ((path (car paths))
-                        (rest (cdr paths)))
-               ;; to suppress error message, check file existence first
-               (if (file-readable? path)
-                 (begin
-                   (load path)
-                   #t)
-                 (if (not (null? rest))
-                   (loop (car rest) (cdr rest))
-                   #f)))))))
+    (%try-scm-file file
+                   (lambda (path)
+                     (load path)
+                     #t))))
 
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
-    (guard (err
-             (else #f))
-           (let ((paths (make-scm-pathname file)))
-             (let loop ((path (car paths))
-                        (rest (cdr paths)))
-               ;; to suppress error message, check file existence first
-               (if (file-readable? path)
-                 (require path)
-                 (if (not (null? rest))
-                   (loop (car rest) (cdr rest))
-                   #f)))))))
+    (%try-scm-file file require)))
 
 ;; for direct candidate selection
 (define number->candidate-index
