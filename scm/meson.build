@@ -171,11 +171,10 @@ custom_target('installed-modules.scm',
                 '--register', module_names,
               ],
               depends: plugins,
-              env: {
-                'LIBUIM_PLUGIN_LIB_DIR': meson.project_build_root() / 'uim',
+              # This doesn't use scm/ in the build tree because it
+              # generates files there.
+              env: uim_build_tree_env + {
                 'LIBUIM_SCM_FILES': meson.current_source_dir(),
-                'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
-                                            'subprojects' / 'sigscheme' / 'lib'),
                 'UIM_DISABLE_NOTIFY': '1',
               },
               input: scm_files,
