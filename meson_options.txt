@@ -90,6 +90,10 @@ option('tests',
        type: 'feature',
        value: 'auto',
        description: 'enable tests (enabled: fail when a program that the tests of an enabled component need is missing)')
+option('wayland',
+       type: 'feature',
+       value: 'auto',
+       description: 'build uim-wayland (zwp_input_method_v1 frontend)')
 option('x11',
        type: 'feature',
        value: 'auto',
