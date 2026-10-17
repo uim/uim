@@ -95,6 +95,28 @@ gtk4 = dependency('gtk4', required: get_option('gtk4'))
 
 ibus = dependency('ibus-1.0', version: '>=1.5.0', required: get_option('ibus'))
 
+wayland_protocols = dependency('wayland-protocols',
+                               version: '>=1.5',
+                               required: get_option('wayland'))
+wayland_scanner = dependency('wayland-scanner',
+                             native: true,
+                             required: get_option('wayland'))
+build_wayland = wayland_protocols.found() and wayland_scanner.found()
+wayland_dependencies = []
+foreach definition : [
+  ['wayland-client', ['>=1.15']],
+  ['xkbcommon', []],
+  ['cairo', []],
+  ['pangocairo', []],
+  ['gio-2.0', []],
+]
+  wayland_dependency = dependency(definition[0],
+                                  version: definition[1],
+                                  required: get_option('wayland'))
+  wayland_dependencies += [wayland_dependency]
+  build_wayland = build_wayland and wayland_dependency.found()
+endforeach
+
 build_pref = get_option('pref').require(
   gtk3.found(), error_message: 'GTK 3 is needed').allowed()
 
@@ -467,6 +489,9 @@ endif
 if ibus.found()
   subdir('ibus')
 endif
+if build_wayland
+  subdir('wayland')
+endif
 if intl.found()
   subdir('po')
 endif
@@ -493,6 +518,7 @@ summary({
           'Notify': get_option('notify'),
           'Pref': build_pref,
           'SKK': get_option('skk'),
+          'Wayland': build_wayland,
           'XIM': build_xim,
         },
         section: 'Features')

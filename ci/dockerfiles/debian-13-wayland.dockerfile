@@ -50,6 +50,8 @@ RUN \
     libxkbcommon-dev \
     librsvg2-bin \
     make \
+    meson \
+    ninja-build \
     pkg-config \
     ruby \
     sudo \

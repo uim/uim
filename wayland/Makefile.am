@@ -1,4 +1,5 @@
 EXTRA_DIST =				\
+	meson.build			\
 	test/candidates.scm		\
 	test/run.rb			\
 	test/surrounding-text.scm	\
