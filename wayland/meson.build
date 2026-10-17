@@ -68,13 +68,8 @@ if get_option('tests').allowed()
          ruby,
          args: [files('test' / 'run.rb')],
          depends: uim_wayland,
-         env: {
+         env: uim_build_tree_env + {
            'INPUT_METHOD_XML': wayland_input_method_xml,
-           'LIBUIM_PLUGIN_LIB_DIR': meson.project_build_root() / 'uim',
-           'LIBUIM_SCM_FILES': (meson.project_build_root() / 'scm' + ':' +
-                                meson.project_source_root() / 'scm'),
-           'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
-                                       'subprojects' / 'sigscheme' / 'lib'),
            'UIM_WAYLAND': uim_wayland.full_path(),
            'WAYLAND_XML': wayland_core_xml,
          },

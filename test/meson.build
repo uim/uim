@@ -1,10 +1,4 @@
-test_environment = environment({
-  'LIBUIM_PLUGIN_LIB_DIR': meson.project_build_root() / 'uim',
-  'LIBUIM_SCM_FILES': meson.project_source_root() / 'scm',
-  'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
-                              'subprojects' / 'sigscheme' / 'lib'),
-  'LIBUIM_VANILLA': '1',
-})
+test_environment = uim_build_tree_env + {'LIBUIM_VANILLA': '1'}
 # [test, should_fail]
 foreach definition : [
   ['test-action.scm', false],

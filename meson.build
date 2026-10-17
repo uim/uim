@@ -459,6 +459,15 @@ if get_option('notify')
 endif
 
 
+# The environment variables to run uim in the build tree.
+uim_build_tree_env = {
+  'LIBUIM_PLUGIN_LIB_DIR': meson.project_build_root() / 'uim',
+  'LIBUIM_SCM_FILES': (meson.project_build_root() / 'scm' + ':' +
+                       meson.project_source_root() / 'scm'),
+  'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
+                              'subprojects' / 'sigscheme' / 'lib'),
+}
+
 subdir('replace')
 subdir('uim')
 subdir('scm')
