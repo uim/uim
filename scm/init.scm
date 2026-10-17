@@ -71,15 +71,8 @@
 	   (setugid?)
 	   (not home-dir))
 	  #f
-	  (let ((orig-verbose (verbose))
-	        (file (or (getenv "LIBUIM_USER_SCM_FILE")
-			  (string-append home-dir "/.uim"))))
-	    (if (>= (verbose)
-		    1)
-		(verbose 1))
-	    (let ((succeeded (try-load file)))
-	      (verbose orig-verbose)
-	      succeeded))))))
+          (try-load (or (getenv "LIBUIM_USER_SCM_FILE")
+                        (string-append home-dir "/.uim")))))))
 
 (define load-modules
   (lambda ()
