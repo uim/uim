@@ -260,10 +260,9 @@
         #f)
       (and-let* ((cic (canna-lib-context-new-internal))
                  (id (canna-lib-create-context *canna-lib-socket*))
-                 (dic-list (canna-lib-context-set-dic-list!
-                            cic
-                            (canna-lib-get-dictionary-list *canna-lib-socket* id)))
+                 (dic-list (canna-lib-get-dictionary-list *canna-lib-socket* id))
                  (mode 19))  ;; XXX: (RK_XFER << RK_XFERBITS) | RK_KFER
+        (canna-lib-context-set-dic-list! cic dic-list)
         (canna-lib-context-set-id! cic id)
         (canna-lib-context-set-mode! cic mode)
         (map (lambda (dict)
