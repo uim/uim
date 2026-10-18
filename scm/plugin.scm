@@ -3,7 +3,7 @@
 ;;;
 ;;; plugin.scm: Plugin for uim.
 ;;;
-;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -61,11 +61,7 @@
 (define require-module
   (lambda (module-name)
     (set! currently-loading-module-name module-name)
-    (let ((succeeded (or (module-load module-name)
-                         (try-require
-                           (find-module-scm-path
-                             uim-plugin-scm-load-path
-                             module-name)))))
+    (let ((succeeded (module-load module-name)))
       (set! currently-loading-module-name #f)
       succeeded)))
 
@@ -128,12 +124,15 @@
 	    (else
 	     (find-module-scm-path (cdr paths) module-name))))))
 
-(define module-load
-  (lambda (module-name)
-    (if (require-dynlib module-name)
-      (let ((scm-path (find-module-scm-path
-				    uim-plugin-scm-load-path module-name)))
-        (if (string? scm-path)
-          (try-require scm-path)
-          #t))
-      #f)))
+;; Loads the dynlib and the Scheme file of the module by
+;; REQUIRE-SCM-FILE. A module may have only one of them.
+(define (%module-load module-name require-scm-file)
+  (let ((dynlib-loaded? (require-dynlib module-name))
+        (scm-path (find-module-scm-path uim-plugin-scm-load-path
+                                        module-name)))
+    (if scm-path
+        (require-scm-file scm-path)
+        dynlib-loaded?)))
+
+(define (module-load module-name)
+  (%module-load module-name try-require))

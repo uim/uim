@@ -236,4 +236,18 @@
 (test-true  (procedure? (im-prop-activate-handler test-py)))
 (test-end)
 
+(test-begin "require-module-with-force-reload: broken Scheme file")
+;; tutcode has both of a dynlib and a Scheme file.
+(test-true (require-dynlib "tutcode"))
+(let ((original-try-require-with-force-reload try-require-with-force-reload)
+      (n-calls 0))
+  ;; Simulate an error in the Scheme file.
+  (set! try-require-with-force-reload (lambda (file)
+                                        (set! n-calls (+ n-calls 1))
+                                        #f))
+  (test-false (require-module-with-force-reload "tutcode"))
+  (set! try-require-with-force-reload original-try-require-with-force-reload)
+  (test-equal 1 n-calls))
+(test-end)
+
 (test-report-result)
