@@ -136,6 +136,16 @@ m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
                      version: '>=1.3.1')
 
+# uim-mozc-helper talks to mozc_server with the protocol buffers
+# generated from mozc/.
+protobuf = dependency('protobuf',
+                      version: '>=3.0.0',
+                      required: get_option('mozc'))
+protoc = find_program('protoc', native: true, required: get_option('mozc'))
+build_mozc = (protobuf.found() and protoc.found() and
+              add_languages('cpp', native: false,
+                            required: get_option('mozc')))
+
 # SigScheme is compiled into libuim-scm as a single translation unit
 # with uim-scm-sigscheme.c. See uim/uim-scm-sigscheme.c.
 sigscheme_combined = dependency('sigscheme-combined',
@@ -498,6 +508,9 @@ endif
 if ibus.found()
   subdir('ibus')
 endif
+if build_mozc
+  subdir('mozc')
+endif
 if build_wayland
   subdir('wayland')
 endif
@@ -523,6 +536,7 @@ summary({
           'GTK 3': gtk3.found(),
           'GTK 4': gtk4.found(),
           'IBus': ibus.found(),
+          'Mozc': build_mozc,
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'Pref': build_pref,

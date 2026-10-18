@@ -143,6 +143,9 @@ endif
 if get_option('skk')
   module_names += ['skk']
 endif
+if build_mozc
+  module_names += ['mozc']
+endif
 module_names += [
   'tutcode',
   'byeoru',

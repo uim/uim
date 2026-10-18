@@ -66,6 +66,10 @@ option('m17nlib',
        type: 'feature',
        value: 'auto',
        description: 'build a plugin for m17n-lib')
+option('mozc',
+       type: 'feature',
+       value: 'auto',
+       description: 'build uim-mozc-helper for Mozc')
 option('notify',
        type: 'boolean',
        value: true,
