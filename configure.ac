@@ -1914,6 +1914,7 @@ AC_CONFIG_FILES([Makefile
                  gtk3/toolbar/Makefile
                  gtk4/Makefile
                  gtk4/immodule/Makefile
+                 gtk4/switcher/Makefile
                  qt3/Makefile
                  qt3/candwin/Makefile
                  qt3/chardict/Makefile
