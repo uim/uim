@@ -1,6 +1,6 @@
 ;;; lazy-load.scm: Lazy IM loading support
 ;;;
-;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -42,28 +42,15 @@
 (define require-module-with-force-reload
   (lambda (module-name)
     (set! currently-loading-module-name module-name)
-    ;; use try-require-with-force-reload because init-handler of the
-    ;; IM may be overwritten by stub-im handler
-    (let ((succeeded (or (module-load-with-force-reload module-name)
-                         (try-require-with-force-reload
-                           (find-module-scm-path
-                             uim-plugin-scm-load-path
-                             module-name)))))
+    (let ((succeeded (module-load-with-force-reload module-name)))
       (set! currently-loading-module-name #f)
       succeeded)))
 
 ;; see also pluin.scm
-(define module-load-with-force-reload
-  (lambda (module-name)
-    (if (require-dynlib module-name)
-      (let ((scm-path (find-module-scm-path
-                                    uim-plugin-scm-load-path module-name)))
-        (if (string? scm-path)
-          ;; use try-require-with-force-reload because init-handler of the
-          ;; im may be overwritten by stub-im handler
-          (try-require-with-force-reload scm-path)
-          #t))
-      #f)))
+(define (module-load-with-force-reload module-name)
+  ;; use try-require-with-force-reload because init-handler of the
+  ;; IM may be overwritten by stub-im handler
+  (%module-load module-name try-require-with-force-reload))
 
 (define stub-im-generate-init-handler
   (lambda (name module-name)

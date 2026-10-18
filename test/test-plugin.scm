@@ -62,4 +62,18 @@
 (test-false (require-module "nonexistent"))
 (test-end)
 
+(test-begin "require-module: broken Scheme file")
+;; tutcode has both of a dynlib and a Scheme file.
+(test-true (require-dynlib "tutcode"))
+(let ((original-try-require try-require)
+      (n-calls 0))
+  ;; Simulate an error in the Scheme file.
+  (set! try-require (lambda (file)
+                      (set! n-calls (+ n-calls 1))
+                      #f))
+  (test-false (require-module "tutcode"))
+  (set! try-require original-try-require)
+  (test-equal 1 n-calls))
+(test-end)
+
 (test-report-result)
