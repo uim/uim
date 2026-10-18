@@ -1484,27 +1484,28 @@
   (let* ((cc-id (canna-context-cc-id cc))
 	 (segments (canna-context-segments cc))
 	 (cur-seg (ustr-cursor-pos segments))
-	 (max (canna-lib-get-nr-candidates cc-id cur-seg))
+	 (nr-candidates (canna-lib-get-nr-candidates cc-id cur-seg))
 	 (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
 		0
 		(+ (ustr-cursor-frontside segments) offset)))
 	 (compensated-n (cond
-			 ((>= n max)
+			 ((>= n nr-candidates)
 			  0)
 			 ((< n 0)
-			  (- max 1))
+			  (- nr-candidates 1))
 			 (else
 			  n)))
-	 (new-op-count (+ 1 (canna-context-candidate-op-count cc))))
+	 (new-op-count (+ 1 (canna-context-candidate-op-count cc)))
+         (candidate-op-count (max canna-candidate-op-count 1)))
     (ustr-cursor-set-frontside! segments compensated-n)
     (canna-context-set-candidate-op-count! cc new-op-count)
     (if (and
 	 (= (canna-context-candidate-op-count cc)
-	    canna-candidate-op-count)
+	    candidate-op-count)
 	 canna-use-candidate-window?)
 	(begin
 	  (canna-context-set-candidate-window! cc #t)
-	  (im-activate-candidate-selector cc max canna-nr-candidate-max)))
+	  (im-activate-candidate-selector cc nr-candidates canna-nr-candidate-max)))
     (if (canna-context-candidate-window cc)
 	(im-select-candidate cc compensated-n))))
 

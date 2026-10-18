@@ -1625,27 +1625,28 @@
 (define (google-cgiapi-jp-move-candidate ggc offset)
   (let* ((segments (google-cgiapi-jp-context-segments ggc))
 	 (cur-seg (ustr-cursor-pos segments))
-	 (max (google-cgiapi-jp-lib-get-nr-candidates ggc cur-seg))
+	 (nr-candidates (google-cgiapi-jp-lib-get-nr-candidates ggc cur-seg))
 	 (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
 		0
 		(+ (ustr-cursor-frontside segments) offset)))
 	 (compensated-n (cond
-			 ((>= n max)
+			 ((>= n nr-candidates)
 			  0)
 			 ((< n 0)
-			  (- max 1))
+			  (- nr-candidates 1))
 			 (else
 			  n)))
-	 (new-op-count (+ 1 (google-cgiapi-jp-context-candidate-op-count ggc))))
+	 (new-op-count (+ 1 (google-cgiapi-jp-context-candidate-op-count ggc)))
+         (candidate-op-count (max google-cgiapi-jp-candidate-op-count 1)))
     (ustr-cursor-set-frontside! segments compensated-n)
     (google-cgiapi-jp-context-set-candidate-op-count! ggc new-op-count)
     (if (and
 	 (= (google-cgiapi-jp-context-candidate-op-count ggc)
-	    google-cgiapi-jp-candidate-op-count)
+	    candidate-op-count)
 	 google-cgiapi-jp-use-candidate-window?)
 	(begin
 	  (google-cgiapi-jp-context-set-candidate-window! ggc #t)
-	  (im-activate-candidate-selector ggc max google-cgiapi-jp-nr-candidate-max)))
+	  (im-activate-candidate-selector ggc nr-candidates google-cgiapi-jp-nr-candidate-max)))
     (if (google-cgiapi-jp-context-candidate-window ggc)
 	(im-select-candidate ggc compensated-n))))
 

@@ -1625,26 +1625,27 @@
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (segments (anthy-context-segments ac))
 	   (cur-seg (ustr-cursor-pos segments))
-	   (max (anthy-lib-get-nr-candidates ac-id cur-seg))
+	   (nr-candidates (anthy-lib-get-nr-candidates ac-id cur-seg))
 	   (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
 		  0
 		  (+ (ustr-cursor-frontside segments) offset)))
 	   (compensated-n (cond
-			   ((>= n max)
+			   ((>= n nr-candidates)
 			    0)
 			   ((< n 0)
-			    (- max 1))
+			    (- nr-candidates 1))
 			   (else
 			    n)))
-	   (new-op-count (+ 1 (anthy-context-candidate-op-count ac))))
+	   (new-op-count (+ 1 (anthy-context-candidate-op-count ac)))
+           (candidate-op-count (max anthy-candidate-op-count 1)))
       (ustr-cursor-set-frontside! segments compensated-n)
       (anthy-context-set-candidate-op-count! ac new-op-count)
       (if (and anthy-use-candidate-window?
 	       (= (anthy-context-candidate-op-count ac)
-		  anthy-candidate-op-count))
+		  candidate-op-count))
 	  (begin
 	    (anthy-context-set-candidate-window! ac #t)
-	    (im-activate-candidate-selector ac max anthy-nr-candidate-max)))
+	    (im-activate-candidate-selector ac nr-candidates anthy-nr-candidate-max)))
       (if (anthy-context-candidate-window ac)
 	  (im-select-candidate ac compensated-n)))))
 

@@ -534,7 +534,8 @@
     (let* ((rkc (generic-context-rk-context pc))
 	   (n (generic-context-rk-nth pc))
 	   (cands (generic-context-cands pc))
-	   (nr (length cands)))
+	   (nr (length cands))
+           (candidate-op-count (max generic-candidate-op-count 1)))
       (if (and 
             (not (generic-context-multi-cand-input pc))
             (not (null? cands))
@@ -557,13 +558,13 @@
 		  (+ 1 (generic-context-candidate-op-count pc)))
 		 (if (and
                       (= (generic-context-candidate-op-count pc)
-                         generic-candidate-op-count)
+                         candidate-op-count)
                       generic-use-candidate-window?)
                      (im-activate-candidate-selector
 		      pc nr generic-nr-candidate-max))
 		 (if (and
 		      (>= (generic-context-candidate-op-count pc)
-			  generic-candidate-op-count)
+			  candidate-op-count)
                       generic-use-candidate-window?)
 		     (im-select-candidate pc n))
 		 #f)
@@ -589,13 +590,13 @@
 		  (+ 1 (generic-context-candidate-op-count pc)))
 		 (if (and
 		      (= (generic-context-candidate-op-count pc)
-			 generic-candidate-op-count)
+			 candidate-op-count)
 		      generic-use-candidate-window?)
 		     (im-activate-candidate-selector pc nr
 						     generic-nr-candidate-max))
 		 (if (and
 		      (>= (generic-context-candidate-op-count pc)
-			  generic-candidate-op-count)
+			  candidate-op-count)
 		      generic-use-candidate-window?)
 		     (begin
 		       (if (>= (+ n 1) nr)
@@ -612,7 +613,7 @@
 	       #f))
 	   #t)
        (if (and (generic-prev-page-key? key state)
-		(<= generic-candidate-op-count
+		(<= candidate-op-count
 		    (generic-context-candidate-op-count pc))
 		generic-use-candidate-window?)
 	   (begin
@@ -620,7 +621,7 @@
 	     #f)
 	   #t)
        (if (and (generic-next-page-key? key state)
-		(<= generic-candidate-op-count
+		(<= candidate-op-count
 		    (generic-context-candidate-op-count pc))
 		generic-use-candidate-window?)
 	   (begin

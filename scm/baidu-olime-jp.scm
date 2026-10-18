@@ -1623,27 +1623,28 @@
 (define (baidu-olime-jp-move-candidate bdc offset)
   (let* ((segments (baidu-olime-jp-context-segments bdc))
 	 (cur-seg (ustr-cursor-pos segments))
-	 (max (baidu-olime-jp-lib-get-nr-candidates bdc cur-seg))
+	 (nr-candidates (baidu-olime-jp-lib-get-nr-candidates bdc cur-seg))
 	 (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
 		0
 		(+ (ustr-cursor-frontside segments) offset)))
 	 (compensated-n (cond
-			 ((>= n max)
+			 ((>= n nr-candidates)
 			  0)
 			 ((< n 0)
-			  (- max 1))
+			  (- nr-candidates 1))
 			 (else
 			  n)))
-	 (new-op-count (+ 1 (baidu-olime-jp-context-candidate-op-count bdc))))
+	 (new-op-count (+ 1 (baidu-olime-jp-context-candidate-op-count bdc)))
+         (candidate-op-count (max baidu-olime-jp-candidate-op-count 1)))
     (ustr-cursor-set-frontside! segments compensated-n)
     (baidu-olime-jp-context-set-candidate-op-count! bdc new-op-count)
     (if (and
 	 (= (baidu-olime-jp-context-candidate-op-count bdc)
-	    baidu-olime-jp-candidate-op-count)
+	    candidate-op-count)
 	 baidu-olime-jp-use-candidate-window?)
 	(begin
 	  (baidu-olime-jp-context-set-candidate-window! bdc #t)
-	  (im-activate-candidate-selector bdc max baidu-olime-jp-nr-candidate-max)))
+	  (im-activate-candidate-selector bdc nr-candidates baidu-olime-jp-nr-candidate-max)))
     (if (baidu-olime-jp-context-candidate-window bdc)
 	(im-select-candidate bdc compensated-n))))
 
