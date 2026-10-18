@@ -91,7 +91,12 @@ xft = dependency('xft', required: false)
 gtk3 = dependency('gtk+-3.0',
                   required: get_option('gtk3').require(
                     x11.found(), error_message: 'X11 is needed'))
-gtk4 = dependency('gtk4', required: get_option('gtk4'))
+# >= 4.12 for gtk_popover_present() and the GtkListBox-based menus used
+# by the GTK 4 candidate view and toolbar.
+gtk4 = dependency('gtk4', version: '>=4.12', required: get_option('gtk4'))
+# Optional: lets the GTK 4 toolbar anchor itself to a screen edge on
+# Wayland compositors that support wlr-layer-shell.
+gtk4_layer_shell = dependency('gtk4-layer-shell-0', required: false)
 
 ibus = dependency('ibus-1.0', version: '>=1.5.0', required: get_option('ibus'))
 
@@ -118,19 +123,23 @@ foreach definition : [
 endforeach
 
 build_pref = get_option('pref').require(
-  gtk3.found(), error_message: 'GTK 3 is needed').allowed()
+  gtk3.found() or gtk4.found(),
+  error_message: 'GTK 3 or GTK 4 is needed').allowed()
 
 # The dictionary utility uses Anthy (EUC-JP) if available as Autotools
 # does.
-dict_option = get_option('dict').require(gtk3.found(),
-                                         error_message: 'GTK 3 is needed')
+dict_option = get_option('dict').require(
+  gtk3.found() or gtk4.found(),
+  error_message: 'GTK 3 or GTK 4 is needed')
 dict_anthy = anthy.found() ? anthy : anthy_utf8
 dict_canna = cc.find_library('canna',
                              has_headers: ['canna/RK.h'],
                              required: false)
-build_dict = dict_option.require(
+dict_available = dict_option.require(
   dict_anthy.found() or dict_canna.found(),
   error_message: 'Anthy or Canna is needed').allowed()
+build_dict = dict_available and gtk3.found()
+build_dict_gtk4 = dict_available and gtk4.found()
 
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
@@ -441,6 +450,9 @@ endif
 
 if have_xkb
   config_data.set('HAVE_XKB', 1)
+endif
+if gtk4_layer_shell.found()
+  config_data.set('HAVE_GTK4_LAYER_SHELL', 1)
 endif
 # For the Compose file.
 if x11.found()
