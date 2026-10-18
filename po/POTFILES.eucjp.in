@@ -8,4 +8,3 @@ scm/canna-custom.scm
 scm/google-cgiapi-jp-custom.scm
 scm/japanese-custom.scm
 scm/tcode.scm
-scm/trycode.scm

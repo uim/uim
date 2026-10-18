@@ -74,6 +74,7 @@ scm/process.scm
 scm/pyload.scm
 scm/skk-custom.scm
 scm/skk-key-custom.scm
+scm/trycode.scm
 scm/tutcode-custom.scm
 scm/tutcode-key-custom.scm
 scm/tutcode-rule-custom.scm
