@@ -9,7 +9,9 @@ RUN \
     libedit \
     librsvg \
     make \
+    meson \
     ncurses \
+    ninja \
     perl \
     pkgconf \
     ruby \

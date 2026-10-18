@@ -31,32 +31,41 @@
 
 set -eu
 
-echo "::group::configure"
+# Tests ibus-engine-uim with both build systems.
+
+echo "::group::Autotools: configure"
 set -x
+mkdir -p autotools
+cd autotools
 # --with-ibus rather than the default, so that a missing dependency
 # stops the build instead of quietly dropping ibus-engine-uim.
 /source/configure \
   --enable-maintainer-mode \
   --enable-tests \
-  --prefix=/tmp/local \
+  --prefix=/tmp/autotools \
   --with-ibus
 set +x
 echo "::endgroup::"
 
-echo "::group::make"
+echo "::group::Autotools: make"
 set -x
 make > /dev/null
 set +x
 echo "::endgroup::"
 
-echo "::group::test"
+echo "::group::Autotools: test"
 set -x
 make check
 set +x
 echo "::endgroup::"
 
-echo "::group::install"
+echo "::group::Autotools: install"
 set -x
 sudo make install
 set +x
 echo "::endgroup::"
+cd -
+
+/source/ci/build-meson.sh \
+  -Dibus=enabled \
+  -Dtests=enabled
