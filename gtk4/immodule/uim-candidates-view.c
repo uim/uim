@@ -107,6 +107,7 @@ struct _UIMCandidatesView
 
 enum {
   INDEX_CHANGED,
+  SHIFT_PAGE_REQUESTED,
   N_SIGNALS
 };
 
@@ -270,16 +271,15 @@ static void
 page_button_clicked_cb(GtkButton *button, gpointer data)
 {
   UIMCandidatesView *view = data;
+  gboolean forward = button == GTK_BUTTON(view->next_page_button);
 
-  if (view->candidate_index < 0) {
-    /* Select the first candidate of the current page so that the
-     * "index-changed" signal is emitted below. */
-    view->candidate_index = view->page_index * view->display_limit;
-  }
-  uim_candidates_view_shift_page(view,
-                                 button == GTK_BUTTON(view->next_page_button));
-  if (view->candidate_index >= 0)
-    g_signal_emit(view, signals[INDEX_CHANGED], 0);
+  /* Delegate entirely to a "shift-page-requested" listener
+   * (uim-im-context.c), which pre-fetches the target page and
+   * performs the actual shift + backend index sync + re-show, using
+   * exactly the same sequence as the keyboard-driven page-shift path
+   * (cand_shift_page_cb). The view itself no longer shifts pages or
+   * emits "index-changed" here. */
+  g_signal_emit(view, signals[SHIFT_PAGE_REQUESTED], 0, forward);
 }
 
 static void
@@ -374,6 +374,20 @@ uim_candidates_view_class_init(UIMCandidatesViewClass *klass)
                                         NULL,
                                         G_TYPE_NONE,
                                         0);
+
+  /* Emitted before a mouse-driven page shift (the "<"/">" buttons)
+   * takes effect, so a listener can pre-fetch the target page's
+   * candidates first. forward is TRUE for ">", FALSE for "<". */
+  signals[SHIFT_PAGE_REQUESTED] = g_signal_new("shift-page-requested",
+                                               G_TYPE_FROM_CLASS(klass),
+                                               G_SIGNAL_RUN_LAST,
+                                               0,
+                                               NULL,
+                                               NULL,
+                                               NULL,
+                                               G_TYPE_NONE,
+                                               1,
+                                               G_TYPE_BOOLEAN);
 }
 
 static void

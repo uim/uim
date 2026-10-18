@@ -538,6 +538,46 @@ candidates_view_index_changed_cb(UIMCandidatesView *view, gpointer data)
   uim_im_context_ensure_page_candidates(uic, new_page);
 }
 
+/* A user clicked the "<"/">" page button on the candidates view.
+ * Pre-fetch the target page's candidates before the view actually
+ * shifts to it (in page_button_clicked_cb()), so the popover
+ * doesn't render an empty page while waiting on the uim backend. */
+static void
+candidates_view_shift_page_requested_cb(UIMCandidatesView *view,
+                                        gboolean forward,
+                                        gpointer data)
+{
+  UIMIMContext *uic = data;
+
+  /* Mirror cand_shift_page_cb() (the keyboard/backend-driven page
+   * shift) exactly: pre-fetch the target page, shift while
+   * "index-changed" is blocked (so uim_set_candidate_index() below
+   * isn't invoked a second time through it), then explicitly
+   * re-show the popover. That last call is what the mouse-driven
+   * "<"/">" buttons were missing: whenever syncing the new page's
+   * candidate index caused the uim backend to refresh the candidate
+   * list out from under us, nothing re-asserted the popover
+   * afterward, leaving it hidden/empty. */
+  guint new_page =
+    uim_candidates_view_query_new_page_by_shift_page(view, forward);
+  uim_im_context_ensure_page_candidates(uic, new_page);
+
+  g_signal_handlers_block_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+  uim_candidates_view_shift_page(view, forward);
+  gint index = uim_candidates_view_get_index(view);
+  if (index != -1)
+    uim_set_candidate_index(uic->uc, index);
+  g_signal_handlers_unblock_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+
+  uim_im_context_show_candidates(uic);
+}
+
 static void
 cand_activate_cb(void *ptr, int n_candidates, int display_limit)
 {
@@ -1171,6 +1211,10 @@ uim_im_context_init(UIMIMContext *uic)
   g_signal_connect(uic->candidates_view,
                    "index-changed",
                    G_CALLBACK(candidates_view_index_changed_cb),
+                   uic);
+  g_signal_connect(uic->candidates_view,
+                   "shift-page-requested",
+                   G_CALLBACK(candidates_view_shift_page_requested_cb),
                    uic);
   uim_im_context_update_candwin_pos_type(uic);
   uic->preedit_segments = g_array_new(FALSE, TRUE, sizeof(preedit_segment));
