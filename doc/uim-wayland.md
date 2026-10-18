@@ -95,6 +95,9 @@ virtual keyboard. Only one input method can run on a seat. A
 compositor that offers both protocols, such as Mir with both enabled,
 gets `zwp_input_method_v1`.
 
+The candidate window is an input method popup, which Sway shows since
+1.10.
+
 ## Debugging
 
 `UIM_WAYLAND_DEBUG=1` in the environment of `uim-wayland` logs
@@ -120,8 +123,8 @@ If the input method doesn't start, look there first.
 
 ## Limitations
 
-- With `zwp_input_method_v2`, candidates aren't shown yet, and uim
-  isn't told the text around the cursor or what a field takes.
+- With `zwp_input_method_v2`, uim isn't told the text around the
+  cursor or what a field takes yet.
 
 - A pending preedit is dropped when the text field loses focus.
   Applications differ in what they do with it (Chromium commits it),

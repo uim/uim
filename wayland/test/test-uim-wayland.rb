@@ -419,6 +419,7 @@ class Compositor
   TIMEOUT = 15
 
   attr_reader :forwarded_keys, :commits, :preedits, :overlay_panels
+  attr_reader :input_popups
   attr_reader :deleted
   # zwp_input_method_v2 only: the serials of the commit requests, and
   # the number of done events sent.
@@ -443,7 +444,7 @@ class Compositor
     @virtual_keyboard = nil
     @pointer = nil
     @pointer_inside = false
-    @panel_surface = nil
+    @candidate_surface = nil
     @buffer_sizes = {}
     @candidate_window_size = nil
     @candidate_window_scale = 1
@@ -455,6 +456,7 @@ class Compositor
     @preedits = []
     @deleted = []
     @overlay_panels = 0
+    @input_popups = 0
     @commit_serials = []
     @done_count = 0
     @virtual_keyboard_keymaps = 0
@@ -570,8 +572,8 @@ class Compositor
 
   # Asks for the candidate window to be drawn at SCALE.
   def prefer_scale(scale)
-    wait_for {@panel_surface}
-    @connection.send_event(@panel_surface, "preferred_buffer_scale", scale)
+    wait_for {@candidate_surface}
+    @connection.send_event(@candidate_surface, "preferred_buffer_scale", scale)
   end
 
   # Left-clicks at a point of the candidate window.
@@ -608,7 +610,7 @@ class Compositor
     raise("uim-wayland has no pointer") if @pointer.nil?
     return if @pointer_inside
     @connection.send_event(@pointer, "enter", @connection.next_serial,
-                           @panel_surface, x, y)
+                           @candidate_surface, x, y)
     @pointer_inside = true
   end
 
@@ -674,7 +676,7 @@ class Compositor
       arguments[1]&.close
     when "wl_surface.attach"
       buffer = arguments[0]
-      if id == @panel_surface
+      if id == @candidate_surface
         if buffer.zero?
           @candidate_window_size = nil
         else
@@ -687,11 +689,14 @@ class Compositor
       # candidate window waits for that before it draws again.
       @connection.send_event(buffer, "release") unless buffer.zero?
     when "wl_surface.set_buffer_scale"
-      @candidate_window_scale = arguments[0] if id == @panel_surface
+      @candidate_window_scale = arguments[0] if id == @candidate_surface
     when "zwp_input_panel_v1.get_input_panel_surface"
-      @panel_surface = arguments[1]
+      @candidate_surface = arguments[1]
     when "zwp_input_panel_surface_v1.set_overlay_panel"
       @overlay_panels += 1
+    when "zwp_input_method_v2.get_input_popup_surface"
+      @candidate_surface = arguments[1]
+      @input_popups += 1
     when "zwp_input_method_context_v1.grab_keyboard"
       @keyboard = arguments[0]
       send_keymap
@@ -844,6 +849,11 @@ class UimWaylandTest < Test::Unit::TestCase
       assert do
         @compositor.activated?
       end
+    end
+
+    def test_candidate_window_is_an_input_popup
+      @compositor.wait_for {@compositor.input_popups == 1}
+      assert_equal(1, @compositor.input_popups)
     end
 
     # It goes through the virtual keyboard, which has to know the keymap
@@ -1102,6 +1112,19 @@ class UimWaylandTest < Test::Unit::TestCase
       @compositor.scroll(-NOTCH)
       @compositor.wait_for {@compositor.commits == ["[10]"]}
       assert_equal(["[10]"], @compositor.commits)
+    end
+
+    sub_test_case("zwp_input_method_v2") do
+      def protocol
+        :v2
+      end
+
+      def test_click_selects_candidate
+        show_candidates
+        @compositor.click(10, row_y(2))
+        @compositor.wait_for {@compositor.commits == ["[2]"]}
+        assert_equal(["[2]"], @compositor.commits)
+      end
     end
   end
 

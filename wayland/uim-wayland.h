@@ -200,6 +200,10 @@ bool uim_wayland_v2_offer(struct uim_wayland *uw,
 /* Uses zwp_input_method_v2 if the compositor offered it along with
  * zwp_virtual_keyboard_v1 and a seat. */
 void uim_wayland_v2_start(struct uim_wayland *uw);
+/* Gives the candidate window surface the input_popup role. */
+struct zwp_input_popup_surface_v2 *
+uim_wayland_v2_get_input_popup_surface(struct uim_wayland *uw,
+                                       struct wl_surface *surface);
 
 /* key.c */
 void uim_wayland_convert_key(xkb_keysym_t sym,
