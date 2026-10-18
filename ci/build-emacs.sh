@@ -56,27 +56,8 @@ set -x
 make check
 set +x
 echo "::endgroup::"
-cd ..
+cd -
 
-echo "::group::Meson: setup"
-set -x
-meson setup \
-  --prefix=/tmp/meson \
+/source/ci/build-meson.sh \
   -Demacs=enabled \
-  -Dtests=enabled \
-  meson \
-  /source
-set +x
-echo "::endgroup::"
-
-echo "::group::Meson: build"
-set -x
-meson compile -C meson > /dev/null
-set +x
-echo "::endgroup::"
-
-echo "::group::Meson: test"
-set -x
-meson test -C meson --print-errorlogs
-set +x
-echo "::endgroup::"
+  -Dtests=enabled

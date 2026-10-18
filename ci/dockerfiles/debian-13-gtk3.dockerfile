@@ -11,6 +11,7 @@ RUN \
 RUN \
   apt update -qq && \
   apt install -y \
+    g++ \
     gcc \
     gettext \
     libedit-dev \
@@ -18,7 +19,11 @@ RUN \
     libgtk-3-dev \
     libncurses-dev \
     librsvg2-bin \
+    libxext-dev \
+    libxft-dev \
     make \
+    meson \
+    ninja-build \
     pkg-config \
     ruby \
     sudo \

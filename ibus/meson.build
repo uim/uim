@@ -44,6 +44,12 @@ if get_option('tests').allowed()
          env: uim_build_tree_env + {
            'IBUS_DAEMON': ibus_daemon.full_path(),
            'IBUS_ENGINE_UIM': ibus_engine_uim.full_path(),
+           # Ruby without the fix for Bug #22101 reads a freed
+           # rb_data_type_t of ruby-gnome at exit. MALLOC_PERTURB_ set by
+           # "meson test" makes it crash.
+           # See also: https://bugs.ruby-lang.org/issues/22101
+           # See also: https://github.com/ruby-gnome/ruby-gnome/pull/1714
+           'MALLOC_PERTURB_': '0',
          },
          suite: 'ibus')
   endif

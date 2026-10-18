@@ -66,31 +66,6 @@ set +x
 echo "::endgroup::"
 cd -
 
-echo "::group::Meson: setup"
-set -x
-meson setup \
-  --prefix=/tmp/meson \
+/source/ci/build-meson.sh \
   -Dtests=enabled \
-  -Dwayland=enabled \
-  meson \
-  /source
-set +x
-echo "::endgroup::"
-
-echo "::group::Meson: build"
-set -x
-meson compile -C meson > /dev/null
-set +x
-echo "::endgroup::"
-
-echo "::group::Meson: test"
-set -x
-meson test -C meson --print-errorlogs
-set +x
-echo "::endgroup::"
-
-echo "::group::Meson: install"
-set -x
-meson install -C meson
-set +x
-echo "::endgroup::"
+  -Dwayland=enabled
