@@ -294,7 +294,7 @@
             nth))
 
 (define (canna-lib-get-unconv-candidate cic seg)
-  (canna-lib-context-set-nth-cands! cic (vector-set! (canna-lib-context-nth-cands cic) seg 0))
+  (vector-set! (canna-lib-context-nth-cands cic) seg 0)
   (canna-lib-get-yomi *canna-lib-socket*
                       (canna-lib-context-id cic)
                       seg))
