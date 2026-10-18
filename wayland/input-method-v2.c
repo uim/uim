@@ -83,7 +83,10 @@ commit_string(struct uim_wayland *uw, const char *str)
   commit(v2);
 }
 
-/* The text input shows no styles, only the cursor. */
+/* The text input shows no styles, only the cursor. A commit without
+ * set_preedit_string clears the preedit. wlroots-based compositors
+ * pass an empty preedit string on as it is, which GTK takes as a
+ * preedit still going on: terminals would keep hiding their cursor. */
 static void
 set_preedit(struct uim_wayland *uw,
             const char *text,
@@ -95,8 +98,9 @@ set_preedit(struct uim_wayland *uw,
   (void)spans;
   (void)n_spans;
 
-  zwp_input_method_v2_set_preedit_string(v2->input_method, text,
-                                         (int32_t)cursor, (int32_t)cursor);
+  if (text[0] != '\0')
+    zwp_input_method_v2_set_preedit_string(v2->input_method, text,
+                                           (int32_t)cursor, (int32_t)cursor);
   commit(v2);
 }
 
