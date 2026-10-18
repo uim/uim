@@ -884,6 +884,17 @@ class UimWaylandTest < Test::Unit::TestCase
                    [@compositor.commits, @compositor.commit_serials.uniq])
     end
 
+    # The preedit "k" is cleared by a commit without a preedit string:
+    # set_preedit_string, commit_string and the commit that clears.
+    def test_preedit_cleared_without_preedit_string
+      @compositor.switch_to_hiragana
+      @compositor.type(KEY_K)
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.commit_serials.size == 3}
+      assert_equal([["k"], [KA]],
+                   [@compositor.preedits, @compositor.commits])
+    end
+
     # Its release would come after the grab is gone, so the application
     # would repeat it.
     def test_held_key_released_on_deactivation
