@@ -64,12 +64,7 @@ if get_option('tests').allowed()
            '-l', meson.current_source_dir() / 'test' / 'run.el',
          ],
          depends: [uim_el_agent, uim_el_helper_agent],
-         env: {
-           'LIBUIM_PLUGIN_LIB_DIR': meson.project_build_root() / 'uim',
-           'LIBUIM_SCM_FILES': (meson.project_build_root() / 'scm' + ':' +
-                                meson.project_source_root() / 'scm'),
-           'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
-                                       'subprojects' / 'sigscheme' / 'lib'),
+         env: uim_build_tree_env + {
            'UIM_EL_AGENT': uim_el_agent.full_path(),
            'UIM_EL_HELPER_AGENT': uim_el_helper_agent.full_path(),
          },

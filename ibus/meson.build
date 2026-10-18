@@ -41,14 +41,9 @@ if get_option('tests').allowed()
          dbus_run_session,
          args: ['--', ruby, files('test' / 'run.rb')],
          depends: ibus_engine_uim,
-         env: {
+         env: uim_build_tree_env + {
            'IBUS_DAEMON': ibus_daemon.full_path(),
            'IBUS_ENGINE_UIM': ibus_engine_uim.full_path(),
-           'LIBUIM_PLUGIN_LIB_DIR': meson.project_build_root() / 'uim',
-           'LIBUIM_SCM_FILES': (meson.project_build_root() / 'scm' + ':' +
-                                meson.project_source_root() / 'scm'),
-           'LIBUIM_SYSTEM_SCM_FILES': (meson.project_source_root() /
-                                       'subprojects' / 'sigscheme' / 'lib'),
          },
          suite: 'ibus')
   endif
