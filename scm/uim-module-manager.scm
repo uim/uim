@@ -105,12 +105,6 @@
 				 current-module-list)))
       (update-all-files revised-module-list))))
 
-;; This function is called with 'uim-module-manager --register-only'
-(define register-only-modules
-  (lambda (module-names)
-    (let ((modules (map string->symbol module-names)))
-      (update-all-files (add-modules-to-module-list modules '())))))
-
 ;; This function is called with 'uim-module-manager --unregister'
 (define unregister-modules
   (lambda (module-names)

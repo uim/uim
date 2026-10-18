@@ -168,7 +168,7 @@ custom_target('installed-modules.scm',
               command: [
                 programs['uim-module-manager'],
                 '--path', '@OUTDIR@',
-                '--register-only', module_names,
+                '--register', module_names,
               ],
               depends: plugins,
               env: {
