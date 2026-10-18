@@ -30,10 +30,11 @@
 */
 
 /*
- * Candidate window on a zwp_input_panel_surface_v1 overlay panel. The
- * compositor places an overlay panel next to the text cursor of the
- * focused client. There is no toolkit here: candidates are drawn with
- * cairo and pango into wl_shm buffers.
+ * Candidate window on a zwp_input_panel_surface_v1 overlay panel with
+ * zwp_input_method_v1, or on a zwp_input_popup_surface_v2 with
+ * zwp_input_method_v2. Either way the compositor places it next to the
+ * text cursor of the focused client. There is no toolkit here:
+ * candidates are drawn with cairo and pango into wl_shm buffers.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -88,7 +89,9 @@ struct shm_buffer {
 struct uim_wayland_candwin {
   struct uim_wayland *uw;
   struct wl_surface *surface;
+  /* One of them gives the surface its role. */
   struct zwp_input_panel_surface_v1 *panel_surface;
+  struct zwp_input_popup_surface_v2 *popup_surface;
   struct shm_buffer buffers[CANDWIN_N_BUFFERS];
   bool shown;
   /* Set when a draw had to be skipped because the compositor still
@@ -625,7 +628,7 @@ uim_wayland_candwin_new(struct uim_wayland *uw)
 {
   struct uim_wayland_candwin *cw;
 
-  if (!uw->input_panel || !uw->compositor || !uw->shm)
+  if (!(uw->input_panel || uw->v2) || !uw->compositor || !uw->shm)
     return NULL;
 
   cw = uim_malloc(sizeof(*cw));
@@ -640,11 +643,17 @@ uim_wayland_candwin_new(struct uim_wayland *uw)
 #ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
   wl_surface_add_listener(cw->surface, &surface_listener, cw);
 #endif
-  cw->panel_surface =
-    zwp_input_panel_v1_get_input_panel_surface(uw->input_panel, cw->surface);
-  /* An overlay panel is positioned by the compositor next to the
-   * cursor of the focused text field. */
-  zwp_input_panel_surface_v1_set_overlay_panel(cw->panel_surface);
+  if (uw->input_panel) {
+    cw->panel_surface =
+      zwp_input_panel_v1_get_input_panel_surface(uw->input_panel,
+                                                 cw->surface);
+    /* An overlay panel is positioned by the compositor next to the
+     * cursor of the focused text field. */
+    zwp_input_panel_surface_v1_set_overlay_panel(cw->panel_surface);
+  } else {
+    cw->popup_surface = uim_wayland_v2_get_input_popup_surface(uw,
+                                                               cw->surface);
+  }
 
   return cw;
 }
@@ -661,6 +670,8 @@ uim_wayland_candwin_free(struct uim_wayland_candwin *cw)
     shm_buffer_destroy(&cw->buffers[i]);
   if (cw->panel_surface)
     zwp_input_panel_surface_v1_destroy(cw->panel_surface);
+  if (cw->popup_surface)
+    zwp_input_popup_surface_v2_destroy(cw->popup_surface);
   if (cw->surface)
     wl_surface_destroy(cw->surface);
   if (cw->font)

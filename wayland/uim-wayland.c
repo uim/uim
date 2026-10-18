@@ -808,15 +808,15 @@ main(int argc, char **argv)
             UIM_WAYLAND_PROGRAM_NAME, UIM_WAYLAND_PROGRAM_NAME);
     return EXIT_FAILURE;
   }
-  if (!uw->compositor || !uw->shm || !uw->input_panel) {
+  uw->candwin = uim_wayland_candwin_new(uw);
+  if (!uw->candwin) {
     /* Everything but the candidate window still works. */
     fprintf(stderr,
             "%s: warning: no %s, candidates won't be shown\n",
             UIM_WAYLAND_PROGRAM_NAME,
-            !uw->input_panel ? "zwp_input_panel_v1" : "wl_compositor/wl_shm");
+            uw->compositor && uw->shm ?
+            "zwp_input_panel_v1" : "wl_compositor/wl_shm");
   }
-
-  uw->candwin = uim_wayland_candwin_new(uw);
 
   if (!open_terminate_pipe()) {
     fprintf(stderr, "%s: cannot create a pipe: %s\n",

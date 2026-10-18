@@ -380,6 +380,16 @@ static const struct uim_wayland_input_method input_method_v2 = {
   destroy
 };
 
+/* The compositor places the popup near the text input by itself, so
+ * text_input_rectangle isn't listened to. */
+struct zwp_input_popup_surface_v2 *
+uim_wayland_v2_get_input_popup_surface(struct uim_wayland *uw,
+                                       struct wl_surface *surface)
+{
+  return zwp_input_method_v2_get_input_popup_surface(uw->v2->input_method,
+                                                     surface);
+}
+
 bool
 uim_wayland_v2_offer(struct uim_wayland *uw,
                      uint32_t name,
