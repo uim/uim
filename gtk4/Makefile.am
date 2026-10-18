@@ -1,3 +1,3 @@
 EXTRA_DIST = meson.build
 
-SUBDIRS = immodule
+SUBDIRS = immodule pad
