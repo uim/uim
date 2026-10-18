@@ -1,6 +1,6 @@
 ;;; google-cgiapi-jp.scm: google-cgiapi-jp for uim.
 ;;;
-;;; Copyright (c) 2011-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2011-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1639,15 +1639,28 @@
 	 (new-op-count (+ 1 (google-cgiapi-jp-context-candidate-op-count ggc))))
     (ustr-cursor-set-frontside! segments compensated-n)
     (google-cgiapi-jp-context-set-candidate-op-count! ggc new-op-count)
-    (if (and
-	 (= (google-cgiapi-jp-context-candidate-op-count ggc)
-	    google-cgiapi-jp-candidate-op-count)
-	 google-cgiapi-jp-use-candidate-window?)
-	(begin
-	  (google-cgiapi-jp-context-set-candidate-window! ggc #t)
-	  (im-activate-candidate-selector ggc max google-cgiapi-jp-nr-candidate-max)))
     (if (google-cgiapi-jp-context-candidate-window ggc)
 	(im-select-candidate ggc compensated-n))))
+
+;; Activates the candidate window when the number of the candidate
+;; operations for the current segment reaches
+;; google-cgiapi-jp-candidate-op-count. 0 activates it as soon as
+;; the segment is converted.
+(define (google-cgiapi-jp-check-candidate-window-begin ggc)
+  (let ((segments (google-cgiapi-jp-context-segments ggc)))
+    (if (and google-cgiapi-jp-use-candidate-window?
+             (not (google-cgiapi-jp-context-candidate-window ggc))
+             (>= (google-cgiapi-jp-context-candidate-op-count ggc)
+                 google-cgiapi-jp-candidate-op-count)
+             ;; not segment-transposing
+             (>= (ustr-cursor-frontside segments) 0))
+        (let ((cur-seg (ustr-cursor-pos segments)))
+          (google-cgiapi-jp-context-set-candidate-window! ggc #t)
+          (im-activate-candidate-selector
+           ggc
+           (google-cgiapi-jp-lib-get-nr-candidates ggc cur-seg)
+           google-cgiapi-jp-nr-candidate-max)
+          (im-select-candidate ggc (ustr-cursor-frontside segments))))))
 
 (define google-cgiapi-jp-move-candidate-in-page
   (lambda (ggc numeralc)
@@ -1824,6 +1837,8 @@
                       (google-cgiapi-jp-proc-prediction-state ggc key key-state)
                       (google-cgiapi-jp-proc-input-state ggc key key-state))))
 	  (google-cgiapi-jp-proc-raw-state ggc key key-state)))
+  (if (google-cgiapi-jp-context-state ggc)
+      (google-cgiapi-jp-check-candidate-window-begin ggc))
   (google-cgiapi-jp-update-preedit ggc))
 
 ;;;

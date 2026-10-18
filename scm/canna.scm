@@ -1,6 +1,6 @@
 ;;; canna.scm: Canna for uim.
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1498,15 +1498,29 @@
 	 (new-op-count (+ 1 (canna-context-candidate-op-count cc))))
     (ustr-cursor-set-frontside! segments compensated-n)
     (canna-context-set-candidate-op-count! cc new-op-count)
-    (if (and
-	 (= (canna-context-candidate-op-count cc)
-	    canna-candidate-op-count)
-	 canna-use-candidate-window?)
-	(begin
-	  (canna-context-set-candidate-window! cc #t)
-	  (im-activate-candidate-selector cc max canna-nr-candidate-max)))
     (if (canna-context-candidate-window cc)
 	(im-select-candidate cc compensated-n))))
+
+;; Activates the candidate window when the number of the candidate
+;; operations for the current segment reaches
+;; canna-candidate-op-count. 0 activates it as soon as the segment is
+;; converted.
+(define (canna-check-candidate-window-begin cc)
+  (let ((segments (canna-context-segments cc)))
+    (if (and canna-use-candidate-window?
+             (not (canna-context-candidate-window cc))
+             (>= (canna-context-candidate-op-count cc)
+                 canna-candidate-op-count)
+             ;; not segment-transposing
+             (>= (ustr-cursor-frontside segments) 0))
+        (let ((cc-id (canna-context-cc-id cc))
+              (cur-seg (ustr-cursor-pos segments)))
+          (canna-context-set-candidate-window! cc #t)
+          (im-activate-candidate-selector
+           cc
+           (canna-lib-get-nr-candidates cc-id cur-seg)
+           canna-nr-candidate-max)
+          (im-select-candidate cc (ustr-cursor-frontside segments))))))
 
 (define canna-move-candidate-in-page
   (lambda (cc numeralc)
@@ -1685,6 +1699,8 @@
                       (canna-proc-prediction-state cc key key-state)
                       (canna-proc-input-state cc key key-state))))
 	  (canna-proc-raw-state cc key key-state)))
+  (if (canna-context-state cc)
+      (canna-check-candidate-window-begin cc))
   (canna-update-preedit cc))
 
 ;;;

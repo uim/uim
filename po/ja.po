@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-14 00:55+0000\n"
+"POT-Creation-Date: 2026-10-18 07:40+0000\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -2368,18 +2368,18 @@ msgstr "註釈を有効にする"
 #: scm/anthy-key-custom.scm:41 scm/anthy-key-custom.scm:45
 #: scm/anthy-key-custom.scm:49 scm/anthy-utf8-custom.scm:55
 #: scm/anthy-utf8-custom.scm:65 scm/anthy-utf8-custom.scm:71
-#: scm/anthy-utf8-custom.scm:86 scm/anthy-utf8-custom.scm:92
-#: scm/anthy-utf8-custom.scm:98 scm/anthy-utf8-custom.scm:104
-#: scm/anthy-utf8-custom.scm:202 scm/anthy-utf8-custom.scm:221
-#: scm/anthy-utf8-custom.scm:230 scm/anthy-utf8-custom.scm:272
-#: scm/anthy-utf8-custom.scm:281 scm/anthy-utf8-custom.scm:319
-#: scm/anthy-utf8-custom.scm:325 scm/anthy-utf8-custom.scm:331
-#: scm/anthy-utf8-custom.scm:337 scm/anthy-utf8-custom.scm:369
-#: scm/anthy-utf8-custom.scm:375 scm/anthy-utf8-custom.scm:381
-#: scm/baidu-olime-jp-key-custom.scm:36 scm/baidu-olime-jp-key-custom.scm:40
-#: scm/baidu-olime-jp-key-custom.scm:44 scm/baidu-olime-jp-key-custom.scm:48
-#: scm/byeoru-custom.scm:84 scm/byeoru-custom.scm:88 scm/byeoru-custom.scm:92
-#: scm/byeoru-custom.scm:96 scm/byeoru-custom.scm:100 scm/byeoru-custom.scm:115
+#: scm/anthy-utf8-custom.scm:86 scm/anthy-utf8-custom.scm:98
+#: scm/anthy-utf8-custom.scm:104 scm/anthy-utf8-custom.scm:202
+#: scm/anthy-utf8-custom.scm:221 scm/anthy-utf8-custom.scm:230
+#: scm/anthy-utf8-custom.scm:272 scm/anthy-utf8-custom.scm:281
+#: scm/anthy-utf8-custom.scm:319 scm/anthy-utf8-custom.scm:325
+#: scm/anthy-utf8-custom.scm:331 scm/anthy-utf8-custom.scm:337
+#: scm/anthy-utf8-custom.scm:369 scm/anthy-utf8-custom.scm:375
+#: scm/anthy-utf8-custom.scm:381 scm/baidu-olime-jp-key-custom.scm:36
+#: scm/baidu-olime-jp-key-custom.scm:40 scm/baidu-olime-jp-key-custom.scm:44
+#: scm/baidu-olime-jp-key-custom.scm:48 scm/byeoru-custom.scm:84
+#: scm/byeoru-custom.scm:88 scm/byeoru-custom.scm:92 scm/byeoru-custom.scm:96
+#: scm/byeoru-custom.scm:100 scm/byeoru-custom.scm:115
 #: scm/byeoru-custom.scm:122 scm/byeoru-custom.scm:125
 #: scm/byeoru-custom.scm:128 scm/byeoru-custom.scm:130
 #: scm/byeoru-custom.scm:142 scm/byeoru-custom.scm:148
@@ -2423,11 +2423,10 @@ msgstr "註釈を有効にする"
 #: scm/elatin-custom.scm:265 scm/elatin-custom.scm:269
 #: scm/elatin-custom.scm:275 scm/elatin-custom.scm:281
 #: scm/elatin-custom.scm:286 scm/generic-custom.scm:37
-#: scm/generic-custom.scm:43 scm/generic-custom.scm:49
-#: scm/generic-custom.scm:55 scm/generic-custom.scm:61
-#: scm/generic-custom.scm:67 scm/generic-custom.scm:73
-#: scm/generic-key-custom.scm:37 scm/generic-key-custom.scm:41
-#: scm/google-cgiapi-jp-key-custom.scm:36
+#: scm/generic-custom.scm:43 scm/generic-custom.scm:55
+#: scm/generic-custom.scm:61 scm/generic-custom.scm:67
+#: scm/generic-custom.scm:73 scm/generic-key-custom.scm:37
+#: scm/generic-key-custom.scm:41 scm/google-cgiapi-jp-key-custom.scm:36
 #: scm/google-cgiapi-jp-key-custom.scm:40
 #: scm/google-cgiapi-jp-key-custom.scm:44
 #: scm/google-cgiapi-jp-key-custom.scm:48 scm/im-custom.scm:49
@@ -2470,17 +2469,17 @@ msgstr "註釈を有効にする"
 #: scm/predict-custom.scm:164 scm/predict-custom.scm:185
 #: scm/predict-custom.scm:207 scm/predict-custom.scm:221 scm/skk-custom.scm:53
 #: scm/skk-custom.scm:58 scm/skk-custom.scm:69 scm/skk-custom.scm:75
-#: scm/skk-custom.scm:83 scm/skk-custom.scm:89 scm/skk-custom.scm:95
-#: scm/skk-custom.scm:101 scm/skk-custom.scm:240 scm/skk-custom.scm:259
-#: scm/skk-custom.scm:268 scm/skk-custom.scm:299 scm/skk-custom.scm:308
-#: scm/skk-custom.scm:351 scm/skk-custom.scm:357 scm/skk-custom.scm:368
-#: scm/skk-custom.scm:379 scm/skk-custom.scm:390 scm/skk-custom.scm:401
-#: scm/skk-custom.scm:417 scm/skk-custom.scm:444 scm/skk-custom.scm:461
-#: scm/skk-custom.scm:478 scm/skk-custom.scm:510 scm/skk-custom.scm:516
-#: scm/skk-custom.scm:522 scm/skk-custom.scm:528 scm/skk-custom.scm:534
-#: scm/skk-custom.scm:540 scm/skk-custom.scm:552 scm/skk-custom.scm:567
-#: scm/skk-custom.scm:573 scm/skk-custom.scm:594 scm/skk-custom.scm:600
-#: scm/skk-custom.scm:607 scm/skk-key-custom.scm:65 scm/skk-key-custom.scm:69
+#: scm/skk-custom.scm:83 scm/skk-custom.scm:89 scm/skk-custom.scm:101
+#: scm/skk-custom.scm:240 scm/skk-custom.scm:259 scm/skk-custom.scm:268
+#: scm/skk-custom.scm:299 scm/skk-custom.scm:308 scm/skk-custom.scm:351
+#: scm/skk-custom.scm:357 scm/skk-custom.scm:368 scm/skk-custom.scm:379
+#: scm/skk-custom.scm:390 scm/skk-custom.scm:401 scm/skk-custom.scm:417
+#: scm/skk-custom.scm:444 scm/skk-custom.scm:461 scm/skk-custom.scm:478
+#: scm/skk-custom.scm:510 scm/skk-custom.scm:516 scm/skk-custom.scm:522
+#: scm/skk-custom.scm:528 scm/skk-custom.scm:534 scm/skk-custom.scm:540
+#: scm/skk-custom.scm:552 scm/skk-custom.scm:567 scm/skk-custom.scm:573
+#: scm/skk-custom.scm:594 scm/skk-custom.scm:600 scm/skk-custom.scm:607
+#: scm/skk-key-custom.scm:65 scm/skk-key-custom.scm:69
 #: scm/skk-key-custom.scm:73 scm/skk-key-custom.scm:78
 #: scm/skk-key-custom.scm:82 scm/skk-key-custom.scm:86
 #: scm/tutcode-custom.scm:56 scm/tutcode-custom.scm:67
@@ -2496,25 +2495,24 @@ msgstr "註釈を有効にする"
 #: scm/tutcode-custom.scm:226 scm/tutcode-custom.scm:242
 #: scm/tutcode-custom.scm:262 scm/tutcode-custom.scm:268
 #: scm/tutcode-custom.scm:277 scm/tutcode-custom.scm:289
-#: scm/tutcode-custom.scm:295 scm/tutcode-custom.scm:301
-#: scm/tutcode-custom.scm:307 scm/tutcode-custom.scm:313
-#: scm/tutcode-custom.scm:319 scm/tutcode-custom.scm:325
-#: scm/tutcode-custom.scm:331 scm/tutcode-custom.scm:337
-#: scm/tutcode-custom.scm:343 scm/tutcode-custom.scm:349
-#: scm/tutcode-custom.scm:355 scm/tutcode-custom.scm:361
-#: scm/tutcode-custom.scm:367 scm/tutcode-custom.scm:373
-#: scm/tutcode-custom.scm:379 scm/tutcode-custom.scm:385
-#: scm/tutcode-custom.scm:391 scm/tutcode-custom.scm:397
-#: scm/tutcode-custom.scm:404 scm/tutcode-custom.scm:410
-#: scm/tutcode-custom.scm:416 scm/tutcode-custom.scm:422
-#: scm/tutcode-custom.scm:428 scm/tutcode-custom.scm:434
-#: scm/tutcode-custom.scm:443 scm/tutcode-custom.scm:449
-#: scm/tutcode-key-custom.scm:38 scm/tutcode-key-custom.scm:42
-#: scm/tutcode-key-custom.scm:46 scm/tutcode-rule-custom.scm:46
-#: scm/tutcode-rule-custom.scm:52 scm/tutcode-rule-custom.scm:58
-#: scm/tutcode-rule-custom.scm:64 scm/anthy-custom.scm:48
-#: scm/anthy-custom.scm:58 scm/anthy-custom.scm:64 scm/anthy-custom.scm:79
-#: scm/anthy-custom.scm:85 scm/anthy-custom.scm:91 scm/anthy-custom.scm:97
+#: scm/tutcode-custom.scm:301 scm/tutcode-custom.scm:307
+#: scm/tutcode-custom.scm:313 scm/tutcode-custom.scm:319
+#: scm/tutcode-custom.scm:325 scm/tutcode-custom.scm:331
+#: scm/tutcode-custom.scm:337 scm/tutcode-custom.scm:343
+#: scm/tutcode-custom.scm:349 scm/tutcode-custom.scm:355
+#: scm/tutcode-custom.scm:361 scm/tutcode-custom.scm:367
+#: scm/tutcode-custom.scm:373 scm/tutcode-custom.scm:379
+#: scm/tutcode-custom.scm:385 scm/tutcode-custom.scm:391
+#: scm/tutcode-custom.scm:397 scm/tutcode-custom.scm:404
+#: scm/tutcode-custom.scm:410 scm/tutcode-custom.scm:416
+#: scm/tutcode-custom.scm:422 scm/tutcode-custom.scm:428
+#: scm/tutcode-custom.scm:434 scm/tutcode-custom.scm:443
+#: scm/tutcode-custom.scm:449 scm/tutcode-key-custom.scm:38
+#: scm/tutcode-key-custom.scm:42 scm/tutcode-key-custom.scm:46
+#: scm/tutcode-rule-custom.scm:46 scm/tutcode-rule-custom.scm:52
+#: scm/tutcode-rule-custom.scm:58 scm/tutcode-rule-custom.scm:64
+#: scm/anthy-custom.scm:48 scm/anthy-custom.scm:58 scm/anthy-custom.scm:64
+#: scm/anthy-custom.scm:79 scm/anthy-custom.scm:91 scm/anthy-custom.scm:97
 #: scm/anthy-custom.scm:195 scm/anthy-custom.scm:214 scm/anthy-custom.scm:223
 #: scm/anthy-custom.scm:265 scm/anthy-custom.scm:274 scm/anthy-custom.scm:312
 #: scm/anthy-custom.scm:318 scm/anthy-custom.scm:324 scm/anthy-custom.scm:330
@@ -2522,27 +2520,26 @@ msgstr "註釈を有効にする"
 #: scm/baidu-olime-jp-custom.scm:44 scm/baidu-olime-jp-custom.scm:48
 #: scm/baidu-olime-jp-custom.scm:52 scm/baidu-olime-jp-custom.scm:62
 #: scm/baidu-olime-jp-custom.scm:68 scm/baidu-olime-jp-custom.scm:83
-#: scm/baidu-olime-jp-custom.scm:89 scm/baidu-olime-jp-custom.scm:95
-#: scm/baidu-olime-jp-custom.scm:101 scm/baidu-olime-jp-custom.scm:200
-#: scm/baidu-olime-jp-custom.scm:219 scm/baidu-olime-jp-custom.scm:228
-#: scm/baidu-olime-jp-custom.scm:270 scm/baidu-olime-jp-custom.scm:279
-#: scm/baidu-olime-jp-custom.scm:322 scm/baidu-olime-jp-custom.scm:328
-#: scm/baidu-olime-jp-custom.scm:341 scm/baidu-olime-jp-custom.scm:347
-#: scm/baidu-olime-jp-custom.scm:353 scm/baidu-olime-jp-custom.scm:360
-#: scm/baidu-olime-jp-custom.scm:366 scm/baidu-olime-jp-custom.scm:372
-#: scm/baidu-olime-jp-custom.scm:389 scm/baidu-olime-jp-custom.scm:395
-#: scm/canna-custom.scm:44 scm/canna-custom.scm:48 scm/canna-custom.scm:52
-#: scm/canna-custom.scm:62 scm/canna-custom.scm:68 scm/canna-custom.scm:83
-#: scm/canna-custom.scm:89 scm/canna-custom.scm:95 scm/canna-custom.scm:101
-#: scm/canna-custom.scm:200 scm/canna-custom.scm:219 scm/canna-custom.scm:228
-#: scm/canna-custom.scm:270 scm/canna-custom.scm:279 scm/canna-custom.scm:328
-#: scm/canna-custom.scm:334 scm/canna-custom.scm:340 scm/canna-custom.scm:402
-#: scm/canna-custom.scm:408 scm/canna-custom.scm:414 scm/canna-custom.scm:421
-#: scm/canna-custom.scm:427 scm/canna-custom.scm:433 scm/canna-custom.scm:439
-#: scm/canna-custom.scm:445 scm/google-cgiapi-jp-custom.scm:44
-#: scm/google-cgiapi-jp-custom.scm:48 scm/google-cgiapi-jp-custom.scm:52
-#: scm/google-cgiapi-jp-custom.scm:62 scm/google-cgiapi-jp-custom.scm:68
-#: scm/google-cgiapi-jp-custom.scm:83 scm/google-cgiapi-jp-custom.scm:89
+#: scm/baidu-olime-jp-custom.scm:95 scm/baidu-olime-jp-custom.scm:101
+#: scm/baidu-olime-jp-custom.scm:200 scm/baidu-olime-jp-custom.scm:219
+#: scm/baidu-olime-jp-custom.scm:228 scm/baidu-olime-jp-custom.scm:270
+#: scm/baidu-olime-jp-custom.scm:279 scm/baidu-olime-jp-custom.scm:322
+#: scm/baidu-olime-jp-custom.scm:328 scm/baidu-olime-jp-custom.scm:341
+#: scm/baidu-olime-jp-custom.scm:347 scm/baidu-olime-jp-custom.scm:353
+#: scm/baidu-olime-jp-custom.scm:360 scm/baidu-olime-jp-custom.scm:366
+#: scm/baidu-olime-jp-custom.scm:372 scm/baidu-olime-jp-custom.scm:389
+#: scm/baidu-olime-jp-custom.scm:395 scm/canna-custom.scm:44
+#: scm/canna-custom.scm:48 scm/canna-custom.scm:52 scm/canna-custom.scm:62
+#: scm/canna-custom.scm:68 scm/canna-custom.scm:83 scm/canna-custom.scm:95
+#: scm/canna-custom.scm:101 scm/canna-custom.scm:200 scm/canna-custom.scm:219
+#: scm/canna-custom.scm:228 scm/canna-custom.scm:270 scm/canna-custom.scm:279
+#: scm/canna-custom.scm:328 scm/canna-custom.scm:334 scm/canna-custom.scm:340
+#: scm/canna-custom.scm:402 scm/canna-custom.scm:408 scm/canna-custom.scm:414
+#: scm/canna-custom.scm:421 scm/canna-custom.scm:427 scm/canna-custom.scm:433
+#: scm/canna-custom.scm:439 scm/canna-custom.scm:445
+#: scm/google-cgiapi-jp-custom.scm:44 scm/google-cgiapi-jp-custom.scm:48
+#: scm/google-cgiapi-jp-custom.scm:52 scm/google-cgiapi-jp-custom.scm:62
+#: scm/google-cgiapi-jp-custom.scm:68 scm/google-cgiapi-jp-custom.scm:83
 #: scm/google-cgiapi-jp-custom.scm:95 scm/google-cgiapi-jp-custom.scm:101
 #: scm/google-cgiapi-jp-custom.scm:200 scm/google-cgiapi-jp-custom.scm:219
 #: scm/google-cgiapi-jp-custom.scm:228 scm/google-cgiapi-jp-custom.scm:270
@@ -3081,12 +3078,19 @@ msgstr "文節区切り"
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
-#: scm/anthy-utf8-custom.scm:91 scm/generic-custom.scm:48 scm/skk-custom.scm:94
+#: scm/anthy-utf8-custom.scm:91 scm/skk-custom.scm:94
 #: scm/tutcode-custom.scm:294 scm/anthy-custom.scm:84
 #: scm/baidu-olime-jp-custom.scm:88 scm/canna-custom.scm:88
 #: scm/google-cgiapi-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
+
+#: scm/anthy-utf8-custom.scm:92 scm/skk-custom.scm:95
+#: scm/tutcode-custom.scm:295 scm/anthy-custom.scm:85
+#: scm/baidu-olime-jp-custom.scm:89 scm/canna-custom.scm:89
+#: scm/google-cgiapi-jp-custom.scm:89
+msgid "0 shows the candidate window at the first conversion key press."
+msgstr "0 にすると最初に変換キーを押したときに候補ウィンドウを表示します。"
 
 #: scm/anthy-utf8-custom.scm:97 scm/generic-custom.scm:54
 #: scm/skk-custom.scm:100 scm/tutcode-custom.scm:300 scm/anthy-custom.scm:90
@@ -4295,6 +4299,18 @@ msgstr "pollエラー"
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
+#: scm/generic-custom.scm:48
+msgid "Next or previous candidate key press count to show candidate window"
+msgstr "候補ウィンドウを表示するために次候補キーか前候補キーを押す回数"
+
+#: scm/generic-custom.scm:49
+msgid ""
+"0 shows the candidate window at the first next or previous candidate key "
+"press."
+msgstr ""
+"0 にすると最初に次候補キーか前候補キーを押したときに候補ウィンドウを表示しま"
+"す。"
+
 #: scm/generic-custom.scm:66
 msgid "Show candidate window without explicit conversion action"
 msgstr "候補ウィンドウを自動的に表示"
@@ -4559,27 +4575,27 @@ msgstr "[Google-CGIAPI-Jp] 次予測候補"
 msgid "[Google-CGIAPI-Jp] Previous prediction candidate"
 msgstr "[Google-CGIAPI-Jp] 前予測候補"
 
-#: scm/hangul.scm:111
+#: scm/hangul.scm:62
 msgid "Hangul (2-beol)"
 msgstr "2ボル式ハングル"
 
-#: scm/hangul.scm:112
+#: scm/hangul.scm:63
 msgid "2-beol style hangul input method"
 msgstr "2ボル式ハングル入力方式"
 
-#: scm/hangul.scm:120
+#: scm/hangul.scm:71
 msgid "Hangul (3-beol)"
 msgstr "3ボル式ハングル"
 
-#: scm/hangul.scm:121
+#: scm/hangul.scm:72
 msgid "3-beol style hangul input method"
 msgstr "3ボル式ハングル入力方式"
 
-#: scm/hangul.scm:128
+#: scm/hangul.scm:79
 msgid "Hangul (Romaja)"
 msgstr "ローマ字入力式ハングル"
 
-#: scm/hangul.scm:129
+#: scm/hangul.scm:80
 msgid "Romaja input style hangul input method"
 msgstr "ローマ字入力式ハングル入力方式"
 

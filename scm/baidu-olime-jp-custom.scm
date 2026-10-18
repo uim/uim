@@ -1,6 +1,6 @@
 ;;; baidu-olime-jp-custom.scm: Customization variables for baidu-olime-jp.scm
 ;;;
-;;; Copyright (c) 2012- uim Project https://github.com/uim/uim
+;;; Copyright (c) 2012-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -86,7 +86,7 @@
   '(baidu-olime-jp candwin)
   '(integer 0 99)
   (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (N_ "0 shows the candidate window at the first conversion key press."))
 
 (define-custom 'baidu-olime-jp-nr-candidate-max 10
   '(baidu-olime-jp candwin)
