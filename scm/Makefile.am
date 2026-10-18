@@ -103,7 +103,9 @@ UIM_MODULE_MANAGER_ENV = \
 
 loader.scm: installed-modules.scm
 
-installed-modules.scm: $(SCM_FILES)
+# The module list depends on configure options in Makefile.
+installed-modules.scm: $(SCM_FILES) Makefile
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \
+	rm -f installed-modules.scm loader.scm && \
 	$(UIM_MODULE_MANAGER_ENV) $(UIM_MODULE_MANAGER) \
 	    --path $(top_builddir)/scm --register $(module_names)
