@@ -23,7 +23,10 @@ uim_mozc_helper_CPPFLAGS = -I$(builddir) -DUIM_VERSION=\"$(VERSION)\" $(PROTOBUF
 uim_mozc_helper_CXXFLAGS = $(MOZC_CXXFLAGS)
 uim_mozc_helper_LDADD = $(PROTOBUF_LIBS)
 
-EXTRA_DIST = $(PROTO_FILES) README.md
+EXTRA_DIST = $(PROTO_FILES) README.md \
+	meson.build \
+	ipc/meson.build \
+	protocol/meson.build
 
 CLEANFILES = $(PROTO_H_FILES) $(PROTO_CC_FILES)
 
