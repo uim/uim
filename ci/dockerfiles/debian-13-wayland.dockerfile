@@ -46,9 +46,9 @@ RUN \
     libedit-dev \
     libncurses-dev \
     libpango1.0-dev \
+    librsvg2-bin \
     libwayland-dev \
     libxkbcommon-dev \
-    librsvg2-bin \
     make \
     meson \
     ninja-build \
