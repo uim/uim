@@ -7,4 +7,3 @@ scm/baidu-olime-jp-custom.scm
 scm/canna-custom.scm
 scm/google-cgiapi-jp-custom.scm
 scm/japanese-custom.scm
-scm/tcode.scm
