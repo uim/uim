@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-18 07:40+0000\n"
+"POT-Creation-Date: 2026-10-18 07:58+0000\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -6001,7 +6001,7 @@ msgstr "辞書ディレクトリを作成できません"
 
 #: scm/predict-sqlite3.scm:159
 msgid "uim-sqlite3 is not installed."
-msgstr ""
+msgstr "uim-sqlite3 がインストールされていません。"
 
 #: scm/process.scm:79
 msgid "cannot duplicate stdin"
@@ -6398,6 +6398,18 @@ msgstr "[SKK] 左に移動"
 #: scm/skk-key-custom.scm:294
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
+
+#: scm/tcode.scm:1645
+msgid "T-Code"
+msgstr "T-Code"
+
+#: scm/tcode.scm:1646 scm/trycode.scm:1648
+msgid "A kanji direct input method"
+msgstr "漢字直接入力方式"
+
+#: scm/trycode.scm:1647
+msgid "Try-Code"
+msgstr "Try-Code"
 
 #: scm/tutcode-custom.scm:35
 msgid "TUT-Code"
@@ -7599,15 +7611,3 @@ msgstr "カスタム対応規則"
 #: scm/japanese-custom.scm:494
 msgid "Keep consonant Romaji not convertible to Kana"
 msgstr "かなに対応しない子音をローマ字として残す"
-
-#: scm/tcode.scm:1645
-msgid "T-Code"
-msgstr "T-Code"
-
-#: scm/tcode.scm:1646 scm/trycode.scm:1648
-msgid "A kanji direct input method"
-msgstr "漢字直接入力方式"
-
-#: scm/trycode.scm:1647
-msgid "Try-Code"
-msgstr "Try-Code"
