@@ -1,6 +1,6 @@
 ;;; anthy-custom.scm: Customization variables for anthy.scm
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -89,7 +89,7 @@
   '(anthy candwin)
   '(integer 0 99)
   (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (N_ "0 shows the candidate window at the first conversion key press."))
 
 (define-custom 'anthy-nr-candidate-max 10
   '(anthy candwin)

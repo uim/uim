@@ -1,7 +1,7 @@
 ;;; anthy.scm: Anthy for uim.
 ;;; charset: EUC-JP
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1639,14 +1639,29 @@
 	   (new-op-count (+ 1 (anthy-context-candidate-op-count ac))))
       (ustr-cursor-set-frontside! segments compensated-n)
       (anthy-context-set-candidate-op-count! ac new-op-count)
-      (if (and anthy-use-candidate-window?
-	       (= (anthy-context-candidate-op-count ac)
-		  anthy-candidate-op-count))
-	  (begin
-	    (anthy-context-set-candidate-window! ac #t)
-	    (im-activate-candidate-selector ac max anthy-nr-candidate-max)))
       (if (anthy-context-candidate-window ac)
 	  (im-select-candidate ac compensated-n)))))
+
+;; Activates the candidate window when the number of the candidate
+;; operations for the current segment reaches
+;; anthy-candidate-op-count. 0 activates it as soon as the segment is
+;; converted.
+(define (anthy-check-candidate-window-begin ac)
+  (let ((segments (anthy-context-segments ac)))
+    (if (and anthy-use-candidate-window?
+             (not (anthy-context-candidate-window ac))
+             (>= (anthy-context-candidate-op-count ac)
+                 anthy-candidate-op-count)
+             ;; not segment-transposing
+             (>= (ustr-cursor-frontside segments) 0))
+        (let ((ac-id (anthy-context-ac-id ac))
+              (cur-seg (ustr-cursor-pos segments)))
+          (anthy-context-set-candidate-window! ac #t)
+          (im-activate-candidate-selector
+           ac
+           (anthy-lib-get-nr-candidates ac-id cur-seg)
+           anthy-nr-candidate-max)
+          (im-select-candidate ac (ustr-cursor-frontside segments))))))
 
 (define anthy-move-candidate-in-page
   (lambda (ac numeralc)
@@ -1839,6 +1854,8 @@
 		        (anthy-proc-prediction-state ac key key-state)
 		        (anthy-proc-input-state ac key key-state))))
 	    (anthy-proc-raw-state ac key key-state)))
+    (if (anthy-context-converting ac)
+        (anthy-check-candidate-window-begin ac))
     ;; preedit
     (anthy-update-preedit ac)))
 

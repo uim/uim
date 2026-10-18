@@ -1,7 +1,7 @@
 ;;; anthy.scm: Anthy (UTF-8) for uim.
 ;;; charset: UTF-8
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1651,14 +1651,29 @@
 	   (new-op-count (+ 1 (anthy-utf8-context-candidate-op-count ac))))
       (ustr-cursor-set-frontside! segments compensated-n)
       (anthy-utf8-context-set-candidate-op-count! ac new-op-count)
-      (if (and anthy-use-candidate-window?
-	       (= (anthy-utf8-context-candidate-op-count ac)
-		  anthy-candidate-op-count))
-	  (begin
-	    (anthy-utf8-context-set-candidate-window! ac #t)
-	    (im-activate-candidate-selector ac max anthy-nr-candidate-max)))
       (if (anthy-utf8-context-candidate-window ac)
 	  (im-select-candidate ac compensated-n)))))
+
+;; Activates the candidate window when the number of the candidate
+;; operations for the current segment reaches
+;; anthy-candidate-op-count. 0 activates it as soon as the segment is
+;; converted.
+(define (anthy-utf8-check-candidate-window-begin ac)
+  (let ((segments (anthy-utf8-context-segments ac)))
+    (if (and anthy-use-candidate-window?
+             (not (anthy-utf8-context-candidate-window ac))
+             (>= (anthy-utf8-context-candidate-op-count ac)
+                 anthy-candidate-op-count)
+             ;; not segment-transposing
+             (>= (ustr-cursor-frontside segments) 0))
+        (let ((ac-id (anthy-utf8-context-ac-id ac))
+              (cur-seg (ustr-cursor-pos segments)))
+          (anthy-utf8-context-set-candidate-window! ac #t)
+          (im-activate-candidate-selector
+           ac
+           (anthy-utf8-lib-get-nr-candidates ac-id cur-seg)
+           anthy-nr-candidate-max)
+          (im-select-candidate ac (ustr-cursor-frontside segments))))))
 
 (define anthy-utf8-move-candidate-in-page
   (lambda (ac numeralc)
@@ -1851,6 +1866,8 @@
 		        (anthy-utf8-proc-prediction-state ac key key-state)
 		        (anthy-utf8-proc-input-state ac key key-state))))
 	    (anthy-utf8-proc-raw-state ac key key-state)))
+    (if (anthy-utf8-context-converting ac)
+        (anthy-utf8-check-candidate-window-begin ac))
     ;; preedit
     (anthy-utf8-update-preedit ac)))
 

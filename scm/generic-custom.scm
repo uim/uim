@@ -1,6 +1,6 @@
 ;;; generic-custom.scm: Customization variables for generic.scm
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -45,8 +45,8 @@
 (define-custom 'generic-candidate-op-count 1
   '(other-ims candwin)
   '(integer 0 99)
-  (N_ "Conversion key press count to show candidate window")
-  (N_ "long description will be here."))
+  (N_ "Next or previous candidate key press count to show candidate window")
+  (N_ "0 shows the candidate window at the first next or previous candidate key press."))
 
 (define-custom 'generic-nr-candidate-max 10
   '(other-ims candwin)

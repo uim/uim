@@ -1,6 +1,6 @@
 ;;; baidu-olime-jp.scm: baidu online ime for uim.
 ;;;
-;;; Copyright (c) 2011-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2011-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -1637,15 +1637,28 @@
 	 (new-op-count (+ 1 (baidu-olime-jp-context-candidate-op-count bdc))))
     (ustr-cursor-set-frontside! segments compensated-n)
     (baidu-olime-jp-context-set-candidate-op-count! bdc new-op-count)
-    (if (and
-	 (= (baidu-olime-jp-context-candidate-op-count bdc)
-	    baidu-olime-jp-candidate-op-count)
-	 baidu-olime-jp-use-candidate-window?)
-	(begin
-	  (baidu-olime-jp-context-set-candidate-window! bdc #t)
-	  (im-activate-candidate-selector bdc max baidu-olime-jp-nr-candidate-max)))
     (if (baidu-olime-jp-context-candidate-window bdc)
 	(im-select-candidate bdc compensated-n))))
+
+;; Activates the candidate window when the number of the candidate
+;; operations for the current segment reaches
+;; baidu-olime-jp-candidate-op-count. 0 activates it as soon as
+;; the segment is converted.
+(define (baidu-olime-jp-check-candidate-window-begin bdc)
+  (let ((segments (baidu-olime-jp-context-segments bdc)))
+    (if (and baidu-olime-jp-use-candidate-window?
+             (not (baidu-olime-jp-context-candidate-window bdc))
+             (>= (baidu-olime-jp-context-candidate-op-count bdc)
+                 baidu-olime-jp-candidate-op-count)
+             ;; not segment-transposing
+             (>= (ustr-cursor-frontside segments) 0))
+        (let ((cur-seg (ustr-cursor-pos segments)))
+          (baidu-olime-jp-context-set-candidate-window! bdc #t)
+          (im-activate-candidate-selector
+           bdc
+           (baidu-olime-jp-lib-get-nr-candidates bdc cur-seg)
+           baidu-olime-jp-nr-candidate-max)
+          (im-select-candidate bdc (ustr-cursor-frontside segments))))))
 
 (define baidu-olime-jp-move-candidate-in-page
   (lambda (bdc numeralc)
@@ -1822,6 +1835,8 @@
                       (baidu-olime-jp-proc-prediction-state bdc key key-state)
                       (baidu-olime-jp-proc-input-state bdc key key-state))))
 	  (baidu-olime-jp-proc-raw-state bdc key key-state)))
+  (if (baidu-olime-jp-context-state bdc)
+      (baidu-olime-jp-check-candidate-window-begin bdc))
   (baidu-olime-jp-update-preedit bdc))
 
 ;;;
