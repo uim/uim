@@ -273,12 +273,6 @@ page_button_clicked_cb(GtkButton *button, gpointer data)
   UIMCandidatesView *view = data;
   gboolean forward = button == GTK_BUTTON(view->next_page_button);
 
-  /* Delegate entirely to a "shift-page-requested" listener
-   * (uim-im-context.c), which pre-fetches the target page and
-   * performs the actual shift + backend index sync + re-show, using
-   * exactly the same sequence as the keyboard-driven page-shift path
-   * (cand_shift_page_cb). The view itself no longer shifts pages or
-   * emits "index-changed" here. */
   g_signal_emit(view, signals[SHIFT_PAGE_REQUESTED], 0, forward);
 }
 
@@ -582,6 +576,12 @@ uim_candidates_view_shift_page(UIMCandidatesView *view, gboolean forward)
     uim_candidates_view_set_page(view, view->page_index + 1);
   else
     uim_candidates_view_set_page(view, view->page_index - 1);
+
+  if (view->candidate_index < 0) {
+    /* Select the first candidate of the current page so that uim is
+     * told about the new page. */
+    view->candidate_index = view->page_index * view->display_limit;
+  }
 }
 
 guint

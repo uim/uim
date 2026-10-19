@@ -538,26 +538,13 @@ candidates_view_index_changed_cb(UIMCandidatesView *view, gpointer data)
   uim_im_context_ensure_page_candidates(uic, new_page);
 }
 
-/* A user clicked the "<"/">" page button on the candidates view.
- * Pre-fetch the target page's candidates before the view actually
- * shifts to it (in page_button_clicked_cb()), so the popover
- * doesn't render an empty page while waiting on the uim backend. */
+/* Fetch the target page before shifting, so that the popover never
+ * shows an empty page while waiting for the uim backend. */
 static void
-candidates_view_shift_page_requested_cb(UIMCandidatesView *view,
-                                        gboolean forward,
-                                        gpointer data)
+uim_im_context_shift_page(UIMIMContext *uic, gboolean forward)
 {
-  UIMIMContext *uic = data;
+  UIMCandidatesView *view = uic->candidates_view;
 
-  /* Mirror cand_shift_page_cb() (the keyboard/backend-driven page
-   * shift) exactly: pre-fetch the target page, shift while
-   * "index-changed" is blocked (so uim_set_candidate_index() below
-   * isn't invoked a second time through it), then explicitly
-   * re-show the popover. That last call is what the mouse-driven
-   * "<"/">" buttons were missing: whenever syncing the new page's
-   * candidate index caused the uim backend to refresh the candidate
-   * list out from under us, nothing re-asserted the popover
-   * afterward, leaving it hidden/empty. */
   guint new_page =
     uim_candidates_view_query_new_page_by_shift_page(view, forward);
   uim_im_context_ensure_page_candidates(uic, new_page);
@@ -576,6 +563,14 @@ candidates_view_shift_page_requested_cb(UIMCandidatesView *view,
     uic);
 
   uim_im_context_show_candidates(uic);
+}
+
+static void
+candidates_view_shift_page_requested_cb(UIMCandidatesView *view,
+                                        gboolean forward,
+                                        gpointer data)
+{
+  uim_im_context_shift_page(data, forward);
 }
 
 static void
@@ -618,28 +613,7 @@ cand_select_cb(void *ptr, int index)
 static void
 cand_shift_page_cb(void *ptr, int direction)
 {
-  UIMIMContext *uic = ptr;
-  UIMCandidatesView *view = uic->candidates_view;
-  gboolean forward = direction != 0;
-
-  guint new_page =
-    uim_candidates_view_query_new_page_by_shift_page(view, forward);
-  uim_im_context_ensure_page_candidates(uic, new_page);
-
-  g_signal_handlers_block_by_func(
-    view,
-    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
-    uic);
-  uim_candidates_view_shift_page(view, forward);
-  gint index = uim_candidates_view_get_index(view);
-  if (index != -1)
-    uim_set_candidate_index(uic->uc, index);
-  g_signal_handlers_unblock_by_func(
-    view,
-    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
-    uic);
-
-  uim_im_context_show_candidates(uic);
+  uim_im_context_shift_page(ptr, direction != 0);
 }
 
 static void
