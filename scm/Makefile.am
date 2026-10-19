@@ -43,7 +43,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  look.scm look-custom.scm \
  m17nlib.scm m17nlib-custom.scm \
  google-cgiapi-jp.scm google-cgiapi-jp-custom.scm google-cgiapi-jp-key-custom.scm \
- baidu-olime-jp.scm baidu-olime-jp-custom.scm baidu-olime-jp-key-custom.scm \
  uim-module-manager.scm \
  fileio.scm socket.scm process.scm \
  openssl.scm \
@@ -87,7 +86,7 @@ endif
 module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"
 # web based IMs
-  module_names += "google-cgiapi-jp" "baidu-olime-jp"
+  module_names += "google-cgiapi-jp"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \

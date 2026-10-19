@@ -99,9 +99,6 @@ scm_files = files(
   'google-cgiapi-jp.scm',
   'google-cgiapi-jp-custom.scm',
   'google-cgiapi-jp-key-custom.scm',
-  'baidu-olime-jp.scm',
-  'baidu-olime-jp-custom.scm',
-  'baidu-olime-jp-key-custom.scm',
   'uim-module-manager.scm',
   'fileio.scm',
   'socket.scm',
@@ -160,7 +157,6 @@ module_names += [
   'look',
   # web based IMs
   'google-cgiapi-jp',
-  'baidu-olime-jp',
 ]
 # uim-module-manager loads the modules to list their input methods, so
 # it needs the plugins they use.
