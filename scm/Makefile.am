@@ -50,8 +50,6 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  sqlite3.scm \
  lolevel.scm \
  input-parse.scm \
- packrat.scm \
- json.scm json-parser-expanded.scm \
  http-client.scm \
  annotation.scm annotation-custom.scm annotation-dict.scm annotation-eb.scm \
  annotation-filter.scm annotation-osx-dcs.scm \
@@ -60,10 +58,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  ct.scm \
  dict-socket.scm
 
-OTHER_SCM_FILES = \
- macro-expander.scm macro-expander-chicken.scm \
- json-parser-expander.scm json.scm.in packrat.scm.in
-EXTRA_DIST = $(OTHER_SCM_FILES) meson.build
+EXTRA_DIST = meson.build
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 

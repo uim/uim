@@ -29,12 +29,11 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1 2 6 23 34 48))
+(require-extension (srfi 1 2 6 23 34 48 180))
 
 (require "ustr.scm")
 (require "japanese.scm")
 (require "http-client.scm")
-(require "json.scm")
 (require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "baidu-olime-jp-custom.scm")
@@ -68,14 +67,14 @@
   (define (make-query)
     (format "/py?ol=1&web=1&py=~a~a"
             (http:encode-uri-string (fromconv str)) opts))
+  ;; [[["reading", ["candidate", ...]], ...], ...]
   (define (parse str)
-    (receive (cars cdrs)
-        (unzip2 (call-with-input-string
-                 str
-                 (lambda (port)
-                   (car (json-read port)))))
-      (cons (map toconv cars)
-            (map (lambda (x) (map toconv x)) cdrs))))
+    (receive (readings candidates)
+        (unzip2 (map vector->list
+                     (vector->list
+                      (vector-ref (call-with-input-string str json-read) 0))))
+      (cons (map toconv readings)
+            (map (lambda (x) (map toconv (vector->list x))) candidates))))
   (let* ((proxy (make-http-proxy-from-custom))
          (ssl (make-http-ssl 443))
          (ret (http:get baidu-olime-jp-server (make-query) 80 proxy ssl)))
