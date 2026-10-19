@@ -29,12 +29,11 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1 2 6 23 34 48))
+(require-extension (srfi 1 2 6 23 34 48 180))
 
 (require "ustr.scm")
 (require "japanese.scm")
 (require "http-client.scm")
-(require "json.scm")
 (require "generic-predict.scm")
 (require "util.scm")
 (require-custom "generic-key-custom.scm")
@@ -69,14 +68,13 @@
   (define (make-query)
     (format "/transliterate?langpair=ja-Hira|ja&text=~a~a"
             (http:encode-uri-string (fromconv str)) opts))
+  ;; [["reading", ["candidate", ...]], ...]
   (define (parse str)
-    (receive (cars cdrs)
-        (unzip2 (call-with-input-string
-                 str
-                 (lambda (port)
-                   (json-read port))))
-      (cons (map toconv cars)
-            (map (lambda (x) (map toconv x)) cdrs))))
+    (receive (readings candidates)
+        (unzip2 (map vector->list
+                     (vector->list (call-with-input-string str json-read))))
+      (cons (map toconv readings)
+            (map (lambda (x) (map toconv (vector->list x))) candidates))))
   (let* ((proxy (make-http-proxy-from-custom))
          (ssl (and google-cgiapi-jp-use-ssl?
                    (make-http-ssl 443)))

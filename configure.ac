@@ -47,6 +47,8 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+# SigScheme uses floor(), sqrt() and so on for inexact real numbers.
+LT_LIB_M
 AC_PATH_PROG(SH, sh)
 AC_PATH_PROG(RSVG, rsvg-convert)
 AC_PATH_PROGS(MD5, md5 md5sum)
@@ -1804,7 +1806,6 @@ else
   # Suppress the warnings of combined-mode SigScheme
   AC_LANG_WERROR  # Turn warning-only unknown options into error.
   AX_CFLAGS_GCC_OPTION([-Wno-redundant-decls], [UIM_SCM_CFLAGS])
-  AX_CFLAGS_GCC_OPTION([-Wno-unused-function], [UIM_SCM_CFLAGS])
   AX_LANG_WNOERROR  # end AC_LANG_WERROR
 
   QT_CONFIG_OPTS="release"
