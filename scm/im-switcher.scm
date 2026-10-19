@@ -1,6 +1,6 @@
 ;;; im-switcher.scm: Action-based IM switcher
 ;;;
-;;; Copyright (c) 2006-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2006-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -42,7 +42,6 @@
     (anthy            . "An")
     (anthy-utf8       . "An")
     (byeoru           . "B")
-    (baidu-olime-jp   . "Bj")
     (canna            . "Ca")
     (chewing          . "Ch")
     (elatin           . "E")
