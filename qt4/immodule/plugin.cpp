@@ -1,7 +1,7 @@
 /*
 
   Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -47,7 +47,7 @@
 #  if QT_VERSION < 0x060000
 #   include <QtX11Extras/QX11Info>
 #  else
-#   include <QtGui/private/qtx11extras_p.h>
+#   include <QtGui/QGuiApplication>
 #  endif
 # endif
 # include <QtCore/qdatastream.h>
@@ -76,6 +76,19 @@
 #define UIM_QT_LIST_SUBIM_AS_QTIM 0
 
 QUimInfoManager *UimInputContextPlugin::infoManager = 0;
+
+// nullptr when the application doesn't run on X11, on Wayland for instance.
+static Display *x11Display()
+{
+#if QT_VERSION < 0x060000
+    return QX11Info::display();
+#elif QT_CONFIG(xcb)
+    auto *x11 = qApp->nativeInterface<QNativeInterface::QX11Application>();
+    return x11 ? x11->display() : nullptr;
+#else
+    return nullptr;
+#endif
+}
 
 
 UimInputContextPlugin::UimInputContextPlugin()
@@ -155,11 +168,14 @@ void UimInputContextPlugin::uimInit()
         if (!infoManager)
             infoManager = new QUimInfoManager();
 
-	if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
-	    uim_scm_callf("%xkb-set-display", "p", QX11Info::display());
+        Display *display = x11Display();
+        if (display
+            && uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
+            uim_scm_callf("%xkb-set-display", "p", display);
 
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
-        uim_x_kana_input_hack_init( QX11Info::display() );
+        if (display)
+            uim_x_kana_input_hack_init(display);
 #endif
         uimReady = true;
     }
