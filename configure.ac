@@ -1803,11 +1803,6 @@ else
   CFLAGS="$CFLAGS -DNDEBUG"
   CXXFLAGS="$CXXFLAGS -DNDEBUG"
 
-  # Suppress the warnings of combined-mode SigScheme
-  AC_LANG_WERROR  # Turn warning-only unknown options into error.
-  AX_CFLAGS_GCC_OPTION([-Wno-redundant-decls], [UIM_SCM_CFLAGS])
-  AX_LANG_WNOERROR  # end AC_LANG_WERROR
-
   QT_CONFIG_OPTS="release"
 fi
 
@@ -1854,7 +1849,7 @@ AC_SUBST(abs_top_builddir)
 #
 # --with-master-pkg=uim instructs that pkgdatadir for Scheme libraries.
 # See also subprojects/sigscheme/lib/Makefile.am
-ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-compat-siod --disable-libsscm --disable-shell"
+ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([subprojects/sigscheme])
 
 AC_ARG_WITH(libgcroots,
