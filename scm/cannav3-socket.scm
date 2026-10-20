@@ -1,6 +1,6 @@
 ;;; cannav3-socket.scm: Canna protocol version 3 for uim.
 ;;;
-;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2009-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -219,6 +219,7 @@
 ;;
 ;; RK compatible functions
 ;;
+;; They take and return UTF-8 strings. Canna uses EUC-JP.
 (define canna-lib-context-rec-spec
   (list
    (list 'id   #f)
@@ -280,7 +281,7 @@
 (define (canna-lib-begin-conversion cic str)
   (let ((cands (canna-lib-begin-convert *canna-lib-socket*
                                         (canna-lib-context-id cic)
-                                        str
+                                        (iconv-convert "EUC-JP" "UTF-8" str)
                                         (canna-lib-context-mode cic))))
     (canna-lib-context-set-cands! cic cands)
     (canna-lib-context-set-nth-cands! cic (make-vector (length cands) 0))
@@ -288,16 +289,19 @@
 
 (define (canna-lib-get-nth-candidate cic seg nth)
   (vector-set! (canna-lib-context-nth-cands cic) seg nth)
-  (list-ref (canna-lib-get-candidacy-list *canna-lib-socket*
-                                          (canna-lib-context-id cic)
-                                          seg)
-            nth))
+  (iconv-convert "UTF-8" "EUC-JP"
+                 (list-ref (canna-lib-get-candidacy-list
+                            *canna-lib-socket*
+                            (canna-lib-context-id cic)
+                            seg)
+                           nth)))
 
 (define (canna-lib-get-unconv-candidate cic seg)
   (vector-set! (canna-lib-context-nth-cands cic) seg 0)
-  (canna-lib-get-yomi *canna-lib-socket*
-                      (canna-lib-context-id cic)
-                      seg))
+  (iconv-convert "UTF-8" "EUC-JP"
+                 (canna-lib-get-yomi *canna-lib-socket*
+                                     (canna-lib-context-id cic)
+                                     seg)))
 
 (define (canna-lib-resize-segment cic seg delta)
   (let* ((direct (if (< 0 delta)
