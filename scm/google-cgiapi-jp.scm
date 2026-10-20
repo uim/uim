@@ -32,7 +32,7 @@
 (require-extension (srfi 1 2 6 23 34 48 180))
 
 (require "ustr.scm")
-(require "japanese.scm")
+(require "japanese-utf8.scm")
 (require "http-client.scm")
 (require "generic-predict.scm")
 (require "util.scm")
@@ -61,20 +61,15 @@
 (define google-cgiapi-jp-internal-context-new-internal google-cgiapi-jp-internal-context-new)
 
 (define (google-cgiapi-jp-conversion str opts)
-  (define (fromconv str)
-    (iconv-convert "UTF-8" "EUC-JP" str))
-  (define (toconv str)
-    (iconv-convert "EUC-JP" "UTF-8" str))
   (define (make-query)
     (format "/transliterate?langpair=ja-Hira|ja&text=~a~a"
-            (http:encode-uri-string (fromconv str)) opts))
+            (http:encode-uri-string str) opts))
   ;; [["reading", ["candidate", ...]], ...]
   (define (parse str)
     (receive (readings candidates)
         (unzip2 (map vector->list
                      (vector->list (call-with-input-string str json-read))))
-      (cons (map toconv readings)
-            (map (lambda (x) (map toconv (vector->list x))) candidates))))
+      (cons readings (map vector->list candidates))))
   (let* ((proxy (make-http-proxy-from-custom))
          (ssl (and google-cgiapi-jp-use-ssl?
                    (make-http-ssl 443)))
@@ -122,7 +117,7 @@
     (length (list-ref cand seg))))
 (define (google-cgiapi-jp-next-yomi-seg yomi-seg seg cnt)
   (let* ((kana-str (list-ref yomi-seg seg))
-         (kana-list (reverse (string-to-list kana-str))))
+         (kana-list (reverse (string-to-list-utf8 kana-str))))
     (cond ((and (< cnt 0) ;; shrink segment
                 (< 1 (length kana-list)))
            (let* ((not-edited-head (if (< 0 seg)
@@ -140,9 +135,9 @@
              (append not-edited-head edited-head edited-tail not-edited-tail)))
           ((and (< 0 cnt) ;; stretch segment
                 (< (+ seg 1) (length yomi-seg))
-                (< 0 (length (string-to-list (list-ref yomi-seg (+ seg 1))))))
+                (< 0 (length (string-to-list-utf8 (list-ref yomi-seg (+ seg 1))))))
            (let* ((next-str (list-ref yomi-seg (+ seg 1)))
-                  (next-kana-list (reverse (string-to-list next-str)))
+                  (next-kana-list (reverse (string-to-list-utf8 next-str)))
                   (not-edited-head (if (< 0 seg)
                                        (take yomi-seg seg)
                                        '()))
@@ -284,9 +279,9 @@
 (register-action 'action_google-cgiapi-jp_hiragana
 		 (lambda (ggc) ;; indication handler
 		   '(ja_hiragana
-		     "¤¢"
-		     "¤Ò¤é¤¬¤Ê"
-		     "¤Ò¤é¤¬¤ÊÆþÎÏ¥â¡¼¥É"))
+		     "ã‚"
+		     "ã²ã‚‰ãŒãª"
+		     "ã²ã‚‰ãŒãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 
 		 (lambda (ggc) ;; activity predicate
 		   (and (google-cgiapi-jp-context-on ggc)
@@ -303,9 +298,9 @@
 (register-action 'action_google-cgiapi-jp_katakana
 		 (lambda (ggc)
 		   '(ja_katakana
-		     "¥¢"
-		     "¥«¥¿¥«¥Ê"
-		     "¥«¥¿¥«¥ÊÆþÎÏ¥â¡¼¥É"))
+		     "ã‚¢"
+		     "ã‚«ã‚¿ã‚«ãƒŠ"
+		     "ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (and (google-cgiapi-jp-context-on ggc)
 		        (not (google-cgiapi-jp-context-alnum ggc))
@@ -320,9 +315,9 @@
 (register-action 'action_google-cgiapi-jp_halfkana
 		 (lambda (ggc)
 		   '(ja_halfkana
-		     "Ž±"
-		     "È¾³Ñ¥«¥¿¥«¥Ê"
-		     "È¾³Ñ¥«¥¿¥«¥ÊÆþÎÏ¥â¡¼¥É"))
+		     "ï½±"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠ"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (and (google-cgiapi-jp-context-on ggc)
 			(not (google-cgiapi-jp-context-alnum ggc))
@@ -337,8 +332,8 @@
 		 (lambda (ggc) ;; indication handler
 		   '(ja_halfwidth_alnum
 		     "a"
-		     "È¾³Ñ±Ñ¿ô"
-		     "È¾³Ñ±Ñ¿ôÆþÎÏ¥â¡¼¥É"))
+		     "åŠè§’è‹±æ•°"
+		     "åŠè§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc) ;; activity predicate
 		   (and (google-cgiapi-jp-context-on ggc)
 			(google-cgiapi-jp-context-alnum ggc)
@@ -356,8 +351,8 @@
 		 (lambda (ggc)
 		   '(ja_direct
 		     "-"
-		     "Ä¾ÀÜÆþÎÏ"
-		     "Ä¾ÀÜ(ÌµÊÑ´¹)ÆþÎÏ¥â¡¼¥É"))
+		     "ç›´æŽ¥å…¥åŠ›"
+		     "ç›´æŽ¥(ç„¡å¤‰æ›)å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (not (google-cgiapi-jp-context-on ggc)))
 		 (lambda (ggc)
@@ -367,9 +362,9 @@
 (register-action 'action_google-cgiapi-jp_fullwidth_alnum
 		 (lambda (ggc)
 		   '(ja_fullwidth_alnum
-		     "£Á"
-		     "Á´³Ñ±Ñ¿ô"
-		     "Á´³Ñ±Ñ¿ôÆþÎÏ¥â¡¼¥É"))
+		     "ï¼¡"
+		     "å…¨è§’è‹±æ•°"
+		     "å…¨è§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (and (google-cgiapi-jp-context-on ggc)
 			(google-cgiapi-jp-context-alnum ggc)
@@ -386,30 +381,30 @@
 (register-action 'action_google-cgiapi-jp_roma
 		 (lambda (ggc)
 		   '(ja_romaji
-		     "£Ò"
-		     "¥í¡¼¥Þ»ú"
-		     "¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "ï¼²"
+		     "ãƒ­ãƒ¼ãƒžå­—"
+		     "ãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-roma))
 		 (lambda (ggc)
 		   (google-cgiapi-jp-prepare-input-rule-activation ggc)
 		   (rk-context-set-rule! (google-cgiapi-jp-context-rkc ggc)
-					 ja-rk-rule)
+					 ja-rk-rule-utf8)
 		   (google-cgiapi-jp-context-set-input-rule! ggc google-cgiapi-jp-input-rule-roma)))
 
 (register-action 'action_google-cgiapi-jp_kana
 		 (lambda (ggc)
 		   '(ja_kana
-		     "¤«"
-		     "¤«¤Ê"
-		     "¤«¤ÊÆþÎÏ¥â¡¼¥É"))
+		     "ã‹"
+		     "ã‹ãª"
+		     "ã‹ãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-kana))
 		 (lambda (ggc)
 		   (google-cgiapi-jp-prepare-input-rule-activation ggc)
-                   (require "japanese-kana.scm")
+                   (require "japanese-kana-utf8.scm")
 		   (google-cgiapi-jp-context-set-input-rule! ggc google-cgiapi-jp-input-rule-kana)
                    (google-cgiapi-jp-context-change-kana-mode!
                      ggc (google-cgiapi-jp-context-kana-mode ggc))
@@ -418,49 +413,49 @@
 (register-action 'action_google-cgiapi-jp_azik
 		 (lambda (ggc)
 		   '(ja_azik
-		     "£Ú"
+		     "ï¼º"
 		     "AZIK"
-		     "AZIK³ÈÄ¥¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "AZIKæ‹¡å¼µãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-azik))
 		 (lambda (ggc)
 		   (google-cgiapi-jp-prepare-input-rule-activation ggc)
-                   (require "japanese-azik.scm")
+                   (require "japanese-azik-utf8.scm")
 		   (rk-context-set-rule! (google-cgiapi-jp-context-rkc ggc)
-					 ja-azik-rule)
+					 ja-azik-rule-utf8)
 		   (google-cgiapi-jp-context-set-input-rule! ggc google-cgiapi-jp-input-rule-azik)))
 
 (register-action 'action_google-cgiapi-jp_kzik
 		 (lambda (ggc)
 		   '(ja_kzik
-		     "£Ë"
+		     "ï¼«"
 		     "KZIK"
-		     "KZIK³ÈÄ¥¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "KZIKæ‹¡å¼µãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-kzik))
 		 (lambda (ggc)
 		   (google-cgiapi-jp-prepare-input-rule-activation ggc)
-                   (require "japanese-kzik.scm")
+                   (require "japanese-kzik-utf8.scm")
 		   (rk-context-set-rule! (google-cgiapi-jp-context-rkc ggc)
-					 ja-kzik-rule)
+					 ja-kzik-rule-utf8)
 		   (google-cgiapi-jp-context-set-input-rule! ggc google-cgiapi-jp-input-rule-kzik)))
 
 (register-action 'action_google-cgiapi-jp_act
 		 (lambda (ggc)
 		   '(ja_act
-		     "£Ã"
+		     "ï¼£"
 		     "ACT"
-		     "ACT³ÈÄ¥¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "ACTæ‹¡å¼µãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-act))
 		 (lambda (ggc)
 		   (google-cgiapi-jp-prepare-input-rule-activation ggc)
-                   (require "japanese-act.scm")
+                   (require "japanese-act-utf8.scm")
 		   (rk-context-set-rule! (google-cgiapi-jp-context-rkc ggc)
-					 ja-act-rule)
+					 ja-act-rule-utf8)
 		   (google-cgiapi-jp-context-set-input-rule! ggc google-cgiapi-jp-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
@@ -507,7 +502,7 @@
 
 (define (google-cgiapi-jp-context-new id im)
   (let ((ggc (google-cgiapi-jp-context-new-internal id im))
-	(rkc (rk-context-new ja-rk-rule #t #f)))
+	(rkc (rk-context-new ja-rk-rule-utf8 #t #f)))
 ;    (google-cgiapi-jp-context-set-ggx-ctx! ggc (if google-cgiapi-jp-init-lib-ok?
 ;				      (google-cgiapi-jp-lib-alloc-context) ()))
     (google-cgiapi-jp-context-set-ggx-ctx! ggc (google-cgiapi-jp-lib-alloc-context))
@@ -544,9 +539,9 @@
         (rk-context-set-rule!
 	 (google-cgiapi-jp-context-rkc ggc)
 	 (cond
-	  ((= kana-mode google-cgiapi-jp-type-hiragana) ja-kana-hiragana-rule)
-	  ((= kana-mode google-cgiapi-jp-type-katakana) ja-kana-katakana-rule)
-	  ((= kana-mode google-cgiapi-jp-type-halfkana) ja-kana-halfkana-rule))))
+	  ((= kana-mode google-cgiapi-jp-type-hiragana) ja-kana-hiragana-rule-utf8)
+	  ((= kana-mode google-cgiapi-jp-type-katakana) ja-kana-katakana-rule-utf8)
+	  ((= kana-mode google-cgiapi-jp-type-halfkana) ja-kana-halfkana-rule-utf8))))
     (google-cgiapi-jp-context-set-kana-mode! ggc kana-mode)))
 
 (define google-cgiapi-jp-make-whole-string
@@ -563,8 +558,8 @@
 
       (if (= rule google-cgiapi-jp-input-rule-kana)
 	  (ja-make-kana-str
-	   (ja-make-kana-str-list
-	    (string-to-list
+	   (ja-make-kana-str-list-utf8
+	    (string-to-list-utf8
 	     (string-append
 	      (string-append-map-ustr-former extract-kana preconv-str)
 	      (if convert-pending-into-kana?
@@ -592,13 +587,13 @@
     (if (not (null? raw-str-list))
 	(if wide?
 	    (string-append
-	     (ja-string-list-to-wide-alphabet
+	     (ja-string-list-to-wide-alphabet-utf8
 	      (if upper?
 		  (map charcode->string
 		       (map ichar-upcase
 			    (map string->charcode
-				 (string-to-list (car raw-str-list)))))
-		  (string-to-list (car raw-str-list))))
+				 (string-to-list-utf8 (car raw-str-list)))))
+		  (string-to-list-utf8 (car raw-str-list))))
 	     (google-cgiapi-jp-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
 	     (if upper?
@@ -606,7 +601,7 @@
 		  (map charcode->string
 		       (map ichar-upcase
 			    (map string->charcode
-				 (string-to-list (car raw-str-list))))))
+				 (string-to-list-utf8 (car raw-str-list))))))
 		 (car raw-str-list))
 	     (google-cgiapi-jp-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
@@ -811,10 +806,10 @@
      ((google-cgiapi-jp-space-key? key key-state)
       (if (google-cgiapi-jp-context-alnum ggc)
 	  (im-commit ggc (list-ref
-			 ja-alnum-space
+			 ja-alnum-space-utf8
 			 (- (google-cgiapi-jp-context-alnum-type ggc)
 			    google-cgiapi-jp-type-halfwidth-alnum)))
-	  (im-commit ggc (list-ref ja-space (google-cgiapi-jp-context-kana-mode ggc)))))
+	  (im-commit ggc (list-ref ja-space-utf8 (google-cgiapi-jp-context-kana-mode ggc)))))
 
      ((symbol? key)
       (google-cgiapi-jp-commit-raw ggc))
@@ -826,8 +821,8 @@
 			       (if (= (google-cgiapi-jp-context-alnum-type ggc)
 				      google-cgiapi-jp-type-halfwidth-alnum)
 			       (list key-str key-str key-str)
-			       (list (ja-wide key-str) (ja-wide key-str)
-				     (ja-wide key-str))))
+			       (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
+				     (ja-wide-utf8 key-str))))
 	    (ustr-insert-elem! (google-cgiapi-jp-context-raw-ustr ggc) key-str))
 	  (let* ((key-str (charcode->string
 		           (if (= rule google-cgiapi-jp-input-rule-kana)
@@ -1128,7 +1123,7 @@
     (and
       str
       google-cgiapi-jp-auto-start-henkan?
-      (string-find japanese-auto-start-henkan-keyword-list str)
+      (string-find japanese-auto-start-henkan-keyword-list-utf8 str)
       (begin
 	(google-cgiapi-jp-reset-prediction-window ggc)
 	(google-cgiapi-jp-begin-conv ggc))))
@@ -1179,14 +1174,14 @@
       (ustr-clear-former! preconv-str)
       (ustr-clear-former! raw-str))
        
-     ;; ¸½ºß¤È¤ÏµÕ¤Î¤«¤Ê¥â¡¼¥É¤Ç¤«¤Ê¤ò³ÎÄê¤¹¤ë
+     ;; ç¾åœ¨ã¨ã¯é€†ã®ã‹ãªãƒ¢ãƒ¼ãƒ‰ã§ã‹ãªã‚’ç¢ºå®šã™ã‚‹
      ((and
        (not (google-cgiapi-jp-context-alnum ggc))
        (google-cgiapi-jp-commit-as-opposite-kana-key? key key-state))
       (im-commit ggc (google-cgiapi-jp-make-whole-string ggc #t (ja-opposite-kana kana)))
       (google-cgiapi-jp-flush ggc))
 
-     ;; Transposing¾õÂÖ¤Ø°Ü¹Ô
+     ;; TransposingçŠ¶æ…‹ã¸ç§»è¡Œ
      ((or (google-cgiapi-jp-transpose-as-hiragana-key? key key-state)
 	  (google-cgiapi-jp-transpose-as-katakana-key? key key-state)
 	  (google-cgiapi-jp-transpose-as-halfkana-key? key key-state)
@@ -1307,7 +1302,7 @@
                     (begin
                       (ustr-insert-seq! preconv-str residual-kana)
                       (ustr-insert-elem! raw-str (reverse
-                                                   (string-to-list pend))))
+                                                   (string-to-list-utf8 pend))))
                     (begin
                       (ustr-insert-elem! preconv-str residual-kana)
                       (ustr-insert-elem! raw-str pend)))))
@@ -1315,8 +1310,8 @@
 			       (if (= (google-cgiapi-jp-context-alnum-type ggc)
 				      google-cgiapi-jp-type-halfwidth-alnum)
 				   (list key-str key-str key-str)
-				   (list (ja-wide key-str) (ja-wide key-str)
-					 (ja-wide key-str))))
+				   (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
+					 (ja-wide-utf8 key-str))))
 	    (ustr-insert-elem! raw-str key-str)
 	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
@@ -1335,7 +1330,7 @@
 	          (if (and next-pend
 		           (not (string=? next-pend "")))
 		      (ustr-insert-seq! raw-str
-                                        (reverse (string-to-list pend)))
+                                        (reverse (string-to-list-utf8 pend)))
 		      (if (list? (car res))
 		          (begin
                             (if (member pend
@@ -1345,7 +1340,7 @@
                               ;; charactear as one raw-str in this case
                               (ustr-insert-elem! raw-str pend)
                               (ustr-insert-elem! raw-str (reverse
-                                                           (string-to-list
+                                                           (string-to-list-utf8
                                                              pend))))
                             ;; assume key-str as a vowel
 			    (ustr-insert-elem! raw-str key-str))
@@ -1459,7 +1454,7 @@
      (append left-str
 	     (if residual-kana
                (if (list? (car residual-kana))
-                 (reverse (string-to-list pending))
+                 (reverse (string-to-list-utf8 pending))
 		 (list pending))
                '())
 	      right-str))))
@@ -1467,20 +1462,20 @@
 (define google-cgiapi-jp-get-raw-candidate
   (lambda (ggc seg-idx cand-idx)
     (let* ((preconv
-	    (ja-join-vu (string-to-list
+	    (ja-join-vu-utf8 (string-to-list-utf8
 			 (google-cgiapi-jp-make-whole-string ggc #t google-cgiapi-jp-type-hiragana))))
 	   (unconv-candidate (google-cgiapi-jp-lib-get-unconv-candidate ggc seg-idx))
 	   (unconv (if unconv-candidate
-		       (ja-join-vu (string-to-list unconv-candidate))
+		       (ja-join-vu-utf8 (string-to-list-utf8 unconv-candidate))
 		       '()))
 	   (raw-str (reverse (google-cgiapi-jp-get-raw-str-seq ggc))))
       (cond
        ((= cand-idx google-cgiapi-jp-candidate-type-hiragana)
 	(string-list-concat unconv))
        ((= cand-idx google-cgiapi-jp-candidate-type-katakana)
-	(ja-make-kana-str (ja-make-kana-str-list unconv) google-cgiapi-jp-type-katakana))
+	(ja-make-kana-str (ja-make-kana-str-list-utf8 unconv) google-cgiapi-jp-type-katakana))
        ((= cand-idx google-cgiapi-jp-candidate-type-halfkana)
-	(ja-make-kana-str (ja-make-kana-str-list unconv) google-cgiapi-jp-type-halfkana))
+	(ja-make-kana-str (ja-make-kana-str-list-utf8 unconv) google-cgiapi-jp-type-halfkana))
        (else
 	(if (not (null? unconv))
 	    (if (member (car unconv) preconv)
@@ -1877,7 +1872,7 @@
 (register-im
  'google-cgiapi-jp
  "ja"
- "EUC-JP"
+ "UTF-8"
  google-cgiapi-jp-im-name-label
  google-cgiapi-jp-im-short-desc
  #f

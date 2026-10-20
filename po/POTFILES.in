@@ -51,6 +51,7 @@ scm/generic-custom.scm
 scm/generic-key-custom.scm
 scm/generic-predict.scm
 scm/generic.scm
+scm/google-cgiapi-jp-custom.scm
 scm/google-cgiapi-jp-key-custom.scm
 scm/hangul.scm
 scm/http-client.scm
