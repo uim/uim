@@ -373,6 +373,9 @@ uim_candidates_view_class_init(UIMCandidatesViewClass *klass)
                                         G_TYPE_NONE,
                                         0);
 
+  /* Emitted instead of shifting the page when the "<"/">" buttons are
+   * clicked; the listener shifts the page. forward is TRUE for ">",
+   * FALSE for "<". */
   signals[SHIFT_PAGE_REQUESTED] = g_signal_new("shift-page-requested",
                                                G_TYPE_FROM_CLASS(klass),
                                                G_SIGNAL_RUN_LAST,
