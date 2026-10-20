@@ -15,6 +15,7 @@ RUN \
     perl \
     pkgconf \
     ruby \
+    ruby-test-unit \
     sudo \
     tzdata
 

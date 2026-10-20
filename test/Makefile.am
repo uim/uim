@@ -46,6 +46,10 @@ TESTS = $(uim_tests) $(uim_optional_tests)
 XFAIL_TESTS = $(uim_xfail_tests)
 endif
 
-EXTRA_DIST = run.sh.in $(uim_tests) meson.build
+EXTRA_DIST = run.sh.in $(uim_tests) meson.build \
+	im/im-driver.c \
+	im/im-driver.rb \
+	im/run.rb \
+	im/test-google-cgiapi-jp.rb
 
 DISTCLEANFILES = run.sh
