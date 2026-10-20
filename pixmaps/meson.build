@@ -80,7 +80,6 @@ im_subst_names = [
   'look',
   'scim',
   'google-cgiapi-jp',
-  'baidu-olime-jp',
 ]
 # [copy, original]
 copies = [

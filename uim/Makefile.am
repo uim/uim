@@ -214,7 +214,7 @@ libuim_lolevel_la_CPPFLAGS = $(AM_CPPFLAGS)
 libuimincludedir =  $(includedir)/uim
 
 libuim_scm_la_SOURCES = uim-scm-sigscheme.c
-libuim_scm_la_LIBADD = $(BDWGC_LIBS) $(GCROOTS_LIBS)
+libuim_scm_la_LIBADD = $(BDWGC_LIBS) $(GCROOTS_LIBS) $(LIBM)
 libuim_scm_la_LDFLAGS = -version-info $(libuim_scm_version) -export-dynamic
 libuim_scm_la_CPPFLAGS = $(AM_CPPFLAGS) \
 			 -I$(top_builddir)/subprojects/sigscheme/include \
