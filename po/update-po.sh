@@ -5,12 +5,6 @@
 #
 # Generates uim.pot in BUILD_DIR, and updates the .po files in
 # SOURCE_DIR with it for update-po. Both Meson and Autotools use this.
-#
-# xgettext accepts a single --from-code per run, but some scm/*.scm
-# files are still EUC-JP. Those are listed in POTFILES.eucjp.in and
-# extracted separately into eucjp.pot, which is then fed into the main
-# UTF-8 run as an additional input. Remove all of this once every
-# source file is UTF-8.
 
 set -eu
 
@@ -38,14 +32,9 @@ xgettext_run() {
 }
 
 xgettext_run \
-  --from-code=EUC-JP \
-  --files-from="${source_dir}/po/POTFILES.eucjp.in" \
-  --output="${build_dir}/eucjp.pot"
-xgettext_run \
   --from-code=UTF-8 \
   --files-from="${source_dir}/po/POTFILES.in" \
-  --output="${build_dir}/uim.pot" \
-  "${build_dir}/eucjp.pot"
+  --output="${build_dir}/uim.pot"
 
 if [ "${command}" = "update-po" ]; then
   for lang in $(sed -e '/^#/d' "${source_dir}/po/LINGUAS"); do

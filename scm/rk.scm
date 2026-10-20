@@ -228,9 +228,9 @@
 
 
 ; Merges two strings that have been converted, for example
-; ("¤ó" "¥ó" "¡¡") ("1" "1" "1") --> ("¤ó1" "¥ó1" "¡¡1").
+; ("ã‚“" "ãƒ³" "ã€€") ("1" "1" "1") --> ("ã‚“1" "ãƒ³1" "ã€€1").
 ; SEQ1 and SEQ2 must be proper lists having the same length.
-; A disgusting hack for implementing ("n" "1") --> ("¤ó1").
+; A disgusting hack for implementing ("n" "1") --> ("ã‚“1").
 ; Anyone with the time, skill and passion, please clean this up :-(
 (define rk-merge-seqs
   (lambda (seq1 seq2)
@@ -344,7 +344,7 @@
            (cadr rule-entry)))))
 
 ;; API
-;;Ä¶Å¬Åö¡£rk.scm¤òÍı²ò¤¹¤ë¤«¡¢¤¢¤È¤Ç¤´¤Ã¤½¤êÀß·×¤·¤Ê¤ª¤¹»ö¡£
+;;è¶…é©å½“ã€‚rk.scmã‚’ç†è§£ã™ã‚‹ã‹ã€ã‚ã¨ã§ã”ã£ãã‚Šè¨­è¨ˆã—ãªãŠã™äº‹ã€‚
 ;;
 ;; The procedure name is confusable. I suggest rk-terminate-input!
 ;;  -- YamaKen 2004-10-25
