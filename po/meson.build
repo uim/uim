@@ -1,9 +1,8 @@
 i18n = import('i18n')
 
 # For the .mo files. Don't use the uim-pot and uim-update-po targets
-# that this defines: they can't extract the messages in the EUC-JP
-# sources, so the .po files lose their translations. Use the pot and
-# update-po targets below instead.
+# that this defines. Use the pot and update-po targets below, which
+# share update-po.sh with Autotools, instead.
 i18n.gettext(meson.project_name(), install: true)
 
 xgettext = find_program('xgettext', required: false)
