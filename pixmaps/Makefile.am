@@ -103,7 +103,7 @@ NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png
 SCIM_PNGS = scim-anthy.png scim-canna.png \
 	    scim-skk.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png
-if ANTHY_UTF8
+if ANTHY_PLUGIN
 SCIM_ORIGINATED_PNGS += anthy-utf8.png
 endif
 

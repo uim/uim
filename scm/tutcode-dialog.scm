@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;

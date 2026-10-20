@@ -83,18 +83,13 @@ libuim_c_args = [
 ]
 libuim_dependencies = [dl, socket, iconv, intl]
 # Anthy can be built into libuim instead of a plugin.
-# [plugin, dependency, static option, macro]
-anthy_definitions = [
-  ['anthy', anthy, 'anthy_static', 'ENABLE_ANTHY_STATIC'],
-  ['anthy-utf8', anthy_utf8, 'anthy_utf8_static', 'ENABLE_ANTHY_UTF8_STATIC'],
-]
-foreach definition : anthy_definitions
-  if definition[1].found() and get_option(definition[2])
-    libuim_sources += files(definition[0] + '.c')
-    libuim_c_args += ['-D' + definition[3]]
-    libuim_dependencies += [definition[1]]
-  endif
-endforeach
+anthy_static = (anthy_plugin.found() and
+                (get_option('anthy_static') or get_option('anthy_utf8_static')))
+if anthy_static
+  libuim_sources += files('anthy.c')
+  libuim_c_args += ['-DENABLE_ANTHY_STATIC']
+  libuim_dependencies += [anthy_plugin]
+endif
 libuim = library('uim',
                  libuim_sources,
                  c_args: uim_c_args + uim_defs + libuim_c_args,
@@ -150,14 +145,10 @@ if get_option('skk')
     ['skk', ['skk.c'], [libuim_bsdlook], net_libraries],
   ]
 endif
-foreach definition : anthy_definitions
-  if definition[1].found() and not get_option(definition[2])
-    plugin_definitions += [
-      [definition[0], [definition[0] + '.c'], [], [definition[1]]],
-    ]
-  endif
-  optional_plugins += {definition[0]: definition[1].found()}
-endforeach
+if anthy_plugin.found() and not anthy_static
+  plugin_definitions += [['anthy', ['anthy.c'], [], [anthy_plugin]]]
+endif
+optional_plugins += {'anthy': anthy_plugin.found()}
 if have_xkb
   plugin_definitions += [['xkb', ['uim-xkb.c'], [libuim_x_util], [x11]]]
 endif
