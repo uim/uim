@@ -34,15 +34,21 @@ require_relative "im-driver"
 # These tests use the real libanthy and its dictionary. They check the
 # first candidates only because the other candidates depend on the
 # version of the dictionary.
-class AnthyUTF8Test < Test::Unit::TestCase
+#
+# anthy and anthy-utf8 are the same input method except their names and
+# actions. So they share these tests.
+module AnthyTests
   include IMDriver::PreeditAttribute
 
   def setup
-    omit("anthy-utf8 isn't enabled") unless IMDriver.available?("anthy-utf8")
-    # libanthy writes what it learns to $XDG_CONFIG_HOME/anthy/.
+    omit("#{im} isn't enabled") unless IMDriver.available?(im)
+    # libanthy writes what it learns to $XDG_CONFIG_HOME/anthy/. Old
+    # libanthy writes it to ~/.anthy/ of the user regardless of $HOME.
+    # So tests must not commit a candidate that changes what other tests
+    # convert.
     Dir.mktmpdir do |config_home|
-      @driver = IMDriver.new("anthy-utf8",
-                             "(require-module \"anthy-utf8\")",
+      @driver = IMDriver.new(im,
+                             "(require-module \"#{im}\")",
                              env: {"XDG_CONFIG_HOME" => config_home})
       begin
         @driver.start
@@ -62,17 +68,17 @@ class AnthyUTF8Test < Test::Unit::TestCase
   end
 
   def test_convert
-    @driver.type("kanji")
+    @driver.type("henkan")
     @driver.press("space")
-    assert_equal([[REVERSE | CURSOR, "漢字"]],
+    assert_equal([[REVERSE | CURSOR, "変換"]],
                  @driver.preedit)
   end
 
   def test_next_candidate
-    @driver.type("kanji")
+    @driver.type("henkan")
     @driver.press("space", "space")
     assert_equal([
-                   "漢字",
+                   "変換",
                    1,
                    [[REVERSE | CURSOR, @driver.candidates[1]]],
                  ],
@@ -84,7 +90,7 @@ class AnthyUTF8Test < Test::Unit::TestCase
   end
 
   def test_commit
-    @driver.type("kanji")
+    @driver.type("nyuuryoku")
     @driver.press("space", "space")
     candidate = @driver.candidates[1]
     @driver.press("return")
@@ -117,27 +123,33 @@ class AnthyUTF8Test < Test::Unit::TestCase
                  @driver.preedit)
   end
 
-  data("hiragana" => ["f6", "かんじ"],
-       "katakana" => ["f7", "カンジ"],
-       "halfwidth katakana" => ["f8", "ｶﾝｼﾞ"],
-       "fullwidth alphanumeric" => ["f9", "ｋａｎｊｉ"],
-       "halfwidth alphanumeric" => ["f10", "kanji"])
-  def test_transpose(data)
-    key, expected = data
-    @driver.type("kanji")
-    @driver.press(key, "return")
-    assert_equal([expected], @driver.commits)
+  def test_transpose
+    [
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+    ].each do |key|
+      @driver.type("aiu")
+      @driver.press(key, "return")
+    end
+    assert_equal(["あいう", "アイウ", "ｱｲｳ", "ａｉｕ", "aiu"],
+                 @driver.commits)
   end
 
-  data("katakana" => ["S-f7", "カナ"],
-       "halfwidth katakana" => ["S-f8", "ｶﾅ"],
-       "fullwidth alphanumeric" => ["S-f9", "ｋａｎａ"])
-  def test_mode(data)
-    key, expected = data
-    @driver.press(key)
-    @driver.type("kana")
-    @driver.press("return")
-    assert_equal([expected], @driver.commits)
+  def test_mode
+    [
+      "S-f7",
+      "S-f8",
+      "S-f9",
+    ].each do |key|
+      @driver.press(key)
+      @driver.type("kana")
+      @driver.press("return")
+    end
+    assert_equal(["カナ", "ｶﾅ", "ｋａｎａ"],
+                 @driver.commits)
   end
 
   def test_fullwidth_symbols
@@ -153,15 +165,34 @@ class AnthyUTF8Test < Test::Unit::TestCase
     assert_equal(["う゛っん、。"], @driver.commits)
   end
 
-  data("kana" => ["kana", "ti3", "かにあ"],
-       "AZIK" => ["azik", "kzkq", "かんかい"],
-       "KZIK" => ["kzik", "kzkq", "かんかい"],
-       "ACT" => ["act", "kanji", "うんあねんい"])
-  def test_input_rule(data)
-    rule, keys, expected = data
-    @driver.activate("action_anthy_utf8_#{rule}")
-    @driver.type(keys)
-    @driver.press("return")
-    assert_equal([expected], @driver.commits)
+  def test_input_rule
+    [
+      ["kana", "ti3"],
+      ["azik", "kzkq"],
+      ["kzik", "kzkq"],
+      ["act", "kanji"],
+    ].each do |rule, keys|
+      @driver.activate("action_#{im.tr("-", "_")}_#{rule}")
+      @driver.type(keys)
+      @driver.press("return")
+    end
+    assert_equal(["かにあ", "かんかい", "かんかい", "うんあねんい"],
+                 @driver.commits)
+  end
+end
+
+class AnthyTest < Test::Unit::TestCase
+  include AnthyTests
+
+  def im
+    "anthy"
+  end
+end
+
+class AnthyUTF8Test < Test::Unit::TestCase
+  include AnthyTests
+
+  def im
+    "anthy-utf8"
   end
 end

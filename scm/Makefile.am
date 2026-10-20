@@ -62,11 +62,8 @@ EXTRA_DIST = meson.build
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 
 module_names =
-if ANTHY
-  module_names += "anthy"
-endif
-if ANTHY_UTF8
-  module_names += "anthy-utf8"
+if ANTHY_PLUGIN
+  module_names += "anthy" "anthy-utf8"
 endif
 if CANNA
   module_names += "canna"

@@ -92,27 +92,15 @@ if M17NLIB
   libuim_m17nlib_la_CPPFLAGS = $(AM_CPPFLAGS) @M17NLIB_CFLAGS@
 endif
 
-if ANTHY
+if ANTHY_PLUGIN
 if ENABLE_ANTHY_STATIC
   libuim_la_SOURCES += anthy.c
 else
   uimplugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
-  libuim_anthy_la_LIBADD = @ANTHY_LIBS@ libuim-scm.la libuim.la
+  libuim_anthy_la_LIBADD = @ANTHY_PLUGIN_LIBS@ libuim-scm.la libuim.la
   libuim_anthy_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-  libuim_anthy_la_CPPFLAGS = $(AM_CPPFLAGS)
-endif
-endif
-
-if ANTHY_UTF8
-if ENABLE_ANTHY_UTF8_STATIC
-  libuim_la_SOURCES += anthy-utf8.c
-else
-  uimplugin_LTLIBRARIES += libuim-anthy-utf8.la
-  libuim_anthy_utf8_la_SOURCES = anthy-utf8.c
-  libuim_anthy_utf8_la_LIBADD = @ANTHY_UTF8_LIBS@ libuim-scm.la libuim.la
-  libuim_anthy_utf8_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
-  libuim_anthy_utf8_la_CPPFLAGS = $(AM_CPPFLAGS) @ANTHY_UTF8_CFLAGS@
+  libuim_anthy_la_CPPFLAGS = $(AM_CPPFLAGS) @ANTHY_PLUGIN_CFLAGS@
 endif
 endif
 
@@ -253,12 +241,8 @@ libuim_la_CPPFLAGS = $(uim_defs) \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 
 if ENABLE_ANTHY_STATIC
-  libuim_la_LIBADD += @ANTHY_LIBS@
-  libuim_la_CPPFLAGS += -DENABLE_ANTHY_STATIC
-endif
-if ENABLE_ANTHY_UTF8_STATIC
-  libuim_la_LIBADD += @ANTHY_LIBS@
-  libuim_la_CPPFLAGS += -DENABLE_ANTHY_UTF8_STATIC
+  libuim_la_LIBADD += @ANTHY_PLUGIN_LIBS@
+  libuim_la_CPPFLAGS += -DENABLE_ANTHY_STATIC @ANTHY_PLUGIN_CFLAGS@
 endif
 if DEBUG
   libuim_la_CPPFLAGS += -DDEBUG=1 -DDEBUG_SCM=1

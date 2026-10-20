@@ -42,14 +42,6 @@
 
 ;;; implementations
 
-;; The plugin doesn't set the encoding of its Anthy context and assumes
-;; EUC-JP. It doesn't work with Anthy 0.4 that uses UTF-8 by default.
-;; See #477.
-(define (anthy-to-euc-jp str)
-  (iconv-convert "EUC-JP" "UTF-8" str))
-(define (anthy-from-euc-jp str)
-  (iconv-convert "UTF-8" "EUC-JP" str))
-
 (define anthy-lib-initialized? #f)
 (define anthy-version #f)
 
@@ -590,7 +582,7 @@
 	       (> (string-length preconv-str)
 		  0))
 	  (begin
-	    (anthy-lib-set-string ac-id (anthy-to-euc-jp preconv-str))
+	    (anthy-lib-set-string ac-id preconv-str)
 	    (let ((nr-segments (anthy-lib-get-nr-segments ac-id)))
 	      (ustr-set-latter-seq! (anthy-context-segments ac)
 				    (make-list nr-segments 0))
@@ -806,7 +798,7 @@
                (> (string-length preconv-str) 0)
                type)
         (begin
-          (anthy-lib-set-string ac-id (anthy-to-euc-jp preconv-str))
+          (anthy-lib-set-string ac-id preconv-str)
           (expand-segment)
           (anthy-lib-commit-segment ac-id 0 type))))))
 
@@ -1393,7 +1385,7 @@
 	       (>= preedit-len anthy-prediction-start-char-count)
 	       force-check?)
 	      (begin
-		(anthy-lib-set-prediction-src-string ac-id (anthy-to-euc-jp preconv-str))
+		(anthy-lib-set-prediction-src-string ac-id preconv-str)
 		(let ((nr (anthy-lib-get-nr-predictions ac-id)))
 		  (if (and
 		       nr
@@ -1469,7 +1461,7 @@
     (let* ((preconv
 	    (ja-join-vu (string-to-list
 			 (anthy-make-whole-string ac #t anthy-type-hiragana))))
-	   (unconv-candidate (anthy-from-euc-jp (anthy-lib-get-unconv-candidate ac-id seg-idx)))
+	   (unconv-candidate (anthy-lib-get-unconv-candidate ac-id seg-idx))
 	   (unconv (if unconv-candidate
 		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
@@ -1520,7 +1512,7 @@
 				       preedit-cursor)
 			  preedit-underline))
 		(cand (if (> cand-idx anthy-candidate-type-halfwidth-alnum)
-			  (anthy-from-euc-jp (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
+			  (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx)
 			  (anthy-get-raw-candidate ac ac-id seg-idx cand-idx)))
 		(seg (list (cons attr cand))))
 	   (if (and separator
@@ -1562,8 +1554,8 @@
       (string-append-map (lambda (seg-idx cand-idx)
 			   (if (> cand-idx
 				  anthy-candidate-type-halfwidth-alnum)
-			       (anthy-from-euc-jp (anthy-lib-get-nth-candidate
-				ac-id seg-idx cand-idx))
+			       (anthy-lib-get-nth-candidate
+				ac-id seg-idx cand-idx)
 			       (anthy-get-raw-candidate
 				ac ac-id seg-idx cand-idx)))
 			 (iota (ustr-length segments))
@@ -1589,8 +1581,8 @@
 (define anthy-get-prediction-string
   (lambda (ac)
     (let ((ac-id (anthy-context-ac-id ac)))
-      (anthy-from-euc-jp (anthy-lib-get-nth-prediction
-       ac-id (anthy-context-prediction-index ac))))))
+      (anthy-lib-get-nth-prediction
+       ac-id (anthy-context-prediction-index ac)))))
 
 (define anthy-learn-prediction-string
   (lambda (ac)
@@ -1888,8 +1880,8 @@
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
 	   (cand (if (anthy-context-converting ac)
-	             (anthy-from-euc-jp (anthy-lib-get-nth-candidate ac-id cur-seg idx))
-	             (anthy-from-euc-jp (anthy-lib-get-nth-prediction ac-id idx)))))
+	             (anthy-lib-get-nth-candidate ac-id cur-seg idx)
+	             (anthy-lib-get-nth-prediction ac-id idx))))
       (list cand (digit->string (+ idx 1)) ""))))
 
 (define anthy-set-candidate-index-handler

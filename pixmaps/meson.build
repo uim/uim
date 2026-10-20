@@ -89,7 +89,7 @@ copies = [
   ['canna.png', 'scim-canna.png'],
   ['uim-icon.png', 'uim-icon48.png'],
 ]
-if anthy_utf8.found()
+if anthy_plugin.found()
   copies += [['anthy-utf8.png', 'scim-anthy.png']]
 endif
 foreach name : im_subst_names

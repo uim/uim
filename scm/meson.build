@@ -124,11 +124,8 @@ install_data(scm_files, install_dir: pkgdatadir)
 # The order is the preference order at the default input method
 # selection for each language.
 module_names = []
-if anthy.found()
-  module_names += ['anthy']
-endif
-if anthy_utf8.found()
-  module_names += ['anthy-utf8']
+if anthy_plugin.found()
+  module_names += ['anthy', 'anthy-utf8']
 endif
 # Canna is used through cannaserver, so it needs no plugin.
 if get_option('canna')
