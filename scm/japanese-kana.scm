@@ -933,3 +933,9 @@
     ((("｢"). ())("｢"))
     ((("｣"). ())("｣"))
     ))
+
+;; Deprecated: The names with the "-utf8" suffix are for compatibility.
+
+(define ja-kana-hiragana-rule-utf8 ja-kana-hiragana-rule)
+(define ja-kana-katakana-rule-utf8 ja-kana-katakana-rule)
+(define ja-kana-halfkana-rule-utf8 ja-kana-halfkana-rule)

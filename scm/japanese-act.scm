@@ -702,4 +702,7 @@
 (define ja-act-skk-downcase-alist (alist->icharlist '(("\"" . "'") (":" . ";"))))
 (define ja-act-skk-set-henkan-point-key (map string->charcode '("'" ";" "q" "j" "k" "x")))
 
+;; Deprecated: The names with the "-utf8" suffix are for compatibility.
 
+(define ja-act-rule-basic-utf8 ja-act-rule-basic)
+(define ja-act-rule-utf8 ja-act-rule)

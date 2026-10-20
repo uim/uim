@@ -532,3 +532,8 @@
 (define ja-azik-skk-okuri-char-alist '((";" . "t")))
 (define ja-azik-skk-downcase-alist (alist->icharlist '(("+" . ";"))))
 (define ja-azik-skk-set-henkan-point-key (map string->charcode '(";")))
+
+;; Deprecated: The names with the "-utf8" suffix are for compatibility.
+
+(define ja-azik-rule-basic-utf8 ja-azik-rule-basic)
+(define ja-azik-rule-utf8 ja-azik-rule)
