@@ -43,9 +43,7 @@
                    (list-ref hex (modulo x 16))))
   (apply
    string-append
-   (map (lambda (c)
-          (hex-format2 (char->integer c)))
-        (string->list str))))
+   (map hex-format2 (string->byte-list str))))
 
 (define (http:read-chunk port)
   (define (hex-decode str)
@@ -74,9 +72,11 @@
     (let ((len (guard (err
                        (else #f))
                       (hex-decode len-str))))
+      ;; A character may be split into chunks. So they are decoded at
+      ;; once.
       (if (or (not len) (= len 0))
-          (apply string-append (reverse rest))
-          (let ((buf (file-read-buffer port len)))
+          (file-buf->string (apply append (reverse rest)))
+          (let ((buf (map (lambda (i) (file-read-char port)) (iota len))))
             (file-read-line port) ;; blank
             (loop (http:drop-cr (file-read-line port)) (cons buf rest)))))))
 

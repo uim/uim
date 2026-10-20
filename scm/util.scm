@@ -287,6 +287,30 @@
                      (load path)
                      #t))))
 
+;; Strings are UTF-8. Data such as files and sockets are bytes, which
+;; may be in another encoding such as EUC-JP. They are converted
+;; without the current character codec.
+(define (string->byte-list str)
+  (with-char-codec "ISO-8859-1"
+    (lambda ()
+      (let ((bytes (string-copy str)))
+        (%%string-reconstruct! bytes)
+        (map char->integer (string->list bytes))))))
+
+(define (byte-list->string bytes)
+  (let ((str (with-char-codec "ISO-8859-1"
+               (lambda ()
+                 (list->string (map integer->char bytes))))))
+    (%%string-reconstruct! str)
+    str))
+
+;; Files written by users such as ~/.uim may be in EUC-JP, the
+;; encoding that uim used internally.
+(define (try-load-user-file file)
+  (with-load-fallback-encodings '("EUC-JP")
+    (lambda ()
+      (try-load file))))
+
 ;; returns succeeded or not
 (define try-require
   (lambda (file)

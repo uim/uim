@@ -52,7 +52,7 @@
 
 (define (canna-lib-initialize socket user)
   (let* ((canna-var&user (canna-var&user-fmt user))
-         (canna-var&user-len (+ 1 (string-length canna-var&user))))
+         (canna-var&user-len (+ 1 (length (string->byte-list canna-var&user)))))
     (file-write socket
                 (u8list->string-buf
                  (u8list-pack '(u32 u32 s8)
@@ -139,7 +139,7 @@
                (u8list-pack '(u8 u8 u16 u32 u16 s16)
                             canna-lib-begin-convert-op
                             0
-                            (+ (string-length yomi) 8)
+                            (+ (length (string->byte-list yomi)) 8)
                             mode context-id yomi)))
   (call-with-u8list-unpack
    '(u16 u16 u16) (string-buf->u8list (file-read socket 6))
@@ -213,7 +213,8 @@
             (if (equal? s16list '(0 0))
                 (reverse rest)
                 (let ((s16 (u8list-unpack '(s16) s16list)))
-                  (loop (drop s16list (+ 2 (string-length (car s16))))
+                  (loop (drop s16list
+                              (+ 2 (length (string->byte-list (car s16)))))
                         (cons (car s16) rest)))))))))
 
 ;;

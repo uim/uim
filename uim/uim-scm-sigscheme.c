@@ -1377,15 +1377,9 @@ uim_scm_init(const char *system_load_path)
   argp = argv;
   *argp++ = "dummy";  /* command name */
 #if SCM_USE_MULTIBYTE_CHAR
-  /*
-   * Set the raw unibyte codec which accepts all (multi)byte sequence
-   * although it slashes a multibyte character on Scheme-level
-   * character processing. Since current uim implementation treats a
-   * multibyte character as string, it is not a problem. The name
-   * "ISO-8859-1" is a dummy name for the codec.
-   */
+  /* Strings in uim are UTF-8. */
   *argp++ = "-C";
-  *argp++ = "ISO-8859-1";
+  *argp++ = "UTF-8";
 #endif
   if (system_load_path) {
     *argp++ = "--system-load-path";

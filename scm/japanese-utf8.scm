@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -35,16 +35,7 @@
 (require "util.scm")
 
 ;; Split a UTF-8 string into a reversed string list.
-(define string-to-list-utf8
-  (lambda (s)
-    (with-char-codec "UTF-8"
-      (lambda ()
-	(map! (lambda (c)
-		(let ((str (list->string (list c))))
-		  (with-char-codec "ISO-8859-1"
-		    (lambda ()
-		      (%%string-reconstruct! str)))))
-	      (reverse! (string->list s)))))))
+(define string-to-list-utf8 string-to-list)
 
 (define ja-rk-rule-basic-utf8 ja-rk-rule-basic)
 

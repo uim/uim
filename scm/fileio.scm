@@ -1,6 +1,6 @@
 ;;; fileio.scm: low-level file IO functions for uim.
 ;;;
-;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2009-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -56,9 +56,9 @@
   (file-position-set! field 0 (assq-cdr '$SEEK_CUR file-position-whence-alist)))
 
 (define (string->file-buf str)
-  (string->list str))
+  (map integer->char (string->byte-list str)))
 (define (file-buf->string buf)
-  (list->string buf))
+  (byte-list->string (map char->integer buf)))
 (define (file-read-string s len)
   (let ((ret (file-read s len)))
     (if (eof-object? ret)
@@ -162,17 +162,17 @@
   (let loop ((c (file-read-char port))
              (rest '()))
     (cond ((eq? #\newline c)
-           (list->string (reverse rest)))
+           (file-buf->string (reverse rest)))
           ((or (eof-object? c) ;; disconnect?
                (not c))
            (if (null? rest)
              c
-             (list->string (reverse rest))))
+             (file-buf->string (reverse rest))))
           (else
            (loop (file-read-char port) (cons c rest))))))
 
 (define (file-read-buffer port len)
-  (list->string (map (lambda (i) (file-read-char port)) (iota len))))
+  (file-buf->string (map (lambda (i) (file-read-char port)) (iota len))))
 
 (define (file-get-buffer port)
   (file-buf->string (inbuf? port)))
