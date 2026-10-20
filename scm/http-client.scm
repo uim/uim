@@ -1,6 +1,6 @@
 ;;; http-client.scm: http client library for uim.
 ;;;
-;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2009-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -39,7 +39,7 @@
   (define hex '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"))
   (define (hex-format2 x)
     (string-append "%"
-                   (list-ref hex (modulo (/ x 16) 256))
+                   (list-ref hex (modulo (quotient x 16) 256))
                    (list-ref hex (modulo x 16))))
   (apply
    string-append

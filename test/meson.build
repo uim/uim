@@ -40,3 +40,24 @@ foreach definition : [
        should_fail: definition[1],
        suite: 'uim')
 endforeach
+
+# Input methods driven through libuim by Ruby. Fake servers stand in for
+# the services they use, so they run without the network.
+im_driver = executable('im-driver',
+                       'im' / 'im-driver.c',
+                       include_directories: uim_include_directories,
+                       link_with: [libuim_scm, libuim])
+# Ruby is required only when the tests are enabled explicitly.
+ruby = find_program('ruby', required: get_option('tests').enabled())
+if ruby.found()
+  test('im',
+       ruby,
+       args: [files('im' / 'run.rb')],
+       depends: im_driver,
+       env: uim_build_tree_env + {
+         'IM_DRIVER': im_driver.full_path(),
+         # ~/.uim and the user's customizations stay out of the test.
+         'LIBUIM_VANILLA': '2',
+       },
+       suite: 'uim')
+endif

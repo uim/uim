@@ -43,15 +43,12 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  look.scm look-custom.scm \
  m17nlib.scm m17nlib-custom.scm \
  google-cgiapi-jp.scm google-cgiapi-jp-custom.scm google-cgiapi-jp-key-custom.scm \
- baidu-olime-jp.scm baidu-olime-jp-custom.scm baidu-olime-jp-key-custom.scm \
  uim-module-manager.scm \
  fileio.scm socket.scm process.scm \
  openssl.scm \
  sqlite3.scm \
  lolevel.scm \
  input-parse.scm \
- packrat.scm \
- json.scm json-parser-expanded.scm \
  http-client.scm \
  annotation.scm annotation-custom.scm annotation-dict.scm annotation-eb.scm \
  annotation-filter.scm annotation-osx-dcs.scm \
@@ -60,10 +57,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  ct.scm \
  dict-socket.scm
 
-OTHER_SCM_FILES = \
- macro-expander.scm macro-expander-chicken.scm \
- json-parser-expander.scm json.scm.in packrat.scm.in
-EXTRA_DIST = $(OTHER_SCM_FILES) meson.build
+EXTRA_DIST = meson.build
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 
@@ -92,7 +86,7 @@ endif
 module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"
 # web based IMs
-  module_names += "google-cgiapi-jp" "baidu-olime-jp"
+  module_names += "google-cgiapi-jp"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
