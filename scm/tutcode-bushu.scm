@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2010-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2010-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -114,18 +114,14 @@
           (if (eq? encoding 'utf-8)
             s
             (iconv-convert (tutcode-encoding-name encoding) "UTF-8" s))))
-    (with-char-codec "ISO-8859-1"
-      (lambda ()
-        (%%string-reconstruct! (string-copy encoded-str))))))
+    encoded-str))
 
 (define (tutcode-encoded-string->utf8 s encoding)
   (let ((utf8-str
           (if (eq? encoding 'utf-8)
             s
             (iconv-convert "UTF-8" (tutcode-encoding-name encoding) s))))
-    (with-char-codec "ISO-8859-1"
-      (lambda ()
-        (%%string-reconstruct! (string-copy utf8-str))))))
+    utf8-str))
 
 ;;; #tの場合、部首の並べ方によって合成される文字の優先度が変わる
 (define tutcode-bushu-sequence-sensitive? #t)

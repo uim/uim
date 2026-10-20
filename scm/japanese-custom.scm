@@ -443,16 +443,7 @@
               ; ("kk" "k" "っ") -> "k"
               (cons next-input '()))))
         (let* ((output (caddr item))
-               ; Split into characters. string-to-list assumes EUC-JP.
-               (output-list
-                 (with-char-codec "UTF-8"
-                   (lambda ()
-                     (map (lambda (c)
-                            (let ((str (list->string (list c))))
-                              (with-char-codec "ISO-8859-1"
-                                (lambda ()
-                                  (%%string-reconstruct! str)))))
-                          (string->list output))))))
+               (output-list (reverse (string-to-list output))))
           (or
             (and
               (=

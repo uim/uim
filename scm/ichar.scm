@@ -1,6 +1,6 @@
 ;;; ichar.scm: Integer-based character processing (being obsoleted)
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -63,12 +63,7 @@
 
 (define ucs->utf8-string
   (lambda (ucs)
-    (with-char-codec "UTF-8"
-      (lambda ()
-	(let ((str (list->string (list (integer->char ucs)))))
-	  (with-char-codec "ISO-8859-1"
-	    (lambda ()
-	      (%%string-reconstruct! str))))))))
+    (list->string (list (integer->char ucs)))))
 
 ;;
 ;; R5RS-like character procedures
