@@ -273,6 +273,10 @@ page_button_clicked_cb(GtkButton *button, gpointer data)
   UIMCandidatesView *view = data;
   gboolean forward = button == GTK_BUTTON(view->next_page_button);
 
+  if (view->candidate_index < 0) {
+    view->candidate_index = view->page_index * view->display_limit;
+  }
+
   g_signal_emit(view, signals[SHIFT_PAGE_REQUESTED], 0, forward);
 }
 
@@ -369,9 +373,6 @@ uim_candidates_view_class_init(UIMCandidatesViewClass *klass)
                                         G_TYPE_NONE,
                                         0);
 
-  /* Emitted before a mouse-driven page shift (the "<"/">" buttons)
-   * takes effect, so a listener can pre-fetch the target page's
-   * candidates first. forward is TRUE for ">", FALSE for "<". */
   signals[SHIFT_PAGE_REQUESTED] = g_signal_new("shift-page-requested",
                                                G_TYPE_FROM_CLASS(klass),
                                                G_SIGNAL_RUN_LAST,
@@ -576,12 +577,6 @@ uim_candidates_view_shift_page(UIMCandidatesView *view, gboolean forward)
     uim_candidates_view_set_page(view, view->page_index + 1);
   else
     uim_candidates_view_set_page(view, view->page_index - 1);
-
-  if (view->candidate_index < 0) {
-    /* Select the first candidate of the current page so that uim is
-     * told about the new page. */
-    view->candidate_index = view->page_index * view->display_limit;
-  }
 }
 
 guint
