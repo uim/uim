@@ -149,7 +149,7 @@
 
 ;;; 文字のリストとして返す。
 (define (tutcode-bushu-parse-entry str)
-  (reverse! (string-to-list-utf8 str)))
+  (reverse! (string-to-list str)))
 
 ;;; STR で始まる行のうち、最初のものを見つける。
 ;;; @param str 検索文字列

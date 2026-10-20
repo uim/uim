@@ -243,7 +243,7 @@
     ("9" "９")
     ("0" "０")
 
-    ("-" "−")
+    ("-" "－")
     ("," "，")
     ("." "．")
     ("!" "！")
@@ -255,7 +255,7 @@
     ("'" "’")
     ("(" "（")
     (")" "）")
-    ("~" "〜")
+    ("~" "～")
     ("=" "＝")
     ("^" "＾")
     ("\\" "＼")
@@ -592,8 +592,8 @@
         (ja-rk-rule-table->rule ja-rk-rule-table-basic)))
     (ja-rk-rule-keep-consonant-update)))
 
-;;; Convert EUC-JP code to EUC-JP string (cf. ucs->utf8-string in ichar.scm)
-(define (ja-euc-jp-code->euc-jp-string code)
+;;; Convert EUC-JP code to UTF-8 string (cf. ucs->utf8-string in ichar.scm)
+(define (ja-euc-jp-code->utf8-string code)
   (with-char-codec "EUC-JP"
     (lambda ()
       (let ((str (list->string (list (integer->char code)))))
@@ -601,8 +601,8 @@
           (lambda ()
             (%%string-reconstruct! str)))))))
 
-;;; Convert JIS code(ISO-2022-JP) to EUC-JP string
-(define (ja-jis-code->euc-jp-string state jis1 jis2)
+;;; Convert JIS code(ISO-2022-JP) to UTF-8 string
+(define (ja-jis-code->utf8-string state jis1 jis2)
   (let
     ((ej0 (if (eq? state 'jisx0213-plane2) #x8f 0))
      (ej1 (+ jis1 #x80))
@@ -613,10 +613,11 @@
       (if (= ej0 #x8f) ; SS3?
         (<= #xa1 ej2 #xfe) ; IN_GR94()
         (<= #xa0 ej2 #xff)) ; IN_GR96()
-      (ja-euc-jp-code->euc-jp-string
-        (+ (* ej0 #x10000) (* ej1 #x100) ej2)))))
+      (iconv-code-conv (iconv-open "UTF-8" "EUC-JP")
+                       (ja-euc-jp-code->utf8-string
+                         (+ (* ej0 #x10000) (* ej1 #x100) ej2))))))
 
-;;; Convert reverse string list of JIS code to one EUC-JP kanji string
+;;; Convert reverse string list of JIS code to one kanji string
 ;;; ("d" "2" "0" "5") -> "亅"
 (define (ja-kanji-code-input-jis str-list)
   (and-let*
@@ -625,9 +626,9 @@
      (str2 (string-list-concat (take str-list 2)))
      (jis1 (string->number str1 16))
      (jis2 (string->number str2 16)))
-    (ja-jis-code->euc-jp-string 'jisx0213-plane1 jis1 jis2)))
+    (ja-jis-code->utf8-string 'jisx0213-plane1 jis1 jis2)))
 
-;;; Convert reverse string list of Kuten code to one EUC-JP kanji string
+;;; Convert reverse string list of Kuten code to one kanji string
 ;;; ("3" "1" "-" "8" "4" "-" "1") -> "亅"
 (define (ja-kanji-code-input-kuten str-list)
   (let*
@@ -637,11 +638,11 @@
      (ku (string->number (list-ref numlist (if men-exists? 1 0))))
      (ten (string->number (list-ref numlist (if men-exists? 2 1)))))
     (and men ku ten (<= 1 men 2)
-      (ja-jis-code->euc-jp-string
+      (ja-jis-code->utf8-string
         (if (= men 2) 'jisx0213-plane2 'jisx0213-plane1)
         (+ ku #x20) (+ ten #x20)))))
 
-;;; Convert reverse string list of UCS to one EUC-JP kanji string
+;;; Convert reverse string list of UCS to one kanji string
 ;;; ("5" "8" "E" "4" "+" "U") -> "亅"
 (define (ja-kanji-code-input-ucs str-list)
   (and-let*
@@ -655,11 +656,10 @@
      (valid? ; sigscheme/src/sigschemeinternal.h:ICHAR_VALID_UNICODEP()
       (or
         (<= 0 ucs #xd7ff)
-        (<= #xe000 ucs #x10ffff)))
-     (utf8-str (ucs->utf8-string ucs)))
-    (iconv-convert "EUC-JP" "UTF-8" utf8-str)))
+        (<= #xe000 ucs #x10ffff))))
+     (ucs->utf8-string ucs)))
 
-;;; Convert reverse string list to one EUC-JP kanji string
+;;; Convert reverse string list to one kanji string
 (define (ja-kanji-code-input str-list)
   (cond
     ((string-ci=? (last str-list) "u")
