@@ -1,5 +1,5 @@
 ;;; anthy.scm: Anthy for uim.
-;;; charset: EUC-JP
+;;; charset: UTF-8
 ;;;
 ;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
@@ -117,9 +117,9 @@
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac) ;; indication handler
 		   '(ja_hiragana
-		     "¤¢"
-		     "¤Ò¤é¤¬¤Ê"
-		     "¤Ò¤é¤¬¤ÊÆþÎÏ¥â¡¼¥É"))
+		     "ã‚"
+		     "ã²ã‚‰ãŒãª"
+		     "ã²ã‚‰ãŒãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 
 		 (lambda (ac) ;; activity predicate
 		   (and (anthy-context-on ac)
@@ -138,9 +138,9 @@
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_katakana
-		     "¥¢"
-		     "¥«¥¿¥«¥Ê"
-		     "¥«¥¿¥«¥ÊÆþÎÏ¥â¡¼¥É"))
+		     "ã‚¢"
+		     "ã‚«ã‚¿ã‚«ãƒŠ"
+		     "ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
 			(not (anthy-context-alnum ac))
@@ -157,9 +157,9 @@
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_halfkana
-		     "Ž±"
-		     "È¾³Ñ¥«¥¿¥«¥Ê"
-		     "È¾³Ñ¥«¥¿¥«¥ÊÆþÎÏ¥â¡¼¥É"))
+		     "ï½±"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠ"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
 			(not (anthy-context-alnum ac))
@@ -175,8 +175,8 @@
 		 (lambda (ac)
 		   '(ja_halfwidth_alnum
 		     "a"
-		     "È¾³Ñ±Ñ¿ô"
-		     "È¾³Ñ±Ñ¿ôÆþÎÏ¥â¡¼¥É"))
+		     "åŠè§’è‹±æ•°"
+		     "åŠè§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
 			(anthy-context-alnum ac)
@@ -196,8 +196,8 @@
 		 (lambda (ac)
 		   '(ja_direct
 		     "-"
-		     "Ä¾ÀÜÆþÎÏ"
-		     "Ä¾ÀÜ(ÌµÊÑ´¹)ÆþÎÏ¥â¡¼¥É"))
+		     "ç›´æŽ¥å…¥åŠ›"
+		     "ç›´æŽ¥(ç„¡å¤‰æ›)å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (not (anthy-context-on ac)))
 		 (lambda (ac)
@@ -209,9 +209,9 @@
 ;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_fullwidth_alnum
-		     "£Á"
-		     "Á´³Ñ±Ñ¿ô"
-		     "Á´³Ñ±Ñ¿ôÆþÎÏ¥â¡¼¥É"))
+		     "ï¼¡"
+		     "å…¨è§’è‹±æ•°"
+		     "å…¨è§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
 			(anthy-context-alnum ac)
@@ -230,9 +230,9 @@
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_romaji
-		     "£Ò"
-		     "¥í¡¼¥Þ»ú"
-		     "¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "ï¼²"
+		     "ãƒ­ãƒ¼ãƒžå­—"
+		     "ãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (= (anthy-context-input-rule ac)
 		      anthy-input-rule-roma))
@@ -248,9 +248,9 @@
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_kana
-		     "¤«"
-		     "¤«¤Ê"
-		     "¤«¤ÊÆþÎÏ¥â¡¼¥É"))
+		     "ã‹"
+		     "ã‹ãª"
+		     "ã‹ãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (= (anthy-context-input-rule ac)
 		      anthy-input-rule-kana))
@@ -271,9 +271,9 @@
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_azik
-		     "£Ú"
+		     "ï¼º"
 		     "AZIK"
-		     "AZIK³ÈÄ¥¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "AZIKæ‹¡å¼µãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (= (anthy-context-input-rule ac)
 		      anthy-input-rule-azik))
@@ -290,9 +290,9 @@
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_kzik
-		     "£Ë"
+		     "ï¼«"
 		     "KZIK"
-		     "KZIK³ÈÄ¥¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "KZIKæ‹¡å¼µãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (= (anthy-context-input-rule ac)
 		      anthy-input-rule-kzik))
@@ -305,11 +305,13 @@
 		   (anthy-context-set-input-rule! ac anthy-input-rule-kzik)))
 
 (register-action 'action_anthy_act
+;;		(indication-alist-indicator 'action_anthy_act
+;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_act
-		     "£Ã"
+		     "ï¼£"
 		     "ACT"
-		     "ACT³ÈÄ¥¥í¡¼¥Þ»úÆþÎÏ¥â¡¼¥É"))
+		     "ACTæ‹¡å¼µãƒ­ãƒ¼ãƒžå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ac)
 		   (= (anthy-context-input-rule ac)
 		      anthy-input-rule-act))
@@ -320,6 +322,7 @@
 					 ja-act-rule)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-context-set-input-rule! ac anthy-input-rule-act)))
+
 
 
 ;; Update widget definitions based on action configurations. The
@@ -372,7 +375,8 @@
 	   (set! anthy-version (anthy-version->major.minor
 				(anthy-lib-get-anthy-version)))))
      (if anthy-lib-initialized?
-	 (anthy-context-set-ac-id! ac (anthy-lib-alloc-context)))
+	 (anthy-context-set-ac-id!
+	  ac (anthy-lib-alloc-context)))
      (anthy-context-set-widgets! ac anthy-widgets)
      (anthy-context-set-rkc! ac rkc)
      (anthy-context-set-preconv-ustr! ac (ustr-new '()))
@@ -790,10 +794,10 @@
             (anthy-lib-resize-segment ac-id 0 1)
             (expand-segment))))
       (cond
-       ((= transposing-type anthy-type-hiragana)
-        (set! type anthy-candidate-type-hiragana))
-       ((= transposing-type anthy-type-katakana)
-        (set! type anthy-candidate-type-katakana)))
+        ((= transposing-type anthy-type-hiragana)
+         (set! type anthy-candidate-type-hiragana))
+        ((= transposing-type anthy-type-katakana)
+         (set! type anthy-candidate-type-katakana)))
       (if (and ac-id
                (> (string-length preconv-str) 0)
                type)
@@ -1132,7 +1136,7 @@
 	(ustr-clear-former! preconv-str)
 	(ustr-clear-former! raw-str))
 
-       ;; ¸½ºß¤È¤ÏµÕ¤Î¤«¤Ê¥â¡¼¥É¤Ç¤«¤Ê¤ò³ÎÄê¤¹¤ë
+       ;; ç¾åœ¨ã¨ã¯é€†ã®ã‹ãªãƒ¢ãƒ¼ãƒ‰ã§ã‹ãªã‚’ç¢ºå®šã™ã‚‹
        ((and
          (not (anthy-context-alnum ac))
          (anthy-commit-as-opposite-kana-key? key key-state))
@@ -1142,7 +1146,7 @@
 	   (anthy-make-whole-string ac #t (ja-opposite-kana kana)))
 	  (anthy-flush ac)))
 
-       ;; Transposing¾õÂÖ¤Ø°Ü¹Ô
+       ;; TransposingçŠ¶æ…‹ã¸ç§»è¡Œ
        ((or (anthy-transpose-as-hiragana-key? key key-state)
 	    (anthy-transpose-as-katakana-key? key key-state)
 	    (anthy-transpose-as-halfkana-key? key key-state)
@@ -1371,8 +1375,11 @@
 	 (not (anthy-context-transposing ac))
 	 (not (anthy-context-predicting ac)))
 	(let* ((use-pending-rk-for-prediction? #f)
-	       (preconv-str
-		(anthy-make-whole-string ac #t (anthy-context-kana-mode ac)))
+               (preconv-str
+		(anthy-make-whole-string
+		 ac
+		 (not use-pending-rk-for-prediction?)
+		 (anthy-context-kana-mode ac)))
 	       (ac-id (anthy-context-ac-id ac))
 	       (preedit-len
 		(+
@@ -1385,7 +1392,8 @@
 	       (>= preedit-len anthy-prediction-start-char-count)
 	       force-check?)
 	      (begin
-		(anthy-lib-set-prediction-src-string ac-id preconv-str)
+		(anthy-lib-set-prediction-src-string
+		 ac-id preconv-str)
 		(let ((nr (anthy-lib-get-nr-predictions ac-id)))
 		  (if (and
 		       nr
@@ -1404,9 +1412,9 @@
 	(anthy-proc-input-state-with-preedit ac key key-state)
 	(anthy-proc-input-state-no-preedit ac key key-state))
     (if (and
-	 anthy-use-prediction?
-	 (not (anthy-context-predicting ac)))
-	(anthy-check-prediction ac #f))))
+         anthy-use-prediction?
+         (not (anthy-context-predicting ac)))
+	 (anthy-check-prediction ac #f))))
 
 (define anthy-separator
   (lambda (ac)
@@ -1533,7 +1541,6 @@
 	    (if (= rule anthy-input-rule-kana)
 		(lambda (entry) (car entry))
 		(lambda (entry) (list-ref entry kana)))))
-
       (list
        (and (not (ustr-cursor-at-beginning? preconv-str))
 	    (cons preedit-underline
@@ -1557,7 +1564,7 @@
 			       (anthy-lib-get-nth-candidate
 				ac-id seg-idx cand-idx)
 			       (anthy-get-raw-candidate
-				ac ac-id seg-idx cand-idx)))
+                                ac ac-id seg-idx cand-idx)))
 			 (iota (ustr-length segments))
 			 (ustr-whole-seq segments)))))
 
@@ -1899,7 +1906,7 @@
 (register-im
  'anthy
  "ja"
- "EUC-JP"
+ "UTF-8"
  anthy-im-name-label
  anthy-im-short-desc
  #f

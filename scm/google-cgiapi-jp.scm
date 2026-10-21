@@ -61,20 +61,15 @@
 (define google-cgiapi-jp-internal-context-new-internal google-cgiapi-jp-internal-context-new)
 
 (define (google-cgiapi-jp-conversion str opts)
-  (define (fromconv str)
-    (iconv-convert "UTF-8" "EUC-JP" str))
-  (define (toconv str)
-    (iconv-convert "EUC-JP" "UTF-8" str))
   (define (make-query)
     (format "/transliterate?langpair=ja-Hira|ja&text=~a~a"
-            (http:encode-uri-string (fromconv str)) opts))
+            (http:encode-uri-string str) opts))
   ;; [["reading", ["candidate", ...]], ...]
   (define (parse str)
     (receive (readings candidates)
         (unzip2 (map vector->list
                      (vector->list (call-with-input-string str json-read))))
-      (cons (map toconv readings)
-            (map (lambda (x) (map toconv (vector->list x))) candidates))))
+      (cons readings (map vector->list candidates))))
   (let* ((proxy (make-http-proxy-from-custom))
          (ssl (and google-cgiapi-jp-use-ssl?
                    (make-http-ssl 443)))
@@ -284,9 +279,9 @@
 (register-action 'action_google-cgiapi-jp_hiragana
 		 (lambda (ggc) ;; indication handler
 		   '(ja_hiragana
-		     "¤¢"
-		     "¤Ò¤é¤¬¤Ê"
-		     "¤Ò¤é¤¬¤ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‚"
+		     "ã²ã‚‰ãŒãª"
+		     "ã²ã‚‰ãŒãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 
 		 (lambda (ggc) ;; activity predicate
 		   (and (google-cgiapi-jp-context-on ggc)
@@ -303,9 +298,9 @@
 (register-action 'action_google-cgiapi-jp_katakana
 		 (lambda (ggc)
 		   '(ja_katakana
-		     "¥¢"
-		     "¥«¥¿¥«¥Ê"
-		     "¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‚¢"
+		     "ã‚«ã‚¿ã‚«ãƒŠ"
+		     "ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (and (google-cgiapi-jp-context-on ggc)
 		        (not (google-cgiapi-jp-context-alnum ggc))
@@ -320,9 +315,9 @@
 (register-action 'action_google-cgiapi-jp_halfkana
 		 (lambda (ggc)
 		   '(ja_halfkana
-		     "±"
-		     "È¾³Ñ¥«¥¿¥«¥Ê"
-		     "È¾³Ñ¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
+		     "ï½±"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠ"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (and (google-cgiapi-jp-context-on ggc)
 			(not (google-cgiapi-jp-context-alnum ggc))
@@ -337,8 +332,8 @@
 		 (lambda (ggc) ;; indication handler
 		   '(ja_halfwidth_alnum
 		     "a"
-		     "È¾³Ñ±Ñ¿ô"
-		     "È¾³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
+		     "åŠè§’è‹±æ•°"
+		     "åŠè§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc) ;; activity predicate
 		   (and (google-cgiapi-jp-context-on ggc)
 			(google-cgiapi-jp-context-alnum ggc)
@@ -356,8 +351,8 @@
 		 (lambda (ggc)
 		   '(ja_direct
 		     "-"
-		     "Ä¾ÀÜÆşÎÏ"
-		     "Ä¾ÀÜ(ÌµÊÑ´¹)ÆşÎÏ¥â¡¼¥É"))
+		     "ç›´æ¥å…¥åŠ›"
+		     "ç›´æ¥(ç„¡å¤‰æ›)å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (not (google-cgiapi-jp-context-on ggc)))
 		 (lambda (ggc)
@@ -367,9 +362,9 @@
 (register-action 'action_google-cgiapi-jp_fullwidth_alnum
 		 (lambda (ggc)
 		   '(ja_fullwidth_alnum
-		     "£Á"
-		     "Á´³Ñ±Ñ¿ô"
-		     "Á´³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
+		     "ï¼¡"
+		     "å…¨è§’è‹±æ•°"
+		     "å…¨è§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (and (google-cgiapi-jp-context-on ggc)
 			(google-cgiapi-jp-context-alnum ggc)
@@ -386,9 +381,9 @@
 (register-action 'action_google-cgiapi-jp_roma
 		 (lambda (ggc)
 		   '(ja_romaji
-		     "£Ò"
-		     "¥í¡¼¥Ş»ú"
-		     "¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "ï¼²"
+		     "ãƒ­ãƒ¼ãƒå­—"
+		     "ãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-roma))
@@ -401,9 +396,9 @@
 (register-action 'action_google-cgiapi-jp_kana
 		 (lambda (ggc)
 		   '(ja_kana
-		     "¤«"
-		     "¤«¤Ê"
-		     "¤«¤ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‹"
+		     "ã‹ãª"
+		     "ã‹ãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-kana))
@@ -418,9 +413,9 @@
 (register-action 'action_google-cgiapi-jp_azik
 		 (lambda (ggc)
 		   '(ja_azik
-		     "£Ú"
+		     "ï¼º"
 		     "AZIK"
-		     "AZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "AZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-azik))
@@ -434,9 +429,9 @@
 (register-action 'action_google-cgiapi-jp_kzik
 		 (lambda (ggc)
 		   '(ja_kzik
-		     "£Ë"
+		     "ï¼«"
 		     "KZIK"
-		     "KZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "KZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-kzik))
@@ -450,9 +445,9 @@
 (register-action 'action_google-cgiapi-jp_act
 		 (lambda (ggc)
 		   '(ja_act
-		     "£Ã"
+		     "ï¼£"
 		     "ACT"
-		     "ACT³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "ACTæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (ggc)
 		   (= (google-cgiapi-jp-context-input-rule ggc)
 		      google-cgiapi-jp-input-rule-act))
@@ -1179,14 +1174,14 @@
       (ustr-clear-former! preconv-str)
       (ustr-clear-former! raw-str))
        
-     ;; ¸½ºß¤È¤ÏµÕ¤Î¤«¤Ê¥â¡¼¥É¤Ç¤«¤Ê¤ò³ÎÄê¤¹¤ë
+     ;; ç¾åœ¨ã¨ã¯é€†ã®ã‹ãªãƒ¢ãƒ¼ãƒ‰ã§ã‹ãªã‚’ç¢ºå®šã™ã‚‹
      ((and
        (not (google-cgiapi-jp-context-alnum ggc))
        (google-cgiapi-jp-commit-as-opposite-kana-key? key key-state))
       (im-commit ggc (google-cgiapi-jp-make-whole-string ggc #t (ja-opposite-kana kana)))
       (google-cgiapi-jp-flush ggc))
 
-     ;; Transposing¾õÂÖ¤Ø°Ü¹Ô
+     ;; TransposingçŠ¶æ…‹ã¸ç§»è¡Œ
      ((or (google-cgiapi-jp-transpose-as-hiragana-key? key key-state)
 	  (google-cgiapi-jp-transpose-as-katakana-key? key key-state)
 	  (google-cgiapi-jp-transpose-as-halfkana-key? key key-state)
@@ -1877,7 +1872,7 @@
 (register-im
  'google-cgiapi-jp
  "ja"
- "EUC-JP"
+ "UTF-8"
  google-cgiapi-jp-im-name-label
  google-cgiapi-jp-im-short-desc
  #f

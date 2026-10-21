@@ -1,4 +1,4 @@
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -105,7 +105,7 @@
             (string-split "hogehoge" "|"))
 (test-end)
 
-;; split EUC-JP string into reversed character list
+;; split string into reversed character list
 (test-begin "string-to-list")
 (test-equal '()
             (string-to-list ""))
@@ -115,18 +115,16 @@
             (string-to-list "st"))
 (test-equal '("g" "n" "i" "r" "t" "s")
             (string-to-list "string"))
-;; EUC-JP: "\xa4;\xa2;" = "あ", "\xc6;\xfc;" = "日", "\xcb;\xdc;" = "本",
-;; "\xb8;\xec;" = "語"
-(test-equal '("\xa4;\xa2;")
-            (string-to-list "\xa4;\xa2;"))
-(test-equal '("\xa4;\xa2;" "a")
-            (string-to-list "a\xa4;\xa2;"))
-(test-equal '("a" "\xa4;\xa2;")
-            (string-to-list "\xa4;\xa2;a"))
-(test-equal '("\xb8;\xec;" "\xcb;\xdc;" "\xc6;\xfc;")
-            (string-to-list "\xc6;\xfc;\xcb;\xdc;\xb8;\xec;"))
-(test-equal '("c" "\xb8;\xec;" "\xcb;\xdc;" "b" "\xc6;\xfc;" "a")
-            (string-to-list "a\xc6;\xfc;b\xcb;\xdc;\xb8;\xec;c"))
+(test-equal '("あ")
+            (string-to-list "あ"))
+(test-equal '("あ" "a")
+            (string-to-list "aあ"))
+(test-equal '("a" "あ")
+            (string-to-list "あa"))
+(test-equal '("語" "本" "日")
+            (string-to-list "日本語"))
+(test-equal '("c" "語" "本" "b" "日" "a")
+            (string-to-list "a日b本語c"))
 (test-end)
 
 (test-begin "string-to-list-utf8")

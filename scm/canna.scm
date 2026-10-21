@@ -101,9 +101,9 @@
 (register-action 'action_canna_hiragana
 		 (lambda (cc) ;; indication handler
 		   '(ja_hiragana
-		     "¤¢"
-		     "¤Ò¤é¤¬¤Ê"
-		     "¤Ò¤é¤¬¤ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‚"
+		     "ã²ã‚‰ãŒãª"
+		     "ã²ã‚‰ãŒãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 
 		 (lambda (cc) ;; activity predicate
 		   (and (canna-context-on cc)
@@ -120,9 +120,9 @@
 (register-action 'action_canna_katakana
 		 (lambda (cc)
 		   '(ja_katakana
-		     "¥¢"
-		     "¥«¥¿¥«¥Ê"
-		     "¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‚¢"
+		     "ã‚«ã‚¿ã‚«ãƒŠ"
+		     "ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
 		        (not (canna-context-alnum cc))
@@ -137,9 +137,9 @@
 (register-action 'action_canna_halfkana
 		 (lambda (cc)
 		   '(ja_halfkana
-		     "±"
-		     "È¾³Ñ¥«¥¿¥«¥Ê"
-		     "È¾³Ñ¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
+		     "ï½±"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠ"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
 			(not (canna-context-alnum cc))
@@ -154,8 +154,8 @@
 		 (lambda (cc) ;; indication handler
 		   '(ja_halfwidth_alnum
 		     "a"
-		     "È¾³Ñ±Ñ¿ô"
-		     "È¾³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
+		     "åŠè§’è‹±æ•°"
+		     "åŠè§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc) ;; activity predicate
 		   (and (canna-context-on cc)
 			(canna-context-alnum cc)
@@ -173,8 +173,8 @@
 		 (lambda (cc)
 		   '(ja_direct
 		     "-"
-		     "Ä¾ÀÜÆşÎÏ"
-		     "Ä¾ÀÜ(ÌµÊÑ´¹)ÆşÎÏ¥â¡¼¥É"))
+		     "ç›´æ¥å…¥åŠ›"
+		     "ç›´æ¥(ç„¡å¤‰æ›)å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (not (canna-context-on cc)))
 		 (lambda (cc)
@@ -184,9 +184,9 @@
 (register-action 'action_canna_fullwidth_alnum
 		 (lambda (cc)
 		   '(ja_fullwidth_alnum
-		     "£Á"
-		     "Á´³Ñ±Ñ¿ô"
-		     "Á´³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
+		     "ï¼¡"
+		     "å…¨è§’è‹±æ•°"
+		     "å…¨è§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
 			(canna-context-alnum cc)
@@ -203,9 +203,9 @@
 (register-action 'action_canna_roma
 		 (lambda (cc)
 		   '(ja_romaji
-		     "£Ò"
-		     "¥í¡¼¥Ş»ú"
-		     "¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "ï¼²"
+		     "ãƒ­ãƒ¼ãƒå­—"
+		     "ãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-roma))
@@ -218,9 +218,9 @@
 (register-action 'action_canna_kana
 		 (lambda (cc)
 		   '(ja_kana
-		     "¤«"
-		     "¤«¤Ê"
-		     "¤«¤ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‹"
+		     "ã‹ãª"
+		     "ã‹ãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-kana))
@@ -235,9 +235,9 @@
 (register-action 'action_canna_azik
 		 (lambda (cc)
 		   '(ja_azik
-		     "£Ú"
+		     "ï¼º"
 		     "AZIK"
-		     "AZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "AZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-azik))
@@ -251,9 +251,9 @@
 (register-action 'action_canna_kzik
 		 (lambda (cc)
 		   '(ja_kzik
-		     "£Ë"
+		     "ï¼«"
 		     "KZIK"
-		     "KZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "KZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-kzik))
@@ -267,9 +267,9 @@
 (register-action 'action_canna_act
 		 (lambda (cc)
 		   '(ja_act
-		     "£Ã"
+		     "ï¼£"
 		     "ACT"
-		     "ACT³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "ACTæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-act))
@@ -373,7 +373,7 @@
         (begin
           (canna-context-set-prediction-ctx! cc (predict-make-meta-search))
           (predict-meta-open (canna-context-prediction-ctx cc) "canna")
-          (predict-meta-set-external-charset! (canna-context-prediction-ctx cc) "EUC-JP")))
+          (predict-meta-set-external-charset! (canna-context-prediction-ctx cc) "UTF-8")))
     cc))
 
 (define (canna-commit-raw cc)
@@ -1032,14 +1032,14 @@
       (ustr-clear-former! preconv-str)
       (ustr-clear-former! raw-str))
        
-     ;; ¸½ºß¤È¤ÏµÕ¤Î¤«¤Ê¥â¡¼¥É¤Ç¤«¤Ê¤ò³ÎÄê¤¹¤ë
+     ;; ç¾åœ¨ã¨ã¯é€†ã®ã‹ãªãƒ¢ãƒ¼ãƒ‰ã§ã‹ãªã‚’ç¢ºå®šã™ã‚‹
      ((and
        (not (canna-context-alnum cc))
        (canna-commit-as-opposite-kana-key? key key-state))
       (im-commit cc (canna-make-whole-string cc #t (ja-opposite-kana kana)))
       (canna-flush cc))
 
-     ;; Transposing¾õÂÖ¤Ø°Ü¹Ô
+     ;; TransposingçŠ¶æ…‹ã¸ç§»è¡Œ
      ((or (canna-transpose-as-hiragana-key? key key-state)
 	  (canna-transpose-as-katakana-key? key key-state)
 	  (canna-transpose-as-halfkana-key? key key-state)
@@ -1743,7 +1743,7 @@
 (register-im
  'canna
  "ja"
- "EUC-JP"
+ "UTF-8"
  canna-im-name-label
  canna-im-short-desc
  #f

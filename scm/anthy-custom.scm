@@ -127,17 +127,17 @@
 	 (N_ "Direct input mode"))
    (list 'action_anthy_hiragana
 	 'ja_hiragana
-	 "§¢"
+	 "„ÅÇ"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_anthy_katakana
 	 'ja_katakana
-	 "•¢"
+	 "„Ç¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
    (list 'action_anthy_halfkana
 	 'ja_halfkana
-	 "é±"
+	 "ÔΩ±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
    (list 'action_anthy_halfwidth_alnum
@@ -147,7 +147,7 @@
 	 (N_ "Halfwidth Alphanumeric input mode"))
    (list 'action_anthy_fullwidth_alnum
 	 'ja_fullwidth_alnum
-	 "£¡"
+	 "Ôº°"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
 
@@ -155,27 +155,27 @@
   (list
    (list 'action_anthy_roma
 	 'ja_romaji
-	 "£“"
+	 "Ôº≤"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
    (list 'action_anthy_kana
 	 'ja_kana
-	 "§´"
+	 "„Åã"
 	 (N_ "Kana")
 	 (N_ "Kana input mode"))
    (list 'action_anthy_azik
 	 'ja_azik
-	 "£⁄"
+	 "Ôº∫"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))
    (list 'action_anthy_act
 	 'ja_act
-	 "£√"
+	 "Ôº£"
 	 (N_ "ACT")
 	 (N_ "ACT extended romaji input mode"))
    (list 'action_anthy_kzik
 	 'ja_kzik
-	 "£À"
+	 "Ôº´"
 	 (N_ "KZIK")
 	 (N_ "KZIK extended romaji input mode"))))
 

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -415,7 +415,7 @@
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
 (require "tutcode-dialog.scm"); 交ぜ書き変換辞書からの削除確認ダイアログ
 (require "tutcode-bushu.scm")
-(require "japanese-utf8.scm") ; for ja-wide-utf8
+(require "japanese-utf8.scm") ; for ja-wide and the deprecated -utf8 names
 (require "ustr.scm")
 
 ;;; user configs
@@ -984,7 +984,7 @@
           ;; tutcode-kigoudicの先頭に入れる
           (set! tutcode-kigoudic
             (append
-              (map (lambda (lst) (list (ja-wide-utf8 lst)))
+              (map (lambda (lst) (list (ja-wide lst)))
                 tutcode-heading-label-char-list-for-kigou-mode)
               (list-tail tutcode-kigoudic
                 (length tutcode-heading-label-char-list-for-kigou-mode)))))
@@ -1198,7 +1198,7 @@
          (trim-words (trim-str filtered-words))
          (candchars ; 予測した熟語の1文字目の漢字のリスト
           (delete-duplicates
-            (map (lambda (cand) (last (string-to-list-utf8 cand)))
+            (map (lambda (cand) (last (string-to-list cand)))
               (append trim-cands trim-words))))
          (cand-stroke
           (map
@@ -1452,7 +1452,7 @@
       (else
         (tutcode-selection-commit pc res yomi)))
     (tutcode-check-auto-help-window-begin pc
-      (drop (string-to-list-utf8 res) (length suffix))
+      (drop (string-to-list res) (length suffix))
       (append suffix head))))
 
 ;;; 交ぜ書き変換の候補選択時に、指定されたラベル文字に対応する候補を確定する
@@ -1554,7 +1554,7 @@
         (let ((str (tutcode-prepare-commit-string-for-history pc)))
           (tutcode-commit pc str)
           (tutcode-flush pc)
-          (tutcode-check-auto-help-window-begin pc (string-to-list-utf8 str) ()))
+          (tutcode-check-auto-help-window-begin pc (string-to-list str) ()))
         #t)
       (eq? tutcode-commit-candidate-by-label-key 'always))))
 
@@ -1602,7 +1602,7 @@
     (tutcode-reset-candidate-window pc)
     (tutcode-commit pc str)
     (tutcode-flush pc)
-    (tutcode-check-auto-help-window-begin pc (string-to-list-utf8 str) ())))
+    (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
 
 ;;; 部首合成変換時の予測入力候補を確定する
 (define (tutcode-do-commit-prediction-for-bushu pc idx)
@@ -1616,7 +1616,7 @@
     (tutcode-reset-candidate-window pc)
     (tutcode-commit pc str)
     (tutcode-flush pc)
-    (tutcode-check-auto-help-window-begin pc (string-to-list-utf8 str) ())))
+    (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
 
 ;;; 交ぜ書き変換辞書から、現在選択されている候補を削除する。
 (define (tutcode-purge-candidate pc)
@@ -1645,7 +1645,7 @@
 ;;; @param str 追加する文字列
 (define (tutcode-append-commit-string pc str)
   (if (and str (string? str))
-    (let* ((strlist (string-to-list-utf8 str)) ; strは複数文字の場合あり
+    (let* ((strlist (string-to-list str)) ; strは複数文字の場合あり
            (commit-strs (tutcode-context-commit-strs pc))
            (new-strs (append strlist commit-strs)))
       (tutcode-context-set-commit-strs! pc
@@ -1745,7 +1745,7 @@
 ;;; 入力された漢字コードに対応する漢字を確定する
 ;;; @param str-list 漢字コード。入力された文字列のリスト(逆順)
 (define (tutcode-begin-kanji-code-input pc str-list)
-  (let ((kanji (ja-kanji-code-input-utf8 str-list)))
+  (let ((kanji (ja-kanji-code-input str-list)))
     (if (and kanji (> (string-length kanji) 0))
       (begin
         (tutcode-commit pc kanji)
@@ -2520,7 +2520,7 @@
   (and-let*
     ((ustr (im-acquire-text pc 'clipboard 'beginning 0 len))
      (latter (ustr-latter-seq ustr))
-     (latter-seq (and (pair? latter) (string-to-list-utf8 (car latter)))))
+     (latter-seq (and (pair? latter) (string-to-list (car latter)))))
     (and (not (null? latter-seq))
          latter-seq)))
 
@@ -3560,7 +3560,7 @@
 ;;; @param commit-str 確定文字列
 ;;; @param data 確定前の状態を再現するのに必要な情報
 (define (tutcode-undo-prepare pc state commit-str data)
-  (let ((commit-len (length (string-to-list-utf8 commit-str))))
+  (let ((commit-len (length (string-to-list commit-str))))
     ;; XXX: 多段undoは未対応
     (tutcode-context-set-undo! pc (list state commit-len data))))
 
@@ -3888,7 +3888,7 @@
       (let*
         ((ustr (im-acquire-text pc 'primary 'cursor len 0))
          (former (and ustr (ustr-former-seq ustr)))
-         (former-seq (and (pair? former) (string-to-list-utf8 (car former)))))
+         (former-seq (and (pair? former) (string-to-list (car former)))))
         (if ustr
           (or former-seq ())
           ;; im-acquire-text未対応環境の場合、内部の確定済文字列バッファを使用
@@ -4011,7 +4011,7 @@
   (and-let*
     ((ustr (im-acquire-text pc 'selection 'beginning 0 'full))
      (latter (ustr-latter-seq ustr))
-     (latter-seq (and (pair? latter) (string-to-list-utf8 (car latter)))))
+     (latter-seq (and (pair? latter) (string-to-list (car latter)))))
     (and (not (null? latter-seq))
          latter-seq)))
 
@@ -4338,7 +4338,7 @@
 ;;; @param str commitされた文字列
 (define (tutcode-seq2kanji-commit-from-child pc str)
   (tutcode-context-set-head! pc
-    (append (string-to-list-utf8 str) (tutcode-context-head pc))))
+    (append (string-to-list str) (tutcode-context-head pc))))
 
 ;;; 子コンテキストでのcommit-raw
 (define (tutcode-seq2kanji-commit-raw-from-child pc key key-state)
@@ -4529,7 +4529,7 @@
         (let ((str (tutcode-prepare-commit-string-for-history pc)))
           (tutcode-commit pc str)
           (tutcode-flush pc)
-          (tutcode-check-auto-help-window-begin pc (string-to-list-utf8 str) ())))
+          (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
       (else
         (tutcode-commit pc (tutcode-prepare-commit-string-for-history pc))
         (tutcode-flush pc)
@@ -4544,7 +4544,7 @@
   (let ((idx (if to-katakana? 1 0)))
     (map
       (lambda (e)
-        (list-ref (ja-find-kana-list-from-rule-utf8 ja-rk-rule-utf8 e) idx))
+        (list-ref (ja-find-kana-list-from-rule ja-rk-rule e) idx))
       strlist)))
 
 ;;; 交ぜ書き変換の読み入力状態のときのキー入力を処理する。
@@ -6265,7 +6265,7 @@
                   (tutcode-commit pc str)
                   (tutcode-flush pc)
                   (tutcode-check-auto-help-window-begin pc
-                    (string-to-list-utf8 str) ())))
+                    (string-to-list str) ())))
               (else
                 (tutcode-commit-with-auto-help pc))))
           (tutcode-update-preedit pc)))
@@ -6621,7 +6621,7 @@
     (let*
       ((basename (last (string-split filename "/")))
        ;; ファイル名から".scm"をけずる
-       (bnlist (string-to-list-utf8 basename))
+       (bnlist (string-to-list basename))
        (codename
         (or
           (and
@@ -6649,7 +6649,7 @@
       (lambda (keyseq cmd)
         (and keyseq
              (> (string-length keyseq) 0))
-          (let ((keys (reverse (string-to-list-utf8 keyseq))))
+          (let ((keys (reverse (string-to-list keyseq))))
             (list (list keys) cmd)))))
     (tutcode-rule-set-sequences!
       (filter
@@ -6891,7 +6891,7 @@
 ;;;       (string-list-concat
 ;;;         (japan-util-ascii-convert
 ;;;           (japan-util-halfkana-to-fullkana-convert
-;;;             (string-to-list-utf8 str)))))))
+;;;             (string-to-list str)))))))
 ;;; (tutcode-rule-set-sequences!
 ;;;   `(((("a" "v" "q")) (,tutcode-filter-fmt-quote))
 ;;;     ((("a" "v" "f")) (,tutcode-filter-fmt-ja))

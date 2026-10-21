@@ -82,6 +82,41 @@ sys_pkgdatadir()
   return MAKE_STR(PKGDATADIR);
 }
 
+/* Strings are UTF-8 but Scheme indexes them by characters. */
+static int
+utf8_continuation_byte_p(char c)
+{
+  return ((unsigned char)c & 0xc0) == 0x80;
+}
+
+/* Returns the byte offset of the INDEX-th character in S or -1. */
+static long
+utf8_char_index_to_byte_offset(const char *s, long index)
+{
+  long offset = 0;
+
+  for (; index > 0; index--) {
+    if (s[offset] == '\0')
+      return -1;
+    offset++;
+    while (utf8_continuation_byte_p(s[offset]))
+      offset++;
+  }
+  return offset;
+}
+
+static long
+utf8_byte_offset_to_char_index(const char *s, long offset)
+{
+  long i, index = 0;
+
+  for (i = 0; i < offset; i++) {
+    if (!utf8_continuation_byte_p(s[i]))
+      index++;
+  }
+  return index;
+}
+
 /* Limited version of SRFI-13 string-contains. The number of args are
  * fixed to 3. */
 static uim_lisp
@@ -89,19 +124,19 @@ string_contains(uim_lisp s1_, uim_lisp s2_, uim_lisp start1_)
 {
   const char *s1, *s2, *found;
   long start1;
-  size_t s1len;
 
   s1 = REFER_C_STR(s1_);
   s2 = REFER_C_STR(s2_);
   start1 = C_INT(start1_);
-  s1len = strlen(s1);
 
-  if (start1 < 0 || s1len < (size_t)start1)
+  if (start1 < 0
+      || (start1 = utf8_char_index_to_byte_offset(s1, start1)) < 0)
     ERROR("string-contains: invalid range");
 
   found = strstr(&s1[start1], s2);
 
-  return (found) ? MAKE_INT(found - s1) : uim_scm_f();
+  return (found) ? MAKE_INT(utf8_byte_offset_to_char_index(s1, found - s1))
+                 : uim_scm_f();
 }
 
 static uim_lisp

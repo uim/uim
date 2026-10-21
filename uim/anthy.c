@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -40,6 +40,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
+#include "uim-util.h"
 #include "dynlib.h"
 
 
@@ -50,6 +51,42 @@ void uim_anthy_plugin_instance_quit(void);
 
 static uim_bool initialized;
 static uim_lisp context_list;
+
+/* Strings are UTF-8. libanthy that can't handle UTF-8 uses EUC-JP. */
+#ifndef LIBANTHY_UTF8_CAPABLE
+static void *iconv_cd_to_anthy;
+static void *iconv_cd_from_anthy;
+#endif
+
+/* Returns STR for libanthy. The caller frees it. */
+static char *
+to_anthy(const char *str)
+{
+#ifdef LIBANTHY_UTF8_CAPABLE
+  return uim_strdup(str);
+#else
+  if (!iconv_cd_to_anthy)
+    iconv_cd_to_anthy = uim_iconv->create("EUC-JP", "UTF-8");
+  return uim_iconv->convert(iconv_cd_to_anthy, str);
+#endif
+}
+
+/* Returns STR from libanthy in UTF-8. STR is freed. */
+static char *
+from_anthy(char *str)
+{
+#ifdef LIBANTHY_UTF8_CAPABLE
+  return str;
+#else
+  char *converted;
+
+  if (!iconv_cd_from_anthy)
+    iconv_cd_from_anthy = uim_iconv->create("UTF-8", "EUC-JP");
+  converted = uim_iconv->convert(iconv_cd_from_anthy, str);
+  free(str);
+  return converted;
+#endif
+}
 
 static void
 validate_segment_index(anthy_context_t ac, int i)
@@ -104,6 +141,9 @@ create_context(void)
   ac = anthy_create_context();
   if (!ac)
     uim_fatal_error("anthy_create_context() failed");
+#ifdef LIBANTHY_UTF8_CAPABLE
+  anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
+#endif
 
   ac_ = MAKE_PTR(ac);
   context_list = uim_scm_callf("cons", "oo", ac_, context_list);
@@ -130,11 +170,12 @@ static uim_lisp
 set_string(uim_lisp ac_, uim_lisp str_)
 {
   anthy_context_t ac;
-  const char *str;
+  char *str;
 
   ac = get_anthy_context(ac_);
-  str = REFER_C_STR(str_);
+  str = to_anthy(REFER_C_STR(str_));
   anthy_set_string(ac, str);
+  free(str);
 
   return uim_scm_f();
 }
@@ -195,7 +236,7 @@ get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
     free(buf);
     uim_fatal_error("anthy_get_segment() failed");
   }
-  buf_ = MAKE_STR_DIRECTLY(buf);
+  buf_ = MAKE_STR_DIRECTLY(from_anthy(buf));
 
   return buf_;
 }
@@ -261,12 +302,13 @@ set_prediction_src_string(uim_lisp ac_, uim_lisp str_)
 {
 #ifdef HAS_ANTHY_PREDICTION
   anthy_context_t ac;
-  const char *str;
+  char *str;
 
   ac = get_anthy_context(ac_);
-  str = REFER_C_STR(str_);
+  str = to_anthy(REFER_C_STR(str_));
 
   anthy_set_prediction_string(ac, str);
+  free(str);
 #endif
   return uim_scm_f();
 }
@@ -312,7 +354,7 @@ get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
     free(buf);
     uim_fatal_error("anthy_get_prediction() failed");
   }
-  buf_ = MAKE_STR_DIRECTLY(buf);
+  buf_ = MAKE_STR_DIRECTLY(from_anthy(buf));
 
   return buf_;
 #else
@@ -386,4 +428,14 @@ uim_anthy_plugin_instance_quit(void)
     anthy_quit();
     initialized = UIM_FALSE;
   }
+#ifndef LIBANTHY_UTF8_CAPABLE
+  if (iconv_cd_to_anthy) {
+    uim_iconv->release(iconv_cd_to_anthy);
+    iconv_cd_to_anthy = NULL;
+  }
+  if (iconv_cd_from_anthy) {
+    uim_iconv->release(iconv_cd_from_anthy);
+    iconv_cd_from_anthy = NULL;
+  }
+#endif
 }

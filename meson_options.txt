@@ -1,19 +1,19 @@
 option('anthy',
        type: 'feature',
        value: 'auto',
-       description: 'build a plugin for Anthy (EUC-JP)')
+       description: 'build a plugin for Anthy')
 option('anthy_static',
        type: 'boolean',
        value: false,
-       description: 'build Anthy (EUC-JP) into libuim instead of a plugin')
+       description: 'build Anthy into libuim instead of a plugin')
 option('anthy_utf8',
        type: 'feature',
        value: 'disabled',
-       description: 'build a plugin for Anthy (UTF-8)')
+       description: 'build a plugin for Anthy with anthy-unicode or libanthy that can handle UTF-8')
 option('anthy_utf8_static',
        type: 'boolean',
        value: false,
-       description: 'build Anthy (UTF-8) into libuim instead of a plugin')
+       description: 'same as anthy_static')
 option('canna',
        type: 'boolean',
        value: false,

@@ -169,6 +169,20 @@ fi
 
 AM_CONDITIONAL(ANTHY_UTF8, test "x$with_anthy_utf8" = xyes)
 
+# Anthy and Anthy (UTF-8) share one plugin. libanthy that can handle
+# UTF-8 is preferred.
+if test "x$with_anthy_utf8" = xyes; then
+  ANTHY_PLUGIN_LIBS="$ANTHY_UTF8_LIBS"
+  ANTHY_PLUGIN_CFLAGS="$ANTHY_UTF8_CFLAGS"
+else
+  ANTHY_PLUGIN_LIBS="$ANTHY_LIBS"
+  ANTHY_PLUGIN_CFLAGS="$ANTHY_CFLAGS"
+fi
+AC_SUBST(ANTHY_PLUGIN_LIBS)
+AC_SUBST(ANTHY_PLUGIN_CFLAGS)
+AM_CONDITIONAL(ANTHY_PLUGIN,
+               test "x$with_anthy" = xyes || test "x$with_anthy_utf8" = xyes)
+
 dnl for uim-dict.xml.in
 if test "x$with_anthy" = xyes || test "x$with_anthy_utf8" = xyes; then
   UI_XML_ANTHY_START=""
@@ -1730,16 +1744,17 @@ AC_ARG_ENABLE(anthy-static,
   [],
   [enable_anthy_static=no])
 
-AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test "x$enable_anthy_static" = xyes)
-
 AC_ARG_ENABLE(anthy-utf8-static,
   AC_HELP_STRING([--enable-anthy-utf8-static],
-    [enable static Anthy-UTF8]),
+    [enable static Anthy-UTF8 (same as --enable-anthy-static)]),
   [],
   [enable_anthy_utf8_static=no])
 
-AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC,
-               test "x$enable_anthy_utf8_static" = xyes)
+AM_CONDITIONAL(ENABLE_ANTHY_STATIC,
+               (test "x$with_anthy" = xyes ||
+                test "x$with_anthy_utf8" = xyes) &&
+               (test "x$enable_anthy_static" = xyes ||
+                test "x$enable_anthy_utf8_static" = xyes))
 
 # ****************************
 # *** Tests for uim-notify ***

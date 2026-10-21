@@ -11,13 +11,11 @@ GMOFILES = $(LINGUAS:%=%.gmo)
 
 POTFILES = $(shell sed -e '/^\#/d' -e 's|^|$(top_srcdir)/|' \
 	$(srcdir)/POTFILES.in)
-EUCJP_POTFILES = $(shell sed -e '/^\#/d' -e 's|^|$(top_srcdir)/|' \
-	$(srcdir)/POTFILES.eucjp.in)
 
-EXTRA_DIST = LINGUAS POTFILES.in POTFILES.eucjp.in \
+EXTRA_DIST = LINGUAS POTFILES.in \
 	meson.build update-po.sh \
 	$(LINGUAS:%=%.po)
-CLEANFILES = $(GMOFILES) $(DOMAIN).pot eucjp.pot
+CLEANFILES = $(GMOFILES) $(DOMAIN).pot
 SUFFIXES = .po .gmo
 
 all-local: $(GMOFILES)
@@ -31,8 +29,7 @@ UPDATE_PO_ARGS = '$(abs_top_srcdir)' '$(abs_builddir)' '$(VERSION)' \
 	'$(XGETTEXT)' '$(MSGMERGE)' '$(MSGATTRIB)'
 
 $(DOMAIN).pot: $(srcdir)/update-po.sh \
-	$(srcdir)/POTFILES.in $(POTFILES) \
-	$(srcdir)/POTFILES.eucjp.in $(EUCJP_POTFILES)
+	$(srcdir)/POTFILES.in $(POTFILES)
 	$(UPDATE_PO) pot $(UPDATE_PO_ARGS)
 
 # Merge the current sources into the translations.  This is the only

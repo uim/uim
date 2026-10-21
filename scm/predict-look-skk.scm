@@ -1,6 +1,6 @@
 ;;; predict-look-skk.scm: predicion using look with SKK-JISYO
 ;;;
-;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2009-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -42,13 +42,14 @@
 
 (class-set-method! predict-look-skk search
   (lambda (self str)
-    (let* ((internal-str (predict->internal-charset self str))
-           (looked (look-lib-look #f #f
+    ;; The lines of SKK-JISYO are converted to STR's encoding first so
+    ;; that they can be processed as strings.
+    (let* ((looked (look-lib-look #f #f
                                   (predict-look-skk-limit self)
                                   (predict-look-skk-jisyo self)
-                                  internal-str))
+                                  (predict->internal-charset self str)))
            (ret (map (lambda (x)
-                       (string-split x " "))
+                       (string-split (predict->external-charset self x) " "))
                      (if looked
                          looked
                          '())))
@@ -57,7 +58,7 @@
                    (map (lambda (x)
                           (map (lambda (l)
                                  (cons
-                                  (string-append internal-str (car x))
+                                  (string-append str (car x))
                                   (let ((s (string-split l ";")))
                                     (if (= 2 (length s))
                                             s
@@ -71,11 +72,11 @@
                    (predict-look-skk-limit self))
                 yomi/kanji/appendix
                 (take yomi/kanji/appendix (predict-look-skk-limit self))))
-           (yomi     (map (lambda (x) (predict->external-charset self (list-ref x 0)))
+           (yomi     (map (lambda (x) (list-ref x 0))
                           limited-yomi/kanji/appendix))
-           (kanji    (map (lambda (x) (predict->external-charset self (list-ref x 1)))
+           (kanji    (map (lambda (x) (list-ref x 1))
                           limited-yomi/kanji/appendix))
-           (appendix (map (lambda (x) (predict->external-charset self (list-ref x 2)))
+           (appendix (map (lambda (x) (list-ref x 2))
                           limited-yomi/kanji/appendix)))
       (make-predict-result yomi kanji appendix))))
 

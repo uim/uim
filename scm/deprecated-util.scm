@@ -1,6 +1,6 @@
 ;;; util.scm: Deprecated utility functions for uim.
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -67,17 +67,10 @@
 	  lst))))
 
 ;; TODO: rewrite list processing with 'string->list'
-;; split EUC-JP string into reversed character list
+;; split string into reversed character list
 (define string-to-list
   (lambda (s)
-    (with-char-codec "EUC-JP"
-      (lambda ()
-	(map! (lambda (c)
-		(let ((str (list->string (list c))))
-		  (with-char-codec "ISO-8859-1"
-		    (lambda ()
-		      (%%string-reconstruct! str)))))
-	      (reverse! (string->list s)))))))
+    (map! string (reverse! (string->list s)))))
 
 ;; TODO: replace with symbol-append
 ;;

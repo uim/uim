@@ -35,10 +35,12 @@ scm/annotation-custom.scm
 scm/annotation-dict.scm
 scm/annotation-filter.scm
 scm/annotation.scm
+scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy-utf8-custom.scm
 scm/byeoru-custom.scm
 scm/byeoru-key-custom.scm
+scm/canna-custom.scm
 scm/canna-key-custom.scm
 scm/cannav3-socket.scm
 scm/custom.scm
@@ -51,6 +53,7 @@ scm/generic-custom.scm
 scm/generic-key-custom.scm
 scm/generic-predict.scm
 scm/generic.scm
+scm/google-cgiapi-jp-custom.scm
 scm/google-cgiapi-jp-key-custom.scm
 scm/hangul.scm
 scm/http-client.scm
@@ -58,6 +61,7 @@ scm/im.scm
 scm/im-custom.scm
 scm/ipa-x-sampa.scm
 scm/iso-639-1.scm
+scm/japanese-custom.scm
 scm/latin.scm
 scm/lolevel.scm
 scm/look-custom.scm
