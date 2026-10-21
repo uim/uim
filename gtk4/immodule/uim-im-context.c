@@ -538,6 +538,41 @@ candidates_view_index_changed_cb(UIMCandidatesView *view, gpointer data)
   uim_im_context_ensure_page_candidates(uic, new_page);
 }
 
+/* Fetch the target page before shifting, so that the popover never
+ * shows an empty page while waiting for the uim backend. */
+static void
+uim_im_context_shift_page(UIMIMContext *uic, gboolean forward)
+{
+  UIMCandidatesView *view = uic->candidates_view;
+
+  guint new_page =
+    uim_candidates_view_query_new_page_by_shift_page(view, forward);
+  uim_im_context_ensure_page_candidates(uic, new_page);
+
+  g_signal_handlers_block_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+  uim_candidates_view_shift_page(view, forward);
+  gint index = uim_candidates_view_get_index(view);
+  if (index != -1)
+    uim_set_candidate_index(uic->uc, index);
+  g_signal_handlers_unblock_by_func(
+    view,
+    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
+    uic);
+
+  uim_im_context_show_candidates(uic);
+}
+
+static void
+candidates_view_shift_page_requested_cb(UIMCandidatesView *view,
+                                        gboolean forward,
+                                        gpointer data)
+{
+  uim_im_context_shift_page(data, forward);
+}
+
 static void
 cand_activate_cb(void *ptr, int n_candidates, int display_limit)
 {
@@ -578,28 +613,7 @@ cand_select_cb(void *ptr, int index)
 static void
 cand_shift_page_cb(void *ptr, int direction)
 {
-  UIMIMContext *uic = ptr;
-  UIMCandidatesView *view = uic->candidates_view;
-  gboolean forward = direction != 0;
-
-  guint new_page =
-    uim_candidates_view_query_new_page_by_shift_page(view, forward);
-  uim_im_context_ensure_page_candidates(uic, new_page);
-
-  g_signal_handlers_block_by_func(
-    view,
-    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
-    uic);
-  uim_candidates_view_shift_page(view, forward);
-  gint index = uim_candidates_view_get_index(view);
-  if (index != -1)
-    uim_set_candidate_index(uic->uc, index);
-  g_signal_handlers_unblock_by_func(
-    view,
-    (gpointer)(uintptr_t)candidates_view_index_changed_cb,
-    uic);
-
-  uim_im_context_show_candidates(uic);
+  uim_im_context_shift_page(ptr, direction != 0);
 }
 
 static void
@@ -1171,6 +1185,10 @@ uim_im_context_init(UIMIMContext *uic)
   g_signal_connect(uic->candidates_view,
                    "index-changed",
                    G_CALLBACK(candidates_view_index_changed_cb),
+                   uic);
+  g_signal_connect(uic->candidates_view,
+                   "shift-page-requested",
+                   G_CALLBACK(candidates_view_shift_page_requested_cb),
                    uic);
   uim_im_context_update_candwin_pos_type(uic);
   uic->preedit_segments = g_array_new(FALSE, TRUE, sizeof(preedit_segment));
