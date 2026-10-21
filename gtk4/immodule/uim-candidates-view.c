@@ -274,6 +274,8 @@ page_button_clicked_cb(GtkButton *button, gpointer data)
   gboolean forward = button == GTK_BUTTON(view->next_page_button);
 
   if (view->candidate_index < 0) {
+    /* Select the first candidate of the current page so that uim is
+     * told about the new page. */
     view->candidate_index = view->page_index * view->display_limit;
   }
 
