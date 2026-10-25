@@ -395,6 +395,7 @@ XimIM::XimIM(Connection *c, C16 id)
     mLangRegion = NULL;
     mTreeTop = NULL;
     mLocale = NULL;
+    set_encoding("UTF-8");
 }
 
 XimIM::~XimIM()
