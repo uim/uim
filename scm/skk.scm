@@ -850,19 +850,17 @@
                                       (not (skk-context-candidate-window sc)))))
                    (show-annotation? (and skk-show-annotation-in-preedit?
                                           show-candidate?))
-                   (candidate (if show-candidate?
-                                  (if show-annotation?
-                                      (skk-lib-eval-candidate
-                                       (skk-get-current-candidate sc))
-                                      (skk-lib-eval-candidate
-                                       (skk-lib-remove-annotation
-                                        (skk-get-current-candidate sc))))
-                                  ""))
-                   (annotation-pos (and show-annotation?
-                                        (string-contains candidate ";" 0)))
-                   (body (if annotation-pos
-                             (substring candidate 0 annotation-pos)
-                             candidate))
+                   (cand (if show-candidate?
+                             (skk-get-current-candidate sc)
+                             ""))
+                   (body (if show-candidate?
+                             (skk-lib-eval-candidate
+                              (skk-lib-remove-annotation cand))
+                             ""))
+                   (annotation (if show-annotation?
+                                   (skk-lib-eval-candidate
+                                    (skk-lib-get-annotation cand))
+                                   ""))
                    (body-attr (bitwise-ior skk-preedit-attr-conv-body
                                            (if skk-show-cursor-on-preedit?
                                                preedit-cursor
@@ -872,11 +870,10 @@
                sc skk-preedit-attr-conv-okuri
                (skk-make-string (skk-context-okuri sc)
                                 (skk-context-kana-mode sc)))
-              (if annotation-pos
+              (if (not (string=? annotation ""))
                   (im-pushback-preedit
                    sc skk-preedit-attr-conv-body
-                   (substring candidate annotation-pos
-                              (string-length candidate)))))
+                   (string-append ";" annotation))))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-appendix
 	     (skk-make-string (skk-context-appendix sc)
