@@ -2273,12 +2273,13 @@
   (lambda (sc)
     (skk-flush sc)))
 
-(define skk-get-candidate-with-okuri
-  (lambda (cand okuri)
-    (let ((annotation (skk-lib-get-annotation cand)))
+(define skk-get-candidate-text
+  (lambda (raw-cand okuri-str)
+    (let ((annotation (skk-lib-eval-candidate
+                       (skk-lib-get-annotation raw-cand))))
       (string-append
-       (skk-lib-remove-annotation cand)
-       (skk-make-string okuri skk-type-hiragana)
+       (skk-lib-eval-candidate (skk-lib-remove-annotation raw-cand))
+       okuri-str
        (if (string=? annotation "")
            ""
            (string-append ";" annotation))))))
@@ -2286,21 +2287,22 @@
 (define skk-get-candidate-handler
   (lambda (sc idx accel-enum-hint)
     (let* ((dcsc (skk-find-descendant-context sc))
-	   (cand (skk-lib-eval-candidate
-		  (skk-get-nth-candidate
-		   dcsc
-		   (cond
-		    ((eq? skk-candidate-selection-style 'uim)
-		       idx)
-		    ((eq? skk-candidate-selection-style 'ddskk-like)
-		       (+ idx (- (skk-normalized-candidate-op-count) 1)))))))
+           (raw-cand (skk-get-nth-candidate
+                      dcsc
+                      (cond
+                       ((eq? skk-candidate-selection-style 'uim)
+                        idx)
+                       ((eq? skk-candidate-selection-style 'ddskk-like)
+                        (+ idx (- (skk-normalized-candidate-op-count) 1))))))
 	   (okuri (skk-context-okuri dcsc)))
       (list
-       (if (and
-	    (not (null? okuri))
-	    skk-show-candidates-with-okuri?)
-	   (skk-get-candidate-with-okuri cand okuri)
-	   cand)
+       (skk-get-candidate-text
+        raw-cand
+        (if (and
+             (not (null? okuri))
+             skk-show-candidates-with-okuri?)
+            (skk-make-string okuri skk-type-hiragana)
+            ""))
        (cond
 	((eq? skk-candidate-selection-style 'uim)
 	 (if (= skk-nr-candidate-max 0)
