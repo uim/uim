@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -733,6 +733,10 @@ int XimIM::get_compose_filename(char *filename, size_t len)
 
     if (lang_region == NULL || encoding == NULL)
 	return 0;
+
+    // Some clients such as xcb-imdkit send an empty locale name
+    if (lang_region[0] == '\0')
+	lang_region = "en_US";
 
     snprintf(locale, sizeof(locale), "%s.%s", lang_region, encoding);
     snprintf(compose_dir_file, sizeof(compose_dir_file), "%s/%s", XLIB_DIR, COMPOSE_DIR_FILE);
