@@ -586,7 +586,9 @@ void Connection::xim_encoding_negotiation(RxPacket *p)
 	// use COMPOUND_TEXT
 	if (!strcmp("COMPOUND_TEXT", buf))
 	    index = idx;
-	else {
+	else if (!strcmp("UTF8_STRING", buf)) {
+	    // UTF8_STRING isn't a locale encoding and isn't supported
+	} else {
 	    if (im)
 		im->set_encoding(buf);
 	}
