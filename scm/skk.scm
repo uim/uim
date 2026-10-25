@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -774,7 +774,9 @@
   (lambda (sc)
    (let ((h (skk-make-string (skk-context-head sc) skk-type-hiragana))
 	 (w (skk-context-dcomp-word sc)))
-     (skk-lib-substring w (string-length h) (string-length w)))))
+     (if (< (string-length w) (string-length h))
+         ""
+         (substring w (string-length h) (string-length w))))))
 
 
 (define skk-do-update-preedit

@@ -1,5 +1,5 @@
 /* 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -4281,39 +4281,6 @@ skk_eval_candidate(uim_lisp str_)
   return MAKE_STR_DIRECTLY(str);
 }
 
-/* only for siod */
-static uim_lisp
-skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
-{
-  const char *str;
-  char *s;
-  int start;
-  int end;
-  int len;
-  int i, j = 0;
-
-  str = REFER_C_STR(str_);
-  start = C_INT(start_);
-  end = C_INT(end_);
-
-  if (!str || start < 0 || start > end)
-    return MAKE_STR("");
-
-  len = strlen(str);
-
-  if (end > len)
-    return MAKE_STR("");
-
-  s = uim_malloc(end - start + 1);
-
-  for (i = start; i < end; i++) {
-    s[j] = str[i];
-    j++;
-  }
-  s[j] = '\0';
-  return MAKE_STR_DIRECTLY(s);
-}
-
 static uim_lisp
 skk_look_open(uim_lisp fn_)
 {
@@ -4478,7 +4445,6 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc2("skk-lib-clear-completions", skk_clear_completions);
   uim_scm_init_proc4("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_proc1("skk-lib-eval-candidate", skk_eval_candidate);
-  uim_scm_init_proc3("skk-lib-substring", skk_substring);
   uim_scm_init_proc1("skk-lib-look-open", skk_look_open);
   uim_scm_init_proc0("skk-lib-look-close", skk_look_close);
 }
