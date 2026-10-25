@@ -2275,15 +2275,13 @@
 
 (define skk-get-candidate-with-okuri
   (lambda (cand okuri)
-    (let ((pos (string-contains cand ";" 0)))
-      (if pos
-	  (string-append
-	   (substring cand 0 pos)
-	   (skk-make-string okuri skk-type-hiragana)
-	   (substring cand pos (string-length cand)))
-	  (string-append
-	   cand
-	   (skk-make-string okuri skk-type-hiragana))))))
+    (let ((annotation (skk-lib-get-annotation cand)))
+      (string-append
+       (skk-lib-remove-annotation cand)
+       (skk-make-string okuri skk-type-hiragana)
+       (if (string=? annotation "")
+           ""
+           (string-append ";" annotation))))))
 
 (define skk-get-candidate-handler
   (lambda (sc idx accel-enum-hint)
