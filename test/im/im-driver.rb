@@ -56,10 +56,11 @@ class IMDriver
   attr_reader :candidate_index
 
   # SCHEME is evaluated before the input method starts, to configure
-  # it.
-  def initialize(im, scheme)
+  # it. ENV is added to the environment of im-driver.
+  def initialize(im, scheme, env: {})
     @im = im
     @scheme = scheme
+    @env = env
     @preedit = []
     @commits = []
     @candidates = nil
@@ -70,7 +71,7 @@ class IMDriver
     program = ENV["IM_DRIVER"]
     raise("IM_DRIVER is not set") if program.nil?
 
-    @io = IO.popen([program, @im, "(begin #{@scheme})"], "r+")
+    @io = IO.popen(@env, [program, @im, "(begin #{@scheme})"], "r+")
     read_until("ready")
   end
 

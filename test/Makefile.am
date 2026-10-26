@@ -51,6 +51,7 @@ EXTRA_DIST = run.sh.in $(uim_tests) meson.build \
 	im/im-driver.c \
 	im/im-driver.rb \
 	im/run.rb \
+	im/test-anthy-utf8.rb \
 	im/test-canna.rb \
 	im/test-google-cgiapi-jp.rb
 
