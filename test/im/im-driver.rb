@@ -37,6 +37,17 @@ class IMDriver
     CURSOR = 4
   end
 
+  class << self
+    # Whether IM is built. Some input methods such as canna are built
+    # only when they're enabled.
+    def available?(im)
+      ENV.fetch("LIBUIM_SCM_FILES", "").split(":").any? do |dir|
+        path = File.join(dir, "installed-modules.scm")
+        File.exist?(path) and File.read(path).include?("\"#{im}\"")
+      end
+    end
+  end
+
   # [[attribute, text], ...]
   attr_reader :preedit
   attr_reader :commits

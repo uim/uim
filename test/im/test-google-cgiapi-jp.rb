@@ -31,6 +31,7 @@ require "json"
 require "socket"
 require "uri"
 
+require_relative "fake-dictionary"
 require_relative "im-driver"
 
 # Stands in for the Google CGI API for Japanese Input. uim reaches it as
@@ -41,12 +42,7 @@ require_relative "im-driver"
 # segments by itself. Every segment has its hiragana and katakana as the
 # last candidates.
 class FakeGoogleTransliterate
-  DICTIONARY = {
-    "かんじ" => ["漢字", "感じ", "幹事"],
-    "へんかん" => ["変換", "返還"],
-    "かん" => ["缶", "間"],
-    "じへんかん" => ["事変感"],
-  }
+  include FakeDictionary
 
   # The readings that uim asked for.
   attr_reader :readings
@@ -108,23 +104,8 @@ class FakeGoogleTransliterate
       segments = split(reading)
     end
     segments.collect do |segment|
-      candidates = DICTIONARY.fetch(segment, []) +
-                   [segment, segment.tr("ぁ-ゖ", "ァ-ヶ")]
-      [segment, candidates.uniq]
+      [segment, candidates(segment)]
     end
-  end
-
-  # Splits READING into the longest words in the dictionary.
-  def split(reading)
-    segments = []
-    until reading.empty?
-      length = reading.length.downto(1).find do |i|
-        DICTIONARY.key?(reading[0, i])
-      end || 1
-      segments << reading[0, length]
-      reading = reading[length..]
-    end
-    segments
   end
 end
 

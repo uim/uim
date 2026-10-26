@@ -59,5 +59,7 @@ if ruby.found()
          # ~/.uim and the user's customizations stay out of the test.
          'LIBUIM_VANILLA': '2',
        },
+       # Each test starts im-driver. It takes about 1 second on CI.
+       timeout: 300,
        suite: 'uim')
 endif
