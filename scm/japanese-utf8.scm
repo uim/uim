@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -46,18 +46,7 @@
 		      (%%string-reconstruct! str)))))
 	      (reverse! (string->list s)))))))
 
-(define japanese-utf8-convert-tree
-  (lambda (value)
-    (cond
-     ((string? value)
-      (iconv-convert "UTF-8" "EUC-JP" value))
-     ((pair? value)
-      (cons (japanese-utf8-convert-tree (car value))
-            (japanese-utf8-convert-tree (cdr value))))
-     (else
-      value))))
-
-(define ja-rk-rule-basic-utf8 (japanese-utf8-convert-tree ja-rk-rule-basic))
+(define ja-rk-rule-basic-utf8 ja-rk-rule-basic)
 
 (define ja-rk-rule-additional-utf8
   '(
@@ -613,8 +602,7 @@
 (define ja-rk-rule-update-utf8
   (lambda ()
     (ja-rk-rule-update)
-    (set! ja-rk-rule-basic-utf8
-      (japanese-utf8-convert-tree ja-rk-rule-basic))
+    (set! ja-rk-rule-basic-utf8 ja-rk-rule-basic)
     (ja-rk-rule-keep-consonant-update-utf8)))
 
 ;;; Convert EUC-JP code to UTF-8 string (cf. ucs->utf8-string in ichar.scm)
