@@ -164,6 +164,7 @@ class CannaTest < Test::Unit::TestCase
         (set! canna-lib-open-with-server
               (lambda (server)
                 (tcp-connect "127.0.0.1" "#{@server.port}")))
+        #{scheme}
       SCHEME
       begin
         @driver.start
@@ -176,6 +177,11 @@ class CannaTest < Test::Unit::TestCase
     ensure
       @server.stop
     end
+  end
+
+  # Additional configuration evaluated after canna is loaded.
+  def scheme
+    ""
   end
 
   def test_hiragana
@@ -298,5 +304,22 @@ class CannaTest < Test::Unit::TestCase
     @driver.type(keys)
     @driver.press("return")
     assert_equal([expected], @driver.commits)
+  end
+
+  sub_test_case("custom rule") do
+    # uim-pref saves these when the composing rule type is "Custom".
+    def scheme
+      <<~SCHEME
+        (custom-set-value! 'ja-rk-rule-type 'custom)
+        (custom-set-value! 'ja-rk-rule-table-basic
+                           (cons '("q" "" "きゅー") ja-rk-rule-table-basic))
+      SCHEME
+    end
+
+    def test_input
+      @driver.type("kyaq")
+      @driver.press("return")
+      assert_equal(["きゃきゅー"], @driver.commits)
+    end
   end
 end
