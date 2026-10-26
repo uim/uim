@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -430,6 +430,12 @@ bool
 is_locale_included(const char *locales, const char *locale)
 {
     char *sep, *tmp, *first;
+
+    // Some clients such as xcb-imdkit send an empty locale name. It
+    // must not match the empty locales of IMs whose language is "".
+    if (locale[0] == '\0')
+	return false;
+
     tmp = strdup(locales);
     first = tmp;
 
