@@ -39,6 +39,7 @@ scm/anthy-key-custom.scm
 scm/anthy-utf8-custom.scm
 scm/byeoru-custom.scm
 scm/byeoru-key-custom.scm
+scm/canna-custom.scm
 scm/canna-key-custom.scm
 scm/cannav3-socket.scm
 scm/custom.scm

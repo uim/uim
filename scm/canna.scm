@@ -30,7 +30,7 @@
 ;;;;
 
 (require "ustr.scm")
-(require "japanese.scm")
+(require "japanese-utf8.scm")
 (require "generic-predict.scm")
 (require "cannav3-socket.scm")
 (require-custom "generic-key-custom.scm")
@@ -101,9 +101,9 @@
 (register-action 'action_canna_hiragana
 		 (lambda (cc) ;; indication handler
 		   '(ja_hiragana
-		     "¤¢"
-		     "¤Ò¤é¤¬¤Ê"
-		     "¤Ò¤é¤¬¤ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‚"
+		     "ã²ã‚‰ãŒãª"
+		     "ã²ã‚‰ãŒãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 
 		 (lambda (cc) ;; activity predicate
 		   (and (canna-context-on cc)
@@ -120,9 +120,9 @@
 (register-action 'action_canna_katakana
 		 (lambda (cc)
 		   '(ja_katakana
-		     "¥¢"
-		     "¥«¥¿¥«¥Ê"
-		     "¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‚¢"
+		     "ã‚«ã‚¿ã‚«ãƒŠ"
+		     "ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
 		        (not (canna-context-alnum cc))
@@ -137,9 +137,9 @@
 (register-action 'action_canna_halfkana
 		 (lambda (cc)
 		   '(ja_halfkana
-		     "±"
-		     "È¾³Ñ¥«¥¿¥«¥Ê"
-		     "È¾³Ñ¥«¥¿¥«¥ÊÆşÎÏ¥â¡¼¥É"))
+		     "ï½±"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠ"
+		     "åŠè§’ã‚«ã‚¿ã‚«ãƒŠå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
 			(not (canna-context-alnum cc))
@@ -154,8 +154,8 @@
 		 (lambda (cc) ;; indication handler
 		   '(ja_halfwidth_alnum
 		     "a"
-		     "È¾³Ñ±Ñ¿ô"
-		     "È¾³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
+		     "åŠè§’è‹±æ•°"
+		     "åŠè§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc) ;; activity predicate
 		   (and (canna-context-on cc)
 			(canna-context-alnum cc)
@@ -173,8 +173,8 @@
 		 (lambda (cc)
 		   '(ja_direct
 		     "-"
-		     "Ä¾ÀÜÆşÎÏ"
-		     "Ä¾ÀÜ(ÌµÊÑ´¹)ÆşÎÏ¥â¡¼¥É"))
+		     "ç›´æ¥å…¥åŠ›"
+		     "ç›´æ¥(ç„¡å¤‰æ›)å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (not (canna-context-on cc)))
 		 (lambda (cc)
@@ -184,9 +184,9 @@
 (register-action 'action_canna_fullwidth_alnum
 		 (lambda (cc)
 		   '(ja_fullwidth_alnum
-		     "£Á"
-		     "Á´³Ñ±Ñ¿ô"
-		     "Á´³Ñ±Ñ¿ôÆşÎÏ¥â¡¼¥É"))
+		     "ï¼¡"
+		     "å…¨è§’è‹±æ•°"
+		     "å…¨è§’è‹±æ•°å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
 			(canna-context-alnum cc)
@@ -203,30 +203,30 @@
 (register-action 'action_canna_roma
 		 (lambda (cc)
 		   '(ja_romaji
-		     "£Ò"
-		     "¥í¡¼¥Ş»ú"
-		     "¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "ï¼²"
+		     "ãƒ­ãƒ¼ãƒå­—"
+		     "ãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-roma))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
 		   (rk-context-set-rule! (canna-context-rkc cc)
-					 ja-rk-rule)
+					 ja-rk-rule-utf8)
 		   (canna-context-set-input-rule! cc canna-input-rule-roma)))
 
 (register-action 'action_canna_kana
 		 (lambda (cc)
 		   '(ja_kana
-		     "¤«"
-		     "¤«¤Ê"
-		     "¤«¤ÊÆşÎÏ¥â¡¼¥É"))
+		     "ã‹"
+		     "ã‹ãª"
+		     "ã‹ãªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-kana))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
-                   (require "japanese-kana.scm")
+                   (require "japanese-kana-utf8.scm")
 		   (canna-context-set-input-rule! cc canna-input-rule-kana)
                    (canna-context-change-kana-mode!
                      cc (canna-context-kana-mode cc))
@@ -235,49 +235,49 @@
 (register-action 'action_canna_azik
 		 (lambda (cc)
 		   '(ja_azik
-		     "£Ú"
+		     "ï¼º"
 		     "AZIK"
-		     "AZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "AZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-azik))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
-                   (require "japanese-azik.scm")
+                   (require "japanese-azik-utf8.scm")
 		   (rk-context-set-rule! (canna-context-rkc cc)
-					 ja-azik-rule)
+					 ja-azik-rule-utf8)
 		   (canna-context-set-input-rule! cc canna-input-rule-azik)))
 
 (register-action 'action_canna_kzik
 		 (lambda (cc)
 		   '(ja_kzik
-		     "£Ë"
+		     "ï¼«"
 		     "KZIK"
-		     "KZIK³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "KZIKæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-kzik))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
-                   (require "japanese-kzik.scm")
+                   (require "japanese-kzik-utf8.scm")
 		   (rk-context-set-rule! (canna-context-rkc cc)
-					 ja-kzik-rule)
+					 ja-kzik-rule-utf8)
 		   (canna-context-set-input-rule! cc canna-input-rule-kzik)))
 
 (register-action 'action_canna_act
 		 (lambda (cc)
 		   '(ja_act
-		     "£Ã"
+		     "ï¼£"
 		     "ACT"
-		     "ACT³ÈÄ¥¥í¡¼¥Ş»úÆşÎÏ¥â¡¼¥É"))
+		     "ACTæ‹¡å¼µãƒ­ãƒ¼ãƒå­—å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-act))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
-                   (require "japanese-act.scm")
+                   (require "japanese-act-utf8.scm")
 		   (rk-context-set-rule! (canna-context-rkc cc)
-					 ja-act-rule)
+					 ja-act-rule-utf8)
 		   (canna-context-set-input-rule! cc canna-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
@@ -360,7 +360,7 @@
 
 (define (canna-context-new id im)
   (let ((cc (canna-context-new-internal id im))
-	(rkc (rk-context-new ja-rk-rule #t #f)))
+	(rkc (rk-context-new ja-rk-rule-utf8 #t #f)))
 ;    (canna-context-set-cc-id! cc (if canna-init-lib-ok?
 ;				      (canna-lib-alloc-context) ()))
     (canna-context-set-cc-id! cc (canna-lib-alloc-context))
@@ -373,7 +373,7 @@
         (begin
           (canna-context-set-prediction-ctx! cc (predict-make-meta-search))
           (predict-meta-open (canna-context-prediction-ctx cc) "canna")
-          (predict-meta-set-external-charset! (canna-context-prediction-ctx cc) "EUC-JP")))
+          (predict-meta-set-external-charset! (canna-context-prediction-ctx cc) "UTF-8")))
     cc))
 
 (define (canna-commit-raw cc)
@@ -397,9 +397,9 @@
         (rk-context-set-rule!
 	 (canna-context-rkc cc)
 	 (cond
-	  ((= kana-mode canna-type-hiragana) ja-kana-hiragana-rule)
-	  ((= kana-mode canna-type-katakana) ja-kana-katakana-rule)
-	  ((= kana-mode canna-type-halfkana) ja-kana-halfkana-rule))))
+	  ((= kana-mode canna-type-hiragana) ja-kana-hiragana-rule-utf8)
+	  ((= kana-mode canna-type-katakana) ja-kana-katakana-rule-utf8)
+	  ((= kana-mode canna-type-halfkana) ja-kana-halfkana-rule-utf8))))
     (canna-context-set-kana-mode! cc kana-mode)))
 
 (define canna-make-whole-string
@@ -416,8 +416,8 @@
 
       (if (= rule canna-input-rule-kana)
 	  (ja-make-kana-str
-	   (ja-make-kana-str-list
-	    (string-to-list 
+	   (ja-make-kana-str-list-utf8
+	    (string-to-list-utf8 
 	     (string-append
 	      (string-append-map-ustr-former extract-kana preconv-str)
 	      (if convert-pending-into-kana?
@@ -445,13 +445,13 @@
     (if (not (null? raw-str-list))
 	(if wide?
 	    (string-append
-	     (ja-string-list-to-wide-alphabet
+	     (ja-string-list-to-wide-alphabet-utf8
 	      (if upper?
 		  (map charcode->string
 		       (map ichar-upcase
 			    (map string->charcode
-				 (string-to-list (car raw-str-list)))))
-		  (string-to-list (car raw-str-list))))
+				 (string-to-list-utf8 (car raw-str-list)))))
+		  (string-to-list-utf8 (car raw-str-list))))
 	     (canna-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
 	     (if upper?
@@ -459,7 +459,7 @@
 		  (map charcode->string
 		       (map ichar-upcase
 			    (map string->charcode
-				 (string-to-list (car raw-str-list))))))
+				 (string-to-list-utf8 (car raw-str-list))))))
 		 (car raw-str-list))
 	     (canna-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
@@ -665,10 +665,10 @@
      ((canna-space-key? key key-state)
       (if (canna-context-alnum cc)
 	  (im-commit cc (list-ref
-			 ja-alnum-space
+			 ja-alnum-space-utf8
 			 (- (canna-context-alnum-type cc)
 			    canna-type-halfwidth-alnum)))
-	  (im-commit cc (list-ref ja-space (canna-context-kana-mode cc)))))
+	  (im-commit cc (list-ref ja-space-utf8 (canna-context-kana-mode cc)))))
 
      ((symbol? key)
       (canna-commit-raw cc))
@@ -680,8 +680,8 @@
 			       (if (= (canna-context-alnum-type cc)
 				      canna-type-halfwidth-alnum)
 			       (list key-str key-str key-str)
-			       (list (ja-wide key-str) (ja-wide key-str)
-				     (ja-wide key-str))))
+			       (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
+				     (ja-wide-utf8 key-str))))
 	    (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
 	  (let* ((key-str (charcode->string
 		           (if (= rule canna-input-rule-kana)
@@ -980,7 +980,7 @@
     (and
       str
       canna-auto-start-henkan?
-      (string-find japanese-auto-start-henkan-keyword-list str)
+      (string-find japanese-auto-start-henkan-keyword-list-utf8 str)
       (begin
 	(canna-reset-prediction-window cc)
 	(canna-begin-conv cc))))
@@ -1032,14 +1032,14 @@
       (ustr-clear-former! preconv-str)
       (ustr-clear-former! raw-str))
        
-     ;; ¸½ºß¤È¤ÏµÕ¤Î¤«¤Ê¥â¡¼¥É¤Ç¤«¤Ê¤ò³ÎÄê¤¹¤ë
+     ;; ç¾åœ¨ã¨ã¯é€†ã®ã‹ãªãƒ¢ãƒ¼ãƒ‰ã§ã‹ãªã‚’ç¢ºå®šã™ã‚‹
      ((and
        (not (canna-context-alnum cc))
        (canna-commit-as-opposite-kana-key? key key-state))
       (im-commit cc (canna-make-whole-string cc #t (ja-opposite-kana kana)))
       (canna-flush cc))
 
-     ;; Transposing¾õÂÖ¤Ø°Ü¹Ô
+     ;; TransposingçŠ¶æ…‹ã¸ç§»è¡Œ
      ((or (canna-transpose-as-hiragana-key? key key-state)
 	  (canna-transpose-as-katakana-key? key key-state)
 	  (canna-transpose-as-halfkana-key? key key-state)
@@ -1160,7 +1160,7 @@
                     (begin
                       (ustr-insert-seq! preconv-str residual-kana)
                       (ustr-insert-elem! raw-str (reverse
-                                                   (string-to-list pend))))
+                                                   (string-to-list-utf8 pend))))
                     (begin
                       (ustr-insert-elem! preconv-str residual-kana)
                       (ustr-insert-elem! raw-str pend)))))
@@ -1168,8 +1168,8 @@
 			       (if (= (canna-context-alnum-type cc)
 				      canna-type-halfwidth-alnum)
 				   (list key-str key-str key-str)
-				   (list (ja-wide key-str) (ja-wide key-str)
-					 (ja-wide key-str))))
+				   (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
+					 (ja-wide-utf8 key-str))))
 	    (ustr-insert-elem! raw-str key-str)
 	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
@@ -1188,7 +1188,7 @@
 	          (if (and next-pend
 		           (not (string=? next-pend "")))
 		      (ustr-insert-seq! raw-str
-                                        (reverse (string-to-list pend)))
+                                        (reverse (string-to-list-utf8 pend)))
 		      (if (list? (car res))
 		          (begin
                             (if (member pend
@@ -1198,7 +1198,7 @@
                               ;; charactear as one raw-str in this case
                               (ustr-insert-elem! raw-str pend)
                               (ustr-insert-elem! raw-str (reverse
-                                                           (string-to-list
+                                                           (string-to-list-utf8
                                                              pend))))
                             ;; assume key-str as a vowel
 			    (ustr-insert-elem! raw-str key-str))
@@ -1312,7 +1312,7 @@
      (append left-str
 	     (if residual-kana
                (if (list? (car residual-kana))
-                 (reverse (string-to-list pending))
+                 (reverse (string-to-list-utf8 pending))
 		 (list pending))
                '())
 	      right-str))))
@@ -1320,20 +1320,20 @@
 (define canna-get-raw-candidate
   (lambda (cc cc-id seg-idx cand-idx)
     (let* ((preconv
-	    (ja-join-vu (string-to-list
+	    (ja-join-vu-utf8 (string-to-list-utf8
 			 (canna-make-whole-string cc #t canna-type-hiragana))))
 	   (unconv-candidate (canna-lib-get-unconv-candidate cc-id seg-idx))
 	   (unconv (if unconv-candidate
-		       (ja-join-vu (string-to-list unconv-candidate))
+		       (ja-join-vu-utf8 (string-to-list-utf8 unconv-candidate))
 		       '()))
 	   (raw-str (reverse (canna-get-raw-str-seq cc))))
       (cond
        ((= cand-idx canna-candidate-type-hiragana)
 	(string-list-concat unconv))
        ((= cand-idx canna-candidate-type-katakana)
-	(ja-make-kana-str (ja-make-kana-str-list unconv) canna-type-katakana))
+	(ja-make-kana-str (ja-make-kana-str-list-utf8 unconv) canna-type-katakana))
        ((= cand-idx canna-candidate-type-halfkana)
-	(ja-make-kana-str (ja-make-kana-str-list unconv) canna-type-halfkana))
+	(ja-make-kana-str (ja-make-kana-str-list-utf8 unconv) canna-type-halfkana))
        (else
 	(if (not (null? unconv))
 	    (if (member (car unconv) preconv)
@@ -1743,7 +1743,7 @@
 (register-im
  'canna
  "ja"
- "EUC-JP"
+ "UTF-8"
  canna-im-name-label
  canna-im-short-desc
  #f
