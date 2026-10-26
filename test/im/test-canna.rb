@@ -29,6 +29,7 @@
 
 
 require "socket"
+require "tmpdir"
 
 require_relative "fake-dictionary"
 require_relative "im-driver"
@@ -159,7 +160,7 @@ class CannaTest < Test::Unit::TestCase
     @server.start
     begin
       # Connect to the fake server because cannaserver uses a fixed port.
-      @driver = IMDriver.new("canna", <<~SCHEME)
+      @driver = IMDriver.new("canna", <<~SCHEME, env: env)
         (require-module "canna")
         (set! canna-lib-open-with-server
               (lambda (server)
@@ -182,6 +183,11 @@ class CannaTest < Test::Unit::TestCase
   # Additional configuration evaluated after canna is loaded.
   def scheme
     ""
+  end
+
+  # Additional environment variables for im-driver.
+  def env
+    {}
   end
 
   def test_hiragana
@@ -314,6 +320,36 @@ class CannaTest < Test::Unit::TestCase
         (custom-set-value! 'ja-rk-rule-table-basic
                            (cons '("q" "" "きゅー") ja-rk-rule-table-basic))
       SCHEME
+    end
+
+    def test_input
+      @driver.type("kyaq")
+      @driver.press("return")
+      assert_equal(["きゃきゅー"], @driver.commits)
+    end
+  end
+
+  sub_test_case("~/.uim") do
+    def setup
+      Dir.mktmpdir do |dir|
+        @user_scm_file = File.join(dir, ".uim")
+        File.write(@user_scm_file, <<~SCHEME)
+          (set! ja-rk-rule-basic
+                (cons '((("q")) ("きゅー" "キュー" "ｷｭｰ"))
+                      ja-rk-rule-basic))
+          (ja-rk-rule-update-utf8)
+        SCHEME
+        super
+      end
+    end
+
+    # LIBUIM_VANILLA=2 doesn't load ~/.uim. So it's loaded explicitly.
+    def scheme
+      "(load-user-conf)"
+    end
+
+    def env
+      {"LIBUIM_USER_SCM_FILE" => @user_scm_file}
     end
 
     def test_input
