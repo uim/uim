@@ -66,6 +66,9 @@
 (setenv "HOME" uim-test-directory)
 (setenv "XDG_RUNTIME_DIR" uim-test-directory)
 
+;; LIBUIM_VANILLA would skip the input methods and user.scm below.
+(setenv "LIBUIM_VANILLA" nil)
+
 (setenv "LIBUIM_USER_SCM_FILE"
         (expand-file-name "user.scm" uim-test-directory))
 (with-temp-file (getenv "LIBUIM_USER_SCM_FILE")
