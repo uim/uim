@@ -47,9 +47,11 @@ XFAIL_TESTS = $(uim_xfail_tests)
 endif
 
 EXTRA_DIST = run.sh.in $(uim_tests) meson.build \
+	im/fake-dictionary.rb \
 	im/im-driver.c \
 	im/im-driver.rb \
 	im/run.rb \
+	im/test-canna.rb \
 	im/test-google-cgiapi-jp.rb
 
 DISTCLEANFILES = run.sh
