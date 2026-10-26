@@ -1,7 +1,7 @@
 ;;; custom-rt.scm: Partial customization support for runtime input
 ;;;                processes
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -97,7 +97,7 @@
 (define custom-load-updated-group-conf
   (lambda (gsym)
     (or (not (custom-group-conf-updated? gsym))
-	(and (try-load (custom-file-path gsym))
+	(and (try-load-user-file (custom-file-path gsym))
 	     (custom-update-group-conf-freshness gsym)))))
 
 ;; full implementation
@@ -108,7 +108,7 @@
 ;;   -- YamaKen 2005-08-09
 (define custom-load-group-conf
   (lambda (gsym)
-    (try-load (custom-file-path gsym))))
+    (try-load-user-file (custom-file-path gsym))))
 
 ;; TODO: disable all newly defined customs when an error occurred in loading
 ;; full implementation

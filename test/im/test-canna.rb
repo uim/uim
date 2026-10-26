@@ -333,9 +333,11 @@ class CannaTest < Test::Unit::TestCase
     def setup
       Dir.mktmpdir do |dir|
         @user_scm_file = File.join(dir, ".uim")
-        File.write(@user_scm_file, <<~SCHEME)
+        encoding, output = data
+        # ~/.uim may be in EUC-JP, the encoding that uim used internally.
+        File.write(@user_scm_file, <<~SCHEME.encode(encoding))
           (set! ja-rk-rule-basic
-                (cons '((("q")) ("きゅー" "キュー" "ｷｭｰ"))
+                (cons '((("q")) ("#{output}" "#{output}" "#{output}"))
                       ja-rk-rule-basic))
           (ja-rk-rule-update-utf8)
         SCHEME
@@ -352,10 +354,18 @@ class CannaTest < Test::Unit::TestCase
       {"LIBUIM_USER_SCM_FILE" => @user_scm_file}
     end
 
+    # uim's iconv converted "EUC-JP" with EUC-JIS-2004 or EUC-JISX0213
+    # if available. "①" isn't in EUC-JP and "丂" (JIS X 0212) isn't in
+    # EUC-JISX0213.
+    data("UTF-8" => ["UTF-8", "きゅー"],
+         "EUC-JP" => ["EUC-JP", "きゅー"],
+         "EUC-JP: JIS X 0212" => ["EUC-JP", "丂"],
+         "EUC-JISX0213" => ["EUC-JISX0213", "①"])
     def test_input
+      _encoding, output = data
       @driver.type("kyaq")
       @driver.press("return")
-      assert_equal(["きゃきゅー"], @driver.commits)
+      assert_equal(["きゃ#{output}"], @driver.commits)
     end
   end
 end

@@ -1,6 +1,6 @@
 ;;; lolevel.scm: low level access utility
 ;;;
-;;; Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2009-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -72,12 +72,12 @@
            (let ((ret (take-while (lambda (x) (not (= x 0))) arg)))
              (loop (cdr fmt)
                    (drop arg (+ 1 (length ret)))
-                   (cons (list->string (map integer->char ret)) rest))))
+                   (cons (byte-list->string ret) rest))))
           ((eq? 's16 (car fmt))
            (let ((ret (take-while (lambda (x) (not (= x 0))) arg)))
              (loop (cdr fmt)
                    (drop arg (+ 2 (length ret))) ;; XXX
-                   (cons (list->string (map integer->char ret)) rest))))
+                   (cons (byte-list->string ret) rest))))
           ((eq? 'u8list (car fmt))
            (loop (cdr fmt) '() (cons arg rest)))
           (else

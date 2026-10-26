@@ -71,8 +71,8 @@
 	   (setugid?)
 	   (not home-dir))
 	  #f
-          (try-load (or (getenv "LIBUIM_USER_SCM_FILE")
-                        (string-append home-dir "/.uim")))))))
+          (try-load-user-file (or (getenv "LIBUIM_USER_SCM_FILE")
+                                  (string-append home-dir "/.uim")))))))
 
 (define load-modules
   (lambda ()
