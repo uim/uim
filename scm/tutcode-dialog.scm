@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -84,7 +84,7 @@
 (define tutcode-dialog-commit
   (lambda (dc str)
     (tutcode-dialog-commit-char-list
-     dc (reverse (string-to-list-utf8 str)))))
+     dc (reverse (string-to-list str)))))
 				 
 (define tutcode-dialog-commit-raw
   (lambda (dc key key-state)

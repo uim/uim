@@ -333,13 +333,13 @@ class CannaTest < Test::Unit::TestCase
     def setup
       Dir.mktmpdir do |dir|
         @user_scm_file = File.join(dir, ".uim")
-        encoding, output = data
+        encoding, output, update = data
         # ~/.uim may be in EUC-JP, the encoding that uim used internally.
         File.write(@user_scm_file, <<~SCHEME.encode(encoding))
           (set! ja-rk-rule-basic
                 (cons '((("q")) ("#{output}" "#{output}" "#{output}"))
                       ja-rk-rule-basic))
-          (ja-rk-rule-update-utf8)
+          (#{update})
         SCHEME
         super
       end
@@ -357,12 +357,15 @@ class CannaTest < Test::Unit::TestCase
     # uim's iconv converted "EUC-JP" with EUC-JIS-2004 or EUC-JISX0213
     # if available. "①" isn't in EUC-JP and "丂" (JIS X 0212) isn't in
     # EUC-JISX0213.
-    data("UTF-8" => ["UTF-8", "きゅー"],
-         "EUC-JP" => ["EUC-JP", "きゅー"],
-         "EUC-JP: JIS X 0212" => ["EUC-JP", "丂"],
-         "EUC-JISX0213" => ["EUC-JISX0213", "①"])
+    #
+    # ja-rk-rule-update-utf8 is a deprecated alias of ja-rk-rule-update.
+    data("UTF-8" => ["UTF-8", "きゅー", "ja-rk-rule-update"],
+         "EUC-JP" => ["EUC-JP", "きゅー", "ja-rk-rule-update"],
+         "EUC-JP: JIS X 0212" => ["EUC-JP", "丂", "ja-rk-rule-update"],
+         "EUC-JISX0213" => ["EUC-JISX0213", "①", "ja-rk-rule-update"],
+         "deprecated" => ["UTF-8", "きゅー", "ja-rk-rule-update-utf8"])
     def test_input
-      _encoding, output = data
+      _encoding, output, _update = data
       @driver.type("kyaq")
       @driver.press("return")
       assert_equal(["きゃ#{output}"], @driver.commits)

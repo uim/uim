@@ -8,6 +8,7 @@ uim_tests = \
         test-fail.scm \
         test-hangul.scm \
         test-iconv.scm \
+        test-japanese.scm \
         test-im.scm \
         test-lazy-load.scm \
         test-light-record.scm \

@@ -616,3 +616,10 @@
        rule-basic))
 
 (define ja-kzik-rule (append ja-kzik-rule-basic (ja-rk-kzik-apply-changeset ja-rk-rule-basic)))
+
+;; Deprecated: The names with the "-utf8" suffix are for compatibility.
+
+(define ja-kzik-rule-basic-utf8 ja-kzik-rule-basic)
+(define ja-rk-rule-basic-kzik-changeset-utf8 ja-rk-rule-basic-kzik-changeset)
+(define ja-rk-kzik-apply-changeset-utf8 ja-rk-kzik-apply-changeset)
+(define ja-kzik-rule-utf8 ja-kzik-rule)

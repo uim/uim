@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2010-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2010-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -54,7 +54,7 @@
 ;;; XXX:kigou-ruleの内容に応じた変換が必要なので、
 ;;;     この関数はtutcode-kigou-rule.scmファイル内に記述。
 (define (tutcode-kigou-rule-pre-translate translate-alist)
-  (require "japanese-utf8.scm") ; for ja-wide-utf8
+  (require "japanese.scm") ; for ja-wide
   (map
     (lambda (elem)
       (let*
@@ -63,7 +63,7 @@
          (key2 (cadr seq))
          (tr (and (string=? key2 " ") (assoc key1 translate-alist)))
          (tr-key (and tr (cadr tr)))
-         (tr-char (and tr-key (ja-wide-utf8 tr-key))))
+         (tr-char (and tr-key (ja-wide tr-key))))
         (if tr-char
           (list (list seq) (list tr-char))
           elem)))

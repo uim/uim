@@ -34,7 +34,7 @@
 
 (require "util.scm")
 (require "ustr.scm")
-(require "japanese-utf8.scm")
+(require "japanese.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "anthy-utf8-custom.scm")
 (require-custom "anthy-key-custom.scm")
@@ -243,7 +243,7 @@
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-rk-rule-utf8)
+					 ja-rk-rule)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-roma)))
 
@@ -260,7 +260,7 @@
 		      anthy-input-rule-kana))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-kana-utf8.scm")
+                   (require "japanese-kana.scm")
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-kana)
 		   (anthy-utf8-context-change-kana-mode! ac (anthy-utf8-context-kana-mode ac))
 		   (anthy-utf8-context-set-alnum! ac #f)
@@ -283,9 +283,9 @@
 		      anthy-input-rule-azik))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-azik-utf8.scm")
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-azik-rule-utf8)
+					 ja-azik-rule)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-azik)))
 
@@ -302,9 +302,9 @@
 		      anthy-input-rule-kzik))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-kzik-utf8.scm")
+                   (require "japanese-kzik.scm")
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-kzik-rule-utf8)
+					 ja-kzik-rule)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-kzik)))
 
@@ -321,9 +321,9 @@
 		      anthy-input-rule-act))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-act-utf8.scm")
+                   (require "japanese-act.scm")
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-act-rule-utf8)
+					 ja-act-rule)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-act)))
 
@@ -372,7 +372,7 @@
 (define anthy-utf8-context-new
  (lambda (id im)
    (let ((ac (anthy-utf8-context-new-internal id im))
-	 (rkc (rk-context-new ja-rk-rule-utf8 #t #f)))
+	 (rkc (rk-context-new ja-rk-rule #t #f)))
      (if (symbol-bound? 'anthy-utf8-lib-init)
          (begin
 	   (set! anthy-utf8-lib-initialized? (anthy-utf8-lib-init))
@@ -411,9 +411,9 @@
         (rk-context-set-rule!
 	 (anthy-utf8-context-rkc ac)
 	 (cond
-	  ((= kana-mode anthy-type-hiragana) ja-kana-hiragana-rule-utf8)
-	  ((= kana-mode anthy-type-katakana) ja-kana-katakana-rule-utf8)
-	  ((= kana-mode anthy-type-halfkana)  ja-kana-halfkana-rule-utf8))))
+	  ((= kana-mode anthy-type-hiragana) ja-kana-hiragana-rule)
+	  ((= kana-mode anthy-type-katakana) ja-kana-katakana-rule)
+	  ((= kana-mode anthy-type-halfkana)  ja-kana-halfkana-rule))))
     (anthy-utf8-context-set-kana-mode! ac kana-mode)))
 
 ;; TODO: generarize as multi-segment procedure
@@ -432,8 +432,8 @@
 
       (if (= rule anthy-input-rule-kana)
 	  (ja-make-kana-str
-	   (ja-make-kana-str-list-utf8
-	    (string-to-list-utf8
+	   (ja-make-kana-str-list
+	    (string-to-list
 	     (string-append
 	      (string-append-map-ustr-former extract-kana preconv-str)
 	      (if convert-pending-into-kana?
@@ -461,15 +461,15 @@
     (if (not (null? raw-str-list))
 	(if wide?
 	    (string-append
-	     (ja-string-list-to-wide-alphabet-utf8
+	     (ja-string-list-to-wide-alphabet
 	      (if upper?
 		  (map
 		   (lambda (x)
 		     (if (ichar-alphabetic? (string->charcode x))
 			 (charcode->string (ichar-upcase (string->charcode x)))
 			 x))
-		   (string-to-list-utf8 (car raw-str-list)))
-		  (string-to-list-utf8 (car raw-str-list))))
+		   (string-to-list (car raw-str-list)))
+		  (string-to-list (car raw-str-list))))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
 	     (if upper?
@@ -479,7 +479,7 @@
 		     (if (ichar-alphabetic? (string->charcode x))
 			 (charcode->string (ichar-upcase (string->charcode x)))
 			 x))
-		   (string-to-list-utf8 (car raw-str-list))))
+		   (string-to-list (car raw-str-list))))
 		 (car raw-str-list))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
@@ -619,7 +619,7 @@
 	     (if (> (string-length name) 5)
 		 (let ((keysym-head
 			(string-list-concat
-		       (list-head (reverse (string-to-list-utf8 name)) 5))))
+		       (list-head (reverse (string-to-list name)) 5))))
 		   (if (string=? keysym-head "-anak") ;; reverse
 		       #t
 		       #f))
@@ -722,10 +722,10 @@
        ((anthy-space-key? key key-state)
 	(if (anthy-utf8-context-alnum ac)
 	    (im-commit ac (list-ref
-			   ja-alnum-space-utf8
+			   ja-alnum-space
 			   (- (anthy-utf8-context-alnum-type ac)
 			      anthy-type-halfwidth-alnum)))
-	    (im-commit ac (list-ref ja-space-utf8 (anthy-utf8-context-kana-mode ac)))))
+	    (im-commit ac (list-ref ja-space (anthy-utf8-context-kana-mode ac)))))
 
        ((anthy-non-composing-symbol? ac key)
 	(anthy-utf8-commit-raw ac))
@@ -741,8 +741,8 @@
 				 (if (= (anthy-utf8-context-alnum-type ac)
 					anthy-type-halfwidth-alnum)
 				     (list key-str key-str key-str)
-				     (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
-					   (ja-wide-utf8 key-str))))
+				     (list (ja-wide key-str) (ja-wide key-str)
+					   (ja-wide key-str))))
 	      (ustr-insert-elem! (anthy-utf8-context-raw-ustr ac) key-str))
 	    (let* ((key-str (if (= rule anthy-input-rule-kana)
 	    			(if (symbol? key)
@@ -1087,7 +1087,7 @@
       (and
 	str
 	anthy-auto-start-henkan?
-	(string-find japanese-auto-start-henkan-keyword-list-utf8 str)
+	(string-find japanese-auto-start-henkan-keyword-list str)
 	(begin
 	  (anthy-utf8-reset-prediction-window ac)
 	  (anthy-utf8-begin-conv ac))))
@@ -1288,7 +1288,7 @@
                       (begin
                         (ustr-insert-seq! preconv-str residual-kana)
                         (ustr-insert-seq! raw-str (reverse
-                                                    (string-to-list-utf8 pend))))
+                                                    (string-to-list pend))))
                       (begin
                         (ustr-insert-elem! preconv-str residual-kana)
                         (ustr-insert-elem! raw-str pend)))))
@@ -1296,8 +1296,8 @@
 				 (if (= (anthy-utf8-context-alnum-type ac)
 					anthy-type-halfwidth-alnum)
 				     (list key-str key-str key-str)
-				     (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
-					   (ja-wide-utf8 key-str))))
+				     (list (ja-wide key-str) (ja-wide key-str)
+					   (ja-wide key-str))))
 	      (ustr-insert-elem! raw-str key-str)
 	      (check-auto-conv key-str))
 	    (let* ((key-str (if (= rule anthy-input-rule-kana)
@@ -1319,7 +1319,7 @@
 		    (if (and next-pend
 			     (not (string=? next-pend "")))
                         (ustr-insert-seq! raw-str
-                                          (reverse (string-to-list-utf8 pend)))
+                                          (reverse (string-to-list pend)))
 			(if (list? (car res))
 			    (begin
                               (if (member pend
@@ -1329,7 +1329,7 @@
                                 ;; charactear as one raw-str in this case
                                 (ustr-insert-elem! raw-str pend)
                                 (ustr-insert-seq! raw-str (reverse
-                                                            (string-to-list-utf8
+                                                            (string-to-list
                                                               pend))))
                               ;; assume key-str as a vowel
 			      (ustr-insert-elem!
@@ -1463,7 +1463,7 @@
       (append left-str
 	      (if residual-kana
                 (if (list? (car residual-kana))
-		  (reverse (string-to-list-utf8 pending))
+		  (reverse (string-to-list pending))
 		  (list pending))
 		  '())
 	      right-str))))
@@ -1471,11 +1471,11 @@
 (define anthy-utf8-get-raw-candidate
   (lambda (ac ac-id seg-idx cand-idx)
     (let* ((preconv
-	    (ja-join-vu-utf8 (string-to-list-utf8
+	    (ja-join-vu (string-to-list
 			 (anthy-utf8-make-whole-string ac #t anthy-type-hiragana))))
 	   (unconv-candidate (anthy-utf8-lib-get-unconv-candidate ac-id seg-idx))
 	   (unconv (if unconv-candidate
-		       (ja-join-vu-utf8 (string-to-list-utf8 unconv-candidate))
+		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
 	   (raw-str (reverse (anthy-utf8-get-raw-str-seq ac))))
       (if (not (null? unconv))

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -82,7 +82,7 @@
 (define skk-editor-commit
   (lambda (ec str)
     (skk-editor-commit-char-list
-     ec (reverse (string-to-list-utf8 str)))))
+     ec (reverse (string-to-list str)))))
 				 
 (define skk-editor-commit-raw
   (lambda (ec key key-state)
