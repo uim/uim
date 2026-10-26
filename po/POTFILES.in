@@ -35,6 +35,7 @@ scm/annotation-custom.scm
 scm/annotation-dict.scm
 scm/annotation-filter.scm
 scm/annotation.scm
+scm/anthy-custom.scm
 scm/anthy-key-custom.scm
 scm/anthy-utf8-custom.scm
 scm/byeoru-custom.scm

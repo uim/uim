@@ -144,7 +144,7 @@ class AnthyUTF8Test < Test::Unit::TestCase
     @driver.press("S-f9")
     @driver.type("-~")
     @driver.press("return")
-    assert_equal(["−〜"], @driver.commits)
+    assert_equal(["－～"], @driver.commits)
   end
 
   def test_symbols

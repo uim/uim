@@ -34,7 +34,7 @@
 
 (require "util.scm")
 (require "ustr.scm")
-(require "japanese.scm")
+(require "japanese-utf8.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "anthy-utf8-custom.scm")
 (require-custom "anthy-key-custom.scm")
@@ -89,12 +89,12 @@
      ((anthy-utf8-context-converting ac)
       (anthy-utf8-do-commit ac))
      ((anthy-utf8-context-transposing ac)
-      (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac))))
+      (im-commit ac (anthy-utf8-transposing-text ac)))
      ((and
        (anthy-utf8-context-on ac)
        (anthy-utf8-has-preedit? ac))
       (im-commit
-       ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac))))))
+       ac (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac)))))
     (anthy-utf8-flush ac)
     (anthy-utf8-update-preedit ac)))
 
@@ -105,14 +105,14 @@
        ((anthy-utf8-context-converting ac)
 	(anthy-utf8-do-commit ac))
        ((anthy-utf8-context-transposing ac)
-	(im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac)))
+	(im-commit ac (anthy-utf8-transposing-text ac))
 	(anthy-utf8-flush ac))
        ((and
 	 (anthy-utf8-context-on ac)
 	 (anthy-utf8-has-preedit? ac)
 	 (not (= old-kana new-mode)))
 	(im-commit
-	 ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac))))
+	 ac (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac)))
 	(anthy-utf8-flush ac)))
       (anthy-utf8-update-preedit ac))))
 
@@ -243,7 +243,7 @@
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-rk-rule)
+					 ja-rk-rule-utf8)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-roma)))
 
@@ -260,7 +260,7 @@
 		      anthy-input-rule-kana))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-kana.scm")
+                   (require "japanese-kana-utf8.scm")
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-kana)
 		   (anthy-utf8-context-change-kana-mode! ac (anthy-utf8-context-kana-mode ac))
 		   (anthy-utf8-context-set-alnum! ac #f)
@@ -283,9 +283,9 @@
 		      anthy-input-rule-azik))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-azik.scm")
+                   (require "japanese-azik-utf8.scm")
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-azik-rule)
+					 ja-azik-rule-utf8)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-azik)))
 
@@ -302,9 +302,9 @@
 		      anthy-input-rule-kzik))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-kzik.scm")
+                   (require "japanese-kzik-utf8.scm")
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-kzik-rule)
+					 ja-kzik-rule-utf8)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-kzik)))
 
@@ -321,9 +321,9 @@
 		      anthy-input-rule-act))
 		 (lambda (ac)
 		   (anthy-utf8-prepare-input-rule-activation ac)
-                   (require "japanese-act.scm")
+                   (require "japanese-act-utf8.scm")
 		   (rk-context-set-rule! (anthy-utf8-context-rkc ac)
-					 ja-act-rule)
+					 ja-act-rule-utf8)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-utf8-context-set-input-rule! ac anthy-input-rule-act)))
 
@@ -372,7 +372,7 @@
 (define anthy-utf8-context-new
  (lambda (id im)
    (let ((ac (anthy-utf8-context-new-internal id im))
-	 (rkc (rk-context-new ja-rk-rule #t #f)))
+	 (rkc (rk-context-new ja-rk-rule-utf8 #t #f)))
      (if (symbol-bound? 'anthy-utf8-lib-init)
          (begin
 	   (set! anthy-utf8-lib-initialized? (anthy-utf8-lib-init))
@@ -411,9 +411,9 @@
         (rk-context-set-rule!
 	 (anthy-utf8-context-rkc ac)
 	 (cond
-	  ((= kana-mode anthy-type-hiragana) ja-kana-hiragana-rule)
-	  ((= kana-mode anthy-type-katakana) ja-kana-katakana-rule)
-	  ((= kana-mode anthy-type-halfkana)  ja-kana-halfkana-rule))))
+	  ((= kana-mode anthy-type-hiragana) ja-kana-hiragana-rule-utf8)
+	  ((= kana-mode anthy-type-katakana) ja-kana-katakana-rule-utf8)
+	  ((= kana-mode anthy-type-halfkana)  ja-kana-halfkana-rule-utf8))))
     (anthy-utf8-context-set-kana-mode! ac kana-mode)))
 
 ;; TODO: generarize as multi-segment procedure
@@ -432,8 +432,8 @@
 
       (if (= rule anthy-input-rule-kana)
 	  (ja-make-kana-str
-	   (ja-make-kana-str-list
-	    (string-to-list
+	   (ja-make-kana-str-list-utf8
+	    (string-to-list-utf8
 	     (string-append
 	      (string-append-map-ustr-former extract-kana preconv-str)
 	      (if convert-pending-into-kana?
@@ -461,15 +461,15 @@
     (if (not (null? raw-str-list))
 	(if wide?
 	    (string-append
-	     (ja-string-list-to-wide-alphabet
+	     (ja-string-list-to-wide-alphabet-utf8
 	      (if upper?
 		  (map
 		   (lambda (x)
 		     (if (ichar-alphabetic? (string->charcode x))
 			 (charcode->string (ichar-upcase (string->charcode x)))
 			 x))
-		   (string-to-list (car raw-str-list)))
-		  (string-to-list (car raw-str-list))))
+		   (string-to-list-utf8 (car raw-str-list)))
+		  (string-to-list-utf8 (car raw-str-list))))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
 	     (if upper?
@@ -479,7 +479,7 @@
 		     (if (ichar-alphabetic? (string->charcode x))
 			 (charcode->string (ichar-upcase (string->charcode x)))
 			 x))
-		   (string-to-list (car raw-str-list))))
+		   (string-to-list-utf8 (car raw-str-list))))
 		 (car raw-str-list))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
@@ -590,7 +590,7 @@
 	       (> (string-length preconv-str)
 		  0))
 	  (begin
-	    (anthy-utf8-lib-set-string ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+	    (anthy-utf8-lib-set-string ac-id preconv-str)
 	    (let ((nr-segments (anthy-utf8-lib-get-nr-segments ac-id)))
 	      (ustr-set-latter-seq! (anthy-utf8-context-segments ac)
 				    (make-list nr-segments 0))
@@ -619,7 +619,7 @@
 	     (if (> (string-length name) 5)
 		 (let ((keysym-head
 			(string-list-concat
-		       (list-head (reverse (string-to-list name)) 5))))
+		       (list-head (reverse (string-to-list-utf8 name)) 5))))
 		   (if (string=? keysym-head "-anak") ;; reverse
 		       #t
 		       #f))
@@ -716,16 +716,16 @@
        
        ;; direct key => commit
        (direct
-	(im-commit ac (anthy-utf8-lib-eucjp-to-utf8 direct)))
+	(im-commit ac direct))
 
        ;; space key => commit
        ((anthy-space-key? key key-state)
 	(if (anthy-utf8-context-alnum ac)
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (list-ref
-			   ja-alnum-space
+	    (im-commit ac (list-ref
+			   ja-alnum-space-utf8
 			   (- (anthy-utf8-context-alnum-type ac)
-			      anthy-type-halfwidth-alnum))))
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (list-ref ja-space (anthy-utf8-context-kana-mode ac))))))
+			      anthy-type-halfwidth-alnum)))
+	    (im-commit ac (list-ref ja-space-utf8 (anthy-utf8-context-kana-mode ac)))))
 
        ((anthy-non-composing-symbol? ac key)
 	(anthy-utf8-commit-raw ac))
@@ -741,8 +741,8 @@
 				 (if (= (anthy-utf8-context-alnum-type ac)
 					anthy-type-halfwidth-alnum)
 				     (list key-str key-str key-str)
-				     (list (ja-wide key-str) (ja-wide key-str)
-					   (ja-wide key-str))))
+				     (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
+					   (ja-wide-utf8 key-str))))
 	      (ustr-insert-elem! (anthy-utf8-context-raw-ustr ac) key-str))
 	    (let* ((key-str (if (= rule anthy-input-rule-kana)
 	    			(if (symbol? key)
@@ -806,7 +806,7 @@
                (> (string-length preconv-str) 0)
                type)
         (begin
-          (anthy-utf8-lib-set-string ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+          (anthy-utf8-lib-set-string ac-id preconv-str)
           (expand-segment)
           (anthy-utf8-lib-commit-segment ac-id 0 type))))))
 
@@ -859,7 +859,7 @@
 	 (if (anthy-commit-key? key key-state)
 	     (begin
 	       (anthy-utf8-learn-transposing-text ac)
-	       (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac)))
+	       (im-commit ac (anthy-utf8-transposing-text ac))
 	       (anthy-utf8-flush ac)
 	       #f)
 	     #t)
@@ -897,7 +897,7 @@
 	     #t)
 	 ; implicit commit
 	 (begin
-	   (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-transposing-text ac)))
+	   (im-commit ac (anthy-utf8-transposing-text ac))
 	   (anthy-utf8-flush ac)
 	   (anthy-utf8-proc-input-state ac key key-state))))))))
 
@@ -1087,7 +1087,7 @@
       (and
 	str
 	anthy-auto-start-henkan?
-	(string-find japanese-auto-start-henkan-keyword-list str)
+	(string-find japanese-auto-start-henkan-keyword-list-utf8 str)
 	(begin
 	  (anthy-utf8-reset-prediction-window ac)
 	  (anthy-utf8-begin-conv ac))))
@@ -1147,7 +1147,7 @@
 	(begin
 	  (im-commit
 	   ac
-	   (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t (ja-opposite-kana kana))))
+	   (anthy-utf8-make-whole-string ac #t (ja-opposite-kana kana)))
 	  (anthy-utf8-flush ac)))
 
        ;; Transposing状態へ移行
@@ -1165,7 +1165,7 @@
        ((anthy-hiragana-key? key key-state)
         (if (not (= kana anthy-type-hiragana))
 	  (begin
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	    (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	    (anthy-utf8-flush ac)))
 	(anthy-utf8-context-set-kana-mode! ac anthy-type-hiragana)
 	(anthy-utf8-context-set-alnum! ac #f))
@@ -1173,7 +1173,7 @@
        ((anthy-katakana-key? key key-state)
         (if (not (= kana anthy-type-katakana))
 	  (begin
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	    (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	    (anthy-utf8-flush ac)))
 	(anthy-utf8-context-set-kana-mode! ac anthy-type-katakana)
 	(anthy-utf8-context-set-alnum! ac #f))
@@ -1181,7 +1181,7 @@
        ((anthy-halfkana-key? key key-state)
         (if (not (= kana anthy-type-halfkana))
 	  (begin
-	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	    (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	    (anthy-utf8-flush ac)))
 	(anthy-utf8-context-set-kana-mode! ac anthy-type-halfkana)
 	(anthy-utf8-context-set-alnum! ac #f))
@@ -1209,7 +1209,7 @@
 	 (not (anthy-utf8-context-alnum ac))
 	 (anthy-kana-toggle-key? key key-state))
 	(begin
-	  (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	  (im-commit ac (anthy-utf8-make-whole-string ac #t kana))
 	  (anthy-utf8-flush ac)
 	  (anthy-utf8-context-kana-toggle ac)))
 
@@ -1225,7 +1225,7 @@
 	(begin
 	  (im-commit
 	   ac
-	   (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-make-whole-string ac #t kana)))
+	   (anthy-utf8-make-whole-string ac #t kana))
 	  (anthy-utf8-flush ac)))
 
        ;; left
@@ -1288,7 +1288,7 @@
                       (begin
                         (ustr-insert-seq! preconv-str residual-kana)
                         (ustr-insert-seq! raw-str (reverse
-                                                    (string-to-list pend))))
+                                                    (string-to-list-utf8 pend))))
                       (begin
                         (ustr-insert-elem! preconv-str residual-kana)
                         (ustr-insert-elem! raw-str pend)))))
@@ -1296,8 +1296,8 @@
 				 (if (= (anthy-utf8-context-alnum-type ac)
 					anthy-type-halfwidth-alnum)
 				     (list key-str key-str key-str)
-				     (list (ja-wide key-str) (ja-wide key-str)
-					   (ja-wide key-str))))
+				     (list (ja-wide-utf8 key-str) (ja-wide-utf8 key-str)
+					   (ja-wide-utf8 key-str))))
 	      (ustr-insert-elem! raw-str key-str)
 	      (check-auto-conv key-str))
 	    (let* ((key-str (if (= rule anthy-input-rule-kana)
@@ -1319,7 +1319,7 @@
 		    (if (and next-pend
 			     (not (string=? next-pend "")))
                         (ustr-insert-seq! raw-str
-                                          (reverse (string-to-list pend)))
+                                          (reverse (string-to-list-utf8 pend)))
 			(if (list? (car res))
 			    (begin
                               (if (member pend
@@ -1329,7 +1329,7 @@
                                 ;; charactear as one raw-str in this case
                                 (ustr-insert-elem! raw-str pend)
                                 (ustr-insert-seq! raw-str (reverse
-                                                            (string-to-list
+                                                            (string-to-list-utf8
                                                               pend))))
                               ;; assume key-str as a vowel
 			      (ustr-insert-elem!
@@ -1397,7 +1397,7 @@
 	       force-check?)
 	      (begin
 		(anthy-utf8-lib-set-prediction-src-string
-		 ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+		 ac-id preconv-str)
 		(let ((nr (anthy-utf8-lib-get-nr-predictions ac-id)))
 		  (if (and
 		       nr
@@ -1431,7 +1431,7 @@
 (define anthy-utf8-context-transposing-state-preedit
   (lambda (ac)
     (let ((transposing-text (anthy-utf8-transposing-text ac)))
-      (list (cons preedit-reverse (anthy-utf8-lib-eucjp-to-utf8 transposing-text))
+      (list (cons preedit-reverse transposing-text)
 	    (cons preedit-cursor "")))))
 
 (define anthy-utf8-transposing-text
@@ -1463,7 +1463,7 @@
       (append left-str
 	      (if residual-kana
                 (if (list? (car residual-kana))
-		  (reverse (string-to-list pending))
+		  (reverse (string-to-list-utf8 pending))
 		  (list pending))
 		  '())
 	      right-str))))
@@ -1471,11 +1471,11 @@
 (define anthy-utf8-get-raw-candidate
   (lambda (ac ac-id seg-idx cand-idx)
     (let* ((preconv
-	    (ja-join-vu (string-to-list
+	    (ja-join-vu-utf8 (string-to-list-utf8
 			 (anthy-utf8-make-whole-string ac #t anthy-type-hiragana))))
-	   (unconv-candidate (anthy-utf8-lib-utf8-to-eucjp (anthy-utf8-lib-get-unconv-candidate ac-id seg-idx)))
+	   (unconv-candidate (anthy-utf8-lib-get-unconv-candidate ac-id seg-idx))
 	   (unconv (if unconv-candidate
-		       (ja-join-vu (string-to-list unconv-candidate))
+		       (ja-join-vu-utf8 (string-to-list-utf8 unconv-candidate))
 		       '()))
 	   (raw-str (reverse (anthy-utf8-get-raw-str-seq ac))))
       (if (not (null? unconv))
@@ -1525,7 +1525,7 @@
 			  preedit-underline))
 		(cand (if (> cand-idx anthy-candidate-type-halfwidth-alnum)
 			  (anthy-utf8-lib-get-nth-candidate ac-id seg-idx cand-idx)
-			  (anthy-utf8-lib-eucjp-to-utf8 (anthy-utf8-get-raw-candidate ac ac-id seg-idx cand-idx))))
+			  (anthy-utf8-get-raw-candidate ac ac-id seg-idx cand-idx)))
 		(seg (list (cons attr cand))))
 	   (if (and separator
 		    (< 0 seg-idx))
@@ -1548,15 +1548,15 @@
       (list
        (and (not (ustr-cursor-at-beginning? preconv-str))
 	    (cons preedit-underline
-		  (anthy-utf8-lib-eucjp-to-utf8 (string-append-map-ustr-former extract-kana preconv-str))))
+		  (string-append-map-ustr-former extract-kana preconv-str)))
        (and (> (string-length pending) 0)
-	    (cons preedit-underline (anthy-utf8-lib-eucjp-to-utf8 pending)))
+	    (cons preedit-underline pending))
        (and (anthy-utf8-has-preedit? ac)
 	    (cons preedit-cursor ""))
        (and (not (ustr-cursor-at-end? preconv-str))
 	    (cons
 	     preedit-underline
-	     (anthy-utf8-lib-eucjp-to-utf8 (string-append-map-ustr-latter extract-kana preconv-str))))))))
+	     (string-append-map-ustr-latter extract-kana preconv-str)))))))
 
 (define anthy-utf8-get-commit-string
   (lambda (ac)
@@ -1567,9 +1567,8 @@
 				  anthy-candidate-type-halfwidth-alnum)
 			       (anthy-utf8-lib-get-nth-candidate
 				ac-id seg-idx cand-idx)
-			       (anthy-utf8-lib-eucjp-to-utf8
-                                 (anthy-utf8-get-raw-candidate
-                                   ac ac-id seg-idx cand-idx))))
+			       (anthy-utf8-get-raw-candidate
+                                ac ac-id seg-idx cand-idx)))
 			 (iota (ustr-length segments))
 			 (ustr-whole-seq segments)))))
 
