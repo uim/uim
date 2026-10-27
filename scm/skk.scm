@@ -59,7 +59,17 @@
 (define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
 (define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
 
+;; ja-rk-rule without the consonant-keeping rules. ~/.uim may change
+;; it. If it isn't changed, it's made again when it's used because
+;; ~/.uim and uim-pref may change ja-rk-rule-basic after skk.scm is
+;; loaded.
 (define skk-ja-rk-rule (append ja-rk-rule-basic ja-rk-rule-additional))
+(define skk-default-ja-rk-rule skk-ja-rk-rule)
+(define (skk-current-ja-rk-rule)
+  (if (eq? skk-ja-rk-rule skk-default-ja-rk-rule)
+      (append ja-rk-rule-basic ja-rk-rule-additional)
+      skk-ja-rk-rule))
+
 (define skk-okuri-char-alist '())
 (define skk-downcase-alist '())
 (define skk-set-henkan-point-key '())
@@ -374,7 +384,7 @@
                   (set! skk-okuri-char-alist '())
                   (set! skk-downcase-alist '()) 
                   (set! skk-set-henkan-point-key '())
-		  skk-ja-rk-rule)
+		  (skk-current-ja-rk-rule))
 		 ((= input-rule skk-input-rule-azik)
 		  (require "japanese-azik.scm")
                   (set! skk-okuri-char-alist ja-azik-skk-okuri-char-alist)
@@ -464,7 +474,7 @@
               (skk-lib-look-open skk-look-dict))
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
-	  (rkc (rk-context-new skk-ja-rk-rule #t #f)))
+	  (rkc (rk-context-new (skk-current-ja-rk-rule) #t #f)))
       (skk-context-set-widgets! sc skk-widgets)
       (skk-context-set-head! sc '())
       (skk-context-set-rk-context! sc rkc)
