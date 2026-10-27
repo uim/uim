@@ -74,6 +74,9 @@ if not get_option('anthy_utf8').disabled()
     anthy_utf8_capable = true
   endif
 endif
+# Anthy and Anthy (UTF-8) share one plugin. libanthy that can handle
+# UTF-8 is preferred.
+anthy_plugin = anthy_utf8.found() ? anthy_utf8 : anthy
 
 curses = dependency('curses', required: get_option('fep'))
 
