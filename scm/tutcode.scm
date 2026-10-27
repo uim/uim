@@ -2208,9 +2208,7 @@
               (cons candlabel res))))))))
 
 (define (tutcode-utf8-string-display-width s)
-  (with-char-codec "UTF-8"
-    (lambda ()
-      (apply + (map uim-char-display-width (string->list s))))))
+  (apply + (map uim-char-display-width (string->list s))))
 
 ;;; 仮想鍵盤の表示を行うかどうかの設定を一時的に切り替える(トグル)。
 ;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。)
@@ -5654,9 +5652,7 @@
 ;;; @return 漢字コード。文字列の長さが1でない場合は#f
 (define (tutcode-utf8-string->ichar s)
   ;; ichar.scmのstring->ichar(string->charcode)のUTF-8版
-  (let ((sl (with-char-codec "UTF-8"
-              (lambda ()
-                (string->list s)))))
+  (let ((sl (string->list s)))
     (cond
       ((null? sl)
         0)

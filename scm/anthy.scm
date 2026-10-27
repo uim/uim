@@ -113,8 +113,6 @@
       (anthy-update-preedit ac))))
 
 (register-action 'action_anthy_hiragana
-;;		 (indication-alist-indicator 'action_anthy_hiragana
-;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac) ;; indication handler
 		   '(ja_hiragana
 		     "あ"
@@ -134,8 +132,6 @@
 		   (anthy-context-change-kana-mode! ac anthy-type-hiragana)))
 
 (register-action 'action_anthy_katakana
-;;		 (indication-alist-indicator 'action_anthy_katakana
-;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_katakana
 		     "ア"
@@ -153,8 +149,6 @@
 		   (anthy-context-change-kana-mode! ac anthy-type-katakana)))
 
 (register-action 'action_anthy_halfkana
-;;		 (indication-alist-indicator 'action_anthy_halfkana
-;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_halfkana
 		     "ｱ"
@@ -191,8 +185,6 @@
 		    ac anthy-type-halfwidth-alnum)))
 
 (register-action 'action_anthy_direct
-;;		 (indication-alist-indicator 'action_anthy_direct
-;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_direct
 		     "-"
@@ -205,8 +197,6 @@
 		   (anthy-context-set-on! ac #f)))
 
 (register-action 'action_anthy_fullwidth_alnum
-;;		 (indication-alist-indicator 'action_anthy_fullwidth_alnum
-;;					     anthy-input-mode-indication-alist)
 		 (lambda (ac)
 		   '(ja_fullwidth_alnum
 		     "Ａ"
@@ -226,8 +216,6 @@
 		    ac anthy-type-fullwidth-alnum)))
 
 (register-action 'action_anthy_roma
-;;		 (indication-alist-indicator 'action_anthy_roma
-;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_romaji
 		     "Ｒ"
@@ -244,8 +232,6 @@
 		   (anthy-context-set-input-rule! ac anthy-input-rule-roma)))
 
 (register-action 'action_anthy_kana
-;;		 (indication-alist-indicator 'action_anthy_kana
-;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_kana
 		     "か"
@@ -267,8 +253,6 @@
 		   ))
 
 (register-action 'action_anthy_azik
-;;		 (indication-alist-indicator 'action_anthy_azik
-;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_azik
 		     "Ｚ"
@@ -286,8 +270,6 @@
 		   (anthy-context-set-input-rule! ac anthy-input-rule-azik)))
 
 (register-action 'action_anthy_kzik
-;;		 (indication-alist-indicator 'action_anthy_kzik
-;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_kzik
 		     "Ｋ"

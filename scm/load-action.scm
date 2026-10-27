@@ -1,6 +1,6 @@
 ;;; load-action.scm: loads action.scm in accordance with platform configuration
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -53,24 +53,6 @@
 	   (indication-alist-entry-extract-choice
 	    (assq act indication-alist)))
 	 act-ids)))
-
-;; Unifying custom variable definitions and actions of toolbar button
-;; widgets is impossible at current libuim implementation. It requires
-;; library-wide default encoding configurability rather than per
-;; context encoding.  -- YamaKen 2005-01-31
-(define indication-alist-indicator
-  (lambda (act-id alist)
-    (let* ((indication (cdr (assq act-id alist)))
-	   (orig-codeset (bind-textdomain-codeset (gettext-package) #f))
-	   (cur-codeset (bind-textdomain-codeset (gettext-package) "EUC-JP"))
-	   (translated (list (indication-id indication)
-			     (indication-iconic-label indication)
-			     (indication-label indication)
-			     (indication-short-desc indication))))
-      (bind-textdomain-codeset (gettext-package) (or orig-codeset
-						     "UTF-8"))
-      (lambda (owner)
-	translated))))
 
 (define do-nothing
   (lambda args
