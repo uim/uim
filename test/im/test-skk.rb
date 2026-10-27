@@ -120,13 +120,32 @@ class SKKTest < Test::Unit::TestCase
     assert_equal(expected, @driver.commits)
   end
 
-  # ~/.uim is loaded after skk when lazy loading is disabled.
-  sub_test_case("~/.uim: skk-ja-rk-rule") do
+  sub_test_case("custom rule") do
+    # uim-pref saves these when the composing rule type is "Custom".
+    # They're changed after skk is loaded like uim-pref changes them
+    # while uim is running.
     def scheme
       <<~SCHEME
-        (set! skk-ja-rk-rule
+        (custom-set-value! 'ja-rk-rule-type 'custom)
+        (custom-set-value! 'ja-rk-rule-table-basic
+                           (cons '("xyz" "" "きゅー") ja-rk-rule-table-basic))
+      SCHEME
+    end
+
+    def test_input
+      @driver.type("kyaxyz")
+      assert_equal(["きゃ", "きゅー"], @driver.commits)
+    end
+  end
+
+  # ~/.uim is loaded after skk when lazy loading is disabled.
+  sub_test_case("~/.uim: ja-rk-rule-basic") do
+    def scheme
+      <<~SCHEME
+        (set! ja-rk-rule-basic
               (cons '((("x" "y" "z")) ("きゅー" "キュー" "ｷｭｰ"))
-                    skk-ja-rk-rule))
+                    ja-rk-rule-basic))
+        (ja-rk-rule-update)
       SCHEME
     end
 

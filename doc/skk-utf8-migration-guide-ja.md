@@ -41,7 +41,6 @@ chmod 600 ~/.skk-uim-jisyo.tmp && mv ~/.skk-uim-jisyo.tmp ~/.skk-uim-jisyo
 含まれる場合は、UTF-8に変換する必要があります。具体的には、以下の変数を
 設定している場合が対象です。
 
-- `skk-ja-rk-rule`
 - `skk-auto-start-henkan-keyword-list`
 - `skk-style-uim`
 - `skk-style-ddskk-like`
