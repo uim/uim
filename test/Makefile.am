@@ -54,6 +54,7 @@ EXTRA_DIST = run.sh.in $(uim_tests) meson.build \
 	im/run.rb \
 	im/test-anthy.rb \
 	im/test-canna.rb \
+	im/test-elatin.rb \
 	im/test-google-cgiapi-jp.rb \
 	im/test-skk.rb
 
