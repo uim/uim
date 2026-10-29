@@ -772,7 +772,8 @@
 
 (define skk-dcomp-word-tail
   (lambda (sc)
-   (let ((h (skk-make-string (skk-context-head sc) skk-type-hiragana))
+   (let ((h (skk-make-string (skk-context-head sc)
+                             (skk-context-kana-mode sc)))
 	 (w (skk-context-dcomp-word sc)))
      (if (< (string-length w) (string-length h))
          ""
