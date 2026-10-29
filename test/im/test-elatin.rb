@@ -105,4 +105,19 @@ class ELatinTest < Test::Unit::TestCase
       assert_equal(["#"], @driver.commits)
     end
   end
+
+  sub_test_case("duplicated sequences") do
+    # Emacs merges the translations of a key sequence that is defined
+    # more than once.
+    def test_candidates
+      @driver.type("~s")
+      assert_equal([[], ["§", "ş", "š"]],
+                   [@driver.commits, @driver.candidates])
+    end
+
+    def test_select_by_number
+      @driver.type("~s2")
+      assert_equal(["ş"], @driver.commits)
+    end
+  end
 end
