@@ -48,7 +48,6 @@ If a user configuration file such as `~/.uim` contains `uim-skk` settings with
 EUC-JP characters, convert it to UTF-8. In particular, this applies when
 setting any of the following variables:
 
-- `skk-ja-rk-rule`
 - `skk-auto-start-henkan-keyword-list`
 - `skk-style-uim`
 - `skk-style-ddskk-like`
