@@ -44,6 +44,7 @@
 ;;  漢字コード入力 kcode
 ;;
 ;;
+(require-extension (srfi 1 95))
 (require "japanese.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "skk-custom.scm")
@@ -615,12 +616,21 @@
      sc
      (skk-context-nth sc))))
 
+;; (head . suffixes) of the completion. While romaji is pending, the completion
+;; covers the kana which the pending romaji may become.
+(define skk-completion-key
+  (lambda (sc)
+    (cons (skk-make-string (skk-context-head sc) skk-type-hiragana)
+          (if (skk-rk-pending? sc)
+              (skk-rk-expected-suffixes sc skk-type-hiragana)
+              (list "")))))
+
 (define skk-get-nth-completion
   (lambda (sc n)
     (skk-lib-get-nth-completion
      skk-dic
      n
-     (skk-make-string (skk-context-head sc) skk-type-hiragana)
+     (skk-completion-key sc)
      skk-use-numeric-conversion?
      skk-use-look?)))
 
@@ -711,6 +721,76 @@
     (if skk-dcomp-activate?
 	(skk-context-set-dcomp-word! sc ""))))
 
+(define skk-rk-output-entries
+  (lambda (str)
+    (cond
+     ((null? str) '())
+     ((string? (car str)) (list str))
+     (else str))))
+
+;; kana which the pending romaji may become by any number of further keys,
+;; sorted in code point order
+(define skk-rk-expected-suffixes
+  (lambda (sc kana-mode)
+    (let* ((rkc (skk-context-rk-context sc))
+           (strs (delete-duplicates
+                  (map (lambda (res)
+                         (skk-make-string (reverse (skk-rk-output-entries res))
+                                          kana-mode))
+                       (skk-rk-expected-outputs rkc (reverse (rk-context-seq rkc)))))))
+      (sort (filter (lambda (str) (not (skk-rk-derived-suffix? str strs)))
+                    strs)
+            string<?))))
+
+;; dcomp matches a suffix by prefix, so an entry starting with another
+;; entry (ちゃ after ち) is already covered by the shorter one
+(define skk-rk-derived-suffix?
+  (lambda (str strs)
+    (any (lambda (base) (skk-string-proper-prefix? base str))
+         strs)))
+
+(define skk-string-proper-prefix?
+  (lambda (base str)
+    (let ((n (string-length base)))
+      (and (< n (string-length str))
+           (string=? base (substring str 0 n))))))
+
+;; outputs of the rules reachable from SEQ (oldest first) by one key, and
+;; recursively from the partial sequences among them. A rule with a residual
+;; key is taken as is, since the residual is not extended further.
+(define skk-rk-expected-outputs
+  (lambda (rkc seq)
+    (let ((rule (rk-context-rule rkc)))
+      (apply append
+             (map (lambda (key)
+                    (let* ((next (append seq (list key)))
+                           (matched (rk-lib-find-seq next rule))
+                           (residual (and matched (not (null? (cdar matched))))))
+                      (append
+                       (if matched (list (cadr matched)) '())
+                       (if (not residual)
+                           (skk-rk-expected-outputs rkc next)
+                           '()))))
+                  (rk-lib-expect-seq seq rule))))))
+
+;; while romaji is pending, the completion of the confirmed head followed by
+;; any kana the romaji may become
+(define skk-lookup-dcomp-word
+  (lambda (sc)
+    (let ((kana-mode (skk-context-kana-mode sc)))
+      (skk-lib-get-dcomp-word
+       skk-dic
+       (skk-make-string (skk-context-head sc) kana-mode)
+       (if (skk-rk-pending? sc)
+           (skk-rk-expected-suffixes sc kana-mode)
+           (list ""))
+       skk-use-numeric-conversion?
+       skk-use-look?))))
+
+(define skk-refresh-dcomp-word!
+  (lambda (sc)
+    (skk-context-set-dcomp-word! sc (skk-lookup-dcomp-word sc))))
+
 (define skk-append-string
   (lambda (sc str)
     (and
@@ -723,14 +803,7 @@
      (skk-context-set-head! sc (cons str (skk-context-head sc)))
      ;;; dcomp
      (if skk-dcomp-activate?
-	 (skk-context-set-dcomp-word!
-	  sc
-	  (skk-lib-get-dcomp-word
-           skk-dic
-           (skk-make-string
-            (skk-context-head sc) (skk-context-kana-mode sc))
-           skk-use-numeric-conversion?
-           skk-use-look?))))))
+	 (skk-refresh-dcomp-word! sc)))))
 
 (define skk-append-okuri-string
   (lambda (sc str)
@@ -776,16 +849,16 @@
 
 (define skk-begin-completion
   (lambda (sc)
-    ;; get residual 'n'
-    (if (eq? (skk-context-state sc) 'skk-state-kanji)
-	(skk-append-residual-kana sc))
-    (skk-lib-get-completion
-     skk-dic
-     (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
-     skk-use-numeric-conversion?
-     skk-use-look?)
-    (skk-context-set-completion-nth! sc 0)
-    (skk-context-set-state! sc 'skk-state-completion)))
+    ;; Without candidates, stay in kanji state: the pending romaji is kept, and
+    ;; no word for the confirmed head is substituted.
+    (if (skk-lib-get-completion
+         skk-dic
+         (skk-completion-key sc)
+         skk-use-numeric-conversion?
+         skk-use-look?)
+        (begin
+          (skk-context-set-completion-nth! sc 0)
+          (skk-context-set-state! sc 'skk-state-completion)))))
 
 (define skk-dcomp-word-tail
   (lambda (sc)
@@ -843,9 +916,11 @@
 	   skk-dcomp-activate?
 	   (null? csc)
 	   (eq? stat 'skk-state-kanji)
-	   (not (skk-rk-pending? sc))
 	   (not (string=? (skk-context-dcomp-word sc) "")))
 	  (begin
+            (if (skk-rk-pending? sc)
+                (im-pushback-preedit sc skk-preedit-attr-pending-rk
+                                     (rk-pending rkc)))
 	    (if skk-show-cursor-on-preedit?
 	        (im-pushback-preedit sc preedit-cursor ""))
 	    (im-pushback-preedit
@@ -957,8 +1032,10 @@
 	    (if skk-show-cursor-on-preedit?
 	        (im-pushback-preedit sc preedit-cursor "")))
 	  (begin
-	    (im-pushback-preedit sc skk-preedit-attr-pending-rk
-				 (rk-pending rkc))
+            (if (and (not with-dcomp-word?)
+                     (not (eq? stat 'skk-state-completion)))
+                (im-pushback-preedit sc skk-preedit-attr-pending-rk
+                                     (rk-pending rkc)))
 	    (if (and
 		 (or
 		  (eq? stat 'skk-state-kanji)
@@ -1290,7 +1367,9 @@
       (if (eq? (skk-context-state sc) 'skk-state-kanji)
 	  (begin
 	    (if res
-		(skk-append-string sc res))))
+                (skk-append-string sc res)
+                (if skk-dcomp-activate?
+                    (skk-refresh-dcomp-word! sc)))))
       (if (or
 	   (eq? (skk-context-state sc) 'skk-state-direct)
 	   (eq? (skk-context-state sc) 'skk-state-latin)
@@ -1330,88 +1409,40 @@
 ; see [Anthy-dev: 2646, 2654]
 (define skk-commit-with-conv-completion
   (lambda (sc)
-    (cond
-     ((and skk-dcomp-activate?
-	   (not (skk-rk-pending? sc))
-	   (not (string=? (skk-context-dcomp-word sc) "")))
-      (if (skk-lib-get-entry
-           skk-dic
-           (skk-context-dcomp-word sc) "" "" skk-use-numeric-conversion?)
-	  (begin
-	    (skk-string-list-to-context-head
-	     sc
-	     (string-to-list (skk-context-dcomp-word sc)))
-	    (skk-context-set-nth! sc 0)
-	    (skk-commit sc (skk-prepare-commit-string sc)))
-	  (begin
-	    (skk-commit sc (skk-context-dcomp-word sc))
-	    (skk-flush sc))))
-     ((and skk-dcomp-activate?
-	   (skk-rk-pending? sc)
-	   (not (string=? (skk-context-dcomp-word sc) "")))
-      (skk-append-residual-kana sc)
-      (if (not (null? (skk-context-head sc)))
-	  (let ((dcomp (skk-lib-get-dcomp-word
-                        skk-dic
-                        (skk-make-string
-                         (skk-context-head sc)
-                         (skk-context-kana-mode sc))
-                        skk-use-numeric-conversion?
-                        skk-use-look?)))
-	    (if (not (string=? dcomp ""))
-		(begin
-		  (skk-string-list-to-context-head
-		   sc
-		   (string-to-list dcomp))
-		  (if (skk-lib-get-entry
-                       skk-dic
-                       (skk-make-string
-                        (skk-context-head sc) skk-type-hiragana)
-                       ""
-                       ""
-                       skk-use-numeric-conversion?)
-		      (begin
-			(skk-context-set-nth! sc 0)
-			(skk-commit sc (skk-prepare-commit-string sc)))
-		      (begin
-			(skk-commit sc dcomp)
-			(skk-flush sc))))
-		(begin
-		  (if (skk-lib-get-entry
-                       skk-dic
-                       (skk-make-string
-                        (skk-context-head sc) skk-type-hiragana)
-                       ""
-                       ""
-                       skk-use-numeric-conversion?)
-		      (begin
-			(skk-context-set-nth! sc 0)
-			(skk-commit sc (skk-prepare-commit-string sc)))
-		      (begin
-			(skk-commit sc (skk-make-string
-					(skk-context-head sc)
-					(skk-context-kana-mode sc)))
-			(skk-flush sc))))))))
-     (else
-      (skk-append-residual-kana sc)
-      (if (not (null? (skk-context-head sc)))
-	  (begin
-	    (if (skk-lib-get-entry
-                 skk-dic
-                 (skk-make-string
-                  (skk-context-head sc) skk-type-hiragana)
-                 ""
-                 ""
-                 skk-use-numeric-conversion?)
+    (let ((dcomp (skk-context-dcomp-word sc)))
+      (if (and skk-dcomp-activate?
+               (not (string=? dcomp "")))
+          (begin
+            (if (skk-rk-pending? sc)
+                (rk-push-key-last! (skk-context-rk-context sc)))
+            (skk-string-list-to-context-head sc (string-to-list dcomp))
+            (if (skk-lib-get-entry
+                 skk-dic dcomp "" "" skk-use-numeric-conversion?)
 		(begin
 		  (skk-context-set-nth! sc 0)
 		  (skk-commit sc (skk-prepare-commit-string sc)))
 		(begin
-		  (skk-commit sc (skk-make-string
-				  (skk-context-head sc)
-				  (skk-context-kana-mode sc)))
+		  (skk-commit sc dcomp)
 		  (skk-flush sc))))
-	  (skk-flush sc))))))
+          (begin
+            (skk-append-residual-kana sc)
+            (if (not (null? (skk-context-head sc)))
+                (if (skk-lib-get-entry
+                     skk-dic
+                     (skk-make-string
+                      (skk-context-head sc) skk-type-hiragana)
+                     ""
+                     ""
+                     skk-use-numeric-conversion?)
+                    (begin
+                      (skk-context-set-nth! sc 0)
+                      (skk-commit sc (skk-prepare-commit-string sc)))
+                    (begin
+                      (skk-commit sc (skk-make-string
+                                      (skk-context-head sc)
+                                      (skk-context-kana-mode sc)))
+                      (skk-flush sc)))
+                (skk-flush sc)))))))
 
 (define skk-proc-state-kanji
   (lambda (c key key-state)
@@ -1450,17 +1481,7 @@
 	     (if (and
 		  skk-dcomp-activate?
 		  (eq? (skk-context-state sc) 'skk-state-kanji))
-		 (skk-context-set-dcomp-word!
-		  sc
-		  (if (not (skk-rk-pending? sc))
-		      (skk-lib-get-dcomp-word
-                       skk-dic
-                       (skk-make-string
-                        (skk-context-head sc)
-                        (skk-context-kana-mode sc))
-                       skk-use-numeric-conversion?
-                       skk-use-look?)
-                      "")))
+		 (skk-refresh-dcomp-word! sc))
 	     #f)
 	   #t)
        (if (or
@@ -1484,38 +1505,19 @@
        (if (skk-begin-conv-with-completion-key? key key-state)
 	   ; do uim's own way --ekato. see [Anthy-dev: 2646, 2654]
 	   (begin
-	     (cond
-	      ((and skk-dcomp-activate?
-		    (not (skk-rk-pending? sc))
-		    (not (string=? (skk-context-dcomp-word sc) "")))
-	       (let ((sl (string-to-list (skk-context-dcomp-word sc))))
-		 (skk-string-list-to-context-head sc sl)
-		 (skk-begin-conversion sc)))
-	      ((and skk-dcomp-activate?
-		    (skk-rk-pending? sc)
-		    (not (string=? (skk-context-dcomp-word sc) "")))
-	       (skk-append-residual-kana sc)
-	       (let ((sl (string-to-list
-			  (skk-lib-get-dcomp-word
-                           skk-dic
-                           (skk-make-string
-                            (skk-context-head sc)
-                            (skk-context-kana-mode sc))
-                           skk-use-numeric-conversion?
-                           skk-use-look?))))
-		 (if (not (null? sl))
-		     (begin
-		       (skk-string-list-to-context-head sc sl)
-		       (skk-begin-conversion sc))
-		     (begin
-		       (if (not (null? (skk-context-head sc)))
-			   (skk-begin-conversion sc)
-			   (skk-flush sc))))))
-	      (else
-	       (skk-append-residual-kana sc)
-	       (if (not (null? (skk-context-head sc)))
-		   (skk-begin-conversion sc)
-		   (skk-flush sc))))
+             (let ((dcomp (skk-context-dcomp-word sc)))
+               (if (and skk-dcomp-activate?
+                        (not (string=? dcomp "")))
+                   (begin
+                     (if (skk-rk-pending? sc)
+                         (rk-push-key-last! (skk-context-rk-context sc)))
+                     (skk-string-list-to-context-head sc (string-to-list dcomp))
+                     (skk-begin-conversion sc))
+                   (begin
+                     (skk-append-residual-kana sc)
+                     (if (not (null? (skk-context-head sc)))
+                         (skk-begin-conversion sc)
+                         (skk-flush sc)))))
 	     #f)
 	   #t)
        (if (skk-commit-with-conv-completion-key? key key-state)
@@ -1643,6 +1645,9 @@
 	       (rk-push-key!
 		rkc
 		(charcode->string key)))
+         (if (and skk-dcomp-activate?
+                  (eq? stat 'skk-state-kanji))
+             (skk-refresh-dcomp-word! sc))
 	 (and
 	  (if (and
 	       res
@@ -1899,7 +1904,7 @@
 	(begin
 	  (if (> (- (skk-lib-get-nr-completions
                      skk-dic
-                     (skk-make-string (skk-context-head sc) skk-type-hiragana)
+                     (skk-completion-key sc)
                      skk-use-numeric-conversion?
                      skk-use-look?)
 		    1)
@@ -1961,32 +1966,31 @@
 	   #t)
        (if (skk-new-completion-from-current-comp-key? key key-state)
 	   (let* ((comp (skk-get-current-completion sc))
-		  (sl (string-to-list comp)))
+                  (sl (string-to-list comp))
+                  (old-key (skk-completion-key sc)))
 	     (if (not (null? sl))
-		 (begin (skk-lib-get-completion
-                         skk-dic
-                         (skk-get-current-completion sc)
-                         skk-use-numeric-conversion?
-                         skk-use-look?)))
-	     (skk-lib-clear-completions
-	      (skk-make-string
-	       (skk-context-head sc)
-	       skk-type-hiragana)
-	      skk-use-numeric-conversion?)
+                 (skk-lib-get-completion
+                  skk-dic
+                  (cons comp (list ""))
+                  skk-use-numeric-conversion?
+                  skk-use-look?))
+             (skk-lib-clear-completions old-key skk-use-numeric-conversion?)
 	     (if (not (null? sl))
-		 (skk-string-list-to-context-head sc sl))
+                 (begin
+                   (skk-string-list-to-context-head sc sl)
+                   (rk-flush (skk-context-rk-context sc))))
 	     (skk-context-set-completion-nth! sc 0)
 	     (if skk-dcomp-activate?
 		 (skk-context-set-dcomp-word!
 		  sc
-		  (skk-get-current-completion sc)))
+		  (if (null? sl) "" (skk-get-current-completion sc))))
 	     #f)
 	   #t)
        (if (skk-cancel-key? key key-state)
 	   (begin
 	     (skk-lib-clear-completions
-	       (skk-make-string (skk-context-head sc) skk-type-hiragana)
-	       skk-use-numeric-conversion?)
+	      (skk-completion-key sc)
+	      skk-use-numeric-conversion?)
 	     (skk-context-set-state! sc 'skk-state-kanji)
 	     ;; don't clear dcomp (not compatible with ddskk's behavior)
 	     ;;(skk-reset-dcomp-word sc)
@@ -1994,10 +1998,12 @@
 	   #t)
        (let ((sl (string-to-list (skk-get-current-completion sc))))
 	 (skk-lib-clear-completions
-	  (skk-make-string (skk-context-head sc) (skk-context-kana-mode sc))
+	  (skk-completion-key sc)
 	  skk-use-numeric-conversion?)
 	 (if (not (null? sl))
-	     (skk-string-list-to-context-head sc sl))
+             (begin
+               (skk-string-list-to-context-head sc sl)
+               (rk-flush (skk-context-rk-context sc))))
 	 (skk-reset-dcomp-word sc)
 	 (skk-context-set-state! sc 'skk-state-kanji)
 	 (skk-proc-state-kanji c key key-state)))

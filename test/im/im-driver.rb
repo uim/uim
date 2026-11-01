@@ -113,6 +113,8 @@ class IMDriver
       when "preedit"
         @preedit = values.each_slice(2).collect do |attribute, text|
           [Integer(attribute, 10), text]
+        end.reject do |attribute, text|
+          text.empty? and attribute != PreeditAttribute::CURSOR
         end
       when "commit"
         @commits << values[0]
