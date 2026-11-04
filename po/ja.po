@@ -1,5 +1,5 @@
 # Japanese translations for uim package.
-# Copyright (C) 2003-2007, uim Project.
+# Copyright (C) 2003-2026, uim Project.
 # This file is distributed under the same license as the uim package.
 # TOKUNAGA Hiroyuki <tkng@xem.jp>, 2004.
 # YamaKen <yamaken@bp.iij4u.or.jp>, 2005.
@@ -6398,6 +6398,10 @@ msgstr "[SKK] 左に移動"
 #: scm/skk-key-custom.scm:294
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
+
+#: scm/skk.scm:76
+msgid "skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-additional instead."
+msgstr "skk: skk-ja-rk-ruleは無視されます。代わりにja-rk-rule-additionalを使ってください。"
 
 #: scm/tcode.scm:1645
 msgid "T-Code"

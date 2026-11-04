@@ -59,10 +59,21 @@
 (define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
 (define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
 
+;; Deprecated: It's ignored. ~/.uim for uim 1.9.9 or earlier may change
+;; it. Use ja-rk-rule-additional instead.
+(define skk-ja-rk-rule '())
+(define skk-ja-rk-rule-warned? #f)
+
 ;; ja-rk-rule without the consonant-keeping rules. It's made when it's
 ;; used because ~/.uim and uim-pref may change ja-rk-rule-basic after
 ;; skk.scm is loaded.
 (define (skk-make-ja-rk-rule)
+  (if (and (not (null? skk-ja-rk-rule))
+           (not skk-ja-rk-rule-warned?))
+      (begin
+        (set! skk-ja-rk-rule-warned? #t)
+        (uim-notify-info
+         (_ "skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-additional instead."))))
   (append ja-rk-rule-basic ja-rk-rule-additional))
 
 (define skk-okuri-char-alist '())

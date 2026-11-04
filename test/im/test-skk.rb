@@ -155,6 +155,23 @@ class SKKTest < Test::Unit::TestCase
     end
   end
 
+  # ~/.uim for uim 1.9.9 or earlier may change skk-ja-rk-rule. It's
+  # ignored.
+  sub_test_case("~/.uim: skk-ja-rk-rule") do
+    def scheme
+      <<~SCHEME
+        (define skk-ja-rk-rule
+          (append '(((("x" "y" "z")) ("きゅー" "キュー" "ｷｭｰ")))
+                  skk-ja-rk-rule))
+      SCHEME
+    end
+
+    def test_input
+      @driver.type("kyaxyz")
+      assert_equal(["きゃ"], @driver.commits)
+    end
+  end
+
   private
   # skk shows empty segments too, for example for the cursor and the
   # okurigana. They're ignored.
