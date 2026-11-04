@@ -34,24 +34,3 @@ chmod 600 ~/.skk-uim-jisyo.tmp && mv ~/.skk-uim-jisyo.tmp ~/.skk-uim-jisyo
 変換できた場合は、~/.skk-uim-jisyo.bak と ~/.skk-uim-jisyo の内容を確認して変換が正しくできていることを確認してください。
 
 変換後は、対応する設定`skk-uim-personal-dic-encoding`を`utf-8`に変更し、uimを再起動してください。
-
-## ユーザー設定ファイルの文字コード
-
-`~/.uim`などのユーザー設定ファイルで`uim-skk`の設定をしていて、EUC-JPの文字が
-含まれる場合は、UTF-8に変換する必要があります。具体的には、以下の変数を
-設定している場合が対象です。
-
-- `skk-ja-rk-rule`
-- `skk-auto-start-henkan-keyword-list`
-- `skk-style-uim`
-- `skk-style-ddskk-like`
-
-これら以外の設定にEUC-JPの文字を含まない場合は、ファイル全体をUTF-8に
-変換してください。EUC-JPの設定を同じファイルに残す場合は、元のファイルを
-EUC-JPのままにして、新しいUTF-8のファイルを作成し、`load`で読み込んでください。
-例えば、`.uim-utf8`を読み込む場合は、以下のように記載します。
-
-```scheme
-;; ~/.uim
-(load (string-append (getenv "HOME") "/.uim-utf8"))
-```

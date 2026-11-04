@@ -46,24 +46,3 @@ Schemeソースです。カスタムコード表を使用する場合はUTF-8で
 ;; ~/.uim
 (define tutcode-rule-filename "/path/to/custom-rule.scm")
 ```
-## ユーザー設定ファイルの文字コード
-
-`~/.uim`などのユーザー設定ファイルで`uim-tutcode`の設定をしていて、EUC-JPの文字が
-含まれる場合は、UTF-8に変換する必要があります。たとえば、以下のような設定が該当します。
-
-- `tutcode-postfix-mazegaki-terminate-char-list`
-- `tutcode-auto-help-cand-str-list`
-- `tutcode-postfix-katakana-char-list`
-- `tutcode-postfix-kanji2seq-delimiter-char-list`
-- `tutcode-rule-set-sequences!`
-- `tutcode-stroke-help-top-page-alist`
-
-これら以外の設定にEUC-JPの文字を含まない場合は、ファイル全体をUTF-8に
-変換してください。EUC-JPの設定を同じファイルに残す場合は、元のファイルを
-EUC-JPのままにして、新しいUTF-8のファイルを作成し、`load`で読み込んでください。
-例えば、`.uim-tutcode-utf8`を読み込む場合は、以下のように記載します。
-
-```scheme
-;; ~/.uim
-(load (string-append (getenv "HOME") "/.uim-tutcode-utf8"))
-```

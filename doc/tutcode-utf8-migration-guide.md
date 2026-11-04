@@ -53,26 +53,3 @@ uim-tutcode. Save a custom code table as UTF-8.
 ;; ~/.uim
 (define tutcode-rule-filename "/path/to/custom-rule.scm")
 ```
-
-## Encoding of user configuration files
-
-If a user configuration file such as `~/.uim` contains `uim-tutcode` settings
-with EUC-JP characters, convert it to UTF-8. For example, the following
-settings may contain Japanese text:
-
-- `tutcode-postfix-mazegaki-terminate-char-list`
-- `tutcode-auto-help-cand-str-list`
-- `tutcode-postfix-katakana-char-list`
-- `tutcode-postfix-kanji2seq-delimiter-char-list`
-- `tutcode-rule-set-sequences!`
-- `tutcode-stroke-help-top-page-alist`
-
-If the other settings do not contain EUC-JP characters, convert the entire
-file to UTF-8. If EUC-JP settings must remain in the same file, leave the
-original file in EUC-JP, create a new UTF-8 file, and load it with `load`.
-For example, add the following to load `.uim-tutcode-utf8`:
-
-```scheme
-;; ~/.uim
-(load (string-append (getenv "HOME") "/.uim-tutcode-utf8"))
-```

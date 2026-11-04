@@ -41,24 +41,3 @@ If conversion succeeds, compare the contents of `~/.skk-uim-jisyo.bak` and
 
 Change the corresponding dictionary encoding setting,
 `skk-uim-personal-dic-encoding`, to `utf-8`, and restart uim.
-
-## Encoding of user configuration files
-
-If a user configuration file such as `~/.uim` contains `uim-skk` settings with
-EUC-JP characters, convert it to UTF-8. In particular, this applies when
-setting any of the following variables:
-
-- `skk-ja-rk-rule`
-- `skk-auto-start-henkan-keyword-list`
-- `skk-style-uim`
-- `skk-style-ddskk-like`
-
-If the other settings do not contain EUC-JP characters, convert the entire
-file to UTF-8. If EUC-JP settings must remain in the same file, leave the
-original file in EUC-JP, create a new UTF-8 file, and load it with `load`.
-For example, add the following to load `.uim-utf8`:
-
-```scheme
-;; ~/.uim
-(load (string-append (getenv "HOME") "/.uim-utf8"))
-```
