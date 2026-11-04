@@ -28,7 +28,6 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; Japanese EUC
 (define ja-act-rule-basic
   '( 
 

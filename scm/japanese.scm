@@ -28,8 +28,6 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; Japanese EUC
-
 (require-extension (srfi 1 2))
 (require-custom "japanese-custom.scm")
 (require "util.scm")
