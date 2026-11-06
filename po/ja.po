@@ -6224,6 +6224,18 @@ msgid "Enable dynamic completion"
 msgstr "動的補完を有効にする"
 
 #: scm/skk-custom.scm:539
+msgid "Use pending romaji for completion"
+msgstr "補完で保留中のローマ字を使用する"
+
+#: scm/skk-custom.scm:540
+msgid ""
+"When on, completion and dynamic completion also use the kana that the "
+"pending romaji may become. When off, only the confirmed head is used."
+msgstr ""
+"オンにすると、補完と動的補完で保留中のローマ字が変換されうる仮名も使用します。"
+"オフにすると、確定済みの見出し部分だけを使用します。"
+
+#: scm/skk-custom.scm:539
 msgid "Use UNIX look command for completion"
 msgstr "アルファベット変換時の補完にlookコマンドを使用"
 
