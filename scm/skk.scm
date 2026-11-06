@@ -599,11 +599,16 @@
      sc
      (skk-context-nth sc))))
 
+;; pending romaji takes part in completion only when skk-completion-use-pending-romaji? is set
+(define (skk-completion-pending-romaji? sc)
+  (and skk-completion-use-pending-romaji?
+       (skk-rk-pending? sc)))
+
 ;; (head . suffixes) of the completion. While romaji is pending, the completion
 ;; covers the kana which the pending romaji may become.
 (define (skk-completion-key sc)
   (cons (skk-make-string (skk-context-head sc) skk-type-hiragana)
-        (if (skk-rk-pending? sc)
+        (if (skk-completion-pending-romaji? sc)
             (skk-rk-expected-suffixes sc skk-type-hiragana)
             (list ""))))
 
@@ -751,17 +756,20 @@
                 (rk-lib-expect-seq seq rule)))))
 
 ;; while romaji is pending, the completion of the confirmed head followed by
-;; any kana the romaji may become
+;; any kana the romaji may become. With the option off, no dcomp word is offered.
 (define (skk-lookup-dcomp-word sc)
   (let ((kana-mode (skk-context-kana-mode sc)))
-    (skk-lib-get-dcomp-word
-     skk-dic
-     (skk-make-string (skk-context-head sc) kana-mode)
-     (if (skk-rk-pending? sc)
-         (skk-rk-expected-suffixes sc kana-mode)
-         (list ""))
-     skk-use-numeric-conversion?
-     skk-use-look?)))
+    (if (and (skk-rk-pending? sc)
+             (not skk-completion-use-pending-romaji?))
+        ""
+        (skk-lib-get-dcomp-word
+         skk-dic
+         (skk-make-string (skk-context-head sc) kana-mode)
+         (if (skk-completion-pending-romaji? sc)
+             (skk-rk-expected-suffixes sc kana-mode)
+             (list ""))
+         skk-use-numeric-conversion?
+         skk-use-look?))))
 
 (define (skk-refresh-dcomp-word! sc)
   (skk-context-set-dcomp-word! sc (skk-lookup-dcomp-word sc)))

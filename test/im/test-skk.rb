@@ -44,6 +44,7 @@ DICTIONARY_TEXT = <<~DICTIONARY
   さんか /参加/
   さんかん /参観/
   さんこう /参考/
+  さんせい /賛成/
   ちゃわん /茶碗/
 DICTIONARY
 
@@ -429,6 +430,48 @@ class SKKTest < Test::Unit::TestCase
 
       assert_equal([["うん"], []], [@driver.commits, preedit])
     end
+
+    sub_test_case("without pending romaji completion") do
+      def scheme
+        super + <<~SCHEME
+          (set! skk-completion-use-pending-romaji? #f)
+        SCHEME
+      end
+
+      def test_completion_without_pending_romaji
+        commit_kana("kanji")
+        @driver.type("K")
+        assert_false(preedit.map(&:last).join.include?("かんじ"))
+        @driver.press("C-g")
+
+        @driver.type("Ka")
+        assert_include(preedit.map(&:last).join, "かんじ")
+        @driver.press("C-g")
+
+        @driver.type("Kan")
+        assert_equal("▽かn", preedit.map(&:last).join)
+      end
+
+      def test_tab_completion_without_pending_romaji
+        commit_kana("sanka")
+        commit_kana("sansei")
+        @driver.type("S")
+        @driver.press("C-i")
+        assert_equal("▽s", preedit.map(&:last).join)
+        @driver.press("C-g")
+
+        @driver.type("Sa")
+        @driver.press("C-i")
+        assert_equal("▽さんせい", preedit.map(&:last).join)
+        @driver.press("C-g")
+        @driver.press("C-g")
+
+        @driver.type("Sank")
+        @driver.press("C-i")
+        assert_equal("▽さんせい", preedit.map(&:last).join)
+      end
+    end
+
     sub_test_case("with skkserv") do
       def scheme
         super + start_skkserv(true)
