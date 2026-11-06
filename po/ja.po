@@ -6399,9 +6399,9 @@ msgstr "[SKK] 左に移動"
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
 
-#: scm/skk.scm:76
-msgid "skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-additional instead."
-msgstr "skk: skk-ja-rk-ruleは無視されます。代わりにja-rk-rule-additionalを使ってください。"
+#: scm/skk.scm:77
+msgid "skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-basic or ja-rk-rule-additional instead."
+msgstr "skk: skk-ja-rk-ruleは無視されます。代わりにja-rk-rule-basicかja-rk-rule-additionalを使ってください。"
 
 #: scm/tcode.scm:1645
 msgid "T-Code"

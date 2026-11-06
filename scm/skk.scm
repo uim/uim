@@ -60,7 +60,8 @@
 (define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
 
 ;; Deprecated: It's ignored. ~/.uim for uim 1.9.9 or earlier may change
-;; it. Use ja-rk-rule-additional instead.
+;; it. Use ja-rk-rule-basic to override existing rules or
+;; ja-rk-rule-additional to add new rules instead.
 (define skk-ja-rk-rule '())
 (define skk-ja-rk-rule-warned? #f)
 
@@ -73,7 +74,7 @@
       (begin
         (set! skk-ja-rk-rule-warned? #t)
         (uim-notify-info
-         (_ "skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-additional instead."))))
+         (_ "skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-basic or ja-rk-rule-additional instead."))))
   (append ja-rk-rule-basic ja-rk-rule-additional))
 
 (define skk-okuri-char-alist '())
