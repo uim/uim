@@ -618,12 +618,11 @@
 
 ;; (head . suffixes) of the completion. While romaji is pending, the completion
 ;; covers the kana which the pending romaji may become.
-(define skk-completion-key
-  (lambda (sc)
-    (cons (skk-make-string (skk-context-head sc) skk-type-hiragana)
-          (if (skk-rk-pending? sc)
-              (skk-rk-expected-suffixes sc skk-type-hiragana)
-              (list "")))))
+(define (skk-completion-key sc)
+  (cons (skk-make-string (skk-context-head sc) skk-type-hiragana)
+        (if (skk-rk-pending? sc)
+            (skk-rk-expected-suffixes sc skk-type-hiragana)
+            (list ""))))
 
 (define skk-get-nth-completion
   (lambda (sc n)
@@ -721,75 +720,68 @@
     (if skk-dcomp-activate?
 	(skk-context-set-dcomp-word! sc ""))))
 
-(define skk-rk-output-entries
-  (lambda (str)
-    (cond
-     ((null? str) '())
-     ((string? (car str)) (list str))
-     (else str))))
+(define (skk-rk-output-entries str)
+  (cond
+   ((null? str) '())
+   ((string? (car str)) (list str))
+   (else str)))
 
 ;; kana which the pending romaji may become by any number of further keys,
 ;; sorted in code point order
-(define skk-rk-expected-suffixes
-  (lambda (sc kana-mode)
-    (let* ((rkc (skk-context-rk-context sc))
-           (strs (delete-duplicates
-                  (map (lambda (res)
-                         (skk-make-string (reverse (skk-rk-output-entries res))
-                                          kana-mode))
-                       (skk-rk-expected-outputs rkc (reverse (rk-context-seq rkc)))))))
-      (sort (filter (lambda (str) (not (skk-rk-derived-suffix? str strs)))
-                    strs)
-            string<?))))
+(define (skk-rk-expected-suffixes sc kana-mode)
+  (let* ((rkc (skk-context-rk-context sc))
+         (strs (delete-duplicates
+                (map (lambda (res)
+                       (skk-make-string (reverse (skk-rk-output-entries res))
+                                        kana-mode))
+                     (skk-rk-expected-outputs rkc (reverse (rk-context-seq rkc)))))))
+    (sort (filter (lambda (str) (not (skk-rk-derived-suffix? str strs)))
+                  strs)
+          string<?)))
 
 ;; dcomp matches a suffix by prefix, so an entry starting with another
 ;; entry (ちゃ after ち) is already covered by the shorter one
-(define skk-rk-derived-suffix?
-  (lambda (str strs)
-    (any (lambda (base) (skk-string-proper-prefix? base str))
-         strs)))
+(define (skk-rk-derived-suffix? str strs)
+  (any (lambda (base) (skk-string-proper-prefix? base str))
+       strs))
 
-(define skk-string-proper-prefix?
-  (lambda (base str)
-    (let ((n (string-length base)))
-      (and (< n (string-length str))
-           (string=? base (substring str 0 n))))))
+(define (skk-string-proper-prefix? base str)
+  (let ((n (string-length base)))
+    (and (< n (string-length str))
+         (string=? base (substring str 0 n)))))
 
 ;; outputs of the rules reachable from SEQ (oldest first) by one key, and
 ;; recursively from the partial sequences among them. A rule with a residual
 ;; key is taken as is, since the residual is not extended further.
-(define skk-rk-expected-outputs
-  (lambda (rkc seq)
-    (let ((rule (rk-context-rule rkc)))
-      (apply append
-             (map (lambda (key)
-                    (let* ((next (append seq (list key)))
-                           (matched (rk-lib-find-seq next rule))
-                           (residual (and matched (not (null? (cdar matched))))))
-                      (append
-                       (if matched (list (cadr matched)) '())
-                       (if (not residual)
-                           (skk-rk-expected-outputs rkc next)
-                           '()))))
-                  (rk-lib-expect-seq seq rule))))))
+(define (skk-rk-expected-outputs rkc seq)
+  (let ((rule (rk-context-rule rkc)))
+    (apply append
+           (map (lambda (key)
+                  (let* ((next (append seq (list key)))
+                         (matched (rk-lib-find-seq next rule))
+                         (residual (and matched (not (null? (cdar matched))))))
+                    (append
+                     (if matched (list (cadr matched)) '())
+                     (if (not residual)
+                         (skk-rk-expected-outputs rkc next)
+                         '()))))
+                (rk-lib-expect-seq seq rule)))))
 
 ;; while romaji is pending, the completion of the confirmed head followed by
 ;; any kana the romaji may become
-(define skk-lookup-dcomp-word
-  (lambda (sc)
-    (let ((kana-mode (skk-context-kana-mode sc)))
-      (skk-lib-get-dcomp-word
-       skk-dic
-       (skk-make-string (skk-context-head sc) kana-mode)
-       (if (skk-rk-pending? sc)
-           (skk-rk-expected-suffixes sc kana-mode)
-           (list ""))
-       skk-use-numeric-conversion?
-       skk-use-look?))))
+(define (skk-lookup-dcomp-word sc)
+  (let ((kana-mode (skk-context-kana-mode sc)))
+    (skk-lib-get-dcomp-word
+     skk-dic
+     (skk-make-string (skk-context-head sc) kana-mode)
+     (if (skk-rk-pending? sc)
+         (skk-rk-expected-suffixes sc kana-mode)
+         (list ""))
+     skk-use-numeric-conversion?
+     skk-use-look?)))
 
-(define skk-refresh-dcomp-word!
-  (lambda (sc)
-    (skk-context-set-dcomp-word! sc (skk-lookup-dcomp-word sc))))
+(define (skk-refresh-dcomp-word! sc)
+  (skk-context-set-dcomp-word! sc (skk-lookup-dcomp-word sc)))
 
 (define skk-append-string
   (lambda (sc str)
