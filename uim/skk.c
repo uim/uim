@@ -197,6 +197,8 @@ typedef struct dic_info_ {
 struct skk_comp_array {
   /* index of completion */
   char *head;
+  /* suffixes joined by '\n', which head is followed by */
+  char *suffixes;
   /* array of completion string */
   int nr_comps;
   char **comps;
@@ -2493,26 +2495,79 @@ skk_get_nr_candidates(uim_lisp skk_dic_, uim_lisp head_, uim_lisp okuri_head_, u
   return MAKE_INT(nr_cands);
 }
 
-static struct skk_comp_array *
-make_comp_array_from_cache(dic_info *di, const char *s, uim_lisp use_look_)
+/* suffixes_ is a list of kana which the head is followed by */
+static char *
+join_suffixes(uim_lisp suffixes_)
 {
-  struct skk_line *sl;
-  struct skk_comp_array *ca;
+  uim_lisp suffixes;
+  size_t len = 0;
+  char *joined, *p;
 
-  if (!di)
-    return NULL;
+  for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes))
+    len += strlen(REFER_C_STR(CAR(suffixes))) + 1;
+  joined = uim_malloc(len + 1);
+  p = joined;
+  for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes)) {
+    strcpy(p, REFER_C_STR(CAR(suffixes)));
+    p += strlen(p);
+    *p++ = '\n';
+  }
+  *p = '\0';
+  return joined;
+}
+
+static uim_bool
+suffix_matches(const char *rest, uim_lisp suffixes_)
+{
+  uim_lisp suffixes;
+
+  for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes))
+    if (!strncmp(rest, REFER_C_STR(CAR(suffixes)),
+                 strlen(REFER_C_STR(CAR(suffixes)))))
+      return 1;
+  return 0;
+}
+
+/* look only takes ASCII-letter heads and suffixes are kana, so it is used only without suffixes */
+static uim_bool
+look_allowed_for_suffixes(uim_lisp suffixes_)
+{
+  uim_lisp suffixes;
+
+  for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes))
+    if (*REFER_C_STR(CAR(suffixes)) != '\0')
+      return 0;
+  return 1;
+}
+
+static struct skk_comp_array *
+new_comp_array(const char *head, const char *suffixes)
+{
+  struct skk_comp_array *ca;
 
   ca = uim_malloc(sizeof(struct skk_comp_array));
   ca->nr_comps = 0;
   ca->refcount = 0;
   ca->comps = NULL;
-  ca->head = NULL;
+  ca->head = uim_strdup(head);
+  ca->suffixes = uim_strdup(suffixes);
   ca->next = NULL;
+  return ca;
+}
 
-  /* search from cache */
+static void
+make_comp_array_from_cache(dic_info *di, struct skk_comp_array *ca,
+                           uim_lisp suffixes_, uim_lisp use_look_)
+{
+  struct skk_line *sl;
+  size_t hlen = strlen(ca->head);
+
+  /* search from cache, most recently used first */
   for (sl = di->head.next; sl; sl = sl->next) {
-    if (/* string 's' is part of sl->head */
-	!strncmp(sl->head, s, strlen(s)) && strcmp(sl->head, s) &&
+    if (/* string 'head' is part of sl->head */
+        !strncmp(sl->head, ca->head, hlen) && strcmp(sl->head, ca->head) &&
+        /* and the rest of sl->head begins with one of suffixes */
+        suffix_matches(sl->head + hlen, suffixes_) &&
 	/* and sl is okuri-nasi line */
 	sl->okuri_head == '\0' &&
 	/* exclude some entries */
@@ -2523,18 +2578,8 @@ make_comp_array_from_cache(dic_info *di, const char *s, uim_lisp use_look_)
     }
   }
 
-  if (TRUEP(use_look_))
-    look_get_comp(ca, s);
-
-  if (ca->nr_comps == 0) {
-    free(ca);
-    ca = NULL;
-  } else {
-    ca->head = uim_strdup(s);
-    ca->next = skk_comp;
-    skk_comp = ca;
-  }
-  return ca;
+  if (TRUEP(use_look_) && hlen > 0 && look_allowed_for_suffixes(suffixes_))
+    look_get_comp(ca, ca->head);
 }
 
 static struct skk_comp_array *
@@ -2649,30 +2694,14 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
     sl = compose_line(di, s, '\0', line);
     free(line);
 
-    if (!ca) {
-      ca = uim_malloc(sizeof(struct skk_comp_array));
-      ca->nr_comps = 0;
-      ca->refcount = 0;
-      ca->comps = NULL;
-      ca->head = NULL;
-      ca->next = NULL;
-    }
     for (i = 0; i < sl->cands[0].nr_cands; i++) {
-      if (strcmp(s, sl->cands[0].cands[i]) != 0) {
+      if (strcmp(ca->head, sl->cands[0].cands[i]) != 0) {
         ca->nr_comps++;
         ca->comps = uim_realloc(ca->comps, sizeof(char *) * ca->nr_comps);
         ca->comps[ca->nr_comps - 1] = uim_strdup(sl->cands[0].cands[i]);
       }
     }
     free_skk_line(sl);
-    if (ca->nr_comps == 0) {
-      free(ca);
-      ca = NULL;
-    } else if (ca->head == NULL) {
-      ca->head = uim_strdup(s);
-      ca->next = skk_comp;
-      skk_comp = ca;
-    }
   } else {
     while ((nr = read(skkservsock, &r, 1)) != -1 && nr != 0 && r != '\n');
   }
@@ -2680,43 +2709,79 @@ append_comp_array_from_server(struct skk_comp_array *ca, dic_info *di, const cha
   return ca;
 }
 
-static struct skk_comp_array *
-find_comp_array(dic_info *di, const char *s, uim_lisp use_look_)
+static int
+has_completion_prefix(const char *head, uim_lisp suffixes_)
 {
-  struct skk_comp_array *ca;
+  uim_lisp suffixes;
 
-  if (strlen(s) == 0)
+  for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes))
+    if (strlen(head) + strlen(REFER_C_STR(CAR(suffixes))) > 0)
+      return 1;
+  return 0;
+}
+
+static struct skk_comp_array *
+find_comp_array(dic_info *di, const char *head, uim_lisp suffixes_, uim_lisp use_look_, uim_bool create)
+{
+  struct skk_comp_array *ca = NULL;
+  uim_lisp suffixes;
+  char *key;
+
+  if (!di || !has_completion_prefix(head, suffixes_))
     return NULL;
 
+  key = join_suffixes(suffixes_);
   for (ca = skk_comp; ca; ca = ca->next) {
-    if (!strcmp(ca->head, s))
+    if (!strcmp(ca->head, head) && !strcmp(ca->suffixes, key))
       break;
   }
-  if (ca == NULL) {
-    ca = make_comp_array_from_cache(di, s, use_look_);
+  if (ca == NULL && create) {
+    ca = new_comp_array(head, key);
+    make_comp_array_from_cache(di, ca, suffixes_, use_look_);
     if (di->skkserv_state & SKK_SERV_TRY_COMPLETION)
-      ca = append_comp_array_from_server(ca, di, s, use_look_);
+      for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes)) {
+        const char *suffix = REFER_C_STR(CAR(suffixes));
+        char *prefix = uim_malloc(strlen(head) + strlen(suffix) + 1);
+
+        strcpy(prefix, head);
+        strcat(prefix, suffix);
+        if (prefix[0] != '\0')
+          ca = append_comp_array_from_server(ca, di, prefix, use_look_);
+        free(prefix);
+      }
+
+    if (ca->nr_comps == 0) {
+      free(ca->head);
+      free(ca->suffixes);
+      free(ca);
+      ca = NULL;
+    } else {
+      ca->next = skk_comp;
+      skk_comp = ca;
+    }
   }
+  free(key);
 
   return ca;
 }
 
+/* key_ is (head . suffixes) */
 static struct skk_comp_array *
-find_comp_array_lisp(dic_info *skk_dic, uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
+find_comp_array_lisp(dic_info *skk_dic, uim_lisp key_, uim_lisp numeric_conv_, uim_lisp use_look_, uim_bool create)
 {
   const char *hs;
   struct skk_comp_array *ca;
   char *rs = NULL;
 
-  hs = REFER_C_STR(head_);
+  hs = REFER_C_STR(CAR(key_));
 
   if (TRUEP(numeric_conv_))
     rs = replace_numeric(hs);
 
   if (!rs)
-    ca = find_comp_array(skk_dic, hs, use_look_);
+    ca = find_comp_array(skk_dic, hs, CDR(key_), use_look_, create);
   else {
-    ca = find_comp_array(skk_dic, rs, use_look_);
+    ca = find_comp_array(skk_dic, rs, CDR(key_), use_look_, create);
     free(rs);
   }
   return ca;
@@ -2731,13 +2796,13 @@ skk_get_completion(uim_lisp skk_dic_, uim_lisp head_, uim_lisp numeric_conv_, ui
   if (PTRP(skk_dic_))
     skk_dic = C_PTR(skk_dic_);
 
-  ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_);
+  ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_, 1);
   if (ca) {
     ca->refcount++;
     return uim_scm_t();
   }
 
-  if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (TRUEP(numeric_conv_) && has_numeric_in_head(CAR(head_)))
     return skk_get_completion(skk_dic_, head_, uim_scm_f(), use_look_);
 
   return uim_scm_f();
@@ -2757,12 +2822,12 @@ skk_get_nth_completion(uim_lisp skk_dic_, uim_lisp nth_, uim_lisp head_,
     skk_dic = C_PTR(skk_dic_);
 
   if (TRUEP(numeric_conv_))
-    numlst_ = skk_store_replaced_numeric_str(head_);
+    numlst_ = skk_store_replaced_numeric_str(CAR(head_));
 
   if (!NULLP(numlst_))
-    ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_);
+    ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_, 0);
   else
-    ca = find_comp_array_lisp(skk_dic, head_, uim_scm_f(), use_look_);
+    ca = find_comp_array_lisp(skk_dic, head_, uim_scm_f(), use_look_, 0);
 
   if (!ca) {
     if (!NULLP(numlst_))
@@ -2797,15 +2862,27 @@ skk_get_nr_completions(uim_lisp skk_dic_, uim_lisp head_, uim_lisp numeric_conv_
   if (PTRP(skk_dic_))
     skk_dic = C_PTR(skk_dic_);
 
-  ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_);
+  ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_, 0);
   if (ca)
     n = ca->nr_comps;
 
-  if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (TRUEP(numeric_conv_) && has_numeric_in_head(CAR(head_)))
     return MAKE_INT(n +
 		    C_INT(skk_get_nr_completions(skk_dic_, head_, uim_scm_f(), use_look_))); 
 
   return MAKE_INT(n);
+}
+
+static struct skk_comp_array *
+find_comp_array_entry(const char *head, const char *key)
+{
+  struct skk_comp_array *ca;
+
+  for (ca = skk_comp; ca; ca = ca->next) {
+    if (!strcmp(ca->head, head) && !strcmp(ca->suffixes, key))
+      break;
+  }
+  return ca;
 }
 
 static uim_lisp
@@ -2815,28 +2892,23 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
   struct skk_comp_array *ca, *ca_prev;
   const char *hs;
   char *rs = NULL;
+  char *key;
 
-  hs = REFER_C_STR(head_);
+  hs = REFER_C_STR(CAR(head_));
+  key = join_suffixes(CDR(head_));
 
   if (TRUEP(numeric_conv_))
     rs = replace_numeric(hs);
 
-  if (!rs)
-    for (ca = skk_comp; ca; ca = ca->next) {
-      if (!strcmp(ca->head, hs)) {
-	ca->refcount--;
-	break;
-      }
-    }
-  else {
-    for (ca = skk_comp; ca; ca = ca->next) {
-      if (!strcmp(ca->head, rs)) {
-	ca->refcount--;
-	break;
-      }
-    }
-    free(rs);
-  }
+  /* same lookup order as find_comp_array_lisp: rs first, then hs */
+  ca = find_comp_array_entry(rs ? rs : hs, key);
+  if (!ca && rs && has_numeric_in_head(CAR(head_)))
+    ca = find_comp_array_entry(hs, key);
+  free(rs);
+  free(key);
+
+  if (ca)
+    ca->refcount--;
 
   if (ca && ca->refcount == 0) {
     for (i = 0; i < ca->nr_comps; i++) {
@@ -2844,6 +2916,7 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
     }
     free(ca->comps);
     free(ca->head);
+    free(ca->suffixes);
 
     if (ca == skk_comp) {
       skk_comp = ca->next;
@@ -2857,9 +2930,6 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
       free(ca);
     }
   }
-
-  if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
-    skk_clear_completions(head_, uim_scm_f());
 
   return uim_scm_t();
 }
@@ -2893,65 +2963,79 @@ restore_numeric(const char *s, uim_lisp numlst_)
   return MAKE_STR_DIRECTLY(str);
 }
 
+/*
+ * Returns the most recently used cached word, or else the look word, whose
+ * head is confirmed followed by one of suffixes. numlst_ is the numeric
+ * replacement of confirmed, which is non-null only with numeric conversion.
+ */
 static uim_lisp
-skk_get_dcomp_word(uim_lisp skk_dic_, uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
+search_dcomp_word(dic_info *skk_dic, const char *confirmed, uim_lisp suffixes_,
+                  uim_lisp numlst_, uim_lisp use_look_)
 {
-  const char *hs;
   struct skk_line *sl;
-  int len;
-  uim_lisp numlst_, look_;
-  char *rs = NULL;
+  uim_lisp suffixes;
+  size_t clen = strlen(confirmed);
+
+  for (sl = skk_dic->head.next; sl; sl = sl->next) {
+    if (sl->okuri_head != '\0' || !(sl->state & SKK_LINE_USE_FOR_COMPLETION))
+      continue;
+    for (suffixes = suffixes_; !NULLP(suffixes); suffixes = CDR(suffixes)) {
+      const char *suffix = REFER_C_STR(CAR(suffixes));
+      size_t slen = strlen(suffix);
+
+      /* the exact match of confirmed is excluded only without suffix */
+      if (clen + slen != 0 && strlen(sl->head) >= clen + slen &&
+          (slen > 0 || strlen(sl->head) > clen) &&
+          !strncmp(sl->head, confirmed, clen) &&
+          !strncmp(sl->head + clen, suffix, slen)) {
+        if (NULLP(numlst_))
+          return MAKE_STR(sl->head);
+        return restore_numeric(sl->head, numlst_);
+      }
+    }
+  }
+
+  if (TRUEP(use_look_) && clen > 0 && look_allowed_for_suffixes(suffixes_)) {
+    uim_lisp look_ = look_get_top_word(confirmed);
+
+    if (TRUEP(look_))
+      return look_;
+  }
+  return uim_scm_f();
+}
+
+/*
+ * confirmed_ is the head which is already confirmed, and suffixes_ are the
+ * kana which the pending romaji may become. Numeric conversion applies to
+ * confirmed_ only.
+ */
+static uim_lisp
+skk_get_dcomp_word(uim_lisp skk_dic_, uim_lisp confirmed_, uim_lisp suffixes_,
+                   uim_lisp numeric_conv_, uim_lisp use_look_)
+{
   dic_info *skk_dic = NULL;
+  uim_lisp numlst_ = uim_scm_null();
+  uim_lisp word_;
+  char *rs;
 
   if (PTRP(skk_dic_))
     skk_dic = C_PTR(skk_dic_);
 
-  numlst_ = uim_scm_null();
-  hs = REFER_C_STR(head_);
-
   if (TRUEP(numeric_conv_))
-    numlst_ = skk_store_replaced_numeric_str(head_);
+    numlst_ = skk_store_replaced_numeric_str(confirmed_);
 
   if (!NULLP(numlst_)) {
-    rs = replace_numeric(hs);
-    len = strlen(rs);
-  } else
-    len = strlen(hs);
-
-  if (len != 0) {
-    /* Search from cache using same way as in make_comp_array_from_cache(). */
-    if (!rs) {
-      for (sl = skk_dic->head.next; sl; sl = sl->next) {
-	if (!strncmp(sl->head, hs, len) && strcmp(sl->head, hs) &&
-			sl->okuri_head == '\0' &&
-			sl->state & SKK_LINE_USE_FOR_COMPLETION)
-	  return MAKE_STR(sl->head);
-      }
-      if (TRUEP(use_look_)) {
-	look_ = look_get_top_word(hs);
-	if (TRUEP(look_))
-	  return look_;
-      }
-    } else {
-      for (sl = skk_dic->head.next; sl; sl = sl->next) {
-	if (!strncmp(sl->head, rs, len) && strcmp(sl->head, rs) &&
-			sl->okuri_head == '\0' &&
-			sl->state & SKK_LINE_USE_FOR_COMPLETION) {
-	  free(rs);
-	  return restore_numeric(sl->head, numlst_);
-	}
-      }
-      if (TRUEP(use_look_)) {
-	look_ = look_get_top_word(rs);
-	free(rs);
-	if (TRUEP(look_))
-	  return look_;
-      } else {
-	free(rs);
-      }
-      return skk_get_dcomp_word(skk_dic_, head_, uim_scm_f(), use_look_);
-    }
+    rs = replace_numeric(REFER_C_STR(confirmed_));
+    word_ = search_dcomp_word(skk_dic, rs, suffixes_, numlst_, use_look_);
+    free(rs);
+    if (TRUEP(word_))
+      return word_;
   }
+
+  word_ = search_dcomp_word(skk_dic, REFER_C_STR(confirmed_), suffixes_,
+                            uim_scm_null(), use_look_);
+  if (TRUEP(word_))
+    return word_;
   return MAKE_STR("");
 }
 
@@ -4443,7 +4527,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc5("skk-lib-get-nth-completion", skk_get_nth_completion);
   uim_scm_init_proc4("skk-lib-get-nr-completions", skk_get_nr_completions);
   uim_scm_init_proc2("skk-lib-clear-completions", skk_clear_completions);
-  uim_scm_init_proc4("skk-lib-get-dcomp-word", skk_get_dcomp_word);
+  uim_scm_init_proc5("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_proc1("skk-lib-eval-candidate", skk_eval_candidate);
   uim_scm_init_proc1("skk-lib-look-open", skk_look_open);
   uim_scm_init_proc0("skk-lib-look-close", skk_look_close);

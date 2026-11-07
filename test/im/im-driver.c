@@ -152,6 +152,9 @@ parse_key(const char *name, int *key, int *state)
     case 'S':
       *state |= UMod_Shift;
       break;
+    case 'A':
+      *state |= UMod_Alt;
+      break;
     default:
       return 0;
     }
