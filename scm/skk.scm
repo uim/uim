@@ -849,6 +849,11 @@
 
 (define skk-begin-completion
   (lambda (sc)
+    ;; Without pending romaji completion, a residual which is already kana
+    ;; such as 'n' is confirmed first.
+    (if (and (not (skk-completion-pending-romaji? sc))
+             (rk-current-seq (skk-context-rk-context sc)))
+        (skk-append-residual-kana sc))
     ;; Without candidates, stay in kanji state: the pending romaji is kept, and
     ;; no word for the confirmed head is substituted.
     (if (skk-lib-get-completion

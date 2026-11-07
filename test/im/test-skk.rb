@@ -40,6 +40,7 @@ DICTIONARY_TEXT = <<~DICTIONARY
   あと /後/
   あんぜん /安全/
   か /蚊/
+  かな /仮名/
   かんじ /漢字/感じ/幹事/
   さんか /参加/
   さんかん /参観/
@@ -486,6 +487,14 @@ class SKKTest < Test::Unit::TestCase
 
         @driver.type("Kan")
         assert_equal("▽かn", preedit.map(&:last).join)
+      end
+
+      def test_tab_confirms_residual_n_without_pending_romaji
+        commit_kana("kanji")
+        commit_kana("kana")
+        @driver.type("Kan")
+        @driver.press("C-i")
+        assert_equal("▽かんじ", preedit.map(&:last).join)
       end
 
       def test_tab_completion_without_pending_romaji
