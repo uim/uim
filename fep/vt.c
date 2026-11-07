@@ -324,6 +324,7 @@ int vt_restore_region(int row, int col, int width)
   VTermScreenCell cell;
   int result = TRUE;
   int end_col;
+  int cursor_col;
   int x;
 
   if (s_vterm == NULL) {
@@ -339,6 +340,7 @@ int vt_restore_region(int row, int col, int width)
   if (col >= s_cols || width <= 0) {
     return TRUE;
   }
+  cursor_col = col;
   if (col > 0) {
     /* If the range starts at the right half of a wide character,
      * restore from the left half too; otherwise half of the character remains. */
@@ -387,10 +389,11 @@ int vt_restore_region(int row, int col, int width)
     }
   }
 
-  if (buffer.len > 0 &&
-      !put_terminal_vt_bytes_preserve_cursor(buffer.data, buffer.len)) {
+  if (!append_format(&buffer, "\033[%d;%dH", row + 1, cursor_col + 1)) {
+    goto memory_error;
+  }
+  if (!put_terminal_vt_bytes(buffer.data, buffer.len)) {
     result = FALSE;
-    goto cleanup;
   }
   goto cleanup;
 

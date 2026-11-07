@@ -1215,15 +1215,9 @@ void put_terminal_bytes(const char *str, int len)
   }
 }
 
-int put_terminal_vt_bytes_preserve_cursor(const char *str, size_t len)
+int put_terminal_vt_bytes(const char *str, size_t len)
 {
-  struct point_tag cursor;
-
   if (g_opt.no_report_cursor || len > INT_MAX) {
-    return FALSE;
-  }
-  cursor = get_cursor_position();
-  if (cursor.row == UNDEFINED || cursor.col == UNDEFINED) {
     return FALSE;
   }
 
@@ -1231,8 +1225,6 @@ int put_terminal_vt_bytes_preserve_cursor(const char *str, size_t len)
   put_exit_attribute_mode();
   change_attr(&s_attr, &s_attr_pty);
 
-  s_cursor.row = s_cursor.col = UNDEFINED;
-  put_cursor_address_p(&cursor);
   return TRUE;
 }
 

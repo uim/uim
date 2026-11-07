@@ -79,7 +79,7 @@ void put_uim_str_len(const char *str, int attr, int len);
 void put_uim_str_no_color(const char *str, int attr);
 void put_uim_str_no_color_len(const char *str, int attr, int len);
 void put_terminal_bytes(const char *str, int len);
-int put_terminal_vt_bytes_preserve_cursor(const char *str, size_t len);
+int put_terminal_vt_bytes(const char *str, size_t len);
 void put_pty_str(const char *str, int len);
 char *cut_padding(const char *escseq);
 void escseq_winch(void);
