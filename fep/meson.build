@@ -1,11 +1,19 @@
 # The sources include config.h only when HAVE_CONFIG_H is defined as
 # Autotools does.
 fep_c_args = ['-DHAVE_CONFIG_H']
+fep_dependencies = [curses] + forkpty_dependencies
+fep_vt_sources = []
+if libvterm.found()
+  fep_dependencies += [libvterm]
+  fep_vt_sources += ['vt.c']
+endif
 # They use libreplace, which Autotools links through libuim.
 executable('uim-fep',
            'callbacks.c',
            'draw.c',
            'escseq.c',
+           fep_vt_sources,
+           'vt.h',
            'helper.c',
            'key.c',
            'read.c',
@@ -13,7 +21,7 @@ executable('uim-fep',
            'udsock.c',
            'uim-fep.c',
            c_args: fep_c_args,
-           dependencies: [curses] + forkpty_dependencies,
+           dependencies: fep_dependencies,
            include_directories: uim_include_directories,
            install: true,
            link_with: [libuim_scm, libuim, libreplace])

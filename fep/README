@@ -8,6 +8,15 @@ INSTALL
 
 See INSTALL.
 
+If libvterm is found by pkg-config, uim-fep can restore the underlying
+characters and colors when it erases the preedit. Enable it with
+-Dlibvterm=enabled for Meson or --with-libvterm for Autotools. The default
+is auto. A UTF-8 locale is required. If pkg-config cannot find the library,
+set PKG_CONFIG_PATH, for example:
+  export PKG_CONFIG_PATH="$HOME/.local/share/pkgconfig"
+On terminals that cannot report the cursor position, and for On-the-Spot
+display, uim-fep uses the traditional erase method.
+
 How to USE
 ==========
 

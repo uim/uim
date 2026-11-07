@@ -1396,6 +1396,31 @@ if test "x$enable_fep" != xno; then
   AC_SUBST(FEP_LIBADD)
 fi
 
+AC_ARG_WITH([libvterm],
+  AS_HELP_STRING([--with-libvterm],
+    [use libvterm to restore uim-fep overlay backgrounds [default=auto]]),
+  [],
+  [with_libvterm=auto])
+
+LIBVTERM_CFLAGS=
+LIBVTERM_LIBS=
+have_libvterm=no
+if test "x$enable_fep" = xyes && test "x$with_libvterm" != xno; then
+  PKG_CHECK_MODULES([LIBVTERM], [vterm],
+    [have_libvterm=yes],
+    [if test "x$with_libvterm" = xyes; then
+       AC_MSG_ERROR([libvterm was requested but was not found])
+     fi])
+fi
+if test "x$have_libvterm" = xyes; then
+  AC_DEFINE([HAVE_LIBVTERM], [1],
+    [Define if libvterm is available])
+fi
+AC_SUBST([LIBVTERM_CFLAGS])
+AC_SUBST([LIBVTERM_LIBS])
+AM_CONDITIONAL([HAVE_LIBVTERM],
+  [test "x$have_libvterm" = xyes])
+
 AM_CONDITIONAL(UIM_FEP, test "x$enable_fep" = xyes)
 
 AC_ARG_ENABLE(emacs,

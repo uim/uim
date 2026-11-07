@@ -126,6 +126,7 @@
 #include "callbacks.h"
 #include "draw.h"
 #include "escseq.h"
+#include "vt.h"
 #include "key.h"
 #include "read.h"
 #include "helper.h"
@@ -547,6 +548,9 @@ opt_end:
   focus_in();
   init_draw(s_master, s_path_getmode);
   init_escseq(&attr_uim);
+  if (!g_opt.no_report_cursor && !g_opt.on_the_spot) {
+    vt_init(g_win->ws_col, g_win->ws_row);
+  }
   set_signal_handler();
 
   /*
@@ -1356,6 +1360,7 @@ static void main_loop(void)
         return;
       }
       buf[len] = '\0';
+      vt_feed(buf, (size_t)len);
 
       /* クリアされた時にモードを再描画する */
       if (g_opt.status_type == LASTLINE) {
@@ -1620,6 +1625,7 @@ static void sigwinch_handler(void)
 
   debug2(("g_win->ws_row = %d g_win->ws_col = %d\n", g_win->ws_row, g_win->ws_col));
 
+  vt_resize(g_win->ws_col, g_win->ws_row);
   escseq_winch();
   callbacks_winch();
   draw_winch(prev_win);
@@ -1631,6 +1637,7 @@ static void sigwinch_handler(void)
 void done(int exit_value)
 {
   flush_pending_pty_sequence();
+  vt_quit();
   uim_quit();
   quit_helper();
   quit_escseq();

@@ -38,6 +38,10 @@ option('fep',
        type: 'feature',
        value: 'auto',
        description: 'build uim-fep')
+option('libvterm',
+       type: 'feature',
+       value: 'auto',
+       description: 'use libvterm to restore uim-fep overlay backgrounds')
 option('ffi',
        type: 'feature',
        value: 'disabled',

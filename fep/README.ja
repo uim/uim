@@ -4,6 +4,14 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのf
 * インストール
   INSTALLを見てください。
 
+  libvtermがpkg-configで見つかる環境では、uim-fepはpreedit消去時に
+  preeditで隠れていた文字や色を復元できます。Mesonでは`-Dlibvterm=enabled`、
+  Autotoolsでは`--with-libvterm`で有効にできます。既定は`auto`です。
+  UTF-8ロケールが必要です。
+  pkg-configがライブラリを見つけられない場合は、`PKG_CONFIG_PATH`を設定してください。
+  例: `export PKG_CONFIG_PATH="$HOME/.local/share/pkgconfig"`
+  On-the-Spot表示とカーソル位置を報告できない端末では従来の消去方法を使います。
+
 
 * 使い方
   LANGに使用する言語とエンコーディングを設定します。

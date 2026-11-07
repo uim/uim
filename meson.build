@@ -79,6 +79,7 @@ endif
 anthy_plugin = anthy_utf8.found() ? anthy_utf8 : anthy
 
 curses = dependency('curses', required: get_option('fep'))
+libvterm = dependency('vterm', required: get_option('libvterm'))
 
 x11 = dependency('x11', method: 'pkg-config', required: get_option('x11'))
 have_xkb = x11.found() and cc.has_header('X11/XKBlib.h', dependencies: x11)
@@ -283,6 +284,10 @@ else
     config_data.set('HAVE_FORKPTY', 1)
     forkpty_dependencies += [util]
   endif
+endif
+
+if libvterm.found()
+  config_data.set('HAVE_LIBVTERM', 1)
 endif
 
 sigsetjmp_code = '''
@@ -536,6 +541,7 @@ summary({
           'GTK 3': gtk3.found(),
           'GTK 4': gtk4.found(),
           'IBus': ibus.found(),
+          'libvterm': libvterm.found(),
           'Mozc': build_mozc,
           'NLS': intl.found(),
           'Notify': get_option('notify'),

@@ -49,6 +49,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <limits.h>
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
@@ -1205,6 +1206,34 @@ void put_uim_str_no_color_len(const char *str, int attr, int len)
   ((char *)str)[len] = '\0';
   put_uim_str_no_color(str, attr);
   ((char *)str)[len] = save_char;
+}
+
+void put_terminal_bytes(const char *str, int len)
+{
+  if (len > 0) {
+    write(g_win_out, str, len);
+  }
+}
+
+int put_terminal_vt_bytes_preserve_cursor(const char *str, size_t len)
+{
+  struct point_tag cursor;
+
+  if (g_opt.no_report_cursor || len > INT_MAX) {
+    return FALSE;
+  }
+  cursor = get_cursor_position();
+  if (cursor.row == UNDEFINED || cursor.col == UNDEFINED) {
+    return FALSE;
+  }
+
+  put_terminal_bytes(str, (int)len);
+  put_exit_attribute_mode();
+  change_attr(&s_attr, &s_attr_pty);
+
+  s_cursor.row = s_cursor.col = UNDEFINED;
+  put_cursor_address_p(&cursor);
+  return TRUE;
 }
 
 /*
