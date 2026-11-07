@@ -847,23 +847,43 @@
 	      (skk-setup-child-context sc skk-child-type-editor)
 	      (skk-flush sc))))))
 
+;; kana which the pending romaji becomes when it is complete, such as ん for 'n'
+(define (skk-rk-residual-kana sc)
+  (let ((outputs (rk-peek-terminal-match (skk-context-rk-context sc))))
+    (and outputs
+         (skk-make-string (reverse (skk-rk-output-entries outputs))
+                          skk-type-hiragana))))
+
 (define skk-begin-completion
   (lambda (sc)
     ;; Without pending romaji completion, a residual which is already kana
-    ;; such as 'n' is confirmed first.
-    (if (and (not (skk-completion-pending-romaji? sc))
-             (rk-current-seq (skk-context-rk-context sc)))
-        (skk-append-residual-kana sc))
-    ;; Without candidates, stay in kanji state: the pending romaji is kept, and
-    ;; no word for the confirmed head is substituted.
-    (if (skk-lib-get-completion
-         skk-dic
-         (skk-completion-key sc)
-         skk-use-numeric-conversion?
-         skk-use-look?)
-        (begin
-          (skk-context-set-completion-nth! sc 0)
-          (skk-context-set-state! sc 'skk-state-completion)))))
+    ;; such as 'n' is confirmed only when the completion of the head with it
+    ;; has candidates; that lookup is reused as the completion below.
+    ;; Without candidates, the pending romaji is kept.
+    (let* ((residual (and (not (skk-completion-pending-romaji? sc))
+                          (skk-rk-residual-kana sc)))
+           (found
+            (if (and residual
+                     (skk-lib-get-completion
+                      skk-dic
+                      (cons (string-append
+                             (skk-make-string (skk-context-head sc) skk-type-hiragana)
+                             residual)
+                            (list ""))
+                      skk-use-numeric-conversion?
+                      skk-use-look?))
+                (begin
+                  (skk-append-residual-kana sc)
+                  #t)
+                (skk-lib-get-completion
+                 skk-dic
+                 (skk-completion-key sc)
+                 skk-use-numeric-conversion?
+                 skk-use-look?))))
+      (if found
+          (begin
+            (skk-context-set-completion-nth! sc 0)
+            (skk-context-set-state! sc 'skk-state-completion))))))
 
 (define skk-dcomp-word-tail
   (lambda (sc)

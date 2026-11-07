@@ -497,6 +497,12 @@ class SKKTest < Test::Unit::TestCase
         assert_equal("▽かんじ", preedit.map(&:last).join)
       end
 
+      def test_tab_keeps_residual_n_without_candidates
+        @driver.type("Kan")
+        @driver.press("C-i")
+        assert_equal("▽かn", preedit.map(&:last).join)
+      end
+
       def test_tab_completion_without_pending_romaji
         commit_kana("sanka")
         commit_kana("sansei")
