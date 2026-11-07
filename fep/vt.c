@@ -137,7 +137,6 @@ static VTerm *s_vterm;
 static VTermScreen *s_screen;
 static uint16_t s_cols;
 static uint16_t s_rows;
-static size_t s_bytes_fed;
 
 static void disable_terminal(const char *operation)
 {
@@ -290,14 +289,12 @@ int vt_init(uint16_t cols, uint16_t rows)
   vterm_input_write(s_vterm, cursor_sequence, (size_t)cursor_sequence_len);
   s_cols = cols;
   s_rows = rows;
-  s_bytes_fed = 0;
   return TRUE;
 }
 
 void vt_feed(const char *data, size_t len)
 {
   if (s_vterm != NULL && len > 0) {
-    s_bytes_fed += len;
     vterm_input_write(s_vterm, data, len);
   }
 }

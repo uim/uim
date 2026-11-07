@@ -1217,7 +1217,7 @@ void put_terminal_bytes(const char *str, int len)
 
 int put_terminal_vt_bytes(const char *str, size_t len)
 {
-  if (g_opt.no_report_cursor || len > INT_MAX) {
+  if (len > INT_MAX) {
     return FALSE;
   }
 
