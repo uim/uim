@@ -895,16 +895,16 @@ static void set_attr(const char *str, int len)
       params[0] = 0;
       str++;
 
-      while (isdigit((unsigned char)str[0]) || str[0] == ';') {
+      while (str < end && (isdigit((unsigned char)str[0]) || str[0] == ';')) {
         if (isdigit((unsigned char)str[0])) {
           int n = 0;
-          while (isdigit((unsigned char)str[0])) {
+          while (str < end && isdigit((unsigned char)str[0])) {
             n = n * 10 + str[0] - '0';
             str++;
           }
           params[nr_params - 1] = n;
         }
-        if (str[0] == ';') {
+        if (str < end && str[0] == ';') {
           nr_params++;
           params = uim_realloc(params, sizeof(int) * nr_params);
           params[nr_params - 1] = 0;
@@ -967,7 +967,7 @@ static void set_attr(const char *str, int len)
                   nr_ext_params = 3;
                 }
 
-                for (j = 0; j < nr_ext_params && i < nr_params; j++) {
+                for (j = 0; j < nr_ext_params && i + 1 < nr_params; j++) {
                   i++;
                   if (0 <= params[i] && params[i] <= 255) {
                     *ext_color_dst |= params[i] << (j * 8);
