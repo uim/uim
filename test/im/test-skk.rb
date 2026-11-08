@@ -576,6 +576,23 @@ class SKKTest < Test::Unit::TestCase
       end
     end
 
+    sub_test_case("C-A-i") do
+      def test_cancel
+        commit_kana("sanka")
+        commit_kana("sankan")
+        commit_kana("sankou")
+        @driver.type("Sa")
+        @driver.press("C-i", "C-i", "C-i", "C-A-i")
+        @driver.press("C-g")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "さんか"],
+                       [UNDERLINE, "ん"],
+                     ],
+                     preedit)
+      end
+    end
+
     sub_test_case("C-A-j") do
       def test_pending_k
         commit_kana("aka")
