@@ -61,6 +61,7 @@
 #include "callbacks.h"
 #include "escseq.h"
 #include "draw.h"
+#include "vt.h"
 #include "str.h"
 #include "udsock.h"
 
@@ -987,28 +988,41 @@ static int min(int a, int b)
   return a < b ? a : b;
 }
 
+static void restore_preedit_region_or_erase(int row, int col, int width)
+{
+  int restored = FALSE;
+
+  if (g_opt.on_the_spot) {
+    put_delete(width);
+  } else {
+    if (!g_opt.no_report_cursor) {
+      restored = vt_restore_region(row, col, width);
+    }
+    if (!restored) {
+      put_erase(width);
+    }
+  }
+}
+
 static void erase_prev_preedit(void)
 {
   int lineno;
   for (lineno = 0; lineno < s_preedit_lines; lineno++) {
-    assert(!g_opt.on_the_spot || s_line2width[lineno] <= s_prev_line2width[lineno]);
-    if (s_prev_line2width[lineno] > s_line2width[lineno]) {
-      put_cursor_address(s_head.row + lineno, s_line2width[lineno]);
-      if (g_opt.on_the_spot) {
-        put_delete(s_prev_line2width[lineno] - s_line2width[lineno]);
-      } else {
-        put_erase(s_prev_line2width[lineno] - s_line2width[lineno]);
-      }
+    int col = s_line2width[lineno];
+    int width = s_prev_line2width[lineno] - col;
+    assert(!g_opt.on_the_spot || width >= 0);
+    if (width > 0) {
+      int row = s_head.row + lineno;
+      put_cursor_address(row, col);
+      restore_preedit_region_or_erase(row, col, width);
     }
   }
   for (; lineno < s_prev_preedit_lines; lineno++) {
-    if (s_prev_line2width[lineno] > 0) {
-      put_cursor_address(s_head.row + lineno, 0);
-      if (g_opt.on_the_spot) {
-        put_delete(s_prev_line2width[lineno]);
-      } else {
-        put_erase(s_prev_line2width[lineno]);
-      }
+    int width = s_prev_line2width[lineno];
+    if (width > 0) {
+      int row = s_head.row + lineno;
+      put_cursor_address(row, 0);
+      restore_preedit_region_or_erase(row, 0, width);
     }
   }
 }
