@@ -863,31 +863,28 @@
 
 (define skk-begin-completion
   (lambda (sc)
-    ;; When completion does not use pending romaji, first try completing the
-    ;; head with the kana of the pending romaji (e.g. "かん" for "か" + "n").
-    ;; The pending romaji is not confirmed, so cancelling restores it.
-    ;; Otherwise complete the head alone.
+    ;; When completion does not use pending romaji, look up the head with the
+    ;; kana of the pending romaji (e.g. "かん" for "か" + "n"). The pending romaji
+    ;; is not confirmed, so cancelling restores it.
     (skk-context-set-completion-residual! sc #f)
     (let* ((residual (and (not (skk-completion-pending-romaji? sc))
                           (skk-rk-residual-kana sc)))
-           (residual-found
-            (and residual
-                 (skk-lib-get-completion
-                  skk-dic
-                  (cons (string-append
-                         (skk-make-string (skk-context-head sc) skk-type-hiragana)
-                         residual)
-                        (list ""))
-                  skk-use-numeric-conversion?
-                  skk-use-look?)))
            (found
-            (or residual-found
+            (if residual
+                (skk-lib-get-completion
+                 skk-dic
+                 (cons (string-append
+                        (skk-make-string (skk-context-head sc) skk-type-hiragana)
+                        residual)
+                       (list ""))
+                 skk-use-numeric-conversion?
+                 skk-use-look?)
                 (skk-lib-get-completion
                  skk-dic
                  (skk-completion-key sc)
                  skk-use-numeric-conversion?
                  skk-use-look?))))
-      (if residual-found
+      (if (and residual found)
           (skk-context-set-completion-residual! sc residual))
       (if found
           (begin
