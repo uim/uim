@@ -376,6 +376,15 @@ class SKKTest < Test::Unit::TestCase
                      preedit)
       end
 
+      def test_cancel_only_pending_romaji
+        commit_kana("sanka")
+        commit_kana("sansei")
+        @driver.type("S")
+        @driver.press("C-i")
+        @driver.press("C-g")
+        assert_equal([], preedit)
+      end
+
       def test_kana_head
         commit_kana("sanka")
         commit_kana("sansei")
@@ -403,11 +412,28 @@ class SKKTest < Test::Unit::TestCase
                      preedit)
       end
 
+      def test_cancel_pending_n
+        commit_kana("kanji")
+        commit_kana("kana")
+        @driver.type("Kan")
+        @driver.press("C-i")
+        @driver.press("C-g")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                     preedit)
+      end
+
       def test_pending_n_no_candidate
         @driver.type("Kan")
         @driver.press("C-i")
         assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
                      preedit)
+      end
+
+      def test_cancel_pending_n_no_candidate
+        @driver.type("Kan")
+        @driver.press("C-i")
+        @driver.press("C-g")
+        assert_equal([], preedit)
       end
     end
 
