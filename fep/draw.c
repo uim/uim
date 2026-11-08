@@ -107,7 +107,8 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width);
 static int compare_preedit(struct preedit_tag *p1, struct preedit_tag *p2);
 static int compare_preedit_rev(struct preedit_tag *p1, struct preedit_tag *p2);
 static int min(int a, int b);
-static void restore_preedit_region_or_erase(int row, int col, int width);
+static int line_start_col(int lineno);
+static void restore_preedit_region_or_erase(int row, int col, int width, int guard_col);
 static void erase_prev_preedit(void);
 static void erase_preedit(void);
 static void erase_displayed_preedit(const struct preedit_tag *preedit);
@@ -914,7 +915,8 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     if (s_line2width[lineno] < s_prev_line2width[lineno]) {
       int row = s_head.row + lineno;
       int col = s_line2width[lineno];
-      restore_preedit_region_or_erase(row, col, s_prev_line2width[lineno] - col);
+      restore_preedit_region_or_erase(row, col, s_prev_line2width[lineno] - col,
+                                      line_start_col(lineno));
       s_prev_line2width[lineno] = col;
     }
 
@@ -989,7 +991,12 @@ static int min(int a, int b)
   return a < b ? a : b;
 }
 
-static void restore_preedit_region_or_erase(int row, int col, int width)
+static int line_start_col(int lineno)
+{
+  return lineno == 0 ? s_head.col : 0;
+}
+
+static void restore_preedit_region_or_erase(int row, int col, int width, int guard_col)
 {
   int restored = FALSE;
 
@@ -997,7 +1004,7 @@ static void restore_preedit_region_or_erase(int row, int col, int width)
     put_delete(width);
   } else {
     if (!g_opt.no_report_cursor) {
-      restored = vt_restore_region(row, col, width);
+      restored = vt_restore_region(row, col, width, guard_col);
     }
     if (!restored) {
       put_erase(width);
@@ -1015,7 +1022,7 @@ static void erase_prev_preedit(void)
     if (width > 0) {
       int row = s_head.row + lineno;
       put_cursor_address(row, col);
-      restore_preedit_region_or_erase(row, col, width);
+      restore_preedit_region_or_erase(row, col, width, line_start_col(lineno));
     }
   }
   for (; lineno < s_prev_preedit_lines; lineno++) {
@@ -1023,7 +1030,7 @@ static void erase_prev_preedit(void)
     if (width > 0) {
       int row = s_head.row + lineno;
       put_cursor_address(row, 0);
-      restore_preedit_region_or_erase(row, 0, width);
+      restore_preedit_region_or_erase(row, 0, width, 0);
     }
   }
 }

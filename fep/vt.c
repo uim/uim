@@ -338,7 +338,7 @@ void vt_scroll_up(void)
   vterm_input_write(s_vterm, seq, (size_t)len);
 }
 
-int vt_restore_region(int row, int col, int width)
+int vt_restore_region(int row, int col, int width, int guard_col)
 {
   struct byte_buffer buffer = {0};
   struct byte_buffer style = {0};
@@ -348,6 +348,7 @@ int vt_restore_region(int row, int col, int width)
   int result = TRUE;
   int end_col;
   int cursor_col;
+  int blank_tail = FALSE;
   int x;
 
   if (s_vterm == NULL) {
@@ -372,8 +373,15 @@ int vt_restore_region(int row, int col, int width)
       return FALSE;
     }
     if (is_wide_tail(&cell)) {
-      col--;
-      width++;
+      /* The left half is under the preedit (at or after guard_col), so it
+       * must not be restored. Only the right half is blanked, keeping its
+       * background style. */
+      if (col - 1 >= guard_col) {
+        blank_tail = TRUE;
+      } else {
+        col--;
+        width++;
+      }
     }
   }
   end_col = width > s_cols - col ? s_cols : col + width;
@@ -388,8 +396,9 @@ int vt_restore_region(int row, int col, int width)
       goto cleanup;
     }
     /* Skip the right half of a wide character: outputting the left half
-     * already advances the terminal cursor by two columns. */
-    if (is_wide_tail(&cell)) {
+     * already advances the terminal cursor by two columns. A blanked right
+     * half is written as a space instead. */
+    if (is_wide_tail(&cell) && !(blank_tail && x == col)) {
       continue;
     }
     style.len = 0;
@@ -407,7 +416,11 @@ int vt_restore_region(int row, int col, int width)
       prev_style = style;
       style = tmp_style;
     }
-    if (!append_cell_text(&buffer, &cell)) {
+    if (is_wide_tail(&cell)) {
+      if (!append_data(&buffer, " ", 1)) {
+        goto memory_error;
+      }
+    } else if (!append_cell_text(&buffer, &cell)) {
       goto memory_error;
     }
   }
