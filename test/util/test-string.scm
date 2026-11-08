@@ -125,6 +125,14 @@
             (string-to-list "日本語"))
 (test-equal '("c" "語" "本" "b" "日" "a")
             (string-to-list "a日b本語c"))
+;; Each byte of an invalid sequence is a character whose code is the
+;; byte. "\xa4\xa2" is "あ" in EUC-JP.
+(test-equal (list "b"
+                  (string (integer->char #xa2))
+                  (string (integer->char #xa4))
+                  "a")
+            (string-to-list
+             (string-append "a" (byte-list->string '(#xa4 #xa2)) "b")))
 (test-end)
 
 (test-begin "string-to-list-utf8")
