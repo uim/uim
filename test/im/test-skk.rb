@@ -32,27 +32,29 @@ require "tmpdir"
 
 require_relative "im-driver"
 
-DICTIONARY_TEXT = <<~DICTIONARY
-  ;; okuri-ari entries.
-  ;; okuri-nasi entries.
-  #がつ /月/
-  あか /赤/
-  あと /後/
-  あんぜん /安全/
-  か /蚊/
-  かな /仮名/
-  かんじ /漢字/感じ/幹事/
-  さんか /参加/
-  さんかん /参観/
-  さんこう /参考/
-  さんせい /賛成/
-  ちゃわん /茶碗/
-DICTIONARY
+module SKKFixture
+  DICTIONARY_TEXT = <<~DICTIONARY
+    ;; okuri-ari entries.
+    ;; okuri-nasi entries.
+    #がつ /月/
+    あか /赤/
+    あと /後/
+    あんぜん /安全/
+    か /蚊/
+    かな /仮名/
+    かんじ /漢字/感じ/幹事/
+    さんか /参加/
+    さんかん /参観/
+    さんこう /参考/
+    さんせい /賛成/
+    ちゃわん /茶碗/
+  DICTIONARY
+end
 
 # Stands in for skkserv. It answers lookups ("1") and completions ("4")
-# from DICTIONARY_TEXT. skkserv uses EUC-JP.
+# from SKKFixture::DICTIONARY_TEXT. skkserv uses EUC-JP.
 class FakeSKKServer
-  DICTIONARY = DICTIONARY_TEXT.lines.filter_map do |line|
+  DICTIONARY = SKKFixture::DICTIONARY_TEXT.lines.filter_map do |line|
     next if line.start_with?(";")
     reading, candidates = line.chomp.split(" /", 2)
     [reading, candidates.delete_suffix("/").split("/")]
@@ -109,7 +111,7 @@ class SKKTest < Test::Unit::TestCase
     Dir.mktmpdir do |dir|
       dictionary = File.join(dir, "SKK-JISYO")
       # SKK dictionaries are in EUC-JP by default.
-      File.write(dictionary, DICTIONARY_TEXT.encode("EUC-JP"))
+      File.write(dictionary, SKKFixture::DICTIONARY_TEXT.encode("EUC-JP"))
       # The personal dictionaries are written to DIR.
       @driver = IMDriver.new("skk", <<~SCHEME)
         (require-module "skk")
