@@ -245,379 +245,388 @@ class SKKTest < Test::Unit::TestCase
     end
   end
 
-  sub_test_case("dynamic completion with pending romaji") do
+  sub_test_case("skk-dcomp-activate?: #t") do
     def scheme
       <<~SCHEME
         (set! skk-dcomp-activate? #t)
-        (set! skk-use-numeric-conversion? #t)
       SCHEME
     end
 
-    def test_uppercase_first_key_narrows_completion_with_pending_romaji
-      @driver.type("Kanji")
-      @driver.press("space", "return")
-      @driver.press("K")
+    sub_test_case("dynamic completion") do
+      def test_only_pending_romaji
+        @driver.type("Kanji")
+        @driver.press("space", "return")
+        @driver.press("K")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "k"],
+                       [UNDERLINE, "かんじ"],
+                     ],
+                     preedit)
+      end
 
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"], [UNDERLINE, "かんじ"]],
-                   preedit)
+      def test_only_pending_romaji_after_shift_q
+        @driver.press("S-q")
+        @driver.type("Kanji")
+        @driver.press("space", "return")
+        @driver.press("S-q")
+        @driver.type("k")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "k"],
+                       [UNDERLINE, "かんじ"],
+                     ],
+                     preedit)
+      end
+
+      def test_recently_used_in_another_row
+        @driver.type("Kanji")
+        @driver.press("space", "return")
+        @driver.type("Kisetsu")
+        @driver.press("space", "return")
+        @driver.press("K")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "k"],
+                       [UNDERLINE, "きせつ"],
+                     ],
+                     preedit)
+      end
+
+      def test_c_of_cha
+        commit_kana("chawan")
+        @driver.type("C")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "c"],
+                       [UNDERLINE, "ちゃわん"],
+                     ],
+                     preedit)
+      end
+
+      def test_pending_k_exact_match
+        commit_kana("sanka")
+        @driver.type("Sank")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "さん"],
+                       [UNDERLINE, "k"],
+                       [UNDERLINE, "か"],
+                     ],
+                     preedit)
+      end
     end
 
-    def test_lowercase_key_in_kanji_mode_narrows_completion_with_pending_romaji
-      @driver.press("S-q")
-      @driver.type("Kanji")
-      @driver.press("space", "return")
-      @driver.press("S-q")
-      @driver.type("k")
+    sub_test_case("C-i") do
+      def test_only_pending_romaji
+        commit_kana("kanji")
+        @driver.press("K")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
+                     preedit)
+      end
 
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"], [UNDERLINE, "かんじ"]],
-                   preedit)
+      def test_only_pending_romaji_exact_match
+        commit_kana("ka")
+        @driver.type("K")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"]],
+                     preedit)
+      end
+
+      def test_recently_used
+        commit_kana("kanji")
+        commit_kana("ka")
+        @driver.press("K")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"]],
+                     preedit)
+      end
+
+      def test_recently_used_next
+        commit_kana("kanji")
+        commit_kana("ka")
+        @driver.press("K")
+        @driver.press("C-i", "C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
+                     preedit)
+      end
+
+      def test_kana_head_excludes_head
+        commit_kana("kanji")
+        commit_kana("ka")
+        @driver.type("Ka")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
+                     preedit)
+      end
+
+      def test_pending_k
+        commit_kana("sankou")
+        commit_kana("sanka")
+        @driver.type("Sank")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんか"]],
+                     preedit)
+      end
+
+      def test_pending_k_next
+        commit_kana("sankou")
+        commit_kana("sanka")
+        @driver.type("Sank")
+        @driver.press("C-i", "C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんこう"]],
+                     preedit)
+      end
+
+      def test_c_of_cha
+        commit_kana("chawan")
+        @driver.type("C")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "ちゃわん"]],
+                     preedit)
+      end
+
+      def test_no_candidate
+        commit_kana("sankou")
+        @driver.type("Sans")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さん"], [UNDERLINE, "s"]],
+                     preedit)
+      end
+
+      def test_cancel_no_candidate
+        commit_kana("sankou")
+        @driver.type("Sans")
+        @driver.press("C-i")
+        @driver.press("C-g")
+        assert_equal([], preedit)
+      end
+
+      def test_cancel
+        commit_kana("sanka")
+        @driver.type("Sank")
+        @driver.press("C-i")
+        @driver.press("C-g")
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "さん"],
+                       [UNDERLINE, "k"],
+                       [UNDERLINE, "か"],
+                     ],
+                     preedit)
+      end
+
+      sub_test_case("skk-use-numeric-conversion?: #t") do
+        def scheme
+          super + <<~SCHEME
+            (set! skk-use-numeric-conversion? #t)
+          SCHEME
+        end
+
+        def test_number_head
+          commit_kana("1gatsu")
+          @driver.press("S-q")
+          @driver.type("1g")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "1がつ"]],
+                       preedit)
+        end
+
+        def test_number_head_after_cancel
+          commit_kana("1gatsu")
+          @driver.press("S-q")
+          @driver.type("1g")
+          @driver.press("C-i", "C-g", "C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "1がつ"]],
+                       preedit)
+        end
+      end
     end
 
-    def test_uppercase_k_prefers_most_recently_committed_word_across_kana_rows
-      @driver.type("Kanji")
-      @driver.press("space", "return")
-      @driver.type("Kisetsu")
-      @driver.press("space", "return")
-      @driver.press("K")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"], [UNDERLINE, "きせつ"]],
-                   preedit)
+    sub_test_case("C-A-i") do
+      def test_restart_from_current_candidate
+        commit_kana("sankan")
+        commit_kana("sankou")
+        commit_kana("sanka")
+        @driver.type("Sank")
+        @driver.press("C-i", "C-A-i", "C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんかん"]],
+                     preedit)
+      end
     end
 
-    def test_tab_after_committed_kanji_completes_whole_word
-      commit_kana("kanji")
-      @driver.press("K")
-      @driver.press("C-i")
+    sub_test_case("C-A-j") do
+      def test_pending_k
+        commit_kana("aka")
+        commit_kana("ato")
+        @driver.type("Ak")
+        @driver.press("C-A-j")
+        assert_equal([["赤", "後", "赤"], []],
+                     [@driver.commits, preedit])
+      end
 
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
-                   preedit)
+      def test_pending_n
+        commit_kana("anzen")
+        @driver.type("An")
+        @driver.press("C-A-j")
+        assert_equal([["安全", "安全"], []], [@driver.commits, preedit])
+      end
+
+      def test_only_pending_romaji
+        commit_kana("sanka")
+        @driver.press("S")
+        @driver.press("C-A-j")
+        assert_equal([["参加", "参加"], []], [@driver.commits, preedit])
+      end
+
+      def test_no_candidate
+        @driver.type("Un")
+        @driver.press("C-A-j")
+        assert_equal([["うん"], []], [@driver.commits, preedit])
+      end
     end
 
-    def test_tab_completes_exact_match_with_pending_romaji
-      commit_kana("ka")
-      @driver.type("K")
-      @driver.press("C-i")
+    sub_test_case("A-space") do
+      def test_pending_k
+        commit_kana("aka")
+        commit_kana("ato")
+        @driver.type("Ak")
+        @driver.press("A-space")
+        assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "赤"]],
+                     preedit)
+      end
 
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"]],
-                   preedit)
+      def test_pending_n
+        commit_kana("anzen")
+        @driver.type("An")
+        @driver.press("A-space")
+        assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "安全"]],
+                     preedit)
+      end
+
+      def test_only_pending_romaji
+        commit_kana("sanka")
+        @driver.press("S")
+        @driver.press("A-space")
+        assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "参加"]],
+                     preedit)
+      end
     end
 
-    def test_tab_first_completion_follows_mru_order
-      commit_kana("kanji")
-      commit_kana("ka")
-      @driver.press("K")
-      @driver.press("C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"]],
-                   preedit)
-    end
-
-    def test_tab_next_completion_follows_mru_order
-      commit_kana("kanji")
-      commit_kana("ka")
-      @driver.press("K")
-      @driver.press("C-i", "C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
-                   preedit)
-    end
-
-    def test_tab_excludes_exact_match_of_head
-      commit_kana("kanji")
-      commit_kana("ka")
-      @driver.type("Ka")
-      @driver.press("C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
-                   preedit)
-    end
-
-    def test_new_completion_key_restarts_from_current_candidate
-      commit_kana("sankan")
-      commit_kana("sankou")
-      commit_kana("sanka")
-      @driver.type("Sank")
-      @driver.press("C-i", "C-A-i", "C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんかん"]],
-                   preedit)
-    end
-
-    def test_tab_completes_kana_head_with_pending_romaji
-      commit_kana("sankou")
-      commit_kana("sanka")
-      @driver.type("Sank")
-      @driver.press("C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんか"]],
-                   preedit)
-    end
-
-    def test_tab_next_completion_of_kana_head_with_pending_romaji
-      commit_kana("sankou")
-      commit_kana("sanka")
-      @driver.type("Sank")
-      @driver.press("C-i", "C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんこう"]],
-                   preedit)
-    end
-
-    def test_tab_without_candidates_keeps_pending_romaji
-      commit_kana("sankou")
-      @driver.type("Sans")
-      @driver.press("C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さん"], [UNDERLINE, "s"]],
-                   preedit)
-    end
-
-    def test_cancel_after_tab_without_candidates_clears_preedit
-      commit_kana("sankou")
-      @driver.type("Sans")
-      @driver.press("C-i")
-      @driver.press("C-g")
-
-      assert_equal([], preedit)
-    end
-
-    def test_cancel_during_completion_keeps_preedit
-      commit_kana("sanka")
-      @driver.type("Sank")
-      @driver.press("C-i")
-      @driver.press("C-g")
-
-      assert_equal([
-                     [UNDERLINE, "▽"],
-                     [UNDERLINE, "さん"],
-                     [UNDERLINE, "k"],
-                     [UNDERLINE, "か"],
-                   ],
-                   preedit)
-    end
-
-    def test_completion_with_numeric_head_with_pending_romaji
-      commit_kana("1gatsu")
-      @driver.press("S-q")
-      @driver.type("1g")
-      @driver.press("C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "1がつ"]],
-                   preedit)
-    end
-
-    def test_completion_with_numeric_head_after_cancel
-      commit_kana("1gatsu")
-      @driver.press("S-q")
-      @driver.type("1g")
-      @driver.press("C-i", "C-g", "C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "1がつ"]],
-                   preedit)
-    end
-
-    def test_dcomp_completes_three_char_romaji_with_one_char_pending
-      commit_kana("chawan")
-      @driver.type("C")
-
-      assert_equal([
-                     [UNDERLINE, "▽"],
-                     [UNDERLINE, "c"],
-                     [UNDERLINE, "ちゃわん"],
-                   ],
-                   preedit)
-    end
-
-    def test_tab_completes_three_char_romaji_with_one_char_pending
-      commit_kana("chawan")
-      @driver.type("C")
-      @driver.press("C-i")
-
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "ちゃわん"]],
-                   preedit)
-    end
-
-    def test_dcomp_completes_exact_match_with_pending_romaji
-      commit_kana("sanka")
-      @driver.type("Sank")
-
-      assert_equal([
-                     [UNDERLINE, "▽"],
-                     [UNDERLINE, "さん"],
-                     [UNDERLINE, "k"],
-                     [UNDERLINE, "か"],
-                   ],
-                   preedit)
-    end
-
-    def test_commit_with_conv_completion_uses_expected_suffix_with_pending_romaji
-      commit_kana("aka")
-      commit_kana("ato")
-      @driver.type("Ak")
-      @driver.press("C-A-j")
-
-      assert_equal([["赤", "後", "赤"], []],
-                   [@driver.commits, preedit])
-    end
-
-    def test_begin_conv_with_completion_uses_expected_suffix_with_pending_romaji
-      commit_kana("aka")
-      commit_kana("ato")
-      @driver.type("Ak")
-      @driver.press("A-space")
-
-      assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "赤"]],
-                   preedit)
-    end
-
-    def test_commit_with_conv_completion_converts_displayed_word_with_pending_romaji
-      commit_kana("anzen")
-      @driver.type("An")
-      @driver.press("C-A-j")
-
-      assert_equal([["安全", "安全"], []], [@driver.commits, preedit])
-    end
-
-    def test_begin_conv_with_completion_converts_displayed_word_with_pending_romaji
-      commit_kana("anzen")
-      @driver.type("An")
-      @driver.press("A-space")
-
-      assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "安全"]],
-                   preedit)
-    end
-
-    def test_commit_with_conv_completion_converts_displayed_word_without_head
-      commit_kana("sanka")
-      @driver.press("S")
-      @driver.press("C-A-j")
-
-      assert_equal([["参加", "参加"], []], [@driver.commits, preedit])
-    end
-
-    def test_begin_conv_with_completion_converts_displayed_word_without_head
-      commit_kana("sanka")
-      @driver.press("S")
-      @driver.press("A-space")
-
-      assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "参加"]],
-                   preedit)
-    end
-
-    def test_commit_with_conv_completion_appends_residual_without_displayed_word
-      @driver.type("Un")
-      @driver.press("C-A-j")
-
-      assert_equal([["うん"], []], [@driver.commits, preedit])
-    end
-
-    sub_test_case("without pending romaji completion") do
+    sub_test_case("skk-completion-use-pending-romaji?: #f") do
       def scheme
         super + <<~SCHEME
           (set! skk-completion-use-pending-romaji? #f)
         SCHEME
       end
 
-      def test_dcomp_with_only_pending_romaji
-        commit_kana("kanji")
-        @driver.type("K")
+      sub_test_case("dynamic completion") do
+        def test_only_pending_romaji
+          commit_kana("kanji")
+          @driver.type("K")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"]],
+                       preedit)
+        end
 
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"]],
-                     preedit)
+        def test_kana_head
+          commit_kana("kanji")
+          @driver.type("Ka")
+          assert_equal([
+                         [UNDERLINE, "▽"],
+                         [UNDERLINE, "か"],
+                         [UNDERLINE, "んじ"],
+                       ],
+                       preedit)
+        end
+
+        def test_pending_n
+          commit_kana("kanji")
+          @driver.type("Kan")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                       preedit)
+        end
       end
 
-      def test_dcomp_with_kana_head
-        commit_kana("kanji")
-        @driver.type("Ka")
+      sub_test_case("C-i") do
+        def test_only_pending_romaji
+          commit_kana("sanka")
+          commit_kana("sansei")
+          @driver.type("S")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "s"]],
+                       preedit)
+        end
 
-        assert_equal([
-                       [UNDERLINE, "▽"],
-                       [UNDERLINE, "か"],
-                       [UNDERLINE, "んじ"],
-                     ],
-                     preedit)
-      end
+        def test_kana_head
+          commit_kana("sanka")
+          commit_kana("sansei")
+          @driver.type("Sa")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんせい"]],
+                       preedit)
+        end
 
-      def test_dcomp_with_pending_n
-        commit_kana("kanji")
-        @driver.type("Kan")
+        def test_pending_k
+          commit_kana("sanka")
+          commit_kana("sansei")
+          @driver.type("Sank")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんせい"]],
+                       preedit)
+        end
 
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
-                     preedit)
-      end
+        def test_pending_n
+          commit_kana("kanji")
+          commit_kana("kana")
+          @driver.type("Kan")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
+                       preedit)
+        end
 
-      def test_tab_confirms_residual_n_without_pending_romaji
-        commit_kana("kanji")
-        commit_kana("kana")
-        @driver.type("Kan")
-        @driver.press("C-i")
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
-                     preedit)
-      end
-
-      def test_tab_keeps_residual_n_without_candidates
-        @driver.type("Kan")
-        @driver.press("C-i")
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
-                     preedit)
-      end
-
-      def test_tab_with_only_pending_romaji
-        commit_kana("sanka")
-        commit_kana("sansei")
-        @driver.type("S")
-        @driver.press("C-i")
-
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "s"]],
-                     preedit)
-      end
-
-      def test_tab_with_kana_head
-        commit_kana("sanka")
-        commit_kana("sansei")
-        @driver.type("Sa")
-        @driver.press("C-i")
-
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんせい"]],
-                     preedit)
-      end
-
-      def test_tab_ignores_pending_romaji
-        commit_kana("sanka")
-        commit_kana("sansei")
-        @driver.type("Sank")
-        @driver.press("C-i")
-
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんせい"]],
-                     preedit)
+        def test_pending_n_no_candidate
+          @driver.type("Kan")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                       preedit)
+        end
       end
     end
 
-    sub_test_case("with skkserv") do
+    sub_test_case("skk-use-skkserv?: #t") do
       def scheme
-        super + start_skkserv(true)
+        super + start_skkserv
       end
 
-      def test_tab_completes_with_server_candidates
-        @driver.type("S")
-        @driver.press("C-i")
+      sub_test_case("skk-skkserv-enable-completion?: #t") do
+        def scheme
+          super + <<~SCHEME
+            (set! skk-skkserv-enable-completion? #t)
+          SCHEME
+        end
 
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんか"]],
-                     preedit)
+        def test_tab_only_pending_romaji
+          @driver.type("S")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんか"]],
+                       preedit)
+        end
       end
-    end
 
-    sub_test_case("with skkserv and completion disabled") do
-      def scheme
-        super + start_skkserv(false)
-      end
+      sub_test_case("skk-skkserv-enable-completion?: #f") do
+        def scheme
+          super + <<~SCHEME
+            (set! skk-skkserv-enable-completion? #f)
+          SCHEME
+        end
 
-      def test_tab_does_not_complete_with_server
-        @driver.type("Kan")
-        @driver.press("C-i")
-
-        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
-                     preedit)
+        def test_tab_pending_n
+          @driver.type("Kan")
+          @driver.press("C-i")
+          assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                       preedit)
+        end
       end
     end
   end
@@ -625,7 +634,7 @@ class SKKTest < Test::Unit::TestCase
   private
   # skkserv replaces the local dictionary, so the candidates come from
   # FakeSKKServer.
-  def start_skkserv(completion)
+  def start_skkserv
     @server = FakeSKKServer.new
     @server.start
     <<~SCHEME
@@ -633,7 +642,6 @@ class SKKTest < Test::Unit::TestCase
       (set! skk-skkserv-use-env? #f)
       (set! skk-skkserv-hostname "127.0.0.1")
       (set! skk-skkserv-portnum #{@server.port})
-      (set! skk-skkserv-enable-completion? #{completion ? "#t" : "#f"})
     SCHEME
   end
 
