@@ -258,7 +258,7 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("space", "return")
       @driver.press("K")
 
-      assert_include(preedit.map(&:last).join, "かんじ")
+      assert_equal("▽kかんじ", preedit.map(&:last).join)
     end
 
     def test_lowercase_key_in_kanji_mode_narrows_completion_with_pending_romaji
@@ -268,7 +268,7 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("S-q")
       @driver.type("k")
 
-      assert_include(preedit.map(&:last).join, "かんじ")
+      assert_equal("▽kかんじ", preedit.map(&:last).join)
     end
 
     def test_uppercase_k_prefers_most_recently_committed_word_across_kana_rows
@@ -278,9 +278,7 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("space", "return")
       @driver.press("K")
 
-      preedit = @driver.preedit.map(&:last).join
-      assert_include(preedit, "きせつ")
-      assert_false(preedit.include?("かんじ"))
+      assert_equal("▽kきせつ", preedit.map(&:last).join)
     end
 
     def test_tab_after_committed_kanji_completes_whole_word
@@ -498,14 +496,14 @@ class SKKTest < Test::Unit::TestCase
         commit_kana("kanji")
         @driver.type("K")
 
-        assert_false(preedit.map(&:last).join.include?("かんじ"))
+        assert_equal("▽k", preedit.map(&:last).join)
       end
 
       def test_dcomp_with_kana_head
         commit_kana("kanji")
         @driver.type("Ka")
 
-        assert_include(preedit.map(&:last).join, "かんじ")
+        assert_equal("▽かんじ", preedit.map(&:last).join)
       end
 
       def test_dcomp_with_pending_n
