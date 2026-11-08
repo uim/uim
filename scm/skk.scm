@@ -380,7 +380,8 @@
     (list 'dialog	      '())
     (list 'latin-conv	      #f)
     (list 'commit-raw	      #f)
-    (list 'completion-nth     0))))
+    (list 'completion-nth     0)
+    (list 'completion-residual #f))))
 (define-record 'skk-context skk-context-rec-spec)
 (define skk-context-new-internal skk-context-new)
 
@@ -624,10 +625,16 @@
 ;; (head . suffixes) of the completion. While romaji is pending, the completion
 ;; covers the kana which the pending romaji may become.
 (define (skk-completion-key sc)
-  (cons (skk-make-string (skk-context-head sc) skk-type-hiragana)
-        (if (skk-completion-pending-romaji? sc)
-            (skk-rk-expected-suffixes sc skk-type-hiragana)
-            (list ""))))
+  (cond
+   ((skk-context-completion-residual sc)
+    (cons (string-append (skk-make-string (skk-context-head sc) skk-type-hiragana)
+                         (skk-context-completion-residual sc))
+          (list "")))
+   (else
+    (cons (skk-make-string (skk-context-head sc) skk-type-hiragana)
+          (if (skk-completion-pending-romaji? sc)
+              (skk-rk-expected-suffixes sc skk-type-hiragana)
+              (list ""))))))
 
 (define skk-get-nth-completion
   (lambda (sc n)
@@ -856,30 +863,32 @@
 
 (define skk-begin-completion
   (lambda (sc)
-    ;; Without pending romaji completion, a residual which is already kana
-    ;; such as 'n' is confirmed only when the completion of the head with it
-    ;; has candidates; that lookup is reused as the completion below.
-    ;; Without candidates, the pending romaji is kept.
+    ;; When completion does not use pending romaji, first try completing the
+    ;; head with the kana of the pending romaji (e.g. "かん" for "か" + "n").
+    ;; The pending romaji is not confirmed, so cancelling restores it.
+    ;; Otherwise complete the head alone.
+    (skk-context-set-completion-residual! sc #f)
     (let* ((residual (and (not (skk-completion-pending-romaji? sc))
                           (skk-rk-residual-kana sc)))
+           (residual-found
+            (and residual
+                 (skk-lib-get-completion
+                  skk-dic
+                  (cons (string-append
+                         (skk-make-string (skk-context-head sc) skk-type-hiragana)
+                         residual)
+                        (list ""))
+                  skk-use-numeric-conversion?
+                  skk-use-look?)))
            (found
-            (if (and residual
-                     (skk-lib-get-completion
-                      skk-dic
-                      (cons (string-append
-                             (skk-make-string (skk-context-head sc) skk-type-hiragana)
-                             residual)
-                            (list ""))
-                      skk-use-numeric-conversion?
-                      skk-use-look?))
-                (begin
-                  (skk-append-residual-kana sc)
-                  #t)
+            (or residual-found
                 (skk-lib-get-completion
                  skk-dic
                  (skk-completion-key sc)
                  skk-use-numeric-conversion?
                  skk-use-look?))))
+      (if residual-found
+          (skk-context-set-completion-residual! sc residual))
       (if found
           (begin
             (skk-context-set-completion-nth! sc 0)
@@ -2000,6 +2009,7 @@
                   skk-use-numeric-conversion?
                   skk-use-look?))
              (skk-lib-clear-completions old-key skk-use-numeric-conversion?)
+             (skk-context-set-completion-residual! sc #f)
 	     (if (not (null? sl))
                  (begin
                    (skk-string-list-to-context-head sc sl)
@@ -2016,6 +2026,7 @@
 	     (skk-lib-clear-completions
 	      (skk-completion-key sc)
 	      skk-use-numeric-conversion?)
+	     (skk-context-set-completion-residual! sc #f)
 	     (skk-context-set-state! sc 'skk-state-kanji)
 	     ;; don't clear dcomp (not compatible with ddskk's behavior)
 	     ;;(skk-reset-dcomp-word sc)
@@ -2025,6 +2036,7 @@
 	 (skk-lib-clear-completions
 	  (skk-completion-key sc)
 	  skk-use-numeric-conversion?)
+	 (skk-context-set-completion-residual! sc #f)
 	 (if (not (null? sl))
              (begin
                (skk-string-list-to-context-head sc sl)
