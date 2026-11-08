@@ -288,7 +288,7 @@ static void start_preedit(void)
       s_head.col = 0;
       if (s_head.row == g_win->ws_row - 1) {
         put_crlf();
-        vt_scroll_up();
+        vt_scroll_up(s_head.row, s_head.col);
       } else {
         s_head.row++;
       }
@@ -923,8 +923,8 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     /* プリエディットが端末の右下から出るときはスクロールする */
     if (s_head.row + lineno == g_win->ws_row - 1 && s_head.row > 0) {
       put_crlf();
-      vt_scroll_up();
       s_head.row--;
+      vt_scroll_up(s_head.row, s_head.col);
     } else {
       put_cursor_address(s_head.row + lineno + 1, 0);
     }
