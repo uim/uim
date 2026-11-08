@@ -258,7 +258,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("space", "return")
       @driver.press("K")
 
-      assert_equal("▽kかんじ", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"], [UNDERLINE, "かんじ"]],
+                   preedit)
     end
 
     def test_lowercase_key_in_kanji_mode_narrows_completion_with_pending_romaji
@@ -268,7 +269,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("S-q")
       @driver.type("k")
 
-      assert_equal("▽kかんじ", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"], [UNDERLINE, "かんじ"]],
+                   preedit)
     end
 
     def test_uppercase_k_prefers_most_recently_committed_word_across_kana_rows
@@ -278,7 +280,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("space", "return")
       @driver.press("K")
 
-      assert_equal("▽kきせつ", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"], [UNDERLINE, "きせつ"]],
+                   preedit)
     end
 
     def test_tab_after_committed_kanji_completes_whole_word
@@ -365,7 +368,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.type("Sans")
       @driver.press("C-i")
 
-      assert_equal("▽さんs", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さん"], [UNDERLINE, "s"]],
+                   preedit)
     end
 
     def test_cancel_after_tab_without_candidates_clears_preedit
@@ -383,7 +387,13 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("C-i")
       @driver.press("C-g")
 
-      assert_equal("▽さんkか", preedit.map(&:last).join)
+      assert_equal([
+                     [UNDERLINE, "▽"],
+                     [UNDERLINE, "さん"],
+                     [UNDERLINE, "k"],
+                     [UNDERLINE, "か"],
+                   ],
+                   preedit)
     end
 
     def test_completion_with_numeric_head_with_pending_romaji
@@ -392,7 +402,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.type("1g")
       @driver.press("C-i")
 
-      assert_equal("▽1がつ", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "1がつ"]],
+                   preedit)
     end
 
     def test_completion_with_numeric_head_after_cancel
@@ -401,14 +412,20 @@ class SKKTest < Test::Unit::TestCase
       @driver.type("1g")
       @driver.press("C-i", "C-g", "C-i")
 
-      assert_equal("▽1がつ", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "1がつ"]],
+                   preedit)
     end
 
     def test_dcomp_completes_three_char_romaji_with_one_char_pending
       commit_kana("chawan")
       @driver.type("C")
 
-      assert_equal("▽cちゃわん", preedit.map(&:last).join)
+      assert_equal([
+                     [UNDERLINE, "▽"],
+                     [UNDERLINE, "c"],
+                     [UNDERLINE, "ちゃわん"],
+                   ],
+                   preedit)
     end
 
     def test_tab_completes_three_char_romaji_with_one_char_pending
@@ -424,7 +441,13 @@ class SKKTest < Test::Unit::TestCase
       commit_kana("sanka")
       @driver.type("Sank")
 
-      assert_equal("▽さんkか", preedit.map(&:last).join)
+      assert_equal([
+                     [UNDERLINE, "▽"],
+                     [UNDERLINE, "さん"],
+                     [UNDERLINE, "k"],
+                     [UNDERLINE, "か"],
+                   ],
+                   preedit)
     end
 
     def test_commit_with_conv_completion_uses_expected_suffix_with_pending_romaji
@@ -443,7 +466,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.type("Ak")
       @driver.press("A-space")
 
-      assert_equal("▼赤", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "赤"]],
+                   preedit)
     end
 
     def test_commit_with_conv_completion_converts_displayed_word_with_pending_romaji
@@ -459,7 +483,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.type("An")
       @driver.press("A-space")
 
-      assert_equal("▼安全", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "安全"]],
+                   preedit)
     end
 
     def test_commit_with_conv_completion_converts_displayed_word_without_head
@@ -475,7 +500,8 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("S")
       @driver.press("A-space")
 
-      assert_equal("▼参加", preedit.map(&:last).join)
+      assert_equal([[UNDERLINE, "▼"], [REVERSE | CURSOR, "参加"]],
+                   preedit)
     end
 
     def test_commit_with_conv_completion_appends_residual_without_displayed_word
@@ -496,21 +522,28 @@ class SKKTest < Test::Unit::TestCase
         commit_kana("kanji")
         @driver.type("K")
 
-        assert_equal("▽k", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "k"]],
+                     preedit)
       end
 
       def test_dcomp_with_kana_head
         commit_kana("kanji")
         @driver.type("Ka")
 
-        assert_equal("▽かんじ", preedit.map(&:last).join)
+        assert_equal([
+                       [UNDERLINE, "▽"],
+                       [UNDERLINE, "か"],
+                       [UNDERLINE, "んじ"],
+                     ],
+                     preedit)
       end
 
       def test_dcomp_with_pending_n
         commit_kana("kanji")
         @driver.type("Kan")
 
-        assert_equal("▽かn", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                     preedit)
       end
 
       def test_tab_confirms_residual_n_without_pending_romaji
@@ -518,13 +551,15 @@ class SKKTest < Test::Unit::TestCase
         commit_kana("kana")
         @driver.type("Kan")
         @driver.press("C-i")
-        assert_equal("▽かんじ", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
+                     preedit)
       end
 
       def test_tab_keeps_residual_n_without_candidates
         @driver.type("Kan")
         @driver.press("C-i")
-        assert_equal("▽かn", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                     preedit)
       end
 
       def test_tab_with_only_pending_romaji
@@ -533,7 +568,8 @@ class SKKTest < Test::Unit::TestCase
         @driver.type("S")
         @driver.press("C-i")
 
-        assert_equal("▽s", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "s"]],
+                     preedit)
       end
 
       def test_tab_with_kana_head
@@ -542,7 +578,8 @@ class SKKTest < Test::Unit::TestCase
         @driver.type("Sa")
         @driver.press("C-i")
 
-        assert_equal("▽さんせい", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんせい"]],
+                     preedit)
       end
 
       def test_tab_ignores_pending_romaji
@@ -551,7 +588,8 @@ class SKKTest < Test::Unit::TestCase
         @driver.type("Sank")
         @driver.press("C-i")
 
-        assert_equal("▽さんせい", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんせい"]],
+                     preedit)
       end
     end
 
@@ -578,7 +616,8 @@ class SKKTest < Test::Unit::TestCase
         @driver.type("Kan")
         @driver.press("C-i")
 
-        assert_equal("▽かn", preedit.map(&:last).join)
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                     preedit)
       end
     end
   end
