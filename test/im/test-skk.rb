@@ -469,8 +469,7 @@ class SKKTest < Test::Unit::TestCase
 
     sub_test_case("dynamic completion") do
       def test_only_pending_romaji
-        @driver.type("Kanji")
-        @driver.press("space", "return")
+        commit_kana("kanji")
         @driver.press("K")
         assert_equal([
                        [UNDERLINE, "▽"],
@@ -481,9 +480,7 @@ class SKKTest < Test::Unit::TestCase
       end
 
       def test_only_pending_romaji_after_shift_q
-        @driver.press("S-q")
-        @driver.type("Kanji")
-        @driver.press("space", "return")
+        commit_kana("kanji")
         @driver.press("S-q")
         @driver.type("k")
         assert_equal([
@@ -495,10 +492,8 @@ class SKKTest < Test::Unit::TestCase
       end
 
       def test_recently_used_in_another_row
-        @driver.type("Kanji")
-        @driver.press("space", "return")
-        @driver.type("Kisetsu")
-        @driver.press("space", "return")
+        commit_kana("kanji")
+        commit_kana("kisetsu")
         @driver.press("K")
         assert_equal([
                        [UNDERLINE, "▽"],
