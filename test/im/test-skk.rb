@@ -300,15 +300,22 @@ class SKKTest < Test::Unit::TestCase
                    preedit)
     end
 
-    def test_tab_next_completion_follows_mru_order
+    def test_tab_first_completion_follows_mru_order
       commit_kana("kanji")
       commit_kana("ka")
       @driver.press("K")
       @driver.press("C-i")
+
       assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"]],
                    preedit)
+    end
 
-      @driver.press("C-i")
+    def test_tab_next_completion_follows_mru_order
+      commit_kana("kanji")
+      commit_kana("ka")
+      @driver.press("K")
+      @driver.press("C-i", "C-i")
+
       assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "かんじ"]],
                    preedit)
     end
@@ -328,12 +335,8 @@ class SKKTest < Test::Unit::TestCase
       commit_kana("sankou")
       commit_kana("sanka")
       @driver.type("Sank")
-      @driver.press("C-i")
-      assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんか"]],
-                   preedit)
+      @driver.press("C-i", "C-A-i", "C-i")
 
-      @driver.press("C-A-i")
-      @driver.press("C-i")
       assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんかん"]],
                    preedit)
     end
@@ -343,10 +346,17 @@ class SKKTest < Test::Unit::TestCase
       commit_kana("sanka")
       @driver.type("Sank")
       @driver.press("C-i")
+
       assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんか"]],
                    preedit)
+    end
 
-      @driver.press("C-i")
+    def test_tab_next_completion_of_kana_head_with_pending_romaji
+      commit_kana("sankou")
+      commit_kana("sanka")
+      @driver.type("Sank")
+      @driver.press("C-i", "C-i")
+
       assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "さんこう"]],
                    preedit)
     end
@@ -382,10 +392,16 @@ class SKKTest < Test::Unit::TestCase
       @driver.press("S-q")
       @driver.type("1g")
       @driver.press("C-i")
-      assert_equal("▽1がつ", preedit.map(&:last).join)
 
-      @driver.press("C-g")
-      @driver.press("C-i")
+      assert_equal("▽1がつ", preedit.map(&:last).join)
+    end
+
+    def test_completion_with_numeric_head_after_cancel
+      commit_kana("1gatsu")
+      @driver.press("S-q")
+      @driver.type("1g")
+      @driver.press("C-i", "C-g", "C-i")
+
       assert_equal("▽1がつ", preedit.map(&:last).join)
     end
 
@@ -477,17 +493,24 @@ class SKKTest < Test::Unit::TestCase
         SCHEME
       end
 
-      def test_completion_without_pending_romaji
+      def test_dcomp_with_only_pending_romaji
         commit_kana("kanji")
         @driver.type("K")
+
         assert_false(preedit.map(&:last).join.include?("かんじ"))
-        @driver.press("C-g")
+      end
 
+      def test_dcomp_with_kana_head
+        commit_kana("kanji")
         @driver.type("Ka")
-        assert_include(preedit.map(&:last).join, "かんじ")
-        @driver.press("C-g")
 
+        assert_include(preedit.map(&:last).join, "かんじ")
+      end
+
+      def test_dcomp_with_pending_n
+        commit_kana("kanji")
         @driver.type("Kan")
+
         assert_equal("▽かn", preedit.map(&:last).join)
       end
 
@@ -505,22 +528,30 @@ class SKKTest < Test::Unit::TestCase
         assert_equal("▽かn", preedit.map(&:last).join)
       end
 
-      def test_tab_completion_without_pending_romaji
+      def test_tab_with_only_pending_romaji
         commit_kana("sanka")
         commit_kana("sansei")
         @driver.type("S")
         @driver.press("C-i")
-        assert_equal("▽s", preedit.map(&:last).join)
-        @driver.press("C-g")
 
+        assert_equal("▽s", preedit.map(&:last).join)
+      end
+
+      def test_tab_with_kana_head
+        commit_kana("sanka")
+        commit_kana("sansei")
         @driver.type("Sa")
         @driver.press("C-i")
-        assert_equal("▽さんせい", preedit.map(&:last).join)
-        @driver.press("C-g")
-        @driver.press("C-g")
 
+        assert_equal("▽さんせい", preedit.map(&:last).join)
+      end
+
+      def test_tab_ignores_pending_romaji
+        commit_kana("sanka")
+        commit_kana("sansei")
         @driver.type("Sank")
         @driver.press("C-i")
+
         assert_equal("▽さんせい", preedit.map(&:last).join)
       end
     end
