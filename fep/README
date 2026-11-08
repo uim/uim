@@ -109,7 +109,8 @@ How to USE
     起動するコマンドを指定します。このオプション以降の引数は
     commandに渡されます。
 
-  o -N This option disables background restoration. Use it when libvterm's
+  o --no-restore-background
+    This option disables background restoration. Use it when libvterm's
     character width differs from the terminal's.
 
   o -h This option show help messages.
