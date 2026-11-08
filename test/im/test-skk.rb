@@ -109,31 +109,34 @@ class SKKTest < Test::Unit::TestCase
 
   def setup
     omit("skk isn't enabled") unless IMDriver.available?("skk")
-    Dir.mktmpdir do |dir|
-      dictionary = File.join(dir, "SKK-JISYO")
-      # SKK dictionaries are in EUC-JP by default.
-      File.write(dictionary, SKKFixture::DICTIONARY_TEXT.encode("EUC-JP"))
-      # The personal dictionaries are written to DIR.
-      @driver = IMDriver.new("skk", <<~SCHEME)
-        (require-module "skk")
-        (set! skk-dic-file-name "#{dictionary}")
-        (set! skk-personal-dic-filename "#{dir}/skk-jisyo")
-        (set! skk-uim-personal-dic-filename "#{dir}/skk-uim-jisyo")
-        #{scheme}
-      SCHEME
-      begin
-        @driver.start
-        # Turn it on.
-        @driver.press("S-space")
-        yield
-      ensure
-        @driver.stop
+    # It's used only when skkserv_scheme is used.
+    @server = FakeSKKServer.new
+    @server.start
+    begin
+      Dir.mktmpdir do |dir|
+        dictionary = File.join(dir, "SKK-JISYO")
+        # SKK dictionaries are in EUC-JP by default.
+        File.write(dictionary, SKKFixture::DICTIONARY_TEXT.encode("EUC-JP"))
+        # The personal dictionaries are written to DIR.
+        @driver = IMDriver.new("skk", <<~SCHEME)
+          (require-module "skk")
+          (set! skk-dic-file-name "#{dictionary}")
+          (set! skk-personal-dic-filename "#{dir}/skk-jisyo")
+          (set! skk-uim-personal-dic-filename "#{dir}/skk-uim-jisyo")
+          #{scheme}
+        SCHEME
+        begin
+          @driver.start
+          # Turn it on.
+          @driver.press("S-space")
+          yield
+        ensure
+          @driver.stop
+        end
       end
+    ensure
+      @server.stop
     end
-  end
-
-  def teardown
-    @server&.stop
   end
 
   # Additional configuration evaluated after skk is loaded.
@@ -596,7 +599,7 @@ class SKKTest < Test::Unit::TestCase
 
     sub_test_case("skk-use-skkserv?: #t") do
       def scheme
-        super + start_skkserv
+        super + skkserv_scheme
       end
 
       sub_test_case("skk-skkserv-enable-completion?: #t") do
@@ -634,9 +637,7 @@ class SKKTest < Test::Unit::TestCase
   private
   # skkserv replaces the local dictionary, so the candidates come from
   # FakeSKKServer.
-  def start_skkserv
-    @server = FakeSKKServer.new
-    @server.start
+  def skkserv_scheme
     <<~SCHEME
       (set! skk-use-skkserv? #t)
       (set! skk-skkserv-use-env? #f)
