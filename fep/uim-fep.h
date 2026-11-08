@@ -80,6 +80,8 @@ struct opt_tag {
   /* レポートカーソル機能がないか */
   int no_report_cursor;
   int print_key;
+  /* プリエディット背景の復元を使わないか */
+  int no_restore_background;
 };
 
 enum {

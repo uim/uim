@@ -107,6 +107,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width);
 static int compare_preedit(struct preedit_tag *p1, struct preedit_tag *p2);
 static int compare_preedit_rev(struct preedit_tag *p1, struct preedit_tag *p2);
 static int min(int a, int b);
+static void restore_preedit_region_or_erase(int row, int col, int width);
 static void erase_prev_preedit(void);
 static void erase_preedit(void);
 static void erase_displayed_preedit(const struct preedit_tag *preedit);
@@ -286,6 +287,7 @@ static void start_preedit(void)
       s_head.col = 0;
       if (s_head.row == g_win->ws_row - 1) {
         put_crlf();
+        vt_scroll_up();
       } else {
         s_head.row++;
       }
@@ -910,17 +912,16 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
 
     /* 右端の文字を消す必要があるか */
     if (s_line2width[lineno] < s_prev_line2width[lineno]) {
-      if (g_opt.on_the_spot) {
-        put_delete(s_prev_line2width[lineno] - s_line2width[lineno]);
-      } else {
-        put_erase(s_prev_line2width[lineno] - s_line2width[lineno]);
-      }
-      s_prev_line2width[lineno] = s_line2width[lineno];
+      int row = s_head.row + lineno;
+      int col = s_line2width[lineno];
+      restore_preedit_region_or_erase(row, col, s_prev_line2width[lineno] - col);
+      s_prev_line2width[lineno] = col;
     }
 
     /* プリエディットが端末の右下から出るときはスクロールする */
     if (s_head.row + lineno == g_win->ws_row - 1 && s_head.row > 0) {
       put_crlf();
+      vt_scroll_up();
       s_head.row--;
     } else {
       put_cursor_address(s_head.row + lineno + 1, 0);

@@ -312,6 +312,32 @@ void vt_resize(uint16_t cols, uint16_t rows)
   s_rows = rows;
 }
 
+/*
+ * Scrolls the model up by one line, as the terminal does when uim-fep emits
+ * CRLF on the bottom row. The model cursor tracks the child process, so it is
+ * saved and restored with CUP rather than DECSC/DECRC, which would overwrite
+ * the child's saved cursor.
+ */
+void vt_scroll_up(void)
+{
+  VTermState *state;
+  VTermPos pos;
+  char seq[64];
+  int len;
+
+  if (s_vterm == NULL) {
+    return;
+  }
+  state = vterm_obtain_state(s_vterm);
+  vterm_state_get_cursorpos(state, &pos);
+  len = snprintf(seq, sizeof(seq), "\033[%d;1H\n\033[%d;%dH",
+                 (int)s_rows, pos.row + 1, pos.col + 1);
+  if (len < 0 || (size_t)len >= sizeof(seq)) {
+    return;
+  }
+  vterm_input_write(s_vterm, seq, (size_t)len);
+}
+
 int vt_restore_region(int row, int col, int width)
 {
   struct byte_buffer buffer = {0};

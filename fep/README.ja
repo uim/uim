@@ -178,6 +178,10 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのf
     $HOME/.uim.d/fep/getmode-$STY-$WINDOW-screen
     になります。
 
+  o -N
+    背景の復元を無効にします。libvterm の文字幅が端末の文字幅と異なる場合に
+    使ってください。
+
   o -f str
     $UIM_FEP_SETMODEと$UIM_FEP_GETMODEのファイル名を
     setmode-{str}

@@ -143,7 +143,8 @@ struct opt_tag g_opt = {
   UNDEFINED,      /* statusline_width  */
   0,              /* timeout           */
   FALSE,          /* no_report_cursor  */
-  FALSE           /* print_key        */
+  FALSE,          /* print_key         */
+  FALSE           /* no_restore_background */
 };
 int g_win_in = STDIN_FILENO;
 int g_win_out = STDOUT_FILENO;
@@ -278,7 +279,7 @@ int main(int argc, char **argv)
   init_str();
   engine = uim_strdup(get_default_im_name());
 
-  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SXciodKvh")) != -1) {
+  while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SXciodKNvh")) != -1) {
     int i;
     switch (op) {
       case 'e':
@@ -340,6 +341,10 @@ int main(int argc, char **argv)
 
       case 'o':
         g_opt.on_the_spot = TRUE;
+        break;
+
+      case 'N':
+        g_opt.no_restore_background = TRUE;
         break;
 
       case 'b':
@@ -548,7 +553,7 @@ opt_end:
   focus_in();
   init_draw(s_master, s_path_getmode);
   init_escseq(&attr_uim);
-  if (!g_opt.no_report_cursor && !g_opt.on_the_spot) {
+  if (!g_opt.no_report_cursor && !g_opt.on_the_spot && !g_opt.no_restore_background) {
     vt_init(g_win->ws_col, g_win->ws_row);
   }
   set_signal_handler();
@@ -1733,6 +1738,7 @@ static void usage(void)
       "-i                                        use cursor_invisible(civis)\n"
       "-o                                        on the spot\n"
       "-d                                        ddskk like candidate style\n",
+      "-N                                        disable background restoration\n"
       "-f                                        file name suffix of $UIM_FEP_SETMODE and $UIM_FEP_GETMODE\n"
       "-S                                        GNU screen mode\n"
       "-K                                        show key code\n",
