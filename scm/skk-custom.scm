@@ -533,6 +533,12 @@
   (N_ "Enable dynamic completion")
   (N_ "long description will be here."))
 
+(define-custom 'skk-completion-use-pending-romaji? #t
+  '(skk-advanced)
+  '(boolean)
+  (N_ "Use pending romaji for completion")
+  (N_ "When on, completion and dynamic completion also use the kana that the pending romaji may become. When off, completion uses the confirmed head and the kana of a pending \"n\" but no other pending romaji. Dynamic completion isn't offered while romaji is pending."))
+
 (define-custom 'skk-use-look? #f
   '(skk-advanced)
   '(boolean)
