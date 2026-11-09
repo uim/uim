@@ -435,6 +435,14 @@ class SKKTest < Test::Unit::TestCase
         @driver.press("C-g")
         assert_equal([], preedit)
       end
+
+      def test_pending_n_candidate_only_for_head
+        commit_kana("kana")
+        @driver.type("Kan")
+        @driver.press("C-i")
+        assert_equal([[UNDERLINE, "▽"], [UNDERLINE, "か"], [UNDERLINE, "n"]],
+                     preedit)
+      end
     end
 
     sub_test_case("skk-use-skkserv?: #t") do
