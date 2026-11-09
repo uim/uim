@@ -6230,10 +6230,14 @@ msgstr "補完で保留中のローマ字を使用する"
 #: scm/skk-custom.scm:540
 msgid ""
 "When on, completion and dynamic completion also use the kana that the "
-"pending romaji may become. When off, only the confirmed head is used."
+"pending romaji may become. When off, completion uses the confirmed head and "
+"the kana of a pending \"n\" but no other pending romaji. Dynamic completion "
+"isn't offered while romaji is pending."
 msgstr ""
 "オンにすると、補完と動的補完で保留中のローマ字が変換されうる仮名も使用します。"
-"オフにすると、確定済みの見出し部分だけを使用します。"
+"オフにすると、補完では確定済みの見出し部分と、保留中の「n」の仮名（「ん」）を"
+"使用し、ほかの保留中のローマ字は使用しません。ローマ字が保留中の間は動的補完"
+"をしません。"
 
 #: scm/skk-custom.scm:539
 msgid "Use UNIX look command for completion"
