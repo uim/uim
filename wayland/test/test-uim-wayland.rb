@@ -340,6 +340,8 @@ end
 module ContentType
   PURPOSE_NORMAL = 0
   PURPOSE_PASSWORD = 8
+  # zwp_text_input_v3 only. It is terminal in zwp_text_input_v1.
+  PURPOSE_DATETIME_V3 = 12
 
   HINT_NONE = 0
   HINT_HIDDEN_TEXT = 0x40
@@ -554,14 +556,45 @@ class Compositor
   end
 
   # The application says what the field takes. The values are the
-  # content_hint and content_purpose enums of zwp_text_input_v1.
+  # content_hint and content_purpose enums of zwp_text_input_v1, which
+  # are the same as zwp_text_input_v3 for the ones used here.
   def send_content_type(hint, purpose)
-    @connection.send_event(@context, "content_type", hint, purpose)
+    if @protocol == :v2
+      @connection.send_event(@input_method, "content_type", hint, purpose)
+      send_done
+    else
+      @connection.send_event(@context, "content_type", hint, purpose)
+    end
   end
 
   # The application reports what is around its cursor, in bytes.
   def send_surrounding_text(text, cursor, anchor=cursor)
-    @connection.send_event(@context, "surrounding_text", text, cursor, anchor)
+    if @protocol == :v2
+      @connection.send_event(@input_method, "surrounding_text",
+                             text, cursor, anchor)
+      send_done
+    else
+      @connection.send_event(@context, "surrounding_text",
+                             text, cursor, anchor)
+    end
+  end
+
+  # zwp_input_method_v2 only: the text input state changes without new
+  # surrounding text, which forgets it.
+  def send_done
+    @connection.send_event(@input_method, "done")
+    @done_count += 1
+  end
+
+  # zwp_input_method_v2 only: another text field gets the focus. The
+  # keys go to the keyboard grab taken for it.
+  def activate_again
+    keyboard = @keyboard
+    @connection.send_event(@input_method, "activate")
+    send_done
+    wait_for {@keyboard and @keyboard != keyboard}
+    raise("uim-wayland didn't take the keyboard again") if @keyboard.nil?
+    send_modifiers(0)
   end
 
   # uim-wayland built against wayland older than 1.22 binds a lower
@@ -719,6 +752,10 @@ class Compositor
       @keyboard = nil
     when "zwp_input_method_v2.commit_string"
       @commits << arguments[0]
+    when "zwp_input_method_v2.delete_surrounding_text"
+      # As zwp_input_method_context_v1 does: the start relative to the
+      # cursor and the length.
+      @deleted << [-arguments[0], arguments[0] + arguments[1]]
     when "zwp_input_method_v2.set_preedit_string"
       @preedits << arguments[0]
     when "zwp_input_method_v2.commit"
@@ -741,11 +778,6 @@ class Compositor
     @connection.send_event(@context, "commit_state", 1)
   end
 
-  def send_done
-    @connection.send_event(@input_method, "done")
-    @done_count += 1
-  end
-
   def send_keymap
     @keymap = Tempfile.new("uim-wayland-test-keymap")
     @keymap.write(KEYMAP)
@@ -763,6 +795,101 @@ class Compositor
   def send_modifiers(depressed)
     @connection.send_event(@keyboard, "modifiers", @connection.next_serial,
                            depressed, 0, 0, 0)
+  end
+end
+
+# A field that takes no composed text gets the keys as they are.
+module ContentTypeTests
+  include ContentType
+  include Keyboard
+
+  def test_password_purpose_is_left_alone
+    @compositor.send_content_type(HINT_NONE, PURPOSE_PASSWORD)
+    @compositor.switch_to_hiragana
+    @compositor.type(KEY_K)
+    @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
+    assert_equal([], @compositor.preedits)
+  end
+
+  def test_hidden_text_hint_is_left_alone
+    @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+    @compositor.switch_to_hiragana
+    @compositor.type(KEY_K)
+    @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
+    assert_equal([], @compositor.preedits)
+  end
+
+  def test_normal_purpose_still_composes
+    @compositor.send_content_type(HINT_NONE, PURPOSE_NORMAL)
+    @compositor.switch_to_hiragana
+    @compositor.type(KEY_K)
+    @compositor.wait_for {@compositor.preedits == ["k"]}
+    assert_equal(["k"], @compositor.preedits)
+  end
+
+  # The key went to the application, so its release does too.
+  def test_key_held_while_field_turns_normal
+    @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+    @compositor.press(KEY_K)
+    @compositor.send_content_type(HINT_NONE, PURPOSE_NORMAL)
+    @compositor.release(KEY_K)
+    forwarded_keys = [[KEY_K, PRESSED], [KEY_K, RELEASED]]
+    @compositor.wait_for {@compositor.forwarded_keys == forwarded_keys}
+    assert_equal(forwarded_keys, @compositor.forwarded_keys)
+  end
+
+  # The key went to the input method, so the application never sees
+  # its release.
+  def test_key_held_while_field_turns_hidden
+    @compositor.switch_to_hiragana
+    @compositor.press(KEY_K)
+    @compositor.wait_for {@compositor.preedits == ["k"]}
+    @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+    @compositor.release(KEY_K)
+    @compositor.type(KEY_L)
+    @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, RELEASED])}
+    assert_equal([],
+                 @compositor.forwarded_keys.select {|key, _| key == KEY_K})
+  end
+end
+
+# The input method commits what it can see, so the commit says what
+# the bridge handed to uim.
+module SurroundingTextTests
+  include Keyboard
+
+  def test_whole_text
+    @compositor.send_surrounding_text("hello world", 5)
+    @compositor.type(KEY_A)
+    @compositor.wait_for {@compositor.commits == ["[hello| world]"]}
+    assert_equal(["[hello| world]"], @compositor.commits)
+  end
+
+  def test_line_before_the_cursor
+    @compositor.send_surrounding_text("one\ntwo", 7)
+    @compositor.type(KEY_J)
+    @compositor.wait_for {@compositor.commits == ["[two|]"]}
+    assert_equal(["[two|]"], @compositor.commits)
+  end
+
+  def test_selection
+    @compositor.send_surrounding_text("hello world", 5, 0)
+    @compositor.type(KEY_K)
+    @compositor.wait_for {@compositor.commits == ["[|hello]"]}
+    assert_equal(["[|hello]"], @compositor.commits)
+  end
+
+  def test_nothing_reported
+    @compositor.type(KEY_A)
+    @compositor.wait_for {@compositor.commits == ["[]"]}
+    assert_equal(["[]"], @compositor.commits)
+  end
+
+  def test_delete
+    @compositor.send_surrounding_text("hello", 5)
+    @compositor.type(KEY_L)
+    @compositor.wait_for {@compositor.deleted == [[-1, 1]]}
+    assert_equal([[-1, 1]], @compositor.deleted)
   end
 end
 
@@ -930,116 +1057,105 @@ class UimWaylandTest < Test::Unit::TestCase
     end
   end
 
-  # A field that takes no composed text gets the keys as they are.
   sub_test_case("content type") do
-    def test_password_purpose_is_left_alone
-      @compositor.send_content_type(HINT_NONE, PURPOSE_PASSWORD)
-      @compositor.switch_to_hiragana
-      @compositor.type(KEY_K)
-      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
-      assert_equal([], @compositor.preedits)
+    sub_test_case("zwp_input_method_v1") do
+      include ContentTypeTests
+
+      def test_preedit_is_dropped_when_field_turns_hidden
+        @compositor.switch_to_hiragana
+        @compositor.type(KEY_K)
+        @compositor.wait_for {@compositor.preedits == ["k"]}
+        @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+        @compositor.type(KEY_L)
+        @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, PRESSED])}
+        assert_equal(["k", ""], @compositor.preedits)
+      end
     end
 
-    def test_hidden_text_hint_is_left_alone
-      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
-      @compositor.switch_to_hiragana
-      @compositor.type(KEY_K)
-      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
-      assert_equal([], @compositor.preedits)
-    end
+    sub_test_case("zwp_input_method_v2") do
+      include ContentTypeTests
 
-    def test_normal_purpose_still_composes
-      @compositor.send_content_type(HINT_NONE, PURPOSE_NORMAL)
-      @compositor.switch_to_hiragana
-      @compositor.type(KEY_K)
-      @compositor.wait_for {@compositor.preedits == ["k"]}
-      assert_equal(["k"], @compositor.preedits)
-    end
+      def protocol
+        :v2
+      end
 
-    def test_preedit_is_dropped_when_field_turns_hidden
-      @compositor.switch_to_hiragana
-      @compositor.type(KEY_K)
-      @compositor.wait_for {@compositor.preedits == ["k"]}
-      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
-      @compositor.type(KEY_L)
-      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, PRESSED])}
-      assert_equal(["k", ""], @compositor.preedits)
-    end
+      # A commit without a preedit string clears the preedit.
+      def test_preedit_is_dropped_when_field_turns_hidden
+        @compositor.switch_to_hiragana
+        @compositor.type(KEY_K)
+        @compositor.wait_for {@compositor.preedits == ["k"]}
+        n_commits = @compositor.commit_serials.size
+        @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
+        @compositor.type(KEY_L)
+        @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, PRESSED])}
+        assert_equal([["k"], n_commits + 1],
+                     [@compositor.preedits, @compositor.commit_serials.size])
+      end
 
-    # The key went to the application, so its release does too.
-    def test_key_held_while_field_turns_normal
-      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
-      @compositor.press(KEY_K)
-      @compositor.send_content_type(HINT_NONE, PURPOSE_NORMAL)
-      @compositor.release(KEY_K)
-      forwarded_keys = [[KEY_K, PRESSED], [KEY_K, RELEASED]]
-      @compositor.wait_for {@compositor.forwarded_keys == forwarded_keys}
-      assert_equal(forwarded_keys, @compositor.forwarded_keys)
-    end
+      # zwp_text_input_v3 numbers the purposes differently.
+      def test_datetime_purpose_is_left_alone
+        @compositor.send_content_type(HINT_NONE, PURPOSE_DATETIME_V3)
+        @compositor.switch_to_hiragana
+        @compositor.type(KEY_K)
+        @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
+        assert_equal([], @compositor.preedits)
+      end
 
-    # The key went to the input method, so the application never sees
-    # its release.
-    def test_key_held_while_field_turns_hidden
-      @compositor.switch_to_hiragana
-      @compositor.press(KEY_K)
-      @compositor.wait_for {@compositor.preedits == ["k"]}
-      @compositor.send_content_type(HINT_HIDDEN_TEXT, PURPOSE_NORMAL)
-      @compositor.release(KEY_K)
-      @compositor.type(KEY_L)
-      @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_L, RELEASED])}
-      assert_equal([],
-                   @compositor.forwarded_keys.select {|key, _| key == KEY_K})
+      # The content type stays until it is changed.
+      def test_kept_by_done_without_content_type
+        @compositor.send_content_type(HINT_NONE, PURPOSE_PASSWORD)
+        @compositor.send_done
+        @compositor.switch_to_hiragana
+        @compositor.type(KEY_K)
+        @compositor.wait_for {@compositor.forwarded_keys.include?([KEY_K, PRESSED])}
+        assert_equal([], @compositor.preedits)
+      end
+
+      # The next text field starts with the normal purpose.
+      def test_reset_by_activate
+        @compositor.send_content_type(HINT_NONE, PURPOSE_PASSWORD)
+        @compositor.activate_again
+        @compositor.switch_to_hiragana
+        @compositor.type(KEY_K)
+        @compositor.wait_for {@compositor.preedits == ["k"]}
+        assert_equal(["k"], @compositor.preedits)
+      end
     end
   end
 
-  # The input method commits what it can see, so the commit says what
-  # the bridge handed to uim.
   sub_test_case("surrounding text") do
     def default_im_name
       "surrounding-text"
     end
 
-    def test_whole_text
-      @compositor.send_surrounding_text("hello world", 5)
-      @compositor.type(KEY_A)
-      @compositor.wait_for {@compositor.commits == ["[hello| world]"]}
-      assert_equal(["[hello| world]"], @compositor.commits)
+    sub_test_case("zwp_input_method_v1") do
+      include SurroundingTextTests
+
+      # A deletion takes effect with the commit that follows it, so the
+      # bridge sends an empty one of its own before uim commits.
+      def test_delete_is_applied_by_a_commit
+        @compositor.send_surrounding_text("hello", 5)
+        @compositor.type(KEY_L)
+        @compositor.wait_for {@compositor.commits == ["", "[deleted]"]}
+        assert_equal(["", "[deleted]"], @compositor.commits)
+      end
     end
 
-    def test_line_before_the_cursor
-      @compositor.send_surrounding_text("one\ntwo", 7)
-      @compositor.type(KEY_J)
-      @compositor.wait_for {@compositor.commits == ["[two|]"]}
-      assert_equal(["[two|]"], @compositor.commits)
-    end
+    sub_test_case("zwp_input_method_v2") do
+      include SurroundingTextTests
 
-    def test_selection
-      @compositor.send_surrounding_text("hello world", 5, 0)
-      @compositor.type(KEY_K)
-      @compositor.wait_for {@compositor.commits == ["[|hello]"]}
-      assert_equal(["[|hello]"], @compositor.commits)
-    end
+      def protocol
+        :v2
+      end
 
-    def test_nothing_reported
-      @compositor.type(KEY_A)
-      @compositor.wait_for {@compositor.commits == ["[]"]}
-      assert_equal(["[]"], @compositor.commits)
-    end
-
-    def test_delete
-      @compositor.send_surrounding_text("hello", 5)
-      @compositor.type(KEY_L)
-      @compositor.wait_for {@compositor.deleted == [[-1, 1]]}
-      assert_equal([[-1, 1]], @compositor.deleted)
-    end
-
-    # A deletion takes effect with the commit that follows it, so the
-    # bridge sends an empty one of its own before uim commits.
-    def test_delete_is_applied_by_a_commit
-      @compositor.send_surrounding_text("hello", 5)
-      @compositor.type(KEY_L)
-      @compositor.wait_for {@compositor.commits == ["", "[deleted]"]}
-      assert_equal(["", "[deleted]"], @compositor.commits)
+      # The surrounding text is applied only by the done that follows it.
+      def test_forgotten_by_done_without_surrounding_text
+        @compositor.send_surrounding_text("hello world", 5)
+        @compositor.send_done
+        @compositor.type(KEY_A)
+        @compositor.wait_for {@compositor.commits == ["[]"]}
+        assert_equal(["[]"], @compositor.commits)
+      end
     end
   end
 
