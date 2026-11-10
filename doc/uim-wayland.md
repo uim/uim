@@ -123,9 +123,6 @@ If the input method doesn't start, look there first.
 
 ## Limitations
 
-- With `zwp_input_method_v2`, uim isn't told the text around the
-  cursor or what a field takes yet.
-
 - A pending preedit is dropped when the text field loses focus.
   Applications differ in what they do with it (Chromium commits it),
   and `zwp_input_method_v1` gives no way to tell them anything after

@@ -41,6 +41,26 @@
 
 #include <uim/uim-util.h>
 
+/* zwp_input_method_v2.content_type refers to the content_hint and
+ * content_purpose enums of zwp_text_input_v3, which number the purposes
+ * differently from zwp_text_input_v1. Only the values uim-wayland acts
+ * on are listed. */
+enum content_hint {
+  CONTENT_HINT_HIDDEN_TEXT = 0x40,
+  CONTENT_HINT_SENSITIVE_DATA = 0x80
+};
+
+enum content_purpose {
+  CONTENT_PURPOSE_DIGITS = 2,
+  CONTENT_PURPOSE_NUMBER = 3,
+  CONTENT_PURPOSE_PHONE = 4,
+  CONTENT_PURPOSE_PASSWORD = 8,
+  CONTENT_PURPOSE_PIN = 9,
+  CONTENT_PURPOSE_DATE = 10,
+  CONTENT_PURPOSE_TIME = 11,
+  CONTENT_PURPOSE_DATETIME = 12
+};
+
 struct uim_wayland_v2 {
   struct zwp_input_method_manager_v2 *manager;
   struct zwp_virtual_keyboard_manager_v1 *virtual_keyboard_manager;
@@ -64,6 +84,15 @@ struct uim_wayland_v2 {
    * deactivate take effect on done. */
   bool pending_active;
   bool pending_activate;
+  /* The text around the cursor that the next done applies. NULL for
+   * none, which is also what a done applies when no surrounding_text
+   * event came before it. */
+  char *pending_surrounding_text;
+  uint32_t pending_surrounding_cursor;
+  uint32_t pending_surrounding_anchor;
+  /* The content type stays until changed or reset by activate. */
+  uint32_t pending_content_hint;
+  uint32_t pending_content_purpose;
 };
 
 /* output */
@@ -261,13 +290,27 @@ activate(struct uim_wayland *uw)
 }
 
 static void
+forget_pending_surrounding_text(struct uim_wayland_v2 *v2)
+{
+  free(v2->pending_surrounding_text);
+  v2->pending_surrounding_text = NULL;
+  v2->pending_surrounding_cursor = 0;
+  v2->pending_surrounding_anchor = 0;
+}
+
+/* activate resets the text input state too. */
+static void
 input_method_activate(void *data, struct zwp_input_method_v2 *input_method)
 {
   struct uim_wayland *uw = data;
+  struct uim_wayland_v2 *v2 = uw->v2;
   (void)input_method;
 
-  uw->v2->pending_active = true;
-  uw->v2->pending_activate = true;
+  v2->pending_active = true;
+  v2->pending_activate = true;
+  forget_pending_surrounding_text(v2);
+  v2->pending_content_hint = 0;
+  v2->pending_content_purpose = 0;
 }
 
 static void
@@ -287,11 +330,14 @@ input_method_surrounding_text(void *data,
                               uint32_t cursor,
                               uint32_t anchor)
 {
-  (void)data;
+  struct uim_wayland *uw = data;
+  struct uim_wayland_v2 *v2 = uw->v2;
   (void)input_method;
-  (void)text;
-  (void)cursor;
-  (void)anchor;
+
+  forget_pending_surrounding_text(v2);
+  v2->pending_surrounding_text = uim_strdup(text);
+  v2->pending_surrounding_cursor = cursor;
+  v2->pending_surrounding_anchor = anchor;
 }
 
 static void
@@ -310,10 +356,59 @@ input_method_content_type(void *data,
                           uint32_t hint,
                           uint32_t purpose)
 {
-  (void)data;
+  struct uim_wayland *uw = data;
+  struct uim_wayland_v2 *v2 = uw->v2;
   (void)input_method;
-  (void)hint;
-  (void)purpose;
+
+  v2->pending_content_hint = hint;
+  v2->pending_content_purpose = purpose;
+}
+
+/* Composing into a field that hides what is typed, or that takes only
+ * digits, gives the user nothing and leaks the text into the preedit
+ * of an input method that has no business seeing it. */
+static bool
+takes_composed_text(uint32_t hint, uint32_t purpose)
+{
+  if (hint & (CONTENT_HINT_HIDDEN_TEXT | CONTENT_HINT_SENSITIVE_DATA))
+    return false;
+
+  switch (purpose) {
+  case CONTENT_PURPOSE_DIGITS:
+  case CONTENT_PURPOSE_NUMBER:
+  case CONTENT_PURPOSE_PHONE:
+  case CONTENT_PURPOSE_PASSWORD:
+  case CONTENT_PURPOSE_PIN:
+  case CONTENT_PURPOSE_DATE:
+  case CONTENT_PURPOSE_TIME:
+  case CONTENT_PURPOSE_DATETIME:
+    return false;
+  default:
+    return true;
+  }
+}
+
+/* The surrounding text is set back to none after it is applied. */
+static void
+apply_text_input_state(struct uim_wayland *uw)
+{
+  struct uim_wayland_v2 *v2 = uw->v2;
+  uint32_t hint = v2->pending_content_hint;
+  uint32_t purpose = v2->pending_content_purpose;
+  bool bypassed = !takes_composed_text(hint, purpose);
+
+  if (bypassed != uw->bypassed)
+    uim_wayland_debug("content type: hint %#x purpose %u, input method %s",
+                      hint, purpose, bypassed ? "off" : "on");
+  uim_wayland_set_bypassed(uw, bypassed);
+
+  if (v2->pending_surrounding_text)
+    uim_wayland_text_set_surrounding(uw, v2->pending_surrounding_text,
+                                     v2->pending_surrounding_cursor,
+                                     v2->pending_surrounding_anchor);
+  else
+    uim_wayland_text_forget_surrounding(uw);
+  forget_pending_surrounding_text(v2);
 }
 
 /* An activate while active is another text field, or the same one
@@ -333,6 +428,10 @@ input_method_done(void *data, struct zwp_input_method_v2 *input_method)
   else if (!v2->pending_active)
     deactivate(uw);
   v2->pending_activate = false;
+  if (uw->focused)
+    apply_text_input_state(uw);
+  else
+    forget_pending_surrounding_text(v2);
 }
 
 static void
@@ -372,6 +471,7 @@ destroy(struct uim_wayland *uw)
     zwp_input_method_manager_v2_destroy(v2->manager);
   if (v2->virtual_keyboard_manager)
     zwp_virtual_keyboard_manager_v1_destroy(v2->virtual_keyboard_manager);
+  free(v2->pending_surrounding_text);
   free(v2);
   uw->v2 = NULL;
 }
