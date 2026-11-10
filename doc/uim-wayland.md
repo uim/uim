@@ -18,7 +18,9 @@ selects it, as the arrow keys would, and the wheel turns the page.
 The candidates use the desktop's interface font, the `font-name` key
 of `org.gnome.desktop.interface` that GTK uses too and that Plasma
 keeps in step with its own font setting. Without that schema they use
-`sans 11`.
+`sans 11`. They are drawn in dark colors when the `color-scheme` key
+of the same schema is `prefer-dark`, as GTK and libadwaita applications
+are.
 uim-helper-server is used as in the other bridges, so the toolbar,
 `uim-im-switcher-cli` and input method changes made by other uim
 processes all work.
