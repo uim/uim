@@ -64,6 +64,9 @@
 #include <fractional-scale-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #endif
+#ifdef HAVE_WAYLAND_CURSOR_SHAPE
+#include <cursor-shape-v1-client-protocol.h>
+#endif
 
 #define UIM_WAYLAND_PROGRAM_NAME "uim-wayland"
 
@@ -139,6 +142,12 @@ struct uim_wayland {
   /* For the pointer on the candidate window. */
   struct wl_seat *seat;
   struct wl_pointer *pointer;
+#ifdef HAVE_WAYLAND_CURSOR_SHAPE
+  /* NULL when not offered. The device is made for the pointer when it
+   * first enters the candidate window. */
+  struct wp_cursor_shape_manager_v1 *cursor_shape_manager;
+  struct wp_cursor_shape_device_v1 *cursor_shape_device;
+#endif
 
   struct xkb_context *xkb_context;
   struct xkb_keymap *xkb_keymap;

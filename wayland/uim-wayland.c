@@ -544,6 +544,12 @@ release_pointer(struct uim_wayland *uw)
 {
   if (!uw->pointer)
     return;
+#ifdef HAVE_WAYLAND_CURSOR_SHAPE
+  if (uw->cursor_shape_device) {
+    wp_cursor_shape_device_v1_destroy(uw->cursor_shape_device);
+    uw->cursor_shape_device = NULL;
+  }
+#endif
   if (wl_pointer_get_version(uw->pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
     wl_pointer_release(uw->pointer);
   else
@@ -609,6 +615,13 @@ registry_global(void *data,
   } else if (strcmp(interface, wp_viewporter_interface.name) == 0) {
     uw->viewporter = wl_registry_bind(registry, name,
                                       &wp_viewporter_interface, 1);
+#endif
+#ifdef HAVE_WAYLAND_CURSOR_SHAPE
+  } else if (strcmp(interface,
+                    wp_cursor_shape_manager_v1_interface.name) == 0) {
+    uw->cursor_shape_manager =
+      wl_registry_bind(registry, name,
+                       &wp_cursor_shape_manager_v1_interface, 1);
 #endif
   } else if (strcmp(interface, wl_seat_interface.name) == 0 && !uw->seat) {
     /* Only the first seat. */
@@ -867,6 +880,10 @@ main(int argc, char **argv)
     wp_fractional_scale_manager_v1_destroy(uw->fractional_scale_manager);
   if (uw->viewporter)
     wp_viewporter_destroy(uw->viewporter);
+#endif
+#ifdef HAVE_WAYLAND_CURSOR_SHAPE
+  if (uw->cursor_shape_manager)
+    wp_cursor_shape_manager_v1_destroy(uw->cursor_shape_manager);
 #endif
   if (uw->compositor)
     wl_compositor_destroy(uw->compositor);

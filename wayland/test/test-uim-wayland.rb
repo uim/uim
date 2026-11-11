@@ -417,6 +417,11 @@ class Compositor
     "wp_fractional_scale_manager_v1" => 1,
     "wp_viewporter" => 1,
   }
+  CURSOR_SHAPE_GLOBALS = {
+    "wp_cursor_shape_manager_v1" => 1,
+  }
+
+  CURSOR_SHAPE_DEFAULT = 1
 
   SEAT_CAPABILITY_POINTER = 1
 
@@ -436,19 +441,23 @@ class Compositor
   attr_reader :candidate_window_scale
   # In buffer pixels.
   attr_reader :candidate_window_buffer_size
+  # [serial, shape] of each wp_cursor_shape_device_v1.set_shape, and the
+  # serial of the last pointer enter.
+  attr_reader :cursor_shapes, :pointer_enter_serial
   # The [red, green, blue] of the last candidate window drawn, just
   # inside its border.
   attr_reader :candidate_window_background
 
   # protocol is :v1, :v2 or :both, the input method protocols offered.
   # fractional_scale also offers wp_fractional_scale_manager_v1 and
-  # wp_viewporter.
+  # wp_viewporter, and cursor_shape wp_cursor_shape_manager_v1.
   def initialize(default_im_name, environment={}, protocol: :v1,
-                 fractional_scale: false)
+                 fractional_scale: false, cursor_shape: false)
     @default_im_name = default_im_name
     @environment = environment
     @protocol = protocol
     @fractional_scale = fractional_scale
+    @cursor_shape = cursor_shape
     @connection = nil
     @process_id = nil
     @scm_file = nil
@@ -471,6 +480,8 @@ class Compositor
     @viewports = {}
     # By viewport.
     @viewport_destinations = {}
+    @cursor_shapes = []
+    @pointer_enter_serial = nil
     @candidate_window_background = nil
     @compositor_version = nil
     @time = 1000
@@ -652,6 +663,11 @@ class Compositor
     end
   end
 
+  # Moves the pointer onto the candidate window.
+  def hover(x, y)
+    enter_candidate_window(x, y)
+  end
+
   # Scrolls over the candidate window. Positive is down.
   def scroll(amount)
     enter_candidate_window(1, 1)
@@ -674,7 +690,8 @@ class Compositor
   def enter_candidate_window(x, y)
     raise("uim-wayland has no pointer") if @pointer.nil?
     return if @pointer_inside
-    @connection.send_event(@pointer, "enter", @connection.next_serial,
+    @pointer_enter_serial = @connection.next_serial
+    @connection.send_event(@pointer, "enter", @pointer_enter_serial,
                            @candidate_surface, x, y)
     @pointer_inside = true
   end
@@ -692,6 +709,7 @@ class Compositor
     if @fractional_scale
       paths += [ENV["FRACTIONAL_SCALE_XML"], ENV["VIEWPORTER_XML"]]
     end
+    paths << ENV["CURSOR_SHAPE_XML"] if @cursor_shape
     paths
   end
 
@@ -724,6 +742,7 @@ class Compositor
       registry = arguments[0]
       globals = GLOBALS[@protocol]
       globals = globals.merge(FRACTIONAL_SCALE_GLOBALS) if @fractional_scale
+      globals = globals.merge(CURSOR_SHAPE_GLOBALS) if @cursor_shape
       globals.each_with_index do |(global, version), index|
         @connection.send_event(registry, "global", index + 1, global, version)
       end
@@ -777,6 +796,8 @@ class Compositor
       @viewports[arguments[1]] = arguments[0]
     when "wp_viewport.set_destination"
       @viewport_destinations[id] = arguments
+    when "wp_cursor_shape_device_v1.set_shape"
+      @cursor_shapes << arguments
     when "wl_surface.set_buffer_scale"
       @candidate_window_scale = arguments[0] if id == @candidate_surface
     when "zwp_input_panel_v1.get_input_panel_surface"
@@ -974,7 +995,8 @@ class UimWaylandTest < Test::Unit::TestCase
   def setup
     @compositor = Compositor.new(default_im_name, uim_wayland_environment,
                                  protocol: protocol,
-                                 fractional_scale: fractional_scale?)
+                                 fractional_scale: fractional_scale?,
+                                 cursor_shape: cursor_shape?)
     begin
       @compositor.start
       yield
@@ -992,6 +1014,10 @@ class UimWaylandTest < Test::Unit::TestCase
   end
 
   def fractional_scale?
+    false
+  end
+
+  def cursor_shape?
     false
   end
 
@@ -1403,6 +1429,33 @@ class UimWaylandTest < Test::Unit::TestCase
       assert_equal([1, @compositor.candidate_window_size],
                    [@compositor.candidate_window_scale,
                     @compositor.candidate_window_buffer_size])
+    end
+  end
+
+  sub_test_case("candidate window cursor") do
+    def setup
+      if ENV.fetch("CURSOR_SHAPE_XML", "").empty?
+        omit("uim-wayland is built without cursor-shape-v1")
+      end
+      super
+    end
+
+    def default_im_name
+      "candidates"
+    end
+
+    def cursor_shape?
+      true
+    end
+
+    def test_default_shape
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.candidate_window_size}
+      @compositor.hover(1, 1)
+      @compositor.wait_for {not @compositor.cursor_shapes.empty?}
+      assert_equal([[@compositor.pointer_enter_serial,
+                     Compositor::CURSOR_SHAPE_DEFAULT]],
+                   @compositor.cursor_shapes)
     end
   end
 
