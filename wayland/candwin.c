@@ -149,6 +149,14 @@ struct uim_wayland_candwin {
 
   /* The buffer scale the compositor asks for. */
   int scale;
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  /* With both, the buffer is drawn at the fractional scale the
+   * compositor asks for, in 120ths, and the viewport shrinks it back
+   * to the surface size. scale is ignored then. */
+  struct wp_fractional_scale_v1 *fractional_scale;
+  struct wp_viewport *viewport;
+  uint32_t scale120;
+#endif
 
   /* The desktop's interface settings, which GTK uses too: the font
    * and the color scheme. Plasma copies its own font here. NULL
@@ -410,10 +418,48 @@ set_source_color(cairo_t *cr, const struct color *color)
   cairo_set_source_rgb(cr, color->red, color->green, color->blue);
 }
 
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+static bool
+use_viewport(struct uim_wayland_candwin *cw)
+{
+  return cw->viewport != NULL;
+}
+#else
+static bool
+use_viewport(struct uim_wayland_candwin *cw)
+{
+  (void)cw;
+  return false;
+}
+#endif
+
+static double
+drawing_scale(struct uim_wayland_candwin *cw)
+{
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  if (use_viewport(cw))
+    return cw->scale120 / 120.0;
+#endif
+  return cw->scale;
+}
+
+/* The size of the buffer for a surface size. The fractional scale
+ * protocol asks for rounding half away from zero. */
+static int
+buffer_size(struct uim_wayland_candwin *cw, int size)
+{
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  if (use_viewport(cw))
+    return (int)(((uint64_t)size * cw->scale120 + 60) / 120);
+#endif
+  return size * cw->scale;
+}
+
 static void
 draw(struct uim_wayland_candwin *cw)
 {
   const struct palette *palette = cw->palette;
+  double scale = drawing_scale(cw);
   cairo_surface_t *scratch;
   cairo_t *cr;
   PangoLayout *layout;
@@ -430,7 +476,7 @@ draw(struct uim_wayland_candwin *cw)
    * the text. */
   scratch = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
   cr = cairo_create(scratch);
-  cairo_scale(cr, cw->scale, cw->scale);
+  cairo_scale(cr, scale, scale);
   layout = pango_cairo_create_layout(cr);
   pango_layout_set_font_description(layout, cw->font);
 
@@ -476,7 +522,8 @@ draw(struct uim_wayland_candwin *cw)
   cairo_destroy(cr);
   cairo_surface_destroy(scratch);
 
-  b = get_buffer(cw, width * cw->scale, height * cw->scale, &all_busy);
+  b = get_buffer(cw, buffer_size(cw, width), buffer_size(cw, height),
+                 &all_busy);
   if (!b) {
     cw->dirty = all_busy;
     return;
@@ -487,7 +534,7 @@ draw(struct uim_wayland_candwin *cw)
                                                 b->width, b->height,
                                                 b->stride);
   cr = cairo_create(surface);
-  cairo_scale(cr, cw->scale, cw->scale);
+  cairo_scale(cr, scale, scale);
   layout = pango_cairo_create_layout(cr);
   pango_layout_set_font_description(layout, cw->font);
 
@@ -541,7 +588,12 @@ draw(struct uim_wayland_candwin *cw)
   cairo_surface_destroy(surface);
 
   b->busy = true;
-  if (wl_surface_get_version(cw->surface) >=
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  if (use_viewport(cw))
+    wp_viewport_set_destination(cw->viewport, width, height);
+#endif
+  if (!use_viewport(cw) &&
+      wl_surface_get_version(cw->surface) >=
       WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
     wl_surface_set_buffer_scale(cw->surface, cw->scale);
   wl_surface_attach(cw->surface, b->buffer, 0, 0);
@@ -591,7 +643,8 @@ surface_preferred_buffer_scale(void *data,
   if (factor < 1 || factor == cw->scale)
     return;
   cw->scale = factor;
-  if (cw->shown)
+  /* The fractional scale takes over. */
+  if (cw->shown && !use_viewport(cw))
     draw(cw);
 }
 
@@ -610,6 +663,27 @@ static const struct wl_surface_listener surface_listener = {
   surface_leave,
   surface_preferred_buffer_scale,
   surface_preferred_buffer_transform
+};
+#endif
+
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+static void
+fractional_scale_preferred_scale(void *data,
+                                 struct wp_fractional_scale_v1 *fractional_scale,
+                                 uint32_t scale)
+{
+  struct uim_wayland_candwin *cw = data;
+  (void)fractional_scale;
+
+  if (scale == 0 || scale == cw->scale120)
+    return;
+  cw->scale120 = scale;
+  if (cw->shown)
+    draw(cw);
+}
+
+static const struct wp_fractional_scale_v1_listener fractional_scale_listener = {
+  fractional_scale_preferred_scale
 };
 #endif
 
@@ -719,6 +793,17 @@ uim_wayland_candwin_new(struct uim_wayland *uw)
 #ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
   wl_surface_add_listener(cw->surface, &surface_listener, cw);
 #endif
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  if (uw->fractional_scale_manager && uw->viewporter) {
+    cw->scale120 = 120;
+    cw->fractional_scale =
+      wp_fractional_scale_manager_v1_get_fractional_scale(
+        uw->fractional_scale_manager, cw->surface);
+    wp_fractional_scale_v1_add_listener(cw->fractional_scale,
+                                        &fractional_scale_listener, cw);
+    cw->viewport = wp_viewporter_get_viewport(uw->viewporter, cw->surface);
+  }
+#endif
   if (uw->input_panel) {
     cw->panel_surface =
       zwp_input_panel_v1_get_input_panel_surface(uw->input_panel,
@@ -748,6 +833,12 @@ uim_wayland_candwin_free(struct uim_wayland_candwin *cw)
     zwp_input_panel_surface_v1_destroy(cw->panel_surface);
   if (cw->popup_surface)
     zwp_input_popup_surface_v2_destroy(cw->popup_surface);
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  if (cw->fractional_scale)
+    wp_fractional_scale_v1_destroy(cw->fractional_scale);
+  if (cw->viewport)
+    wp_viewport_destroy(cw->viewport);
+#endif
   if (cw->surface)
     wl_surface_destroy(cw->surface);
   if (cw->font)

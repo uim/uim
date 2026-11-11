@@ -885,6 +885,15 @@ if test "x$with_wayland" != xno; then
   with_wayland=$have_wayland
 fi
 
+dnl Fractional scaling is used only when wayland-protocols has it.
+have_wayland_fractional_scale=no
+if test "x$with_wayland" = xyes &&
+   $PKG_CONFIG --atleast-version=1.31 wayland-protocols; then
+  have_wayland_fractional_scale=yes
+  AC_DEFINE(HAVE_WAYLAND_FRACTIONAL_SCALE, 1,
+            [Define to 1 if wayland-protocols has fractional-scale-v1.])
+fi
+
 # The test speaks the protocol itself, so it only needs Ruby and the
 # description of the core protocol.
 WAYLAND_CORE_XML=
@@ -903,6 +912,8 @@ if test "x$wayland_requested" = xyes && test "x$enable_tests" = xyes; then
 fi
 
 AM_CONDITIONAL(WAYLAND, test "x$with_wayland" = xyes)
+AM_CONDITIONAL(WAYLAND_FRACTIONAL_SCALE,
+               test "x$have_wayland_fractional_scale" = xyes)
 AM_CONDITIONAL(WAYLAND_TEST,
                test "x$enable_tests" != xno &&
                test -n "$RUBY" && test -n "$WAYLAND_CORE_XML")
