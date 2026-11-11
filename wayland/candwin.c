@@ -69,6 +69,40 @@
 /* Axis distance per page: a wheel notch is 10 in Weston, 15 in KWin. */
 #define CANDWIN_SCROLL_STEP 10.0
 
+struct color {
+  double red;
+  double green;
+  double blue;
+};
+
+struct palette {
+  struct color background;
+  struct color border;
+  struct color text;
+  /* The annotations and the footer. */
+  struct color dim_text;
+  struct color selected_background;
+  struct color selected_text;
+};
+
+static const struct palette light_palette = {
+  {1.0, 1.0, 1.0},
+  {0.6, 0.6, 0.6},
+  {0.0, 0.0, 0.0},
+  {0.4, 0.4, 0.4},
+  {0.2, 0.4, 0.8},
+  {1.0, 1.0, 1.0}
+};
+
+static const struct palette dark_palette = {
+  {0.2, 0.2, 0.2},
+  {0.4, 0.4, 0.4},
+  {1.0, 1.0, 1.0},
+  {0.7, 0.7, 0.7},
+  {0.2, 0.4, 0.8},
+  {1.0, 1.0, 1.0}
+};
+
 struct candidate {
   char *heading;
   char *str;
@@ -116,11 +150,14 @@ struct uim_wayland_candwin {
   /* The buffer scale the compositor asks for. */
   int scale;
 
-  /* The desktop's interface font, which GTK uses too. Plasma copies
-   * its own font here. NULL without the schema. */
+  /* The desktop's interface settings, which GTK uses too: the font
+   * and the color scheme. Plasma copies its own font here. NULL
+   * without the schema. */
   GSettings *desktop_settings;
   char *font_name;
   PangoFontDescription *font;
+  /* The light one unless the desktop prefers dark. */
+  const struct palette *palette;
 };
 
 /* shm buffers */
@@ -368,8 +405,15 @@ draw_text(cairo_t *cr,
 }
 
 static void
+set_source_color(cairo_t *cr, const struct color *color)
+{
+  cairo_set_source_rgb(cr, color->red, color->green, color->blue);
+}
+
+static void
 draw(struct uim_wayland_candwin *cw)
 {
+  const struct palette *palette = cw->palette;
   cairo_surface_t *scratch;
   cairo_t *cr;
   PangoLayout *layout;
@@ -448,9 +492,9 @@ draw(struct uim_wayland_candwin *cw)
   pango_layout_set_font_description(layout, cw->font);
 
   /* background and border */
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  set_source_color(cr, &palette->background);
   cairo_paint(cr);
-  cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+  set_source_color(cr, &palette->border);
   cairo_set_line_width(cr, 1.0);
   cairo_rectangle(cr, 0.5, 0.5, width - 1, height - 1);
   cairo_stroke(cr);
@@ -466,13 +510,13 @@ draw(struct uim_wayland_candwin *cw)
       cw->index >= 0 && cw->index - cw->page * page_size(cw) == i;
 
     if (selected) {
-      cairo_set_source_rgb(cr, 0.2, 0.4, 0.8);
+      set_source_color(cr, &palette->selected_background);
       cairo_rectangle(cr, 1, y - CANDWIN_ROW_GAP / 2.0,
                       width - 2, row_height);
       cairo_fill(cr);
-      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+      set_source_color(cr, &palette->selected_text);
     } else {
-      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+      set_source_color(cr, &palette->text);
     }
 
     draw_text(cr, layout, c->heading, x, y);
@@ -481,14 +525,14 @@ draw(struct uim_wayland_candwin *cw)
     x += m.str_width + CANDWIN_COLUMN_GAP;
     if (c->annotation[0] != '\0') {
       if (!selected)
-        cairo_set_source_rgb(cr, 0.4, 0.4, 0.4);
+        set_source_color(cr, &palette->dim_text);
       draw_text(cr, layout, c->annotation, x, y);
     }
     y += row_height;
   }
 
   y += CANDWIN_ROW_GAP;
-  cairo_set_source_rgb(cr, 0.4, 0.4, 0.4);
+  set_source_color(cr, &palette->dim_text);
   draw_text(cr, layout, footer, width - CANDWIN_PADDING - footer_width, y);
 
   g_object_unref(layout);
@@ -569,7 +613,7 @@ static const struct wl_surface_listener surface_listener = {
 };
 #endif
 
-/* font */
+/* desktop settings */
 
 static GSettings *
 desktop_settings_new(void)
@@ -591,17 +635,12 @@ desktop_settings_new(void)
   return settings;
 }
 
-/* Read on every activation: without a GLib main loop there is no
- * change notification. */
 static void
 update_font(struct uim_wayland_candwin *cw)
 {
   char *name = NULL;
 
   if (cw->desktop_settings) {
-    /* GSettings queues work for the default main context. */
-    while (g_main_context_iteration(NULL, FALSE))
-      ;
     name = g_settings_get_string(cw->desktop_settings, "font-name");
     if (name[0] == '\0') {
       g_free(name);
@@ -621,6 +660,43 @@ update_font(struct uim_wayland_candwin *cw)
   cw->font = pango_font_description_from_string(name);
 }
 
+/* The color-scheme key is the one GTK and libadwaita follow. GNOME
+ * older than 42 doesn't have it. */
+static void
+update_palette(struct uim_wayland_candwin *cw)
+{
+  GSettingsSchema *schema;
+  bool has_color_scheme;
+  char *color_scheme;
+
+  cw->palette = &light_palette;
+  if (!cw->desktop_settings)
+    return;
+  g_object_get(cw->desktop_settings, "settings-schema", &schema, NULL);
+  has_color_scheme = g_settings_schema_has_key(schema, "color-scheme");
+  g_settings_schema_unref(schema);
+  if (!has_color_scheme)
+    return;
+  color_scheme = g_settings_get_string(cw->desktop_settings, "color-scheme");
+  if (strcmp(color_scheme, "prefer-dark") == 0)
+    cw->palette = &dark_palette;
+  g_free(color_scheme);
+}
+
+/* Read on every activation: without a GLib main loop there is no
+ * change notification. */
+static void
+update_desktop_settings(struct uim_wayland_candwin *cw)
+{
+  if (cw->desktop_settings) {
+    /* GSettings queues work for the default main context. */
+    while (g_main_context_iteration(NULL, FALSE))
+      ;
+  }
+  update_font(cw);
+  update_palette(cw);
+}
+
 /* public API */
 
 struct uim_wayland_candwin *
@@ -637,7 +713,7 @@ uim_wayland_candwin_new(struct uim_wayland *uw)
   cw->index = -1;
   cw->scale = 1;
   cw->desktop_settings = desktop_settings_new();
-  update_font(cw);
+  update_desktop_settings(cw);
 
   cw->surface = wl_compositor_create_surface(uw->compositor);
 #ifdef WL_SURFACE_PREFERRED_BUFFER_SCALE_SINCE_VERSION
@@ -693,7 +769,7 @@ uim_wayland_candwin_activate(struct uim_wayland_candwin *cw,
   cw->display_limit = display_limit;
   cw->page = 0;
   cw->index = -1;
-  update_font(cw);
+  update_desktop_settings(cw);
   fetch_page(cw);
   draw(cw);
 }

@@ -430,6 +430,9 @@ class Compositor
   # In surface coordinates. nil while the candidate window is hidden.
   attr_reader :candidate_window_size
   attr_reader :candidate_window_scale
+  # The [red, green, blue] of the last candidate window drawn, just
+  # inside its border.
+  attr_reader :candidate_window_background
 
   # protocol is :v1, :v2 or :both, the input method protocols offered.
   def initialize(default_im_name, environment={}, protocol: :v1)
@@ -448,8 +451,11 @@ class Compositor
     @pointer_inside = false
     @candidate_surface = nil
     @buffer_sizes = {}
+    @pools = {}
+    @buffer_pixels = {}
     @candidate_window_size = nil
     @candidate_window_scale = 1
+    @candidate_window_background = nil
     @compositor_version = nil
     @time = 1000
 
@@ -507,6 +513,8 @@ class Compositor
     end
     @keymap&.close!
     @scm_file&.close!
+    @pools.each_value(&:close)
+    @buffer_pixels.each_value {|file, _offset, _stride| file.close}
   end
 
   def activated?
@@ -704,9 +712,16 @@ class Compositor
     when "wl_seat.get_pointer"
       @pointer = arguments[0]
     when "wl_shm_pool.create_buffer"
-      @buffer_sizes[arguments[0]] = [arguments[2], arguments[3]]
+      buffer, offset, width, height, stride = arguments
+      @buffer_sizes[buffer] = [width, height]
+      # The pool may be destroyed before the buffer.
+      @buffer_pixels[buffer] = [@pools[id].dup, offset, stride]
+    when "wl_buffer.destroy"
+      @buffer_pixels.delete(id)&.first&.close
     when "wl_shm.create_pool"
-      arguments[1]&.close
+      @pools[arguments[0]] = arguments[1]
+    when "wl_shm_pool.destroy"
+      @pools.delete(id)&.close
     when "wl_surface.attach"
       buffer = arguments[0]
       if id == @candidate_surface
@@ -716,6 +731,7 @@ class Compositor
           @candidate_window_size = @buffer_sizes[buffer].collect do |size|
             size / @candidate_window_scale.to_f
           end
+          @candidate_window_background = read_background(buffer)
         end
       end
       # A compositor releases the buffer once it has read it, and the
@@ -776,6 +792,14 @@ class Compositor
     @context = @connection.create_object("zwp_input_method_context_v1")
     @connection.send_event(@input_method, "activate", @context)
     @connection.send_event(@context, "commit_state", 1)
+  end
+
+  # A pixel 2 pixels inside the top left corner, past the 1 pixel
+  # border. The buffer is ARGB32 in the native byte order.
+  def read_background(buffer)
+    file, offset, stride = @buffer_pixels[buffer]
+    pixel = file.pread(4, offset + stride * 2 + 4 * 2).unpack1("L")
+    [(pixel >> 16) & 0xff, (pixel >> 8) & 0xff, pixel & 0xff]
   end
 
   def send_keymap
@@ -1318,6 +1342,100 @@ class UimWaylandTest < Test::Unit::TestCase
       @compositor.wait_for {@compositor.candidate_window_size}
       _width, height = @compositor.candidate_window_size
       assert_operator(height, :>, 300)
+    end
+  end
+
+  # The colors follow the desktop's color scheme, here the default of
+  # a schema of our own.
+  sub_test_case("candidate window color scheme") do
+    def default_im_name
+      "candidates"
+    end
+
+    def setup
+      @schema_dir = Dir.mktmpdir("uim-wayland-test-schemas")
+      File.write(File.join(@schema_dir, "test.gschema.xml"), <<~SCHEMA)
+        <schemalist>
+          <enum id="org.gnome.desktop.interface.ColorScheme">
+            <value nick="default" value="0"/>
+            <value nick="prefer-dark" value="1"/>
+            <value nick="prefer-light" value="2"/>
+          </enum>
+          <schema id="org.gnome.desktop.interface"
+                  path="/org/gnome/desktop/interface/">
+            <key name="font-name" type="s">
+              <default>'sans 11'</default>
+            </key>
+            #{color_scheme_key}
+          </schema>
+        </schemalist>
+      SCHEMA
+      unless system("glib-compile-schemas", @schema_dir)
+        omit("glib-compile-schemas is needed")
+      end
+      super
+    ensure
+      FileUtils.rm_rf(@schema_dir)
+    end
+
+    def uim_wayland_environment
+      {"GSETTINGS_SCHEMA_DIR" => @schema_dir}
+    end
+
+    def color_scheme_key
+      <<~KEY
+        <key name="color-scheme"
+             enum="org.gnome.desktop.interface.ColorScheme">
+          <default>'#{color_scheme}'</default>
+        </key>
+      KEY
+    end
+
+    def candidate_window_background
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.candidate_window_background}
+      @compositor.candidate_window_background
+    end
+
+    sub_test_case("color-scheme: default") do
+      def color_scheme
+        "default"
+      end
+
+      def test_background
+        assert_equal([255, 255, 255], candidate_window_background)
+      end
+    end
+
+    sub_test_case("color-scheme: prefer-dark") do
+      def color_scheme
+        "prefer-dark"
+      end
+
+      def test_background
+        assert_equal([51, 51, 51], candidate_window_background)
+      end
+    end
+
+    sub_test_case("color-scheme: prefer-light") do
+      def color_scheme
+        "prefer-light"
+      end
+
+      def test_background
+        assert_equal([255, 255, 255], candidate_window_background)
+      end
+    end
+
+    # GNOME older than 42.
+    sub_test_case("no color-scheme") do
+      def color_scheme_key
+        ""
+      end
+
+      def test_background
+        assert_equal([255, 255, 255], candidate_window_background)
+      end
     end
   end
 end
