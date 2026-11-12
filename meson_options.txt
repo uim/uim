@@ -101,7 +101,7 @@ option('tests',
 option('wayland',
        type: 'feature',
        value: 'auto',
-       description: 'build uim-wayland (zwp_input_method_v1 frontend)')
+       description: 'build uim-wayland (zwp_input_method_v1 and v2 frontend)')
 option('x11',
        type: 'feature',
        value: 'auto',
