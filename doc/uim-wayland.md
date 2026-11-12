@@ -41,7 +41,8 @@ protocol, so `uim-wayland` can't be used there.
 are found. The candidate window is drawn at a fractional scale only
 with `wayland-protocols` 1.31 or later, and sets the pointer's cursor
 only with 1.32 or later.
-Pass `--without-wayland` to `configure` to disable it.
+Pass `--without-wayland` to `configure`, or `-Dwayland=disabled` to
+`meson setup`, to disable it.
 
 ## KWin
 

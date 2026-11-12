@@ -849,7 +849,7 @@ dnl *** Check for Wayland input method frontend ***
 dnl ***********************************************
 AC_ARG_WITH(wayland,
   AC_HELP_STRING([--with-wayland],
-    [build uim-wayland (zwp_input_method_v1 frontend) [default=auto]]),
+    [build uim-wayland (zwp_input_method_v1 and v2 frontend) [default=auto]]),
   [],
   [with_wayland=auto])
 wayland_requested=$with_wayland
