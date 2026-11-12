@@ -885,13 +885,20 @@ if test "x$with_wayland" != xno; then
   with_wayland=$have_wayland
 fi
 
-dnl Fractional scaling is used only when wayland-protocols has it.
+dnl Newer protocols are used only when wayland-protocols has them.
 have_wayland_fractional_scale=no
 if test "x$with_wayland" = xyes &&
    $PKG_CONFIG --atleast-version=1.31 wayland-protocols; then
   have_wayland_fractional_scale=yes
   AC_DEFINE(HAVE_WAYLAND_FRACTIONAL_SCALE, 1,
             [Define to 1 if wayland-protocols has fractional-scale-v1.])
+fi
+have_wayland_cursor_shape=no
+if test "x$with_wayland" = xyes &&
+   $PKG_CONFIG --atleast-version=1.32 wayland-protocols; then
+  have_wayland_cursor_shape=yes
+  AC_DEFINE(HAVE_WAYLAND_CURSOR_SHAPE, 1,
+            [Define to 1 if wayland-protocols has cursor-shape-v1.])
 fi
 
 # The test speaks the protocol itself, so it only needs Ruby and the
@@ -914,6 +921,8 @@ fi
 AM_CONDITIONAL(WAYLAND, test "x$with_wayland" = xyes)
 AM_CONDITIONAL(WAYLAND_FRACTIONAL_SCALE,
                test "x$have_wayland_fractional_scale" = xyes)
+AM_CONDITIONAL(WAYLAND_CURSOR_SHAPE,
+               test "x$have_wayland_cursor_shape" = xyes)
 AM_CONDITIONAL(WAYLAND_TEST,
                test "x$enable_tests" != xno &&
                test -n "$RUBY" && test -n "$WAYLAND_CORE_XML")

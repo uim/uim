@@ -120,10 +120,13 @@ foreach definition : [
   wayland_dependencies += [wayland_dependency]
   build_wayland = build_wayland and wayland_dependency.found()
 endforeach
-# Fractional scaling is used only when wayland-protocols has it.
+# Newer protocols are used only when wayland-protocols has them.
 have_wayland_fractional_scale = (
   build_wayland and
   wayland_protocols.version().version_compare('>=1.31'))
+have_wayland_cursor_shape = (
+  build_wayland and
+  wayland_protocols.version().version_compare('>=1.32'))
 
 build_pref = get_option('pref').require(
   gtk3.found(), error_message: 'GTK 3 is needed').allowed()
@@ -185,6 +188,8 @@ config_data.set('_GNU_SOURCE', 1)
 config_data.set('STDC_HEADERS', 1)
 config_data.set('HAVE_WAYLAND_FRACTIONAL_SCALE',
                 have_wayland_fractional_scale ? 1 : false)
+config_data.set('HAVE_WAYLAND_CURSOR_SHAPE',
+                have_wayland_cursor_shape ? 1 : false)
 
 foreach header : [
   'alloca.h',

@@ -30,6 +30,19 @@ else
   wayland_fractional_scale_xml = ''
   wayland_viewporter_xml = ''
 endif
+if have_wayland_cursor_shape
+  wayland_cursor_shape_xml = (wayland_protocols_dir / 'staging' /
+                              'cursor-shape' / 'cursor-shape-v1.xml')
+  # cursor-shape-v1 refers to zwp_tablet_tool_v2.
+  wayland_tablet_xml = (wayland_protocols_dir / 'unstable' / 'tablet' /
+                        'tablet-unstable-v2.xml')
+  wayland_protocols_to_generate += [
+    [wayland_cursor_shape_xml, 'cursor-shape-v1'],
+    [wayland_tablet_xml, 'tablet-unstable-v2'],
+  ]
+else
+  wayland_cursor_shape_xml = ''
+endif
 wayland_protocol_sources = []
 foreach protocol : wayland_protocols_to_generate
   foreach definition : [
@@ -104,6 +117,7 @@ if get_option('tests').allowed()
            # Empty when uim-wayland is built without them.
            'FRACTIONAL_SCALE_XML': wayland_fractional_scale_xml,
            'VIEWPORTER_XML': wayland_viewporter_xml,
+           'CURSOR_SHAPE_XML': wayland_cursor_shape_xml,
            'WAYLAND_XML': wayland_core_xml,
          },
          suite: 'wayland',

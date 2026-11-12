@@ -930,6 +930,26 @@ uim_wayland_candwin_deactivate(struct uim_wayland_candwin *cw)
 
 /* pointer */
 
+/* The default arrow. Without cursor-shape-v1 the cursor is left as it
+ * was. */
+static void
+set_cursor(struct uim_wayland *uw, uint32_t serial)
+{
+#ifdef HAVE_WAYLAND_CURSOR_SHAPE
+  if (!uw->cursor_shape_manager)
+    return;
+  if (!uw->cursor_shape_device)
+    uw->cursor_shape_device =
+      wp_cursor_shape_manager_v1_get_pointer(uw->cursor_shape_manager,
+                                             uw->pointer);
+  wp_cursor_shape_device_v1_set_shape(uw->cursor_shape_device, serial,
+                                      WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT);
+#else
+  (void)uw;
+  (void)serial;
+#endif
+}
+
 static struct uim_wayland_candwin *
 pointer_candwin(struct uim_wayland *uw)
 {
@@ -951,7 +971,6 @@ pointer_enter(void *data,
   struct uim_wayland *uw = data;
   struct uim_wayland_candwin *cw = uw->candwin;
   (void)pointer;
-  (void)serial;
   (void)x;
 
   if (!cw)
@@ -959,6 +978,8 @@ pointer_enter(void *data,
   cw->pointer_inside = surface == cw->surface;
   cw->pointer_y = wl_fixed_to_double(y);
   cw->scroll = 0;
+  if (cw->pointer_inside)
+    set_cursor(uw, serial);
 }
 
 static void

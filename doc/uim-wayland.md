@@ -39,7 +39,8 @@ protocol, so `uim-wayland` can't be used there.
 `uim-wayland` is built when `wayland-client`, `wayland-protocols`,
 `wayland-scanner`, `xkbcommon`, `cairo`, `pangocairo` and `gio-2.0`
 are found. The candidate window is drawn at a fractional scale only
-with `wayland-protocols` 1.31 or later.
+with `wayland-protocols` 1.31 or later, and sets the pointer's cursor
+only with 1.32 or later.
 Pass `--without-wayland` to `configure` to disable it.
 
 ## KWin
@@ -145,8 +146,11 @@ If the input method doesn't start, look there first.
   1.22 without fractional scaling, gets scale 1, which looks blurry
   on a scaled output. With only the integer scale on a fractional
   scale, the compositor scales the buffer down, so it is slightly
-  soft. It doesn't set a cursor image, so what the pointer looks like
-  over it is up to the compositor.
+  soft.
+- The pointer over the candidate window is set to the default arrow
+  with `wp_cursor_shape_manager_v1`. A compositor without it, or a
+  build against wayland-protocols older than 1.32, leaves the cursor
+  image to the compositor.
 - `text-input-v3` has no preedit styling, so applications using it,
   Chromium among them, show the preedit without underlines. KWin does
   turn the highlighted segment into a selection range, so the segment

@@ -53,6 +53,13 @@ PROTOCOL_SOURCES += \
 	viewporter-client-protocol.h \
 	viewporter-protocol.c
 endif
+if WAYLAND_CURSOR_SHAPE
+PROTOCOL_SOURCES += \
+	cursor-shape-v1-client-protocol.h \
+	cursor-shape-v1-protocol.c \
+	tablet-unstable-v2-client-protocol.h \
+	tablet-unstable-v2-protocol.c
+endif
 BUILT_SOURCES = $(PROTOCOL_SOURCES)
 CLEANFILES = $(PROTOCOL_SOURCES) uim-wayland.desktop
 
@@ -93,6 +100,23 @@ viewporter-client-protocol.h: $(VIEWPORTER_XML)
 viewporter-protocol.c: $(VIEWPORTER_XML)
 	$(WAYLAND_SCANNER) private-code $< $@
 
+CURSOR_SHAPE_XML = \
+	$(WAYLAND_PROTOCOLS_DIR)/staging/cursor-shape/cursor-shape-v1.xml
+# cursor-shape-v1 refers to zwp_tablet_tool_v2.
+TABLET_XML = $(WAYLAND_PROTOCOLS_DIR)/unstable/tablet/tablet-unstable-v2.xml
+
+cursor-shape-v1-client-protocol.h: $(CURSOR_SHAPE_XML)
+	$(WAYLAND_SCANNER) client-header $< $@
+
+cursor-shape-v1-protocol.c: $(CURSOR_SHAPE_XML)
+	$(WAYLAND_SCANNER) private-code $< $@
+
+tablet-unstable-v2-client-protocol.h: $(TABLET_XML)
+	$(WAYLAND_SCANNER) client-header $< $@
+
+tablet-unstable-v2-protocol.c: $(TABLET_XML)
+	$(WAYLAND_SCANNER) private-code $< $@
+
 # KWin lists input methods from desktop files that have
 # X-KDE-Wayland-VirtualKeyboard=true.
 desktopdir = $(datadir)/applications
@@ -113,6 +137,9 @@ if WAYLAND_FRACTIONAL_SCALE
 TEST_FRACTIONAL_SCALE_XML = $(FRACTIONAL_SCALE_XML)
 TEST_VIEWPORTER_XML = $(VIEWPORTER_XML)
 endif
+if WAYLAND_CURSOR_SHAPE
+TEST_CURSOR_SHAPE_XML = $(CURSOR_SHAPE_XML)
+endif
 
 TESTS_ENVIRONMENT = \
 	UIM_WAYLAND="$(abs_builddir)/uim-wayland" \
@@ -122,6 +149,7 @@ TESTS_ENVIRONMENT = \
 	VIRTUAL_KEYBOARD_XML="$(abs_srcdir)/$(VIRTUAL_KEYBOARD_XML)" \
 	FRACTIONAL_SCALE_XML="$(TEST_FRACTIONAL_SCALE_XML)" \
 	VIEWPORTER_XML="$(TEST_VIEWPORTER_XML)" \
+	CURSOR_SHAPE_XML="$(TEST_CURSOR_SHAPE_XML)" \
 	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/subprojects/sigscheme/lib" \
 	LIBUIM_SCM_FILES="$(abs_top_builddir)/scm:$(abs_top_srcdir)/scm" \
 	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs"
