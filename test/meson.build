@@ -6,6 +6,7 @@ foreach definition : [
   ['test-custom-rt.scm', false],
   ['test-custom.scm', false],
   ['test-fail.scm', true],
+  ['test-fileio.scm', false],
   ['test-hangul.scm', false],
   ['test-iconv.scm', false],
   ['test-japanese.scm', false],

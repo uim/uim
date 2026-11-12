@@ -6,6 +6,7 @@ uim_tests = \
         test-custom-rt.scm \
         test-custom.scm \
         test-fail.scm \
+        test-fileio.scm \
         test-hangul.scm \
         test-iconv.scm \
         test-japanese.scm \

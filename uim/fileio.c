@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2009-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2009-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -43,6 +43,7 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <errno.h>
+#include <signal.h>
 
 #ifdef HAVE_POLL_H
 #include <poll.h>
@@ -216,6 +217,8 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
   uim_lisp ret_;
   unsigned char *buf;
   unsigned char *p;
+  struct sigaction ignore, old;
+  int ignored;
 
   buf = p = uim_malloc(nbytes);
   while (!NULLP(buf_)) {
@@ -223,7 +226,16 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
     p++;
     buf_ = CDR(buf_);
   }
+  /* Writing to a pipe of a helper process that has exited must fail
+   * instead of killing the application. sigaction() restores a handler
+   * of the application as it was, SA_SIGINFO and all. */
+  memset(&ignore, 0, sizeof(ignore));
+  ignore.sa_handler = SIG_IGN;
+  sigemptyset(&ignore.sa_mask);
+  ignored = (sigaction(SIGPIPE, &ignore, &old) == 0);
   ret_ = MAKE_INT((int)write(C_INT(d_), buf, nbytes));
+  if (ignored)
+    sigaction(SIGPIPE, &old, NULL);
   free(buf);
   return ret_;
 }
