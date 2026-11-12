@@ -1,6 +1,6 @@
 project('uim',
         'c',
-        version: '2.0.0',
+        version: '2.0.1',
         license: 'BSD-3-Clause',
         # The bundled libgcroots is linked into libuim-scm as configure
         # does, so that uim needs no shared library of its own for it.
