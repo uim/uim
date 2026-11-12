@@ -1,5 +1,268 @@
 # NEWS
 
+## 2.0.0 - 2026-11-12
+
+### Incompatible changes
+
+  * Used UTF-8 as the character codec. Strings in Scheme are UTF-8
+    and `string-length`, `substring` and so on work on characters
+    instead of bytes. All input methods use UTF-8 internally.
+    * [GH-520](https://github.com/uim/uim/issues/520)
+    * [GH-522](https://github.com/uim/uim/issues/522)
+    * [GH-524](https://github.com/uim/uim/issues/524)
+    * [GH-526](https://github.com/uim/uim/issues/526)
+    * [GH-528](https://github.com/uim/uim/issues/528)
+    * [GH-535](https://github.com/uim/uim/issues/535)
+
+  * Japanese: Deprecated the definitions with the "-utf8" suffix such
+    as `ja-rk-rule-basic-utf8`. They're aliases of the ones without
+    the suffix now. `~/.uim` should use the ones without the suffix.
+    * [GH-529](https://github.com/uim/uim/issues/529)
+
+  * Anthy: Merged anthy-utf8 into anthy. The anthy plugin uses UTF-8
+    with libanthy that can handle it and converts strings to EUC-JP
+    otherwise. So it works with libanthy whose default encoding is
+    UTF-8 too. The anthy-utf8 plugin is removed. The anthy-utf8 input
+    method is kept for compatibility.
+    * [GH-477](https://github.com/uim/uim/issues/477)
+    * [GH-531](https://github.com/uim/uim/issues/531)
+    * Reported by yamam
+
+  * Disabled SIOD compatibility of SigScheme. For example, `set-car!`
+    doesn't return the given value anymore. `symbol-value`,
+    `set-symbol-value!` and `verbose` are still available.
+    * [GH-468](https://github.com/uim/uim/issues/468)
+    * [GH-470](https://github.com/uim/uim/issues/470)
+    * [GH-474](https://github.com/uim/uim/issues/474)
+    * [GH-476](https://github.com/uim/uim/issues/476)
+
+  * Removed the Wnn input method.
+    * [GH-405](https://github.com/uim/uim/issues/405)
+
+  * Removed the baidu-olime-jp input method.
+    * [GH-509](https://github.com/uim/uim/issues/509)
+
+  * Removed the knotify3, knotify4 and Growl plugins of uim-notify.
+    * [GH-412](https://github.com/uim/uim/issues/412)
+
+  * Stopped installing `uim-m17nlib-relink-icons`. `make install`
+    makes the links of the m17n-lib icons. Packages that list it need
+    to drop it.
+    * [GH-402](https://github.com/uim/uim/issues/402)
+
+  * Emacs: Removed XEmacs support.
+    * [GH-418](https://github.com/uim/uim/issues/418)
+
+  * GTK 3: Removed the GNOME 3 panel applet.
+    * [GH-466](https://github.com/uim/uim/issues/466)
+
+### Improvements
+
+  * Added Meson build support. Autotools is still supported.
+    * [GH-395](https://github.com/uim/uim/issues/395)
+    * [GH-397](https://github.com/uim/uim/issues/397)
+    * [GH-399](https://github.com/uim/uim/issues/399)
+    * [GH-400](https://github.com/uim/uim/issues/400)
+    * [GH-401](https://github.com/uim/uim/issues/401)
+    * [GH-404](https://github.com/uim/uim/issues/404)
+    * [GH-407](https://github.com/uim/uim/issues/407)
+    * [GH-413](https://github.com/uim/uim/issues/413)
+    * [GH-414](https://github.com/uim/uim/issues/414)
+    * [GH-417](https://github.com/uim/uim/issues/417)
+    * [GH-459](https://github.com/uim/uim/issues/459)
+    * [GH-460](https://github.com/uim/uim/issues/460)
+    * [GH-461](https://github.com/uim/uim/issues/461)
+    * [GH-462](https://github.com/uim/uim/issues/462)
+    * [GH-463](https://github.com/uim/uim/issues/463)
+    * [GH-464](https://github.com/uim/uim/issues/464)
+    * [GH-465](https://github.com/uim/uim/issues/465)
+    * [GH-467](https://github.com/uim/uim/issues/467)
+    * [GH-469](https://github.com/uim/uim/issues/469)
+    * [GH-480](https://github.com/uim/uim/issues/480)
+    * [GH-483](https://github.com/uim/uim/issues/483)
+    * [GH-494](https://github.com/uim/uim/issues/494)
+
+  * Added an option to enable or disable tests.
+    * [GH-416](https://github.com/uim/uim/issues/416)
+
+  * Wayland: Added support for the input method v2 protocol
+    (`zwp_input_method_v2`) used by Sway, labwc and so on.
+    * [GH-392](https://github.com/uim/uim/issues/392)
+    * [GH-492](https://github.com/uim/uim/issues/492)
+    * [GH-493](https://github.com/uim/uim/issues/493)
+    * [GH-544](https://github.com/uim/uim/issues/544)
+    * [GH-548](https://github.com/uim/uim/issues/548)
+    * Reported by tista500
+
+  * Wayland: Added support for dark mode in the candidate window.
+    * [GH-545](https://github.com/uim/uim/issues/545)
+
+  * Wayland: Added support for fractional scale in the candidate
+    window.
+    * [GH-546](https://github.com/uim/uim/issues/546)
+
+  * Wayland: Set the default cursor over the candidate window.
+    * [GH-547](https://github.com/uim/uim/issues/547)
+
+  * SKK: Added support for completion and dynamic completion while
+    romaji is pending.
+    * [GH-538](https://github.com/uim/uim/issues/538)
+    * Patch by yamam
+
+  * SKK: Used the composing rule changed after `skk.scm` is loaded.
+    * [GH-534](https://github.com/uim/uim/issues/534)
+
+  * elatin: Showed all translations of a duplicated key sequence.
+    * [GH-172](https://github.com/uim/uim/issues/172)
+    * [GH-537](https://github.com/uim/uim/issues/537)
+    * Reported by Keith Bowes
+
+  * FEP: Added a libvterm backend to restore the background under the
+    preedit.
+    * [GH-540](https://github.com/uim/uim/issues/540)
+    * [GH-543](https://github.com/uim/uim/issues/543)
+    * Patch by yamam
+
+  * Showed the candidate window at the first conversion key press when
+    the candidate operation count is 0.
+    * [GH-478](https://github.com/uim/uim/issues/478)
+    * [GH-490](https://github.com/uim/uim/issues/490)
+    * Patch by yamam
+
+  * Annotation: Deferred connections to annotation backends until
+    their first use.
+    * [GH-434](https://github.com/uim/uim/issues/434)
+    * Patch by yamam
+
+  * uim-notify: Translated messages and made them UTF-8.
+    * [GH-430](https://github.com/uim/uim/issues/430)
+    * [GH-436](https://github.com/uim/uim/issues/436)
+    * [GH-439](https://github.com/uim/uim/issues/439)
+    * Patch by yamam
+
+  * Notified when initialization of a custom filter fails.
+    * [GH-435](https://github.com/uim/uim/issues/435)
+    * Patch by yamam
+
+  * Notified errors in files loaded by `try-load` and `try-require`.
+    * [GH-481](https://github.com/uim/uim/issues/481)
+
+  * Icons: Drew the uim mark in icons of input methods without their
+    own.
+    * [GH-398](https://github.com/uim/uim/issues/398)
+
+  * Converted the tcode and trycode sources to UTF-8.
+    * [GH-488](https://github.com/uim/uim/issues/488)
+    * [GH-489](https://github.com/uim/uim/issues/489)
+    * Patch by yamam
+
+  * Updated SigScheme to 1.0.0.
+    * [GH-508](https://github.com/uim/uim/issues/508)
+    * [GH-510](https://github.com/uim/uim/issues/510)
+    * [GH-549](https://github.com/uim/uim/issues/549)
+
+  * Japanese: Updated translation.
+    * [GH-433](https://github.com/uim/uim/issues/433)
+    * [GH-495](https://github.com/uim/uim/issues/495)
+
+  * Georgian, Korean and French: Updated translations. They aren't
+    reviewed by native speakers yet.
+    * [GH-499](https://github.com/uim/uim/issues/499)
+    * [GH-500](https://github.com/uim/uim/issues/500)
+    * [GH-501](https://github.com/uim/uim/issues/501)
+
+### Fixes
+
+  * Fixed a bug that an invalid UTF-8 sequence in a string disabled
+    all functionality of libuim.
+    * [GH-542](https://github.com/uim/uim/issues/542)
+
+  * SKK: Fixed the okuri position before annotations in the preedit.
+    * [GH-513](https://github.com/uim/uim/issues/513)
+    * Patch by yamam
+
+  * SKK: Fixed annotations of candidates with okuri and `(concat ...)`
+    bodies.
+    * [GH-519](https://github.com/uim/uim/issues/519)
+    * Patch by yamam
+
+  * Canna: Fixed candidate state corruption.
+    * [GH-497](https://github.com/uim/uim/issues/497)
+    * Patch by yamam
+
+  * Mozc: Fixed a bug that the focused candidate wasn't highlighted
+    when Mozc's focus differs.
+    * [GH-403](https://github.com/uim/uim/issues/403)
+    * Patch by shitamo
+
+  * Look and DICT: Fixed annotation formatting and the default
+    database.
+    * [GH-429](https://github.com/uim/uim/issues/429)
+    * Patch by yamam
+
+  * DICT: Handled annotation connection failures safely.
+    * [GH-411](https://github.com/uim/uim/issues/411)
+    * Patch by yamam
+
+  * XIM: Initialized a fallback encoding for clients.
+    * [GH-168](https://github.com/uim/uim/issues/168)
+    * [GH-514](https://github.com/uim/uim/issues/514)
+    * Patch by yamam
+
+  * XIM: Ignored `UTF8_STRING` in encoding negotiation.
+    * [GH-515](https://github.com/uim/uim/issues/515)
+
+  * XIM: Handled an empty client locale name.
+    * [GH-516](https://github.com/uim/uim/issues/516)
+
+  * Qt 6: Fixed a build error without the private header to get the X
+    display.
+    * [GH-506](https://github.com/uim/uim/issues/506)
+    * [GH-507](https://github.com/uim/uim/issues/507)
+    * Reported by Nobutarou
+
+  * GTK 4: Pre-fetched the target page when a page button is clicked
+    in the candidate window.
+    * [GH-502](https://github.com/uim/uim/issues/502)
+    * Patch by shitamo
+
+  * FEP: Guarded escape sequence parsing against buffer overrun.
+    * [GH-541](https://github.com/uim/uim/issues/541)
+    * Patch by yamam
+
+  * helper: Fixed duplicated `uim-helper-server` processes and
+    handling of client disconnects.
+    * [GH-438](https://github.com/uim/uim/issues/438)
+    * [GH-441](https://github.com/uim/uim/issues/441)
+    * [GH-443](https://github.com/uim/uim/issues/443)
+    * [GH-444](https://github.com/uim/uim/issues/444)
+    * Patch by yamam
+
+  * Fixed stale installed module registrations after reconfiguration.
+    * [GH-484](https://github.com/uim/uim/issues/484)
+    * Patch by yamam
+
+  * Fixed a bug that the Scheme file of a module was loaded more than
+    once.
+    * [GH-487](https://github.com/uim/uim/issues/487)
+    * Reported by yamam
+
+  * uim-notify: Fixed leaks, long messages and the build of the
+    libnotify plugin.
+    * [GH-408](https://github.com/uim/uim/issues/408)
+    * [GH-410](https://github.com/uim/uim/issues/410)
+
+  * Checked `dlopen()` failures by its return value.
+    * [GH-409](https://github.com/uim/uim/issues/409)
+
+### Thanks
+
+  * yamam
+  * shitamo
+  * Keith Bowes
+  * Nobutarou
+  * tista500
+
 ## 1.9.9 - 2026-10-05
 
 ### Improvements
