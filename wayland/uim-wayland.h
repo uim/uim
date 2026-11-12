@@ -60,6 +60,10 @@
 #include <input-method-unstable-v1-client-protocol.h>
 #include <input-method-unstable-v2-client-protocol.h>
 #include <virtual-keyboard-unstable-v1-client-protocol.h>
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+#include <fractional-scale-v1-client-protocol.h>
+#include <viewporter-client-protocol.h>
+#endif
 
 #define UIM_WAYLAND_PROGRAM_NAME "uim-wayland"
 
@@ -117,6 +121,12 @@ struct uim_wayland {
   struct wl_registry *registry;
   struct wl_compositor *compositor;
   struct wl_shm *shm;
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  /* The candidate window needs both to be drawn at a fractional scale.
+   * NULL when not offered. */
+  struct wp_fractional_scale_manager_v1 *fractional_scale_manager;
+  struct wp_viewporter *viewporter;
+#endif
   /* The protocol in use. NULL until the compositor offers one. */
   const struct uim_wayland_input_method *input_method;
   struct uim_wayland_v1 *v1;

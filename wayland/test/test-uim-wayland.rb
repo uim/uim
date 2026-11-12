@@ -413,6 +413,10 @@ class Compositor
     v2: COMMON_GLOBALS.merge(V2_GLOBALS),
     both: COMMON_GLOBALS.merge(V1_GLOBALS).merge(V2_GLOBALS),
   }
+  FRACTIONAL_SCALE_GLOBALS = {
+    "wp_fractional_scale_manager_v1" => 1,
+    "wp_viewporter" => 1,
+  }
 
   SEAT_CAPABILITY_POINTER = 1
 
@@ -430,15 +434,21 @@ class Compositor
   # In surface coordinates. nil while the candidate window is hidden.
   attr_reader :candidate_window_size
   attr_reader :candidate_window_scale
+  # In buffer pixels.
+  attr_reader :candidate_window_buffer_size
   # The [red, green, blue] of the last candidate window drawn, just
   # inside its border.
   attr_reader :candidate_window_background
 
   # protocol is :v1, :v2 or :both, the input method protocols offered.
-  def initialize(default_im_name, environment={}, protocol: :v1)
+  # fractional_scale also offers wp_fractional_scale_manager_v1 and
+  # wp_viewporter.
+  def initialize(default_im_name, environment={}, protocol: :v1,
+                 fractional_scale: false)
     @default_im_name = default_im_name
     @environment = environment
     @protocol = protocol
+    @fractional_scale = fractional_scale
     @connection = nil
     @process_id = nil
     @scm_file = nil
@@ -455,6 +465,12 @@ class Compositor
     @buffer_pixels = {}
     @candidate_window_size = nil
     @candidate_window_scale = 1
+    @candidate_window_buffer_size = nil
+    # By surface.
+    @fractional_scales = {}
+    @viewports = {}
+    # By viewport.
+    @viewport_destinations = {}
     @candidate_window_background = nil
     @compositor_version = nil
     @time = 1000
@@ -611,6 +627,14 @@ class Compositor
     (@compositor_version || 0) >= 6
   end
 
+  # Asks for the candidate window to be drawn at SCALE / 120 with
+  # wp_fractional_scale_v1.
+  def prefer_fractional_scale(scale)
+    wait_for {@candidate_surface and @fractional_scales[@candidate_surface]}
+    @connection.send_event(@fractional_scales[@candidate_surface],
+                           "preferred_scale", scale)
+  end
+
   # Asks for the candidate window to be drawn at SCALE.
   def prefer_scale(scale)
     wait_for {@candidate_surface}
@@ -659,12 +683,16 @@ class Compositor
     core = ENV["WAYLAND_XML"] ||
            File.join(`pkg-config --variable=pkgdatadir wayland-scanner`.strip,
                      "wayland.xml")
-    [
+    paths = [
       core,
       ENV["INPUT_METHOD_V1_XML"],
       ENV["INPUT_METHOD_V2_XML"],
       ENV["VIRTUAL_KEYBOARD_XML"],
     ]
+    if @fractional_scale
+      paths += [ENV["FRACTIONAL_SCALE_XML"], ENV["VIEWPORTER_XML"]]
+    end
+    paths
   end
 
   # Scheme wants only the quote and the backslash escaped, and it wants
@@ -694,7 +722,9 @@ class Compositor
       @connection.delete_id(callback)
     when "wl_display.get_registry"
       registry = arguments[0]
-      GLOBALS[@protocol].each_with_index do |(global, version), index|
+      globals = GLOBALS[@protocol]
+      globals = globals.merge(FRACTIONAL_SCALE_GLOBALS) if @fractional_scale
+      globals.each_with_index do |(global, version), index|
         @connection.send_event(registry, "global", index + 1, global, version)
       end
     when "wl_registry.bind"
@@ -727,16 +757,26 @@ class Compositor
       if id == @candidate_surface
         if buffer.zero?
           @candidate_window_size = nil
+          @candidate_window_buffer_size = nil
         else
-          @candidate_window_size = @buffer_sizes[buffer].collect do |size|
-            size / @candidate_window_scale.to_f
-          end
+          @candidate_window_buffer_size = @buffer_sizes[buffer]
+          destination = @viewport_destinations[@viewports[id]]
+          @candidate_window_size =
+            destination || @buffer_sizes[buffer].collect do |size|
+              size / @candidate_window_scale.to_f
+            end
           @candidate_window_background = read_background(buffer)
         end
       end
       # A compositor releases the buffer once it has read it, and the
       # candidate window waits for that before it draws again.
       @connection.send_event(buffer, "release") unless buffer.zero?
+    when "wp_fractional_scale_manager_v1.get_fractional_scale"
+      @fractional_scales[arguments[1]] = arguments[0]
+    when "wp_viewporter.get_viewport"
+      @viewports[arguments[1]] = arguments[0]
+    when "wp_viewport.set_destination"
+      @viewport_destinations[id] = arguments
     when "wl_surface.set_buffer_scale"
       @candidate_window_scale = arguments[0] if id == @candidate_surface
     when "zwp_input_panel_v1.get_input_panel_surface"
@@ -933,7 +973,8 @@ class UimWaylandTest < Test::Unit::TestCase
 
   def setup
     @compositor = Compositor.new(default_im_name, uim_wayland_environment,
-                                 protocol: protocol)
+                                 protocol: protocol,
+                                 fractional_scale: fractional_scale?)
     begin
       @compositor.start
       yield
@@ -948,6 +989,10 @@ class UimWaylandTest < Test::Unit::TestCase
 
   def protocol
     :v1
+  end
+
+  def fractional_scale?
+    false
   end
 
   def omit_unless_scale_supported
@@ -1302,6 +1347,62 @@ class UimWaylandTest < Test::Unit::TestCase
       @compositor.prefer_scale(2)
       @compositor.wait_for {@compositor.candidate_window_scale == 2}
       assert_equal(2, @compositor.candidate_window_scale)
+    end
+  end
+
+  # The buffer is drawn at the fractional scale and the viewport
+  # shrinks it back to the surface size.
+  sub_test_case("candidate window fractional scale") do
+    def setup
+      if ENV.fetch("FRACTIONAL_SCALE_XML", "").empty?
+        omit("uim-wayland is built without fractional-scale-v1")
+      end
+      super
+    end
+
+    def default_im_name
+      "candidates"
+    end
+
+    def fractional_scale?
+      true
+    end
+
+    def show_candidates
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.candidate_window_size}
+    end
+
+    def test_scale
+      @compositor.prefer_fractional_scale(180)
+      show_candidates
+      width, height = @compositor.candidate_window_size
+      assert_equal([(width * 1.5).round, (height * 1.5).round],
+                   @compositor.candidate_window_buffer_size)
+    end
+
+    # The text is measured at the new scale, so the surface size may
+    # change a little too.
+    def test_redrawn_when_scale_changes
+      show_candidates
+      @compositor.prefer_fractional_scale(180)
+      @compositor.wait_for do
+        @compositor.candidate_window_buffer_size !=
+          @compositor.candidate_window_size
+      end
+      width, height = @compositor.candidate_window_size
+      assert_equal([(width * 1.5).round, (height * 1.5).round],
+                   @compositor.candidate_window_buffer_size)
+    end
+
+    # The fractional scale takes over the integer one.
+    def test_preferred_buffer_scale_is_ignored
+      omit_unless_scale_supported
+      @compositor.prefer_scale(2)
+      show_candidates
+      assert_equal([1, @compositor.candidate_window_size],
+                   [@compositor.candidate_window_scale,
+                    @compositor.candidate_window_buffer_size])
     end
   end
 

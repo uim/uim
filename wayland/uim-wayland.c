@@ -600,6 +600,16 @@ registry_global(void *data,
                                       &wl_compositor_interface, version);
   } else if (strcmp(interface, wl_shm_interface.name) == 0) {
     uw->shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  } else if (strcmp(interface,
+                    wp_fractional_scale_manager_v1_interface.name) == 0) {
+    uw->fractional_scale_manager =
+      wl_registry_bind(registry, name,
+                       &wp_fractional_scale_manager_v1_interface, 1);
+  } else if (strcmp(interface, wp_viewporter_interface.name) == 0) {
+    uw->viewporter = wl_registry_bind(registry, name,
+                                      &wp_viewporter_interface, 1);
+#endif
   } else if (strcmp(interface, wl_seat_interface.name) == 0 && !uw->seat) {
     /* Only the first seat. */
     uw->seat = wl_registry_bind(registry, name, &wl_seat_interface,
@@ -852,6 +862,12 @@ main(int argc, char **argv)
   uw->input_method->destroy(uw);
   if (uw->shm)
     wl_shm_destroy(uw->shm);
+#ifdef HAVE_WAYLAND_FRACTIONAL_SCALE
+  if (uw->fractional_scale_manager)
+    wp_fractional_scale_manager_v1_destroy(uw->fractional_scale_manager);
+  if (uw->viewporter)
+    wp_viewporter_destroy(uw->viewporter);
+#endif
   if (uw->compositor)
     wl_compositor_destroy(uw->compositor);
   wl_registry_destroy(uw->registry);

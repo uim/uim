@@ -1,7 +1,8 @@
 # Client code generated from the protocol descriptions.
-wayland_input_method_v1_xml = (
-  wayland_protocols.get_variable(pkgconfig: 'pkgdatadir') /
-  'unstable' / 'input-method' / 'input-method-unstable-v1.xml')
+wayland_protocols_dir = wayland_protocols.get_variable(pkgconfig: 'pkgdatadir')
+wayland_input_method_v1_xml = (wayland_protocols_dir / 'unstable' /
+                               'input-method' /
+                               'input-method-unstable-v1.xml')
 # wayland-protocols doesn't have these.
 wayland_input_method_v2_xml = (meson.current_source_dir() / 'protocol' /
                                'input-method-unstable-v2.xml')
@@ -10,12 +11,27 @@ wayland_virtual_keyboard_xml = (meson.current_source_dir() / 'protocol' /
 wayland_scanner_program = find_program(
   wayland_scanner.get_variable(pkgconfig: 'wayland_scanner'),
   native: true)
-wayland_protocol_sources = []
-foreach protocol : [
+wayland_protocols_to_generate = [
   [wayland_input_method_v1_xml, 'input-method-unstable-v1'],
   [wayland_input_method_v2_xml, 'input-method-unstable-v2'],
   [wayland_virtual_keyboard_xml, 'virtual-keyboard-unstable-v1'],
 ]
+if have_wayland_fractional_scale
+  wayland_fractional_scale_xml = (wayland_protocols_dir / 'staging' /
+                                  'fractional-scale' /
+                                  'fractional-scale-v1.xml')
+  wayland_viewporter_xml = (wayland_protocols_dir / 'stable' /
+                            'viewporter' / 'viewporter.xml')
+  wayland_protocols_to_generate += [
+    [wayland_fractional_scale_xml, 'fractional-scale-v1'],
+    [wayland_viewporter_xml, 'viewporter'],
+  ]
+else
+  wayland_fractional_scale_xml = ''
+  wayland_viewporter_xml = ''
+endif
+wayland_protocol_sources = []
+foreach protocol : wayland_protocols_to_generate
   foreach definition : [
     ['client-header', protocol[1] + '-client-protocol.h'],
     ['private-code', protocol[1] + '-protocol.c'],
@@ -85,6 +101,9 @@ if get_option('tests').allowed()
            'INPUT_METHOD_V2_XML': wayland_input_method_v2_xml,
            'UIM_WAYLAND': uim_wayland.full_path(),
            'VIRTUAL_KEYBOARD_XML': wayland_virtual_keyboard_xml,
+           # Empty when uim-wayland is built without them.
+           'FRACTIONAL_SCALE_XML': wayland_fractional_scale_xml,
+           'VIEWPORTER_XML': wayland_viewporter_xml,
            'WAYLAND_XML': wayland_core_xml,
          },
          suite: 'wayland',
