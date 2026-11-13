@@ -253,6 +253,37 @@
 	    (im-name (retrieve-im 'test-im)))
 (test-end)
 
+(test-begin "retrieve-available-im")
+(setup)
+(define test-im-required-command-alist im-required-command-alist)
+(define test-im-path (getenv "PATH"))
+(set! im-required-command-alist
+      (list (cons 'anthy (lambda () "uim-test-nonexistent-command"))))
+(test-false (retrieve-available-im 'anthy))
+(set! im-required-command-alist
+      (list (cons 'anthy (lambda () "sh"))))
+(setenv "PATH" "/nonexistent::/bin:/usr/bin" #t)
+(test-equal 'anthy
+	    (im-name (retrieve-available-im 'anthy)))
+(set! im-required-command-alist
+      (list (cons 'anthy (lambda () "/bin/sh"))))
+(setenv "PATH" "" #t)
+(test-equal 'anthy
+	    (im-name (retrieve-available-im 'anthy)))
+(setenv "PATH" test-im-path #t)
+(set! im-required-command-alist test-im-required-command-alist)
+(test-end)
+
+(test-begin "find-im (required command)")
+(setup)
+(set! im-required-command-alist
+      (list (cons 'skk (lambda () "uim-test-nonexistent-command"))))
+;; The default input method instead.
+(test-equal 'anthy
+	    (im-name (find-im 'skk "ja")))
+(set! im-required-command-alist test-im-required-command-alist)
+(test-end)
+
 (test-begin "default-im-for-debug")
 (setup)
 (test-true  (feature? 'debug))

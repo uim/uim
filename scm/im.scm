@@ -1,6 +1,6 @@
 ;;; im.scm: Core IM management functions for uim
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -153,12 +153,50 @@
 	   (normalize-im-list)
            initial-registration?))))
 
+;; The commands that input methods use: ((im-name . thunk) ...). The
+;; thunk returns the command. An input method whose command isn't
+;; available isn't chosen by name.
+(define im-required-command-alist
+  (list (cons 'mozc
+              (lambda ()
+                (if (symbol-bound? 'mozc-emacs-helper-command)
+                    mozc-emacs-helper-command
+                    "mozc_emacs_helper")))))
+
+;; COMMAND is a path or a name to find in PATH.
+(define (im-command-available? command)
+  (define (executable? file)
+    (and (file-regular? file)
+         (file-executable? file)))
+  (if (string-contains command "/" 0)
+      (executable? command)
+      (let ((path (getenv "PATH")))
+        (and (string? path)
+             (find (lambda (dir)
+                     (and (not (string=? dir ""))
+                          (executable? (string-append dir "/" command))))
+                   (string-split path ":"))
+             #t))))
+
+(define (im-available? im)
+  (let ((command (assq-cdr (im-name im) im-required-command-alist)))
+    (or (not command)
+        (im-command-available? (command)))))
+
 ;; strictly find out im by name
 (define retrieve-im
   (lambda (name)
     (and name
 	 (let ((im (assq name im-list)))
 	   im))))
+
+;; retrieve-im that doesn't return an input method whose command isn't
+;; available.
+(define (retrieve-available-im name)
+  (let ((im (retrieve-im name)))
+    (and im
+         (im-available? im)
+         im)))
 
 (define default-im-for-debug
   (lambda ()
@@ -183,13 +221,13 @@
 (define find-default-im
   (lambda (localestr)
     (or (default-im-for-debug)
-	(retrieve-im default-im-name)
+	(retrieve-available-im default-im-name)
 	(find-im-for-locale localestr))))
 
 ;; find most suitable im by im-name and lang
 (define find-im
   (lambda (name localestr)
-    (or (retrieve-im name)
+    (or (retrieve-available-im name)
 	(find-default-im localestr))))
 
 (define uim-filter-convertible-ims
