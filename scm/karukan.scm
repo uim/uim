@@ -460,6 +460,35 @@
    (else
     (+ #x1000000 key))))
 
+;; ((predicate-name . keysym) ...): a key that the predicate is true for
+;; is sent as the keysym without modifiers. The predicates are looked up
+;; when used because changing a custom defines them again.
+(define karukan-key-translation-alist
+  '((karukan-commit-key?               . #xff0d)    ; Return
+    (karukan-cancel-key?               . #xff1b)    ; Escape
+    (karukan-backspace-key?            . #xff08)    ; BackSpace
+    (karukan-delete-key?               . #xffff)    ; Delete
+    (karukan-next-candidate-key?       . #xff54)    ; Down
+    (karukan-prev-candidate-key?       . #xff52)    ; Up
+    (karukan-next-page-key?            . #xff56)    ; Next
+    (karukan-prev-page-key?            . #xff55)    ; Prior
+    (karukan-beginning-of-preedit-key? . #xff50)    ; Home
+    (karukan-end-of-preedit-key?       . #xff57)    ; End
+    (karukan-go-left-key?              . #xff51)    ; Left
+    (karukan-go-right-key?             . #xff53)))  ; Right
+
+;; Returns (keysym . key-state) to send, or #f.
+(define (karukan-translate-key key key-state)
+  (let ((translation
+         (find (lambda (translation)
+                 ((symbol-value (car translation)) key key-state))
+               karukan-key-translation-alist)))
+    (if translation
+        (cons (cdr translation) 0)
+        (let ((keysym (karukan-keysym key key-state)))
+          (and keysym
+               (cons keysym key-state))))))
+
 (define (karukan-modifiers key-state)
   (list (cons 'shift (and (shift-key-mask key-state) #t))
         (cons 'control (and (control-key-mask key-state) #t))
@@ -568,9 +597,9 @@
          (not (karukan-context-composing? kc)))
     (karukan-set-off kc))
    (else
-    (let ((keysym (karukan-keysym key key-state)))
-      (if (not (and keysym
-                    (karukan-send-key kc keysym key-state)))
+    (let ((translated (karukan-translate-key key key-state)))
+      (if (not (and translated
+                    (karukan-send-key kc (car translated) (cdr translated))))
           (im-commit-raw kc))))))
 
 (define (karukan-press-key-handler kc key key-state)

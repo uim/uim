@@ -37,6 +37,7 @@ class KarukanTest < Test::Unit::TestCase
   include IMDriver::PreeditAttribute
 
   RETURN = 0xff0d
+  ESCAPE = 0xff1b
 
   def setup
     omit("karukan isn't enabled") unless IMDriver.available?("karukan")
@@ -174,6 +175,49 @@ class KarukanTest < Test::Unit::TestCase
       @driver.type("a")
       assert_equal([{"text" => "", "cursor_pos" => 0}],
                    surrounding_texts)
+    end
+  end
+
+  sub_test_case("custom keys") do
+    def test_backspace
+      @driver.type("ab")
+      @driver.press("C-h")
+      assert_equal([[UNDERLINE, "a"], [CURSOR, ""]],
+                   @driver.preedit)
+    end
+
+    def test_cancel
+      @driver.type("ab")
+      @driver.press("space", "C-g")
+      assert_equal([[UNDERLINE, "ab"], [CURSOR, ""]],
+                   @driver.preedit)
+    end
+
+    def test_next_candidate
+      @driver.type("ab")
+      @driver.press("space", "C-n", "return")
+      assert_equal(["ab"], @driver.commits)
+    end
+
+    # Space isn't karukan-next-candidate-key unlike the global one: it
+    # has other meanings in Karukan.
+    def test_space
+      @driver.press("space")
+      assert_equal([" ".ord], keysyms)
+    end
+
+    # The modifiers are dropped.
+    def test_sent_key
+      @driver.type("a")
+      @driver.press("C-g")
+      assert_equal({"keysym" => ESCAPE,
+                    "modifiers" => {
+                      "shift" => false,
+                      "control" => false,
+                      "alt" => false,
+                      "super" => false,
+                    }},
+                   requests.last["params"])
     end
   end
 

@@ -51,6 +51,16 @@ For example, Space converts and selects the next candidate, Ctrl+1
 to Ctrl+9 select a candidate on the page, and Return commits the
 selected one.
 
+The Karukan key bindings of uim add keys to them, such as Ctrl+G for
+cancel (`karukan-cancel-key`) and Ctrl+D for delete
+(`karukan-delete-key`). They're the global ones by default. A key is
+sent to Karukan as the key of Karukan that has the same meaning, such
+as Escape and Delete. The commit key (`karukan-commit-key`) is the
+global return key, not the global commit key, because Ctrl+J has
+another meaning in Karukan. The next candidate key
+(`karukan-next-candidate-key`) doesn't have Space of the global one
+for the same reason.
+
 The text before the cursor is passed to Karukan for conversion when
 the application provides it. Turn off "Use the text before the cursor
 for conversion" (`karukan-use-surrounding-text?`) not to pass it.
