@@ -53,6 +53,10 @@
 
 static gboolean have_focus = FALSE;
 
+/* Every context gets the helper messages; the focused one handles them. */
+static UIMIMContext *focused_context = NULL;
+static gboolean disable_focused_context = TRUE;
+
 typedef struct preedit_segment
 {
   int attr;
@@ -314,8 +318,10 @@ uim_im_context_parse_helper_message_im_change(UIMIMContext *uic,
   g_string_prepend_c(im_name_sym, '\'');
 
   if (g_str_has_prefix(str, "im_change_this_text_area_only")) {
-    uim_switch_im(uic->uc, im_name);
-    uim_prop_list_update(uic->uc);
+    if (uic == focused_context && !disable_focused_context) {
+      uim_switch_im(uic->uc, im_name);
+      uim_prop_list_update(uic->uc);
+    }
   } else if (g_str_has_prefix(str, "im_change_whole_desktop")) {
     uim_switch_im(uic->uc, im_name);
     uim_prop_update_custom(uic->uc,
@@ -626,6 +632,16 @@ cand_deactivate_cb(void *ptr)
   uim_candidates_view_clear_candidates(uic->candidates_view);
 }
 
+static gboolean
+uim_im_context_window_is_active(UIMIMContext *uic)
+{
+  if (!uic->client_widget)
+    return FALSE;
+
+  GtkRoot *root = gtk_widget_get_root(uic->client_widget);
+  return GTK_IS_WINDOW(root) && gtk_window_is_active(GTK_WINDOW(root));
+}
+
 static void
 uim_im_context_parse_helper_message(UIMIMContext *uic, const char *message)
 {
@@ -645,6 +661,8 @@ uim_im_context_parse_helper_message(UIMIMContext *uic, const char *message)
     uim_prop_reload_configs();
     uim_im_context_update_candwin_pos_type(uic);
     uim_im_context_update_candwin_style(uic);
+  } else if (uic != focused_context || disable_focused_context) {
+    /* The rest is for the focused text area only. */
   } else if (g_str_has_prefix(message, "prop_list_get")) {
     uim_prop_list_update(uic->uc);
   } else if (g_str_has_prefix(message, "prop_activate")) {
@@ -658,7 +676,9 @@ uim_im_context_parse_helper_message(UIMIMContext *uic, const char *message)
   } else if (g_str_has_prefix(message, "commit_string")) {
     uim_im_context_commit_string_from_other_process(uic, message);
   } else if (g_str_has_prefix(message, "focus_in")) {
-    /* We don't need this if GTK notifies all focus in/out information. */
+    /* Another client got the focus. Contexts of this process send it too. */
+    if (!uim_im_context_window_is_active(uic))
+      disable_focused_context = TRUE;
   }
 }
 
@@ -1053,6 +1073,8 @@ uim_im_context_focus_in(GtkIMContext *ic)
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
 
   have_focus = TRUE;
+  focused_context = uic;
+  disable_focused_context = FALSE;
 
   uim_im_context_check_helper_connection(uic);
   uim_helper_client_focus_in(uic->uc);
@@ -1232,6 +1254,11 @@ uim_im_context_dispose(GObject *obj)
   }
 
   uim_im_context_dispose_helper(uic);
+
+  if (uic == focused_context) {
+    focused_context = NULL;
+    disable_focused_context = TRUE;
+  }
 
   if (uic->slave) {
     g_signal_handlers_disconnect_by_data(uic->slave, uic);
