@@ -156,8 +156,8 @@ void init_callbacks(void)
   if (g_opt.ddskk) {
     const char *enc;
 
-    if (uim_iconv->is_convertible(enc = get_enc(), "EUC-JP")) {
-      void *cd = uim_iconv->create(enc, "EUC-JP");
+    if (uim_iconv->is_convertible(enc = get_enc(), "UTF-8")) {
+      void *cd = uim_iconv->create(enc, "UTF-8");
       s_nokori_str = uim_iconv->convert(cd, "残り");
       if (cd) {
         uim_iconv->release(cd);
