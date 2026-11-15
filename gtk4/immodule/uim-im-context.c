@@ -749,6 +749,9 @@ uim_im_context_check_helper_connection(UIMIMContext *uic)
   }
 
   uim_im_context_dispose_helper(uic);
+  /* The connection is reused while this is set. libuim also sends the
+   * messages of this context such as "focus_in" with this. */
+  uim_set_uim_fd(uic->uc, helper_fd);
   uic->helper_channel = g_io_channel_unix_new(helper_fd);
   GError *error = NULL;
   GIOStatus status =
