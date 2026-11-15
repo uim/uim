@@ -53,9 +53,20 @@
 
 static gboolean have_focus = FALSE;
 
-/* Every context gets the helper messages; the focused one handles them. */
+/* The messages for the focused text area are handled by this context. */
 static UIMIMContext *focused_context = NULL;
 static gboolean disable_focused_context = TRUE;
+
+/* All contexts of this process. */
+static GList *contexts = NULL;
+
+/* The connection to the helper server shared by all contexts. The
+ * helper server doesn't send a message back to the connection that
+ * sent it, so this process doesn't get its own messages. */
+static int helper_fd = -1;
+static GIOChannel *helper_channel = NULL;
+static guint helper_watch_tag = 0;
+static GString *helper_buffer = NULL;
 
 typedef struct preedit_segment
 {
@@ -87,10 +98,6 @@ struct _UIMIMContext
 
   GArray *preedit_segments;
   size_t prev_preedit_len;
-
-  GIOChannel *helper_channel;
-  guint helper_watch_tag;
-  GString *helper_buffer;
 };
 
 struct _UIMIMContextClass
@@ -271,6 +278,18 @@ uim_im_context_switch_im(UIMIMContext *uic, const char *name)
   g_string_free(im_name_sym, TRUE);
 }
 
+/* The helper server doesn't send our messages back to us, so the other
+ * contexts of this process are switched here. */
+static void
+uim_im_context_switch_other_contexts(UIMIMContext *uic, const char *name)
+{
+  for (GList *node = contexts; node; node = node->next) {
+    UIMIMContext *context = node->data;
+    if (context != uic)
+      uim_switch_im(context->uc, name);
+  }
+}
+
 static void
 switch_app_global_im_cb(void *ptr, const char *name)
 {
@@ -281,12 +300,8 @@ switch_app_global_im_cb(void *ptr, const char *name)
     return;
   }
 
+  uim_im_context_switch_other_contexts(uic, name);
   uim_im_context_switch_im(uic, name);
-
-  GString *message = g_string_new("");
-  g_string_printf(message, "im_change_this_application_only\n%s\n", name);
-  uim_helper_send_message(uim_get_uim_fd(uic->uc), message->str);
-  g_string_free(message, TRUE);
 }
 
 static void
@@ -294,6 +309,7 @@ switch_system_global_im_cb(void *ptr, const char *name)
 {
   UIMIMContext *uic = ptr;
 
+  uim_im_context_switch_other_contexts(uic, name);
   uim_im_context_switch_im(uic, name);
 
   /* Switch contexts of other processes. Bridges should not expect
@@ -307,9 +323,28 @@ switch_system_global_im_cb(void *ptr, const char *name)
 
 /* uim helper related */
 
+static gboolean
+uim_im_context_has_focused_context(void)
+{
+  return focused_context && !disable_focused_context;
+}
+
 static void
-uim_im_context_parse_helper_message_im_change(UIMIMContext *uic,
-                                              const char *str)
+uim_im_context_switch_all_contexts(const char *im_name, const char *im_name_sym)
+{
+  for (GList *node = contexts; node; node = node->next) {
+    UIMIMContext *context = node->data;
+    uim_switch_im(context->uc, im_name);
+    uim_prop_update_custom(context->uc,
+                           "custom-preserved-default-im-name",
+                           im_name_sym);
+    if (context == focused_context)
+      uim_prop_list_update(context->uc);
+  }
+}
+
+static void
+uim_im_context_parse_helper_message_im_change(const char *str)
 {
   gchar **lines = g_strsplit(str, "\n", -1);
   gchar *im_name = lines[1];
@@ -318,24 +353,15 @@ uim_im_context_parse_helper_message_im_change(UIMIMContext *uic,
   g_string_prepend_c(im_name_sym, '\'');
 
   if (g_str_has_prefix(str, "im_change_this_text_area_only")) {
-    if (uic == focused_context && !disable_focused_context) {
-      uim_switch_im(uic->uc, im_name);
-      uim_prop_list_update(uic->uc);
+    if (uim_im_context_has_focused_context()) {
+      uim_switch_im(focused_context->uc, im_name);
+      uim_prop_list_update(focused_context->uc);
     }
   } else if (g_str_has_prefix(str, "im_change_whole_desktop")) {
-    uim_switch_im(uic->uc, im_name);
-    uim_prop_update_custom(uic->uc,
-                           "custom-preserved-default-im-name",
-                           im_name_sym->str);
-    uim_prop_list_update(uic->uc);
+    uim_im_context_switch_all_contexts(im_name, im_name_sym->str);
   } else if (g_str_has_prefix(str, "im_change_this_application_only")) {
-    if (have_focus) {
-      uim_switch_im(uic->uc, im_name);
-      uim_prop_update_custom(uic->uc,
-                             "custom-preserved-default-im-name",
-                             im_name_sym->str);
-      uim_prop_list_update(uic->uc);
-    }
+    if (uim_im_context_has_focused_context())
+      uim_im_context_switch_all_contexts(im_name, im_name_sym->str);
   }
   g_strfreev(lines);
   g_string_free(im_name_sym, TRUE);
@@ -632,76 +658,80 @@ cand_deactivate_cb(void *ptr)
   uim_candidates_view_clear_candidates(uic->candidates_view);
 }
 
-static gboolean
-uim_im_context_window_is_active(UIMIMContext *uic)
-{
-  if (!uic->client_widget)
-    return FALSE;
-
-  GtkRoot *root = gtk_widget_get_root(uic->client_widget);
-  return GTK_IS_WINDOW(root) && gtk_window_is_active(GTK_WINDOW(root));
-}
-
 static void
-uim_im_context_parse_helper_message(UIMIMContext *uic, const char *message)
+uim_im_context_parse_helper_message(const char *message)
 {
   if (g_str_has_prefix(message, "im_change")) {
-    uim_im_context_parse_helper_message_im_change(uic, message);
+    uim_im_context_parse_helper_message_im_change(message);
   } else if (g_str_has_prefix(message, "prop_update_custom")) {
     gchar **lines = g_strsplit(message, "\n", 0);
-    if (lines && lines[0] && lines[1] && lines[2]) {
+    if (contexts && lines && lines[0] && lines[1] && lines[2]) {
+      UIMIMContext *uic = contexts->data;
+      /* All custom variables are global. */
       uim_prop_update_custom(uic->uc, lines[1], lines[2]);
-      if (g_str_equal(lines[1], "candidate-window-position"))
-        uim_im_context_update_candwin_pos_type(uic);
-      if (g_str_equal(lines[1], "candidate-window-style"))
-        uim_im_context_update_candwin_style(uic);
+      for (GList *node = contexts; node; node = node->next) {
+        UIMIMContext *context = node->data;
+        if (g_str_equal(lines[1], "candidate-window-position"))
+          uim_im_context_update_candwin_pos_type(context);
+        if (g_str_equal(lines[1], "candidate-window-style"))
+          uim_im_context_update_candwin_style(context);
+      }
     }
     g_strfreev(lines);
   } else if (g_str_has_prefix(message, "custom_reload_notify")) {
     uim_prop_reload_configs();
-    uim_im_context_update_candwin_pos_type(uic);
-    uim_im_context_update_candwin_style(uic);
-  } else if (uic != focused_context || disable_focused_context) {
+    for (GList *node = contexts; node; node = node->next) {
+      UIMIMContext *context = node->data;
+      uim_im_context_update_candwin_pos_type(context);
+      uim_im_context_update_candwin_style(context);
+    }
+  } else if (!uim_im_context_has_focused_context()) {
     /* The rest is for the focused text area only. */
   } else if (g_str_has_prefix(message, "prop_list_get")) {
-    uim_prop_list_update(uic->uc);
+    uim_prop_list_update(focused_context->uc);
   } else if (g_str_has_prefix(message, "prop_activate")) {
     gchar **lines = g_strsplit(message, "\n", 0);
     if (lines && lines[0]) {
-      uim_prop_activate(uic->uc, lines[1]);
+      uim_prop_activate(focused_context->uc, lines[1]);
     }
     g_strfreev(lines);
   } else if (g_str_has_prefix(message, "im_list_get")) {
-    uim_im_context_send_im_list(uic);
+    uim_im_context_send_im_list(focused_context);
   } else if (g_str_has_prefix(message, "commit_string")) {
-    uim_im_context_commit_string_from_other_process(uic, message);
+    uim_im_context_commit_string_from_other_process(focused_context, message);
   } else if (g_str_has_prefix(message, "focus_in")) {
-    /* Another client got the focus. Contexts of this process send it too. */
-    if (!uim_im_context_window_is_active(uic))
-      disable_focused_context = TRUE;
+    /* Another process got the focus. Our own "focus_in" doesn't come
+     * back. We don't clear focused_context because some messages such
+     * as "prop_activate" from the toolbar come while nobody has the
+     * focus. */
+    disable_focused_context = TRUE;
   }
 }
 
 static void
-uim_im_context_dispose_helper(UIMIMContext *uic)
+uim_im_context_close_helper_connection(void)
 {
-  uim_unset_uim_fd(uic->uc);
-  if (uic->helper_watch_tag != 0) {
-    g_source_remove(uic->helper_watch_tag);
-    uic->helper_watch_tag = 0;
+  for (GList *node = contexts; node; node = node->next) {
+    UIMIMContext *context = node->data;
+    uim_unset_uim_fd(context->uc);
   }
-  if (uic->helper_channel) {
-    g_io_channel_unref(uic->helper_channel);
-    uic->helper_channel = NULL;
+  if (helper_watch_tag != 0) {
+    g_source_remove(helper_watch_tag);
+    helper_watch_tag = 0;
   }
-  g_string_truncate(uic->helper_buffer, 0);
+  if (helper_channel) {
+    /* This closes helper_fd. */
+    g_io_channel_unref(helper_channel);
+    helper_channel = NULL;
+  }
+  helper_fd = -1;
+  if (helper_buffer)
+    g_string_truncate(helper_buffer, 0);
 }
 
 static gboolean
 helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer data)
 {
-  UIMIMContext *uic = data;
-
 #define BUFFER_SIZE 1024
   char buffer[BUFFER_SIZE];
   gsize bytes_read;
@@ -717,45 +747,43 @@ helper_read_cb(GIOChannel *channel, GIOCondition c, gpointer data)
   }
 
   if (bytes_read > 0) {
-    g_string_append_len(uic->helper_buffer, buffer, bytes_read);
+    g_string_append_len(helper_buffer, buffer, bytes_read);
     char *message;
-    while ((message = uim_helper_buffer_get_message(uic->helper_buffer->str))) {
-      uim_im_context_parse_helper_message(uic, message);
+    while ((message = uim_helper_buffer_get_message(helper_buffer->str))) {
+      uim_im_context_parse_helper_message(message);
       free(message);
     }
-    g_string_truncate(uic->helper_buffer, strlen(uic->helper_buffer->str));
+    g_string_truncate(helper_buffer, strlen(helper_buffer->str));
   }
 #undef BUFFER_SIZE
 
   if (status == G_IO_STATUS_NORMAL) {
     return TRUE;
   } else {
-    uic->helper_watch_tag = 0; /* "return FALSE" removes this callback. */
-    uim_im_context_dispose_helper(uic);
+    helper_watch_tag = 0; /* "return FALSE" removes this callback. */
+    uim_im_context_close_helper_connection();
     return FALSE;
   }
 }
 
+/* Connects to the helper server if this process isn't connected yet. */
 static void
-uim_im_context_check_helper_connection(UIMIMContext *uic)
+uim_im_context_check_helper_connection(void)
 {
-  if (uim_get_uim_fd(uic->uc) >= 0) {
+  if (helper_fd >= 0) {
     return;
   }
 
-  int helper_fd = uim_helper_init_client_fd(NULL);
+  helper_fd = uim_helper_init_client_fd(NULL);
   if (helper_fd < 0) {
     return;
   }
 
-  uim_im_context_dispose_helper(uic);
-  /* The connection is reused while this is set. libuim also sends the
-   * messages of this context such as "focus_in" with this. */
-  uim_set_uim_fd(uic->uc, helper_fd);
-  uic->helper_channel = g_io_channel_unix_new(helper_fd);
+  if (!helper_buffer)
+    helper_buffer = g_string_new(NULL);
+  helper_channel = g_io_channel_unix_new(helper_fd);
   GError *error = NULL;
-  GIOStatus status =
-    g_io_channel_set_encoding(uic->helper_channel, NULL, &error);
+  GIOStatus status = g_io_channel_set_encoding(helper_channel, NULL, &error);
   if (status != G_IO_STATUS_NORMAL) {
     if (error) {
       g_warning("uim: failed to set encoding for helper channel: %s: %d: %s",
@@ -767,12 +795,19 @@ uim_im_context_check_helper_connection(UIMIMContext *uic)
     }
   }
   g_clear_error(&error);
-  g_io_channel_set_buffered(uic->helper_channel, FALSE);
-  g_io_channel_set_close_on_unref(uic->helper_channel, TRUE);
-  uic->helper_watch_tag = g_io_add_watch(uic->helper_channel,
-                                         G_IO_IN | G_IO_HUP | G_IO_ERR,
-                                         helper_read_cb,
-                                         uic);
+  g_io_channel_set_buffered(helper_channel, FALSE);
+  g_io_channel_set_close_on_unref(helper_channel, TRUE);
+  helper_watch_tag = g_io_add_watch(helper_channel,
+                                    G_IO_IN | G_IO_HUP | G_IO_ERR,
+                                    helper_read_cb,
+                                    NULL);
+
+  /* libuim sends the messages of a context such as "focus_in" with
+   * this. */
+  for (GList *node = contexts; node; node = node->next) {
+    UIMIMContext *context = node->data;
+    uim_set_uim_fd(context->uc, helper_fd);
+  }
 }
 
 /* class functions */
@@ -1079,7 +1114,7 @@ uim_im_context_focus_in(GtkIMContext *ic)
   focused_context = uic;
   disable_focused_context = FALSE;
 
-  uim_im_context_check_helper_connection(uic);
+  uim_im_context_check_helper_connection();
   uim_helper_client_focus_in(uic->uc);
   uim_prop_list_update(uic->uc);
 
@@ -1097,7 +1132,7 @@ uim_im_context_focus_out(GtkIMContext *ic)
   gtk_im_context_focus_out(uic->slave);
   uim_focus_out_context(uic->uc);
 
-  uim_im_context_check_helper_connection(uic);
+  uim_im_context_check_helper_connection();
   uim_helper_client_focus_out(uic->uc);
 
   uim_im_context_hide_candidates(uic);
@@ -1220,10 +1255,11 @@ uim_im_context_init(UIMIMContext *uic)
   g_array_set_clear_func(uic->preedit_segments, preedit_segment_clear);
   uic->prev_preedit_len = 0;
 
-  uic->helper_channel = NULL;
-  uic->helper_watch_tag = 0;
-  uic->helper_buffer = g_string_new(NULL);
-  uim_im_context_check_helper_connection(uic);
+  contexts = g_list_prepend(contexts, uic);
+  if (helper_fd >= 0)
+    uim_set_uim_fd(uic->uc, helper_fd);
+  else
+    uim_im_context_check_helper_connection();
 
   uim_set_preedit_cb(uic->uc,
                      preedit_clear_cb,
@@ -1256,7 +1292,13 @@ uim_im_context_dispose(GObject *obj)
     g_clear_object(&uic->candidates_view);
   }
 
-  uim_im_context_dispose_helper(uic);
+  if (g_list_find(contexts, uic)) {
+    uim_unset_uim_fd(uic->uc);
+    contexts = g_list_remove(contexts, uic);
+    /* The last context closes the connection. */
+    if (!contexts)
+      uim_im_context_close_helper_connection();
+  }
 
   if (uic == focused_context) {
     focused_context = NULL;
@@ -1275,8 +1317,6 @@ static void
 uim_im_context_finalize(GObject *obj)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(obj);
-
-  g_string_free(uic->helper_buffer, TRUE);
 
   uim_release_context(uic->uc);
 
