@@ -80,6 +80,13 @@ struct _UIMIMContext
 
   GtkWidget *client_widget;
   GdkRectangle cursor_location;
+  /* The cursor location while there is no preedit. The preedit starts
+   * there. Clients don't report the location of the preedit. */
+  GdkRectangle preedit_start_location;
+  /* FALSE until the location is reported without preedit, and after
+   * a commit because the next preedit starts after the committed text,
+   * not there. */
+  gboolean preedit_start_location_valid;
   gboolean use_preedit;
 
   UIMCandidatesView *candidates_view;
@@ -106,6 +113,7 @@ commit_cb(void *ptr, const char *str)
 {
   UIMIMContext *uic = ptr;
   g_return_if_fail(str);
+  uic->preedit_start_location_valid = FALSE;
   g_signal_emit_by_name(uic, "commit", str);
 }
 
@@ -423,6 +431,17 @@ uim_im_context_update_candwin_style(UIMIMContext *uic)
   /* TODO: Only the vertical style is implemented. */
 }
 
+static void
+uim_im_context_update_candidates_location(UIMIMContext *uic)
+{
+  /* The cursor is the best guess when the preedit start is unknown. */
+  uim_candidates_view_set_location(uic->candidates_view,
+                                   &uic->cursor_location,
+                                   uic->preedit_start_location_valid
+                                     ? &uic->preedit_start_location
+                                     : &uic->cursor_location);
+}
+
 static gboolean
 uim_im_context_can_show_candidates(UIMIMContext *uic)
 {
@@ -461,8 +480,7 @@ uim_im_context_show_candidates(UIMIMContext *uic)
     gtk_widget_set_parent(view, uic->client_widget);
   }
 
-  uim_candidates_view_set_cursor_location(uic->candidates_view,
-                                          &uic->cursor_location);
+  uim_im_context_update_candidates_location(uic);
   gtk_popover_popup(GTK_POPOVER(view));
 }
 
@@ -1161,8 +1179,15 @@ uim_im_context_set_cursor_location(GtkIMContext *ic, GdkRectangle *area)
 {
   UIMIMContext *uic = UIM_IM_CONTEXT(ic);
   uic->cursor_location = *area;
+  /* Clients may report the location while they handle
+   * "preedit-changed". So this checks the current preedit, not the
+   * one that the client knows. */
+  if (uim_im_context_get_preedit_length(uic) == 0) {
+    uic->preedit_start_location = *area;
+    uic->preedit_start_location_valid = TRUE;
+  }
   if (gtk_widget_get_visible(GTK_WIDGET(uic->candidates_view)))
-    uim_candidates_view_set_cursor_location(uic->candidates_view, area);
+    uim_im_context_update_candidates_location(uic);
 }
 
 static void
@@ -1219,6 +1244,7 @@ uim_im_context_init(UIMIMContext *uic)
   uic->preedit_segments = g_array_new(FALSE, TRUE, sizeof(preedit_segment));
   g_array_set_clear_func(uic->preedit_segments, preedit_segment_clear);
   uic->prev_preedit_len = 0;
+  uic->preedit_start_location_valid = FALSE;
 
   uic->helper_channel = NULL;
   uic->helper_watch_tag = 0;

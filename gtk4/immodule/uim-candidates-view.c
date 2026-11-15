@@ -101,6 +101,7 @@ struct _UIMCandidatesView
 
   UIMCandidatesViewPosition position;
   GdkRectangle cursor_location;
+  GdkRectangle preedit_start_location;
 
   gboolean block_index_changed;
 };
@@ -141,8 +142,9 @@ uim_candidates_view_present(UIMCandidatesView *view)
 
   switch (view->position) {
   case UIM_CANDIDATES_VIEW_POSITION_LEFT:
-    rect.x = 0;
-    rect.width = 1;
+    /* The cursor line, not the preedit start line, so that the window
+     * doesn't hide the wrapped preedit. */
+    rect.x = view->preedit_start_location.x;
     break;
   case UIM_CANDIDATES_VIEW_POSITION_RIGHT:
     rect.x = MAX(gtk_widget_get_width(parent) - 1, 0);
@@ -297,6 +299,7 @@ uim_candidates_view_init(UIMCandidatesView *view)
   view->cursor_location.y = 0;
   view->cursor_location.width = 0;
   view->cursor_location.height = 0;
+  view->preedit_start_location = view->cursor_location;
   view->block_index_changed = FALSE;
 
   /* Never take keyboard focus/grab away from the client widget. */
@@ -626,20 +629,21 @@ uim_candidates_view_set_position(UIMCandidatesView *view,
 }
 
 void
-uim_candidates_view_set_cursor_location(UIMCandidatesView *view,
-                                        const GdkRectangle *area)
+uim_candidates_view_set_location(UIMCandidatesView *view,
+                                 const GdkRectangle *cursor,
+                                 const GdkRectangle *preedit_start)
 {
   g_return_if_fail(UIM_IS_CANDIDATES_VIEW(view));
-  g_return_if_fail(area);
+  g_return_if_fail(cursor);
+  g_return_if_fail(preedit_start);
 
   /* Clients report the same location on every preedit update.
    * Re-presenting each time can stall the GSK renderer. */
-  if (area->x == view->cursor_location.x &&
-      area->y == view->cursor_location.y &&
-      area->width == view->cursor_location.width &&
-      area->height == view->cursor_location.height)
+  if (gdk_rectangle_equal(cursor, &view->cursor_location) &&
+      gdk_rectangle_equal(preedit_start, &view->preedit_start_location))
     return;
 
-  view->cursor_location = *area;
+  view->cursor_location = *cursor;
+  view->preedit_start_location = *preedit_start;
   uim_candidates_view_present(view);
 }

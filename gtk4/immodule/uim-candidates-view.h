@@ -96,9 +96,13 @@ uim_candidates_view_query_new_page_by_shift_page(UIMCandidatesView *view,
 void
 uim_candidates_view_set_position(UIMCandidatesView *view,
                                  UIMCandidatesViewPosition position);
-/* area: in the coordinates of the parent widget of this view. */
+/* cursor: in the coordinates of the parent widget of this view.
+ * preedit_start: the cursor location just before the preedit started,
+ * in the same coordinates. It's used for
+ * UIM_CANDIDATES_VIEW_POSITION_LEFT. */
 void
-uim_candidates_view_set_cursor_location(UIMCandidatesView *view,
-                                        const GdkRectangle *area);
+uim_candidates_view_set_location(UIMCandidatesView *view,
+                                 const GdkRectangle *cursor,
+                                 const GdkRectangle *preedit_start);
 
 G_END_DECLS
