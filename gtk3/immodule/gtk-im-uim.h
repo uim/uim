@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -72,6 +72,13 @@ typedef struct _IMUIMContext {
 
   GtkWidget *caret_state_indicator;
   GdkRectangle preedit_pos;
+  /* The cursor location while there is no preedit. The preedit starts
+   * there. Clients don't report the location of the preedit. */
+  GdkRectangle preedit_start_pos;
+  /* FALSE until the location is reported without preedit, and after
+   * a commit because the next preedit starts after the committed text,
+   * not there. */
+  gboolean preedit_start_pos_valid;
 
   /* following two members are used when use_preedit == FALSE */
   GtkWidget *preedit_window;

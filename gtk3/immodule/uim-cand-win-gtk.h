@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -73,6 +73,9 @@ struct _UIMCandWinGtk {
   UimCandWinPos	 position;
 
   GdkRectangle	 cursor;
+  /* The cursor location just before the preedit started. It's used
+   * for UIM_CAND_WIN_POS_LEFT. */
+  GdkRectangle	 preedit_start;
   gboolean block_index_selection;
   gboolean index_changed;
 
@@ -141,6 +144,8 @@ void		uim_cand_win_gtk_layout			(UIMCandWinGtk *cwin,
 							 gint topwin_height);
 void		uim_cand_win_gtk_set_cursor_location	(UIMCandWinGtk *cwin,
 							 GdkRectangle *area);
+void		uim_cand_win_gtk_set_preedit_start_location(UIMCandWinGtk *cwin,
+							     GdkRectangle *area);
 void		uim_cand_win_gtk_get_window_pos_type	(UIMCandWinGtk *cwin);
 
 void		uim_cand_win_gtk_update_label		(UIMCandWinGtk *cwin);

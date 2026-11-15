@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -174,6 +174,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
+  cwin->preedit_start = cwin->cursor;
 
   cwin->sub_window.window          = NULL;
   cwin->sub_window.scrolled_window = NULL;
@@ -735,7 +736,7 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   /* FIXME */
   switch (cwin->position) {
   case UIM_CAND_WIN_POS_LEFT:
-    cursor_x = 0;
+    cursor_x = cwin->preedit_start.x;
     break;
   case UIM_CAND_WIN_POS_RIGHT:
     cursor_x = topwin_width - cw_wi;
@@ -773,6 +774,16 @@ uim_cand_win_gtk_set_cursor_location(UIMCandWinGtk *cwin, GdkRectangle *area)
   g_return_if_fail(area);
 
   cwin->cursor = *area;
+}
+
+void
+uim_cand_win_gtk_set_preedit_start_location(UIMCandWinGtk *cwin,
+					    GdkRectangle *area)
+{
+  g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
+  g_return_if_fail(area);
+
+  cwin->preedit_start = *area;
 }
 
 void
