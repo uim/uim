@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -174,6 +174,7 @@ im_uim_commit_string(void *ptr, const char *str)
   gint x, y;
 
   g_return_if_fail(str);
+  uic->preedit_start_pos_valid = FALSE;
   g_signal_emit_by_name(uic, "commit", str);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
@@ -566,6 +567,11 @@ layout_candwin(IMUIMContext *uic)
     gdk_window_get_geometry(uic->win, &x, &y, &width, &height);
     gdk_window_get_origin(uic->win, &x, &y);
     update_transient_for(uic);
+    /* The cursor is the best guess when the preedit start is unknown. */
+    uim_cand_win_gtk_set_preedit_start_location(
+      uic->cwin,
+      uic->preedit_start_pos_valid ? &uic->preedit_start_pos
+                                   : &uic->preedit_pos);
     uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   }
 }
@@ -1431,6 +1437,13 @@ im_uim_set_cursor_location(GtkIMContext *ic, GdkRectangle *area)
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
   uic->preedit_pos = *area;
+  /* Clients may report the location while they handle
+   * "preedit-changed". So this checks the current preedit, not the
+   * one that the client knows. */
+  if (preedit_strlen(uic) == 0) {
+    uic->preedit_start_pos = *area;
+    uic->preedit_start_pos_valid = TRUE;
+  }
   uim_cand_win_gtk_set_cursor_location(uic->cwin, area);
   caret_state_indicator_set_cursor_location(uic->caret_state_indicator, area);
 
@@ -1610,6 +1623,7 @@ im_uim_init(IMUIMContext *uic)
   uic->pseg = NULL;
   uic->nr_psegs = 0;
   uic->prev_preedit_len = 0;
+  uic->preedit_start_pos_valid = FALSE;
 
   uic->cwin = im_uim_create_cand_win_gtk();
 #if IM_UIM_USE_TOPLEVEL
