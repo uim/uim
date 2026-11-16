@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -1483,8 +1483,6 @@ check_candwin_pos_type()
 
     if (candwin_pos_type && !strcmp(candwin_pos_type, "left"))
 	XimServer::gCandWinPosType = Left;
-    else if (candwin_pos_type && !strcmp(candwin_pos_type, "right"))
-	XimServer::gCandWinPosType = Right;
     else
 	XimServer::gCandWinPosType = Caret;
 

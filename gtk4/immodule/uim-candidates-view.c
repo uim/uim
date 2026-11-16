@@ -146,10 +146,6 @@ uim_candidates_view_present(UIMCandidatesView *view)
      * doesn't hide the wrapped preedit. */
     rect.x = view->preedit_start_location.x;
     break;
-  case UIM_CANDIDATES_VIEW_POSITION_RIGHT:
-    rect.x = MAX(gtk_widget_get_width(parent) - 1, 0);
-    rect.width = 1;
-    break;
   case UIM_CANDIDATES_VIEW_POSITION_CARET:
   default:
     break;

@@ -4700,10 +4700,6 @@ msgstr "커서 옆"
 msgid "Left end of preedit area"
 msgstr "편집영역의 왼쪽 끝"
 
-#: scm/im-custom.scm:445 scm/im-custom.scm:446
-msgid "Right end of preedit area"
-msgstr "편집영역의 오른쪽 끝"
-
 #: scm/im-custom.scm:447
 msgid "Candidate window position"
 msgstr "후보창의 위치"

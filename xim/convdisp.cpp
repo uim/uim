@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -752,9 +752,6 @@ void PeLineWin::draw_segment(pe_ustring *s)
     case Caret:
 	mCandWinXOff = mCursorX;
 	break;
-    case Right:
-	mCandWinXOff = m_x;
-	break;
     case Left:
     default:
 	mCandWinXOff = 0;
@@ -1496,10 +1493,6 @@ void ConvdispOv::layoutCharEnt()
 	    m_candwin_x_off = m_ce[caret_pos - 1].x + m_ce[caret_pos - 1].width - m_atr->spot_location.x;
 	    m_candwin_y_off = m_ce[caret_pos - 1].y - m_atr->spot_location.y;
 	}
-	break;
-    case Right:
-	m_candwin_x_off = m_ce[m_ce_len - 1].x + m_ce[m_ce_len - 1].width - m_atr->spot_location.x;
-	m_candwin_y_off = m_ce[m_ce_len - 1].y - m_atr->spot_location.y;
 	break;
     case Left:
     default:

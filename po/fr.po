@@ -4721,10 +4721,6 @@ msgstr "À côté du curseur"
 msgid "Left end of preedit area"
 msgstr "Extrémité gauche de la zone de pré-édition"
 
-#: scm/im-custom.scm:445 scm/im-custom.scm:446
-msgid "Right end of preedit area"
-msgstr "Extrémité droite de la zone de pré-édition"
-
 #: scm/im-custom.scm:447
 msgid "Candidate window position"
 msgstr "Position de la fenêtre des candidats"

@@ -445,8 +445,6 @@ uim_im_context_update_candwin_pos_type(UIMIMContext *uic)
   char *value = uim_scm_symbol_value_str("candidate-window-position");
   if (value && g_str_equal(value, "left"))
     position = UIM_CANDIDATES_VIEW_POSITION_LEFT;
-  else if (value && g_str_equal(value, "right"))
-    position = UIM_CANDIDATES_VIEW_POSITION_RIGHT;
   free(value);
   uim_candidates_view_set_position(uic->candidates_view, position);
 }

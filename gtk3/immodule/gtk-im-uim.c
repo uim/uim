@@ -559,12 +559,11 @@ index_changed_cb(UIMCandWinGtk *cwin, IMUIMContext *uic)
 static void
 layout_candwin(IMUIMContext *uic)
 {
-  gint x, y, width, height;
+  gint x, y;
 
   g_return_if_fail(uic);
 
   if (uic->win && uic->cwin) {
-    gdk_window_get_geometry(uic->win, &x, &y, &width, &height);
     gdk_window_get_origin(uic->win, &x, &y);
     update_transient_for(uic);
     /* The cursor is the best guess when the preedit start is unknown. */
@@ -572,7 +571,7 @@ layout_candwin(IMUIMContext *uic)
       uic->cwin,
       uic->preedit_start_pos_valid ? &uic->preedit_start_pos
                                    : &uic->preedit_pos);
-    uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+    uim_cand_win_gtk_layout(uic->cwin, x, y);
   }
 }
 
