@@ -292,6 +292,62 @@ int vt_init(uint16_t cols, uint16_t rows)
   return TRUE;
 }
 
+/*
+ * Appends the cell's style and then one space, so the space is drawn with
+ * the cell's background.
+ */
+static int append_cell_background_space(struct byte_buffer *buffer,
+                                        const VTermScreenCell *cell)
+{
+  return append_cell_style(buffer, cell) &&
+         append_data(buffer, " ", 1);
+}
+
+/* Writes a space in the style of the cell at (row, col) at the cursor, which
+ * must be at (row, col). The cursor ends one cell to the right. The glyph
+ * there is replaced; its background is kept. */
+int vt_put_background_space(int row, int col)
+{
+  VTermScreenCell cell;
+  struct byte_buffer buffer = {0};
+  int result;
+
+  if (!get_cell(row, col, &cell)) {
+    disable_terminal("background preservation");
+    return FALSE;
+  }
+  if (!append_cell_background_space(&buffer, &cell)) {
+    free(buffer.data);
+    disable_terminal("background preservation");
+    return FALSE;
+  }
+  result = put_terminal_vt_bytes_at(buffer.data, buffer.len, row, col + 1);
+  free(buffer.data);
+  return result;
+}
+
+/* Sets *is_tail to TRUE if (row, col) is the right half of a wide character.
+ * Cells outside the screen are never wide tails. Returns FALSE if the cell
+ * cannot be read. */
+int vt_is_wide_tail(int row, int col, int *is_tail)
+{
+  VTermScreenCell cell;
+
+  *is_tail = FALSE;
+  if (s_vterm == NULL) {
+    return FALSE;
+  }
+  if (row < 0 || row >= s_rows || col <= 0 || col >= s_cols) {
+    return TRUE;
+  }
+  if (!get_cell(row, col, &cell)) {
+    disable_terminal("wide-tail check");
+    return FALSE;
+  }
+  *is_tail = is_wide_tail(&cell);
+  return TRUE;
+}
+
 void vt_feed(const char *data, size_t len)
 {
   if (s_vterm != NULL && len > 0) {
@@ -343,7 +399,7 @@ int vt_restore_region(int row, int col, int width, int guard_col)
   VTermScreenCell cell;
   int result = TRUE;
   int end_col;
-  int cursor_col;
+  int out_col;
   int blank_tail = FALSE;
   int x;
 
@@ -360,7 +416,6 @@ int vt_restore_region(int row, int col, int width, int guard_col)
   if (col >= s_cols || width <= 0) {
     return TRUE;
   }
-  cursor_col = col;
   if (col > 0) {
     /* If the range starts at the right half of a wide character,
      * restore from the left half too; otherwise half of the character remains. */
@@ -381,10 +436,8 @@ int vt_restore_region(int row, int col, int width, int guard_col)
     }
   }
   end_col = width > s_cols - col ? s_cols : col + width;
+  out_col = col;
 
-  if (!append_format(&buffer, "\033[%d;%dH", row + 1, col + 1)) {
-    goto memory_error;
-  }
   for (x = col; x < end_col; x++) {
     if (!get_cell(row, x, &cell)) {
       disable_terminal("restore");
@@ -397,6 +450,9 @@ int vt_restore_region(int row, int col, int width, int guard_col)
     if (is_wide_tail(&cell) && !(blank_tail && x == col)) {
       continue;
     }
+    /* Each output cell advances the cursor by its width. A blanked wide tail
+     * has width 1, matching the single space written for it. */
+    out_col += cell.width;
     style.len = 0;
     if (!append_cell_style(&style, &cell)) {
       goto memory_error;
@@ -421,10 +477,12 @@ int vt_restore_region(int row, int col, int width, int guard_col)
     }
   }
 
-  if (!append_format(&buffer, "\033[%d;%dH", row + 1, cursor_col + 1)) {
-    goto memory_error;
+  put_cursor_address(row, col);
+  /* After writing the last column the cursor stays there (pending wrap). */
+  if (out_col >= s_cols) {
+    out_col = s_cols - 1;
   }
-  if (!put_terminal_vt_bytes(buffer.data, buffer.len)) {
+  if (!put_terminal_vt_bytes_at(buffer.data, buffer.len, row, out_col)) {
     result = FALSE;
   }
   goto cleanup;

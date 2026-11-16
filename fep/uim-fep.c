@@ -118,6 +118,7 @@
 #endif
 
 #include <uim/uim.h>
+#include <uim/uim-scm.h>
 #include <uim/uim-internal.h>
 
 #include "udsock.h"
@@ -135,16 +136,19 @@
 
 /* global variables */
 struct opt_tag g_opt = {
-  DEFAULT_STATUS, /* status_type       */
-  FALSE,          /* ddskk             */
-  FALSE,          /* cursor_no_reverse */
-  FALSE,          /* use_civis         */
-  FALSE,          /* on_the_spot       */
-  UNDEFINED,      /* statusline_width  */
-  0,              /* timeout           */
-  FALSE,          /* no_report_cursor  */
-  FALSE,          /* print_key         */
-  FALSE           /* no_restore_background */
+  DEFAULT_STATUS,   /* status_type               */
+  FALSE,            /* ddskk                     */
+  FALSE,            /* cursor_no_reverse         */
+  FALSE,            /* use_civis                 */
+  FALSE,            /* on_the_spot               */
+  UNDEFINED,        /* statusline_width          */
+  0,                /* timeout                   */
+  FALSE,            /* no_report_cursor          */
+  FALSE,            /* print_key                 */
+  FALSE,            /* no_restore_background     */
+  FALSE,            /* candidate_popup           */
+  FALSE,            /* ascii_popup_border        */
+  CANDWIN_POS_CARET /* candidate_window_position */
 };
 int g_win_in = STDIN_FILENO;
 int g_win_out = STDOUT_FILENO;
@@ -201,6 +205,23 @@ static void version(void);
 
 
 /*
+ * Sets g_opt.candidate_window_position from the candidate-window-position
+ * scm variable. Any value other than "left" uses the caret position.
+ */
+static void init_candidate_window_position(void)
+{
+  char *position = uim_scm_symbol_value_str("candidate-window-position");
+
+  g_opt.candidate_window_position = CANDWIN_POS_CARET;
+  if (position) {
+    if (strcmp(position, "left") == 0) {
+      g_opt.candidate_window_position = CANDWIN_POS_LEFT;
+    }
+    free(position);
+  }
+}
+
+/*
  * uimを初期化する
  * engine 変換エンジンの名前
  */
@@ -212,6 +233,7 @@ static void init_uim(const char *engine)
     printf("uim_init error\n");
     exit(EXIT_FAILURE);
   }
+  init_candidate_window_position();
   g_context = uim_create_context(NULL, get_enc(), NULL, engine, NULL, commit_cb);
   nr = uim_get_nr_im(g_context);
   for (i = 0; i < nr; i++) {
@@ -244,6 +266,8 @@ static const char *get_default_im_name(void)
 
 static const struct option long_options[] = {
   {"no-restore-background", no_argument, NULL, 'N'},
+  {"candidate-popup", no_argument, NULL, 'p'},
+  {"ascii-popup-border", no_argument, NULL, 'A'},
   {NULL, 0, NULL, 0}
 };
 
@@ -284,9 +308,17 @@ int main(int argc, char **argv)
   init_str();
   engine = uim_strdup(get_default_im_name());
 
-  while ((op = getopt_long(argc, argv, "e:s:u:b:w:t:C:f:SXciodKvh", long_options, NULL)) != -1) {
+  while ((op = getopt_long(argc, argv, "e:s:u:b:w:t:C:f:SXciodKvhp", long_options, NULL)) != -1) {
     int i;
     switch (op) {
+      case 'p':
+        g_opt.candidate_popup = TRUE;
+        break;
+
+      case 'A':
+        g_opt.ascii_popup_border = TRUE;
+        break;
+
       case 'e':
         command[0] = optarg;
         for (i = 1; i < 1 + argc - optind; i++) {
@@ -404,6 +436,17 @@ opt_end:
 
   if (optind != argc) {
     usage();
+    return EXIT_FAILURE;
+  }
+
+  if (g_opt.candidate_popup &&
+      (g_opt.on_the_spot || g_opt.no_report_cursor || g_opt.no_restore_background)) {
+    fprintf(stderr, "uim-fep: -p cannot be used with -o, -S, -K, or --no-restore-background\n");
+    return EXIT_FAILURE;
+  }
+
+  if (g_opt.ascii_popup_border && !g_opt.candidate_popup) {
+    fprintf(stderr, "uim-fep: --ascii-popup-border requires -p\n");
     return EXIT_FAILURE;
   }
 
@@ -558,8 +601,15 @@ opt_end:
   focus_in();
   init_draw(s_master, s_path_getmode);
   init_escseq(&attr_uim);
+  if (g_opt.candidate_popup && g_opt.no_report_cursor) {
+    fprintf(stderr, "uim-fep: -p requires the terminal to report the cursor position\n");
+    done(EXIT_FAILURE);
+  }
   if (!g_opt.no_report_cursor && !g_opt.on_the_spot && !g_opt.no_restore_background) {
-    vt_init(g_win->ws_col, g_win->ws_row);
+    if (!vt_init(g_win->ws_col, g_win->ws_row) && g_opt.candidate_popup) {
+      fprintf(stderr, "uim-fep: -p requires libvterm background restoration\n");
+      done(EXIT_FAILURE);
+    }
   }
   set_signal_handler();
 
@@ -1370,6 +1420,12 @@ static void main_loop(void)
         return;
       }
       buf[len] = '\0';
+      /*
+       * Erase the popup before the child output can scroll the screen.
+       * The restore reads the terminal model, which matches the screen only
+       * until vt_feed() updates it.
+       */
+      draw_candidate_popup_clear();
       vt_feed(buf, (size_t)len);
 
       /* クリアされた時にモードを再描画する */
@@ -1396,6 +1452,11 @@ static void main_loop(void)
         redraw_statusline_if_ready();
       } else {
         filter_pty_output(buf, len);
+      }
+      if (g_opt.candidate_popup &&
+          !s_synchronized_update && !s_cursor_hidden &&
+          s_pending_pty_sequence_len == 0) {
+        draw_candidate_popup_refresh();
       }
     }
 
@@ -1600,6 +1661,7 @@ static void sigtstp_handler(void)
   struct sigaction act;
   sigset_t sigmask;
 
+  draw_candidate_popup_clear();
   quit_escseq();
   put_save_cursor();
   tcsetattr(g_win_in, TCSAFLUSH, &s_save_tios);
@@ -1647,6 +1709,7 @@ static void sigwinch_handler(void)
 void done(int exit_value)
 {
   flush_pending_pty_sequence();
+  draw_candidate_popup_clear();
   vt_quit();
   uim_quit();
   quit_helper();
@@ -1702,6 +1765,8 @@ static void usage(void)
   printf("Options\n"
       "-u <input method>                         input method      [default=%s]\n"
       "-s <lastline/backtick/none>               statusline type   [default=%s]\n"
+      "-p, --candidate-popup                     show candidates near the cursor\n"
+      "--ascii-popup-border                      draw popup frame with ASCII (1 column)\n"
       "-b <file>                                 socket file       [default=%s]\n"
       "-w <width>                                statusline width\n"
       "%s"

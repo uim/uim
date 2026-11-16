@@ -38,8 +38,7 @@
 #include <stdint.h>
 
 /* Terminal model API, implemented by vt.c when HAVE_LIBVTERM is defined.
- * Otherwise the calls expand to no-ops and background restoration is
- * disabled. */
+ * Otherwise vt_init() reports failure and the other calls expand to no-ops. */
 #ifdef HAVE_LIBVTERM
 
 int vt_init(uint16_t cols, uint16_t rows);
@@ -47,15 +46,19 @@ void vt_feed(const char *data, size_t len);
 void vt_resize(uint16_t cols, uint16_t rows);
 void vt_scroll_up(int row, int col);
 int vt_restore_region(int row, int col, int width, int guard_col);
+int vt_is_wide_tail(int row, int col, int *is_tail);
+int vt_put_background_space(int row, int col);
 void vt_quit(void);
 
 #else
 
-#define vt_init(cols, rows) ((void)0)
+#define vt_init(cols, rows) 0
 #define vt_feed(data, len) ((void)0)
 #define vt_resize(cols, rows) ((void)0)
 #define vt_scroll_up(row, col) ((void)0)
 #define vt_restore_region(row, col, width, guard_col) 0
+#define vt_is_wide_tail(row, col, is_tail) ((*(is_tail) = 0), 1)
+#define vt_put_background_space(row, col) 1
 #define vt_quit() ((void)0)
 
 #endif

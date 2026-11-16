@@ -34,6 +34,15 @@
 #ifndef UIM_FEP_CALLBACKS_H
 #define UIM_FEP_CALLBACKS_H
 
+/* Candidate popup geometry shared by callbacks.c and draw.c */
+#define POPUP_BORDER_ROWS  2 /* top and bottom border */
+#define POPUP_FOOTER_ROWS  1 /* "index / total" line */
+#define POPUP_BORDER_COLS  2 /* left and right border */
+#define POPUP_PADDING_COLS 2 /* one space on each side of the text */
+#define POPUP_FRAME_COLS   (POPUP_BORDER_COLS + POPUP_PADDING_COLS)
+#define POPUP_MIN_WIDTH    5 /* frame plus one character */
+#define POPUP_MIN_ROWS     (POPUP_BORDER_ROWS + POPUP_FOOTER_ROWS + 1)
+
 struct preedit_tag {
   /* 文字列の幅 */
   int width;
@@ -56,6 +65,10 @@ char *get_commit_str(void);
 char *get_statusline_str(void);
 char *get_candidate_str(void);
 int get_candidate_col(void);
+int get_candidate_popup_page(int *first, int *count, int *selected, int *total);
+char *get_candidate_popup_item(int index);
+void get_candidate_popup_list_info(int *list_id, int *page_size);
+const char *get_candidate_nokori_str(void);
 char *get_index_str(void);
 int get_index_col(void);
 struct preedit_tag *get_preedit(void);
