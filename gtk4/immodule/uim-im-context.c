@@ -1084,13 +1084,18 @@ uim_im_context_get_preedit_string(GtkIMContext *ic,
 
   if (attrs)
     *attrs = pango_attr_list_new();
+  /* The beginning of the preedit when there is no cursor segment as
+   * the GTK 3 module does. */
+  if (cursor_pos)
+    *cursor_pos = 0;
 
   GString *buffer = g_string_new(NULL);
   for (guint i = 0; i < uic->preedit_segments->len; i++) {
     preedit_segment *segment =
       &g_array_index(uic->preedit_segments, preedit_segment, i);
     if ((segment->attr & UPreeditAttr_Cursor) && cursor_pos) {
-      *cursor_pos = buffer->len;
+      /* In characters, not bytes. */
+      *cursor_pos = g_utf8_strlen(buffer->str, buffer->len);
     }
     uim_im_context_convert_preedit_segment(uic,
                                            segment,
