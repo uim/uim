@@ -208,7 +208,7 @@ static void version(void);
  * Sets g_opt.candidate_window_position from the candidate-window-position
  * scm variable. Any value other than "left" uses the caret position.
  */
-static void init_candidate_window_position(void)
+void init_candidate_window_position(void)
 {
   char *position = uim_scm_symbol_value_str("candidate-window-position");
 

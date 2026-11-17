@@ -111,6 +111,7 @@ extern struct winsize *g_win;
 extern uim_context g_context;
 
 void done(int exit_value);
+void init_candidate_window_position(void);
 
 #ifdef DEBUG
 
