@@ -148,7 +148,8 @@ void XimIM_impl::destroy_ic(C16 icid)
     // destruct IC
     XimIC *ic;
     ic = get_ic_by_id(icid);
-    delete_ic(ic);
+    if (ic)
+	 delete_ic(ic);
 }
 
 void XimIM_impl::changeContext(const char *engine)
@@ -182,7 +183,8 @@ void XimIM_impl::set_ic_values(RxPacket *p)
 	v[i] = p->getC8();
     }
 
-    ic->setICAttrs((void *)v, atr_len);
+    if (ic)
+	ic->setICAttrs((void *)v, atr_len);
 
     TxPacket *t = createTxPacket(XIM_SET_IC_VALUES_REPLY, 0);
     t->pushC16(imid);
@@ -198,6 +200,10 @@ void XimIM_impl::get_ic_values(RxPacket *p)
     p->getC16();
     icid = p->getC16();
     ic = get_ic_by_id(icid);
+    if (!ic) {
+	mConn->push_error_packet(mID, icid, ERR_BadSomething, "Invalid ICID");
+	return;
+    }
 
     int len;
     len = p->getC16();
@@ -328,6 +334,28 @@ void XimIM_impl::forward_event(RxPacket *p)
 	    if (!focusedContext)
 		ic->setFocus(); // workaround for some buggy applications
 	    ic->OnKeyEvent(k);
+	} else { 
+	    TxPacket *t = createTxPacket(XIM_FORWARD_EVENT, 0);
+	    t->pushC16(mID);
+	    t->pushC16(icid);
+	    t->pushC16(1); // flag, synchronous
+	    t->pushC16((C16)((k.ev.xkey.serial >> 16) & 0xffff));
+
+	    t->pushC8((C8)k.ev.xkey.type);
+	    t->pushC8((C8)k.ev.xkey.keycode);
+	    t->pushC16((C16)(k.ev.xkey.serial & 0xffff));
+	    t->pushC32(static_cast<C32>(k.ev.xkey.time));
+	    t->pushC32(static_cast<C32>(k.ev.xkey.root));
+	    t->pushC32(static_cast<C32>(k.ev.xkey.window));
+	    t->pushC32(static_cast<C32>(k.ev.xkey.subwindow));
+	    t->pushC16((C16)k.ev.xkey.x_root);
+	    t->pushC16((C16)k.ev.xkey.y_root);
+	    t->pushC16((C16)k.ev.xkey.x);
+	    t->pushC16((C16)k.ev.xkey.y);
+	    t->pushC16((C16)k.ev.xkey.state);
+	    t->pushC8((C8)k.ev.xkey.same_screen);
+	    t->pushC8(0);
+	    mConn->push_packet(t);
 	}
 	if (!(g_option_mask & OPT_ON_DEMAND_SYNC))
 	    send_sync_reply(icid);
