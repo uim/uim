@@ -334,7 +334,7 @@ void XimIM_impl::forward_event(RxPacket *p)
 	    if (!focusedContext)
 		ic->setFocus(); // workaround for some buggy applications
 	    ic->OnKeyEvent(k);
-	} else { 
+	} else {
 	    TxPacket *t = createTxPacket(XIM_FORWARD_EVENT, 0);
 	    t->pushC16(mID);
 	    t->pushC16(icid);
