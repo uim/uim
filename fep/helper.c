@@ -98,6 +98,9 @@ void helper_handler(void)
           if ((eol = strchr(value, '\n')) != NULL) {
             *eol = '\0';
             uim_prop_update_custom(g_context, sym, value);
+            if (strcmp(sym, "candidate-window-position") == 0) {
+              init_candidate_window_position();
+            }
           }
         }
       }
@@ -105,6 +108,7 @@ void helper_handler(void)
     } else if (str_has_prefix(message, "custom_reload_notify")) {
       debug(("custom_reload_notify\n"));
       uim_prop_reload_configs();
+      init_candidate_window_position();
 
     } else if (g_focus_in) {
       if (str_has_prefix(message, "prop_list_get")) {

@@ -113,6 +113,19 @@ How to USE
     This option disables background restoration. Use it when libvterm's
     character width differs from the terminal's.
 
+  o --candidate-window
+    This option shows the candidate list in a window near the preedit cursor.
+    It is not shown in the status line.
+    The window is placed below the preedit, then above it. Its column is set
+    by candidate-window-position: caret (default) or left.
+    The window requires libvterm for background restoration. --candidate-window cannot be used
+    with -o, -S, -K, or --no-restore-background.
+
+  o --ascii-window-border
+    This option draws the candidate window frame with ASCII characters (| - +),
+    which are one column wide. Use it with --candidate-window when the terminal draws box
+    drawing characters (East Asian Ambiguous width) two columns wide.
+
   o -h This option show help messages.
 
   o -v This option show version.

@@ -65,8 +65,6 @@
 #include "uim-fep.h"
 #include "str.h"
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
-
 static int s_utf8;
 
 static int str2wcstr(const char *str, wchar_t **wcstr);

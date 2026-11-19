@@ -62,6 +62,15 @@
 #define WIN_IN_FILENO  STDOUT_FILENO
 #define PROC_FILENO    STDIN_FILENO
 
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
+
+/* Horizontal position of the candidate window (candidate-window-position) */
+enum {
+  CANDWIN_POS_CARET,
+  CANDWIN_POS_LEFT,
+};
+
 struct opt_tag {
   /* ステータスラインの種類 */
   int status_type;
@@ -82,6 +91,13 @@ struct opt_tag {
   int print_key;
   /* プリエディット背景の復元を使わないか */
   int no_restore_background;
+  /* Show candidates in a window near the cursor */
+  int candidate_window;
+  /* Draw the window frame with 1-column ASCII instead of box drawing */
+  int ascii_window_border;
+  /* Column used when the window is placed above or below the preedit: caret
+   * (cursor) or left (preedit start) */
+  int candidate_window_position;
 };
 
 enum {
@@ -95,6 +111,7 @@ extern struct winsize *g_win;
 extern uim_context g_context;
 
 void done(int exit_value);
+void init_candidate_window_position(void);
 
 #ifdef DEBUG
 

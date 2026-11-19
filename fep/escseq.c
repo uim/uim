@@ -1222,9 +1222,26 @@ int put_terminal_vt_bytes(const char *str, size_t len)
   }
 
   put_terminal_bytes(str, (int)len);
+  /* The last cell's style would otherwise stay on the terminal. put_pty_str
+   * restores the pty attributes before its next output. */
   put_exit_attribute_mode();
-  change_attr(&s_attr, &s_attr_pty);
+  /* Raw output moves the cursor without updating s_cursor. */
+  s_cursor.row = s_cursor.col = UNDEFINED;
 
+  return TRUE;
+}
+
+/*
+ * Like put_terminal_vt_bytes, for raw output that leaves the cursor at
+ * (row, col), so that cursor-relative output can follow it.
+ */
+int put_terminal_vt_bytes_at(const char *str, size_t len, int row, int col)
+{
+  if (!put_terminal_vt_bytes(str, len)) {
+    return FALSE;
+  }
+  s_cursor.row = row;
+  s_cursor.col = col;
   return TRUE;
 }
 

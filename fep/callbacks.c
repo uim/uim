@@ -70,6 +70,8 @@ static char *s_label_str;
 static char *s_im_str;
 static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
+/* Incremented each time a candidate list is activated */
+static int s_candidate_list_id = 0;
 
 static void update_current_im_name(void);
 static void configuration_changed_cb(void *ptr);
@@ -112,6 +114,10 @@ struct candidate_tag {
   int *page2index;
   /* 現在の候補のインデックスを描画するカラム */
   int *index_col;
+  /* Candidate strings for the candidate window */
+  char **window_items;
+  /* Number of candidates per page in the candidate window */
+  int window_page_size;
 };
 
 static struct candidate_tag s_candidate = {
@@ -124,6 +130,8 @@ static struct candidate_tag s_candidate = {
   NULL,      /* cand_col */
   NULL,      /* page2index */
   NULL,      /* index_col */
+  NULL,      /* window_items */
+  UNDEFINED, /* window_page_size */
 };
 
 /*
@@ -149,7 +157,7 @@ void init_callbacks(void)
   uim_set_configuration_changed_cb(g_context, configuration_changed_cb);
   uim_set_im_switch_request_cb(g_context, switch_app_global_im_cb, switch_system_global_im_cb);
   configuration_changed_cb(NULL);
-  if (g_opt.status_type != NONE) {
+  if (g_opt.status_type != NONE || g_opt.candidate_window) {
     uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
   }
 
@@ -225,7 +233,8 @@ int end_callbacks(void)
       s_statusline_str = uim_strdup(s_candidate.page_strs[s_candidate.page]);
     else
       s_statusline_str = uim_strdup("");
-    if (s_candidate.index != UNDEFINED) {
+    /* With --candidate-window the statusline never shows the selected candidate */
+    if (s_candidate.index != UNDEFINED && !g_opt.candidate_window) {
       set_candidate();
     } else {
       s_candidate_str = uim_strdup("");
@@ -285,6 +294,59 @@ int get_candidate_col(void)
 {
   assert(!s_start_callbacks);
   return s_candidate_col;
+}
+
+/*
+ * Gets the page the candidate window shows: the index of its first candidate,
+ * its candidate count, the selected candidate relative to the page (UNDEFINED
+ * if none), and the total. Returns FALSE if there is no page to show.
+ */
+int get_candidate_window_page(int *first, int *count, int *selected, int *total)
+{
+  int end;
+
+  if (s_candidate.nr == UNDEFINED ||
+      s_candidate.page < 0 || s_candidate.page >= s_candidate.nr_pages) {
+    return FALSE;
+  }
+  *first = s_candidate.page2index[s_candidate.page];
+  end = s_candidate.page + 1 < s_candidate.nr_pages ?
+    s_candidate.page2index[s_candidate.page + 1] : s_candidate.nr;
+  *count = end - *first;
+  *selected = s_candidate.index == UNDEFINED ?
+    UNDEFINED : s_candidate.index - *first;
+  *total = s_candidate.nr;
+  return TRUE;
+}
+
+/*
+ * Returns a newly allocated copy of the window item at index, or NULL if there
+ * is none. The caller must free it.
+ */
+char *get_candidate_window_item(int index)
+{
+  if (s_candidate.nr == UNDEFINED ||
+      index < 0 || index >= s_candidate.nr ||
+      s_candidate.window_items[index] == NULL) {
+    return NULL;
+  }
+  return uim_strdup(s_candidate.window_items[index]);
+}
+
+/*
+ * Returns an id that changes whenever a candidate list starts, and the
+ * number of candidates on a full page.
+ */
+void get_candidate_window_list_info(int *list_id, int *page_size)
+{
+  *list_id = s_candidate_list_id;
+  *page_size = s_candidate.window_page_size;
+}
+
+/* Returns the label for the remaining candidate count in the window footer. */
+const char *get_candidate_nokori_str(void)
+{
+  return s_nokori_str;
 }
 
 /*
@@ -389,6 +451,7 @@ static void activate_cb(void *ptr, int nr, int display_limit)
 {
   debug2(("activate_cb(nr = %d display_limit = %d)\n", nr, display_limit));
   start_callbacks();
+  s_candidate_list_id++;
   reset_candidate();
   init_candidate(nr, display_limit);
   make_page_strs(); /* setup first page */
@@ -732,6 +795,38 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 }
 
 /*
+ * Returns the number of candidates per page in the candidate window.
+ * Candidates that do not fit the screen height go to the next page.
+ */
+static int candidate_window_page_size(int nr, int display_limit)
+{
+  int size = display_limit > 0 ? display_limit : nr;
+  int avail;
+
+  avail = g_win->ws_row - WINDOW_BORDER_ROWS - WINDOW_FOOTER_ROWS;
+  size = min(size, avail);
+  return max(size, 1);
+}
+
+/*
+ * Returns the head index of the page that follows the page starting at
+ * start, in the candidate window.
+ * It never crosses a virtual page boundary of display_limit (the blocks
+ * of 10 that number keys select from).
+ */
+static int window_page_end(int start)
+{
+  int end = start + s_candidate.window_page_size;
+
+  if (s_candidate.limit > 0) {
+    int virtual_end = (start / s_candidate.limit + 1) * s_candidate.limit;
+    end = min(end, virtual_end);
+  }
+  end = min(end, s_candidate.nr);
+  return end;
+}
+
+/*
  * initialize contents of s_candidate
  *
  * s_candidate.page_strs = array of page string
@@ -743,21 +838,30 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 static void init_candidate(int nr, int display_limit)
 {
   int nr_virtual_pages = 0;
+  int start;
   int i;
 
   s_candidate.nr = nr;
   s_candidate.limit = display_limit;
+  s_candidate.window_page_size = candidate_window_page_size(nr, display_limit);
   s_candidate.page = 0;
   s_candidate.cand_col = uim_malloc(nr * sizeof(int));
+  s_candidate.window_items = uim_malloc(nr * sizeof(char *));
+  memset(s_candidate.window_items, 0, nr * sizeof(char *));
 
   assert(s_candidate.nr != UNDEFINED);
   assert(s_candidate.limit != UNDEFINED);
   assert(s_candidate.cand_col != NULL);
 
-  if (s_candidate.limit)
+  if (g_opt.candidate_window) {
+    for (start = 0; start < nr; start = window_page_end(start)) {
+      nr_virtual_pages++;
+    }
+  } else if (s_candidate.limit) {
     nr_virtual_pages = (s_candidate.nr - 1) / s_candidate.limit + 1;
-  else
+  } else {
     nr_virtual_pages = 1;
+  }
 
   s_candidate.nr_pages = nr_virtual_pages;
   s_candidate.page2index = uim_realloc(s_candidate.page2index, nr_virtual_pages * sizeof(int));
@@ -768,6 +872,35 @@ static void init_candidate(int nr, int display_limit)
     s_candidate.page2index[i] = i * s_candidate.limit;
     s_candidate.index_col[i] = UNDEFINED;
     s_candidate.page_strs[i] = NULL;
+  }
+
+  if (g_opt.candidate_window) {
+    for (i = 0, start = 0; i < nr_virtual_pages; i++, start = window_page_end(start)) {
+      s_candidate.page2index[i] = start;
+    }
+  }
+}
+
+/*
+ * Generate s_candidate.window_items of the current page.
+ * With --candidate-window the statusline is not used, so only this is needed.
+ */
+static void make_window_items(void)
+{
+  int index;
+  int start = s_candidate.page2index[s_candidate.page];
+  int end = s_candidate.page + 1 < s_candidate.nr_pages ?
+    s_candidate.page2index[s_candidate.page + 1] : s_candidate.nr;
+
+  for (index = start; index < end; index++) {
+    uim_candidate cand = uim_get_candidate(g_context, index, index - start);
+    char *cand_str_cand = tab2space(uim_candidate_get_cand_str(cand));
+
+    free(s_candidate.window_items[index]);
+    uim_asprintf(&s_candidate.window_items[index], "%s:%s",
+                 uim_candidate_get_heading_label(cand), cand_str_cand);
+    uim_candidate_free(cand);
+    free(cand_str_cand);
   }
 }
 
@@ -783,8 +916,7 @@ static void init_candidate(int nr, int display_limit)
  */
 static void make_page_strs(void)
 {
-  /* NULLをreallocしてゴミにならないように */
-  char *page_str = uim_strdup("");
+  char *page_str;
   int page_byte = 0;
   int page_width = 0;
   int index_in_page = 0;
@@ -795,6 +927,14 @@ static void make_page_strs(void)
   assert(s_candidate.nr != UNDEFINED);
   assert(s_candidate.limit != UNDEFINED);
   assert(s_candidate.cand_col != NULL);
+
+  if (g_opt.candidate_window) {
+    make_window_items();
+    return;
+  }
+
+  /* NULLをreallocしてゴミにならないように */
+  page_str = uim_strdup("");
 
   page = s_candidate.page;
   start = s_candidate.page2index[page];
@@ -951,6 +1091,18 @@ static void make_page_strs(void)
 }
 
 /*
+ * Whether the page has been generated by make_page_strs().
+ * With --candidate-window only window_items are generated, so check them instead of page_strs.
+ */
+static int page_is_generated(int page)
+{
+  if (g_opt.candidate_window) {
+    return s_candidate.window_items[s_candidate.page2index[page]] != NULL;
+  }
+  return s_candidate.page_strs[page] != NULL;
+}
+
+/*
  * Generate pages in order until the page containing index is available.
  */
 static void make_page_strs_until(int index)
@@ -966,7 +1118,7 @@ static void make_page_strs_until(int index)
     if (page_to_generate > page) {
       break;
     }
-    if (s_candidate.page_strs[page_to_generate] == NULL) {
+    if (!page_is_generated(page_to_generate)) {
       s_candidate.page = page_to_generate;
       make_page_strs();
     }
@@ -1026,15 +1178,24 @@ static void reset_candidate(void)
   if (s_candidate.index_col != NULL) {
     free(s_candidate.index_col);
   }
+  if (s_candidate.window_items != NULL) {
+    int i;
+    for (i = 0; i < s_candidate.nr; i++) {
+      free(s_candidate.window_items[i]);
+    }
+    free(s_candidate.window_items);
+  }
 
   s_candidate.nr = UNDEFINED;
   s_candidate.limit = UNDEFINED;
+  s_candidate.window_page_size = UNDEFINED;
   s_candidate.nr_pages = UNDEFINED;
   s_candidate.index = UNDEFINED;
   s_candidate.page_strs = NULL;
   s_candidate.cand_col = NULL;
   s_candidate.page2index = NULL;
   s_candidate.index_col = NULL;
+  s_candidate.window_items = NULL;
 }
 
 /*
@@ -1131,6 +1292,14 @@ void callbacks_winch(void)
   if (s_candidate.cand_col != NULL) {
     free(s_candidate.cand_col);
     s_candidate.cand_col = NULL;
+  }
+  if (s_candidate.window_items != NULL) {
+    int i;
+    for (i = 0; i < s_candidate.nr; i++) {
+      free(s_candidate.window_items[i]);
+    }
+    free(s_candidate.window_items);
+    s_candidate.window_items = NULL;
   }
 
   current_index = s_candidate.index;

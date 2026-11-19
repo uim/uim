@@ -34,6 +34,15 @@
 #ifndef UIM_FEP_CALLBACKS_H
 #define UIM_FEP_CALLBACKS_H
 
+/* Candidate window geometry shared by callbacks.c and draw.c */
+#define WINDOW_BORDER_ROWS  2 /* top and bottom border */
+#define WINDOW_FOOTER_ROWS  1 /* "index / total" line */
+#define WINDOW_BORDER_COLS  2 /* left and right border */
+#define WINDOW_PADDING_COLS 2 /* one space on each side of the text */
+#define WINDOW_FRAME_COLS   (WINDOW_BORDER_COLS + WINDOW_PADDING_COLS)
+#define WINDOW_MIN_WIDTH    5 /* frame plus one character */
+#define WINDOW_MIN_ROWS     (WINDOW_BORDER_ROWS + WINDOW_FOOTER_ROWS + 1)
+
 struct preedit_tag {
   /* 文字列の幅 */
   int width;
@@ -56,6 +65,10 @@ char *get_commit_str(void);
 char *get_statusline_str(void);
 char *get_candidate_str(void);
 int get_candidate_col(void);
+int get_candidate_window_page(int *first, int *count, int *selected, int *total);
+char *get_candidate_window_item(int index);
+void get_candidate_window_list_info(int *list_id, int *page_size);
+const char *get_candidate_nokori_str(void);
 char *get_index_str(void);
 int get_index_col(void);
 struct preedit_tag *get_preedit(void);
