@@ -61,7 +61,7 @@ void draw_commit_and_preedit(void);
 int has_pending_preedit(void);
 void draw_winch(struct winsize *prevwin);
 int get_preedit_cursor_position(int *row, int *col);
-void draw_candidate_popup_refresh(void);
-void draw_candidate_popup_clear(void);
+void draw_candidate_window_refresh(void);
+void draw_candidate_window_clear(void);
 
 #endif

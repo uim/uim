@@ -97,12 +97,12 @@ static const char *s_path_getmode;
 /* 端末サイズが変換したときTRUE */
 static int s_winch = FALSE;
 
-struct candidate_popup_layout {
+struct candidate_window_layout {
   int row;
   int col;
   int width;
   int height;
-  /* Size used for placement, so the popup does not move when it gets smaller
+  /* Size used for placement, so the window does not move when it gets smaller
      while paging */
   int place_width;
   int place_height;
@@ -119,22 +119,22 @@ static struct {
   int col;
   int width;
   int height;
-} s_candidate_popup;
+} s_candidate_window;
 
 /* Widest item text shown so far in the current candidate list */
 static struct {
   int list_id;
   int text_width;
-} s_candidate_popup_size;
+} s_candidate_window_size;
 
 static void init_backtick(void);
 static void start_preedit(void);
 static void end_preedit(void);
 static void draw_statusline(int force, int restore, int visible, int draw_background);
-static void restore_candidate_popup(void);
-static void show_candidate_popup(void);
-static int render_candidate_popup(const struct candidate_popup_layout *layout);
-static int candidate_popup_position_available(int row, int col, int width, int height);
+static void restore_candidate_window(void);
+static void show_candidate_window(void);
+static int render_candidate_window(const struct candidate_window_layout *layout);
+static int candidate_window_position_available(int row, int col, int width, int height);
 static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_preedit);
 static int is_eq_region(void);
 static void draw_subpreedit(struct preedit_tag *p, int start, int end);
@@ -172,7 +172,7 @@ int get_preedit_cursor_position(int *row, int *col)
 }
 
 /* Returns TRUE if (row, col) is a cell of the preedit text. */
-static int is_candidate_popup_preedit_cell(int row, int col)
+static int is_candidate_window_preedit_cell(int row, int col)
 {
   int line;
 
@@ -188,26 +188,26 @@ static int is_candidate_popup_preedit_cell(int row, int col)
 }
 
 /*
- * A popup edge can cut a wide character whose left half is under the
+ * A window edge can cut a wide character whose left half is under the
  * preedit. Restoring or blanking that left half would erase the preedit, so
  * the guard makes vt_restore_region blank only the right half.
  */
-static int candidate_popup_restore_guard(int row, int col)
+static int candidate_window_restore_guard(int row, int col)
 {
-  if (col > 0 && is_candidate_popup_preedit_cell(row, col - 1)) {
+  if (col > 0 && is_candidate_window_preedit_cell(row, col - 1)) {
     return col - 1;
   }
   return INT_MAX;
 }
 
 /*
- * Checks whether the popup's left edge at (row, col) cuts a wide character,
+ * Checks whether the window's left edge at (row, col) cuts a wide character,
  * whose left half (col - 1) then needs a background space. A left half under
  * the preedit is left alone. Returns FALSE if the cell cannot be read.
  */
-static int candidate_popup_left_background_needed(int row, int col, int *needed)
+static int candidate_window_left_background_needed(int row, int col, int *needed)
 {
-  if (col > 0 && is_candidate_popup_preedit_cell(row, col - 1)) {
+  if (col > 0 && is_candidate_window_preedit_cell(row, col - 1)) {
     *needed = FALSE;
     return TRUE;
   }
@@ -215,15 +215,15 @@ static int candidate_popup_left_background_needed(int row, int col, int *needed)
 }
 
 /*
- * Checks whether the column just past the popup's right edge, (row, col), is
+ * Checks whether the column just past the window's right edge, (row, col), is
  * the right half of a wide character. Its left half is about to be covered,
  * so it needs a background space after the row is drawn. A cell under the
  * preedit is left alone. Returns FALSE if the cell cannot be read.
  */
-static int candidate_popup_right_background_needed(int row, int col,
+static int candidate_window_right_background_needed(int row, int col,
                                                    int *needed)
 {
-  if (is_candidate_popup_preedit_cell(row, col)) {
+  if (is_candidate_window_preedit_cell(row, col)) {
     *needed = FALSE;
     return TRUE;
   }
@@ -233,7 +233,7 @@ static int candidate_popup_right_background_needed(int row, int col,
 /*
  * The cursor is saved once for all rows, because vt_restore_region moves it.
  */
-static int restore_candidate_popup_rows(int row, int col, int width, int height)
+static int restore_candidate_window_rows(int row, int col, int width, int height)
 {
   int i;
   int result = TRUE;
@@ -241,7 +241,7 @@ static int restore_candidate_popup_rows(int row, int col, int width, int height)
   put_save_cursor();
   for (i = 0; i < height; i++) {
     if (!vt_restore_region(row + i, col, width,
-                           candidate_popup_restore_guard(row + i, col))) {
+                           candidate_window_restore_guard(row + i, col))) {
       result = FALSE;
       break;
     }
@@ -250,23 +250,23 @@ static int restore_candidate_popup_rows(int row, int col, int width, int height)
   return result;
 }
 
-/* Erases the popup last drawn, restoring the cells it covered. */
-static void restore_candidate_popup(void)
+/* Erases the window last drawn, restoring the cells it covered. */
+static void restore_candidate_window(void)
 {
-  if (!s_candidate_popup.visible) {
+  if (!s_candidate_window.visible) {
     return;
   }
-  restore_candidate_popup_rows(s_candidate_popup.row, s_candidate_popup.col,
-                               s_candidate_popup.width,
-                               s_candidate_popup.height);
-  s_candidate_popup.visible = FALSE;
+  restore_candidate_window_rows(s_candidate_window.row, s_candidate_window.col,
+                               s_candidate_window.width,
+                               s_candidate_window.height);
+  s_candidate_window.visible = FALSE;
 }
 
 /*
- * Returns TRUE if a popup of width x height at (row, col) fits on the screen
+ * Returns TRUE if a window of width x height at (row, col) fits on the screen
  * and does not cover the preedit.
  */
-static int candidate_popup_position_available(int row, int col, int width, int height)
+static int candidate_window_position_available(int row, int col, int width, int height)
 {
   int line;
 
@@ -288,10 +288,10 @@ static int candidate_popup_position_available(int row, int col, int width, int h
 }
 
 /*
- * Returns the column where the popup starts, following
+ * Returns the column where the window starts, following
  * candidate-window-position.
  */
-static int get_candidate_popup_base_col(int cursor_col)
+static int get_candidate_window_base_col(int cursor_col)
 {
   switch (g_opt.candidate_window_position) {
   case CANDWIN_POS_LEFT:
@@ -302,12 +302,12 @@ static int get_candidate_popup_base_col(int cursor_col)
 }
 
 /*
- * Places the popup left of the preedit start, or right of the preedit end if
+ * Places the window left of the preedit start, or right of the preedit end if
  * the left side does not fit. If neither side fits at full width, the wider
- * side is used (left on a tie) and the popup is narrowed to its free columns.
+ * side is used (left on a tie) and the window is narrowed to its free columns.
  */
-static int place_candidate_popup_beside_preedit(
-  struct candidate_popup_layout *layout)
+static int place_candidate_window_beside_preedit(
+  struct candidate_window_layout *layout)
 {
   int end_row = s_head.row;
   int end_col = s_line2width[0];
@@ -325,7 +325,7 @@ static int place_candidate_popup_beside_preedit(
 
   for (i = 0; i < 2; i++) {
     use_start = i == 0;
-    if (candidate_popup_position_available(
+    if (candidate_window_position_available(
           use_start ? start_row : end_row,
           use_start ? start_col : end_col,
           layout->place_width, layout->place_height)) {
@@ -338,13 +338,13 @@ static int place_candidate_popup_beside_preedit(
   use_start = start_avail >= end_avail;
   layout->place_width = min(use_start ? start_avail : end_avail,
                             layout->place_width);
-  if (layout->place_width < POPUP_MIN_WIDTH) {
+  if (layout->place_width < WINDOW_MIN_WIDTH) {
     return FALSE;
   }
   layout->width = min(layout->width, layout->place_width);
   layout->row = use_start ? start_row : end_row;
   layout->col = use_start ? s_head.col - layout->place_width : end_col;
-  return candidate_popup_position_available(layout->row, layout->col,
+  return candidate_window_position_available(layout->row, layout->col,
                                             layout->place_width,
                                             layout->place_height);
 }
@@ -361,14 +361,14 @@ static int decimal_width(int n)
 }
 
 /*
- * Draws the candidate popup (-p) for the current page of candidates.
- * The popup goes below the preedit, above it, or beside the cursor,
+ * Draws the candidate window for the current page of candidates.
+ * The window goes below the preedit, above it, or beside the cursor,
  * whichever fits first. It is silently skipped when it cannot be shown
  * (no reported cursor position, terminal too small, or no page).
  */
-static void show_candidate_popup(void)
+static void show_candidate_window(void)
 {
-  struct candidate_popup_layout layout = {0};
+  struct candidate_window_layout layout = {0};
   int page_candidate_count;
   int selected;
   int page_first;
@@ -382,20 +382,20 @@ static void show_candidate_popup(void)
   int i;
 
   if (g_opt.no_report_cursor ||
-      g_win->ws_row < POPUP_MIN_ROWS ||
-      g_win->ws_col < POPUP_MIN_WIDTH ||
+      g_win->ws_row < WINDOW_MIN_ROWS ||
+      g_win->ws_col < WINDOW_MIN_WIDTH ||
       !get_preedit_cursor_position(&anchor_row, &anchor_col) ||
-      !get_candidate_popup_page(&page_first, &page_candidate_count,
+      !get_candidate_window_page(&page_first, &page_candidate_count,
                                 &selected, &layout.total) ||
       page_candidate_count <= 0) {
     return;
   }
 
-  get_candidate_popup_list_info(&list_id, &page_size);
+  get_candidate_window_list_info(&list_id, &page_size);
   /* A new candidate list starts with a fresh width */
-  if (list_id != s_candidate_popup_size.list_id) {
-    s_candidate_popup_size.list_id = list_id;
-    s_candidate_popup_size.text_width = 0;
+  if (list_id != s_candidate_window_size.list_id) {
+    s_candidate_window_size.list_id = list_id;
+    s_candidate_window_size.text_width = 0;
   }
 
   /* visible_max is the page capacity; visible_count is the rows this page
@@ -427,43 +427,43 @@ static void show_candidate_popup(void)
   memset(layout.items, 0, sizeof(char *) * layout.visible_count);
   for (i = 0; i < layout.visible_count; i++) {
     int width;
-    layout.items[i] = get_candidate_popup_item(page_first + i);
+    layout.items[i] = get_candidate_window_item(page_first + i);
     if (layout.items[i] == NULL) {
       goto done;
     }
     width = strwidth(layout.items[i]);
     max_text_width = max(max_text_width, width);
   }
-  /* Keep the widest width seen in this list, so the popup does not shrink
+  /* Keep the widest width seen in this list, so the window does not shrink
      while paging */
-  s_candidate_popup_size.text_width = max(s_candidate_popup_size.text_width,
+  s_candidate_window_size.text_width = max(s_candidate_window_size.text_width,
                                           max_text_width);
-  layout.place_width = min(s_candidate_popup_size.text_width + POPUP_FRAME_COLS,
+  layout.place_width = min(s_candidate_window_size.text_width + WINDOW_FRAME_COLS,
                            g_win->ws_col);
   /* Reserve a full page of height so the position does not move on a shorter
      last page */
-  layout.place_height = visible_max + POPUP_FOOTER_ROWS + POPUP_BORDER_ROWS;
-  layout.width = min(max_text_width + POPUP_FRAME_COLS, layout.place_width);
-  layout.height = layout.visible_count + POPUP_FOOTER_ROWS + POPUP_BORDER_ROWS;
+  layout.place_height = visible_max + WINDOW_FOOTER_ROWS + WINDOW_BORDER_ROWS;
+  layout.width = min(max_text_width + WINDOW_FRAME_COLS, layout.place_width);
+  layout.height = layout.visible_count + WINDOW_FOOTER_ROWS + WINDOW_BORDER_ROWS;
 
   /* Try below the preedit, then above it, then beside the cursor */
-  col = get_candidate_popup_base_col(anchor_col);
+  col = get_candidate_window_base_col(anchor_col);
   col = min(col, g_win->ws_col - layout.place_width);
-  if (candidate_popup_position_available(
+  if (candidate_window_position_available(
         s_head.row + s_preedit_lines, col,
         layout.place_width, layout.place_height)) {
     layout.row = s_head.row + s_preedit_lines;
     layout.col = col;
-  } else if (candidate_popup_position_available(
+  } else if (candidate_window_position_available(
                s_head.row - layout.place_height, col,
                layout.place_width, layout.place_height)) {
     layout.row = s_head.row - layout.place_height;
     layout.col = col;
-  } else if (!place_candidate_popup_beside_preedit(&layout)) {
+  } else if (!place_candidate_window_beside_preedit(&layout)) {
     goto done;
   }
 
-  render_candidate_popup(&layout);
+  render_candidate_window(&layout);
 
   /* items and footer are per-call buffers, so free them on every path */
 done:
@@ -476,7 +476,7 @@ done:
   free(layout.footer);
 }
 
-struct popup_frame_glyphs {
+struct window_frame_glyphs {
   const char *vertical;
   const char *horizontal;
   const char *top_left;
@@ -485,40 +485,40 @@ struct popup_frame_glyphs {
   const char *bottom_right;
 };
 
-static const struct popup_frame_glyphs s_box_frame_glyphs = {
+static const struct window_frame_glyphs s_box_frame_glyphs = {
   "│", "─", "╭", "╮", "╰", "╯"
 };
 
 /* ASCII glyphs are one column wide even where box drawing is ambiguous-width. */
-static const struct popup_frame_glyphs s_ascii_frame_glyphs = {
+static const struct window_frame_glyphs s_ascii_frame_glyphs = {
   "|", "-", "+", "+", "+", "+"
 };
 
 /*
- * Returns the ASCII border glyphs if the ascii popup border option is set,
+ * Returns the ASCII border glyphs if the ascii window border option is set,
  * and the box-drawing glyphs otherwise.
  */
-static const struct popup_frame_glyphs *get_popup_frame_glyphs(void)
+static const struct window_frame_glyphs *get_window_frame_glyphs(void)
 {
-  return g_opt.ascii_popup_border ? &s_ascii_frame_glyphs : &s_box_frame_glyphs;
+  return g_opt.ascii_window_border ? &s_ascii_frame_glyphs : &s_box_frame_glyphs;
 }
 
 /*
- * Draws a row of the popup at (row, col) spanning width cells, with text in
+ * Draws a row of the window at (row, col) spanning width cells, with text in
  * attr. If framed, the text is bracketed by vertical borders. A wide character
  * cut by either edge is repainted: a background space is written at col - 1
  * before the row, and at col + width after it.
  */
-static int draw_candidate_popup_row(int row, int col, int width,
+static int draw_candidate_window_row(int row, int col, int width,
                                     const char *text, int attr, int framed)
 {
-  const char *vertical = get_popup_frame_glyphs()->vertical;
+  const char *vertical = get_window_frame_glyphs()->vertical;
   int left_background = FALSE;
   int right_background = FALSE;
   int ok;
 
-  if (!candidate_popup_left_background_needed(row, col, &left_background) ||
-      !candidate_popup_right_background_needed(row, col + width,
+  if (!candidate_window_left_background_needed(row, col, &left_background) ||
+      !candidate_window_right_background_needed(row, col + width,
                                                &right_background)) {
     return FALSE;
   }
@@ -538,16 +538,16 @@ static int draw_candidate_popup_row(int row, int col, int width,
 }
 
 /*
- * Draws one body row of the popup at (row, col): text clipped to the inner
+ * Draws one body row of the window at (row, col): text clipped to the inner
  * width, padded with spaces, and framed by the vertical borders. attr sets
  * the text style (reverse video for the selected candidate).
  */
-static int render_candidate_popup_line(int row, int col, int width,
+static int render_candidate_window_line(int row, int col, int width,
                                        const char *text, int attr)
 {
   char *clipped = uim_strdup(text);
   char *line;
-  int content_width = width - POPUP_FRAME_COLS;
+  int content_width = width - WINDOW_FRAME_COLS;
   int text_width = strwidth(clipped);
   int padding;
   size_t text_bytes;
@@ -566,24 +566,24 @@ static int render_candidate_popup_line(int row, int col, int width,
   memset(line + 1 + text_bytes, ' ', (size_t)padding + 1);
   line[line_bytes - 1] = '\0';
 
-  ok = draw_candidate_popup_row(row, col, width, line, attr, TRUE);
+  ok = draw_candidate_window_row(row, col, width, line, attr, TRUE);
   free(line);
   free(clipped);
   return ok;
 }
 
 /*
- * Draws a horizontal border row of the popup at (row, col), using the given
+ * Draws a horizontal border row of the window at (row, col), using the given
  * left and right corner glyphs and filling the width with horizontal glyphs.
  */
-static int render_candidate_popup_border(int row, int col, int width,
+static int render_candidate_window_border(int row, int col, int width,
                                          const char *left, const char *right)
 {
-  const char *horizontal = get_popup_frame_glyphs()->horizontal;
+  const char *horizontal = get_window_frame_glyphs()->horizontal;
   size_t left_len = strlen(left);
   size_t horizontal_len = strlen(horizontal);
   size_t right_len = strlen(right);
-  int fill = width - POPUP_BORDER_COLS;
+  int fill = width - WINDOW_BORDER_COLS;
   size_t line_len = left_len + (size_t)fill * horizontal_len + right_len;
   char *line = uim_malloc(line_len + 1);
   size_t offset = 0;
@@ -600,50 +600,50 @@ static int render_candidate_popup_border(int row, int col, int width,
   offset += right_len;
   line[offset] = '\0';
 
-  ok = draw_candidate_popup_row(row, col, width, line, UPreeditAttr_None,
+  ok = draw_candidate_window_row(row, col, width, line, UPreeditAttr_None,
                                 FALSE);
   free(line);
   return ok;
 }
 
 /*
- * Draws the popup described by layout: top border, the visible candidates
+ * Draws the window described by layout: top border, the visible candidates
  * (the selected one in reverse video), the footer, and the bottom border.
  * Records the drawn area so it can be erased later. On a write error, the
- * partial popup is erased and FALSE is returned.
+ * partial window is erased and FALSE is returned.
  */
-static int render_candidate_popup(const struct candidate_popup_layout *layout)
+static int render_candidate_window(const struct candidate_window_layout *layout)
 {
-  const struct popup_frame_glyphs *glyphs = get_popup_frame_glyphs();
+  const struct window_frame_glyphs *glyphs = get_window_frame_glyphs();
   int row = layout->row + 1;
   int i;
 
-  s_candidate_popup.visible = TRUE;
-  s_candidate_popup.row = layout->row;
-  s_candidate_popup.col = layout->col;
-  s_candidate_popup.width = layout->width;
-  s_candidate_popup.height = layout->height;
+  s_candidate_window.visible = TRUE;
+  s_candidate_window.row = layout->row;
+  s_candidate_window.col = layout->col;
+  s_candidate_window.width = layout->width;
+  s_candidate_window.height = layout->height;
   put_save_cursor();
   put_cursor_invisible();
-  if (!render_candidate_popup_border(layout->row, layout->col, layout->width,
+  if (!render_candidate_window_border(layout->row, layout->col, layout->width,
                                      glyphs->top_left, glyphs->top_right)) {
     goto output_error;
   }
   for (i = 0; i < layout->visible_count; i++) {
     int selected = layout->selected != UNDEFINED && i == layout->selected;
-    if (!render_candidate_popup_line(row + i, layout->col, layout->width,
+    if (!render_candidate_window_line(row + i, layout->col, layout->width,
                                      layout->items[i],
                                      selected ? UPreeditAttr_Reverse :
                                      UPreeditAttr_None)) {
       goto output_error;
     }
   }
-  if (!render_candidate_popup_line(row + layout->visible_count,
+  if (!render_candidate_window_line(row + layout->visible_count,
                                    layout->col, layout->width,
                                    layout->footer, UPreeditAttr_None)) {
     goto output_error;
   }
-  if (!render_candidate_popup_border(layout->row + layout->height - 1,
+  if (!render_candidate_window_border(layout->row + layout->height - 1,
                                      layout->col, layout->width,
                                      glyphs->bottom_left, glyphs->bottom_right)) {
     goto output_error;
@@ -655,24 +655,24 @@ static int render_candidate_popup(const struct candidate_popup_layout *layout)
 output_error:
   put_restore_cursor();
   put_cursor_normal();
-  restore_candidate_popup();
+  restore_candidate_window();
   return FALSE;
 }
 
-/* Redraws the candidate popup for the current state, if -p is enabled. */
-void draw_candidate_popup_refresh(void)
+/* Redraws the candidate window for the current state, if --candidate-window is enabled. */
+void draw_candidate_window_refresh(void)
 {
-  if (!g_opt.candidate_popup) {
+  if (!g_opt.candidate_window) {
     return;
   }
-  restore_candidate_popup();
-  show_candidate_popup();
+  restore_candidate_window();
+  show_candidate_window();
 }
 
-/* Erases the candidate popup, if one is shown. */
-void draw_candidate_popup_clear(void)
+/* Erases the candidate window, if one is shown. */
+void draw_candidate_window_clear(void)
 {
-  restore_candidate_popup();
+  restore_candidate_window();
 }
 
 #if defined(DEBUG) && DEBUG > 2
@@ -740,7 +740,7 @@ int draw(void)
     return FALSE;
   }
 
-  restore_candidate_popup();
+  restore_candidate_window();
 
   prev_preedit = s_preedit;
   s_preedit = get_preedit();
@@ -803,8 +803,8 @@ int draw(void)
     s_preedit->width = s_preedit->cursor = s_preedit->nr_psegs = 0;
   }
 
-  if (g_opt.candidate_popup) {
-    show_candidate_popup();
+  if (g_opt.candidate_window) {
+    show_candidate_window();
   }
 
   free_preedit(prev_preedit);
@@ -954,8 +954,8 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
   prev_index_col = index_col;
 
   mode_str = get_mode_str();
-  /* With -p, candidates are shown only in the popup, never in the statusline */
-  if (g_opt.candidate_popup) {
+  /* With --candidate-window, candidates are shown only in the window, never in the statusline */
+  if (g_opt.candidate_window) {
     statusline_str = uim_strdup("");
     candidate_str = uim_strdup("");
     candidate_col = UNDEFINED;
@@ -1211,7 +1211,7 @@ void draw_statusline_force_restore(void)
  */
 void recover_display(void)
 {
-  draw_candidate_popup_clear();
+  draw_candidate_window_clear();
   if (g_start_preedit) {
     put_cursor_invisible();
     erase_displayed_preedit(s_preedit);
@@ -1774,7 +1774,7 @@ void draw_winch(struct winsize *prev_win)
     put_restore_cursor();
     put_cursor_normal();
   }
-  draw_candidate_popup_refresh();
+  draw_candidate_window_refresh();
 }
 
 #if defined(DEBUG) && DEBUG > 2

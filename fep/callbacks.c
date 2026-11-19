@@ -114,10 +114,10 @@ struct candidate_tag {
   int *page2index;
   /* 現在の候補のインデックスを描画するカラム */
   int *index_col;
-  /* Candidate strings for the candidate popup */
-  char **popup_items;
-  /* Number of candidates per page in the candidate popup (-p) */
-  int popup_page_size;
+  /* Candidate strings for the candidate window */
+  char **window_items;
+  /* Number of candidates per page in the candidate window */
+  int window_page_size;
 };
 
 static struct candidate_tag s_candidate = {
@@ -130,8 +130,8 @@ static struct candidate_tag s_candidate = {
   NULL,      /* cand_col */
   NULL,      /* page2index */
   NULL,      /* index_col */
-  NULL,      /* popup_items */
-  UNDEFINED, /* popup_page_size */
+  NULL,      /* window_items */
+  UNDEFINED, /* window_page_size */
 };
 
 /*
@@ -157,7 +157,7 @@ void init_callbacks(void)
   uim_set_configuration_changed_cb(g_context, configuration_changed_cb);
   uim_set_im_switch_request_cb(g_context, switch_app_global_im_cb, switch_system_global_im_cb);
   configuration_changed_cb(NULL);
-  if (g_opt.status_type != NONE || g_opt.candidate_popup) {
+  if (g_opt.status_type != NONE || g_opt.candidate_window) {
     uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
   }
 
@@ -233,8 +233,8 @@ int end_callbacks(void)
       s_statusline_str = uim_strdup(s_candidate.page_strs[s_candidate.page]);
     else
       s_statusline_str = uim_strdup("");
-    /* With -p the statusline never shows the selected candidate */
-    if (s_candidate.index != UNDEFINED && !g_opt.candidate_popup) {
+    /* With --candidate-window the statusline never shows the selected candidate */
+    if (s_candidate.index != UNDEFINED && !g_opt.candidate_window) {
       set_candidate();
     } else {
       s_candidate_str = uim_strdup("");
@@ -297,11 +297,11 @@ int get_candidate_col(void)
 }
 
 /*
- * Gets the page the candidate popup shows: the index of its first candidate,
+ * Gets the page the candidate window shows: the index of its first candidate,
  * its candidate count, the selected candidate relative to the page (UNDEFINED
  * if none), and the total. Returns FALSE if there is no page to show.
  */
-int get_candidate_popup_page(int *first, int *count, int *selected, int *total)
+int get_candidate_window_page(int *first, int *count, int *selected, int *total)
 {
   int end;
 
@@ -320,30 +320,30 @@ int get_candidate_popup_page(int *first, int *count, int *selected, int *total)
 }
 
 /*
- * Returns a newly allocated copy of the popup item at index, or NULL if there
+ * Returns a newly allocated copy of the window item at index, or NULL if there
  * is none. The caller must free it.
  */
-char *get_candidate_popup_item(int index)
+char *get_candidate_window_item(int index)
 {
   if (s_candidate.nr == UNDEFINED ||
       index < 0 || index >= s_candidate.nr ||
-      s_candidate.popup_items[index] == NULL) {
+      s_candidate.window_items[index] == NULL) {
     return NULL;
   }
-  return uim_strdup(s_candidate.popup_items[index]);
+  return uim_strdup(s_candidate.window_items[index]);
 }
 
 /*
  * Returns an id that changes whenever a candidate list starts, and the
  * number of candidates on a full page.
  */
-void get_candidate_popup_list_info(int *list_id, int *page_size)
+void get_candidate_window_list_info(int *list_id, int *page_size)
 {
   *list_id = s_candidate_list_id;
-  *page_size = s_candidate.popup_page_size;
+  *page_size = s_candidate.window_page_size;
 }
 
-/* Returns the label for the remaining candidate count in the popup footer. */
+/* Returns the label for the remaining candidate count in the window footer. */
 const char *get_candidate_nokori_str(void)
 {
   return s_nokori_str;
@@ -795,28 +795,28 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 }
 
 /*
- * Returns the number of candidates per page in the candidate popup (-p).
+ * Returns the number of candidates per page in the candidate window.
  * Candidates that do not fit the screen height go to the next page.
  */
-static int candidate_popup_page_size(int nr, int display_limit)
+static int candidate_window_page_size(int nr, int display_limit)
 {
   int size = display_limit > 0 ? display_limit : nr;
   int avail;
 
-  avail = g_win->ws_row - POPUP_BORDER_ROWS - POPUP_FOOTER_ROWS;
+  avail = g_win->ws_row - WINDOW_BORDER_ROWS - WINDOW_FOOTER_ROWS;
   size = min(size, avail);
   return max(size, 1);
 }
 
 /*
  * Returns the head index of the page that follows the page starting at
- * start, in the candidate popup (-p).
+ * start, in the candidate window.
  * It never crosses a virtual page boundary of display_limit (the blocks
  * of 10 that number keys select from).
  */
-static int popup_page_end(int start)
+static int window_page_end(int start)
 {
-  int end = start + s_candidate.popup_page_size;
+  int end = start + s_candidate.window_page_size;
 
   if (s_candidate.limit > 0) {
     int virtual_end = (start / s_candidate.limit + 1) * s_candidate.limit;
@@ -843,18 +843,18 @@ static void init_candidate(int nr, int display_limit)
 
   s_candidate.nr = nr;
   s_candidate.limit = display_limit;
-  s_candidate.popup_page_size = candidate_popup_page_size(nr, display_limit);
+  s_candidate.window_page_size = candidate_window_page_size(nr, display_limit);
   s_candidate.page = 0;
   s_candidate.cand_col = uim_malloc(nr * sizeof(int));
-  s_candidate.popup_items = uim_malloc(nr * sizeof(char *));
-  memset(s_candidate.popup_items, 0, nr * sizeof(char *));
+  s_candidate.window_items = uim_malloc(nr * sizeof(char *));
+  memset(s_candidate.window_items, 0, nr * sizeof(char *));
 
   assert(s_candidate.nr != UNDEFINED);
   assert(s_candidate.limit != UNDEFINED);
   assert(s_candidate.cand_col != NULL);
 
-  if (g_opt.candidate_popup) {
-    for (start = 0; start < nr; start = popup_page_end(start)) {
+  if (g_opt.candidate_window) {
+    for (start = 0; start < nr; start = window_page_end(start)) {
       nr_virtual_pages++;
     }
   } else if (s_candidate.limit) {
@@ -874,18 +874,18 @@ static void init_candidate(int nr, int display_limit)
     s_candidate.page_strs[i] = NULL;
   }
 
-  if (g_opt.candidate_popup) {
-    for (i = 0, start = 0; i < nr_virtual_pages; i++, start = popup_page_end(start)) {
+  if (g_opt.candidate_window) {
+    for (i = 0, start = 0; i < nr_virtual_pages; i++, start = window_page_end(start)) {
       s_candidate.page2index[i] = start;
     }
   }
 }
 
 /*
- * Generate s_candidate.popup_items of the current page.
- * With -p the statusline is not used, so only this is needed.
+ * Generate s_candidate.window_items of the current page.
+ * With --candidate-window the statusline is not used, so only this is needed.
  */
-static void make_popup_items(void)
+static void make_window_items(void)
 {
   int index;
   int start = s_candidate.page2index[s_candidate.page];
@@ -896,8 +896,8 @@ static void make_popup_items(void)
     uim_candidate cand = uim_get_candidate(g_context, index, index - start);
     char *cand_str_cand = tab2space(uim_candidate_get_cand_str(cand));
 
-    free(s_candidate.popup_items[index]);
-    uim_asprintf(&s_candidate.popup_items[index], "%s:%s",
+    free(s_candidate.window_items[index]);
+    uim_asprintf(&s_candidate.window_items[index], "%s:%s",
                  uim_candidate_get_heading_label(cand), cand_str_cand);
     uim_candidate_free(cand);
     free(cand_str_cand);
@@ -928,8 +928,8 @@ static void make_page_strs(void)
   assert(s_candidate.limit != UNDEFINED);
   assert(s_candidate.cand_col != NULL);
 
-  if (g_opt.candidate_popup) {
-    make_popup_items();
+  if (g_opt.candidate_window) {
+    make_window_items();
     return;
   }
 
@@ -1092,12 +1092,12 @@ static void make_page_strs(void)
 
 /*
  * Whether the page has been generated by make_page_strs().
- * With -p only popup_items are generated, so check them instead of page_strs.
+ * With --candidate-window only window_items are generated, so check them instead of page_strs.
  */
 static int page_is_generated(int page)
 {
-  if (g_opt.candidate_popup) {
-    return s_candidate.popup_items[s_candidate.page2index[page]] != NULL;
+  if (g_opt.candidate_window) {
+    return s_candidate.window_items[s_candidate.page2index[page]] != NULL;
   }
   return s_candidate.page_strs[page] != NULL;
 }
@@ -1178,24 +1178,24 @@ static void reset_candidate(void)
   if (s_candidate.index_col != NULL) {
     free(s_candidate.index_col);
   }
-  if (s_candidate.popup_items != NULL) {
+  if (s_candidate.window_items != NULL) {
     int i;
     for (i = 0; i < s_candidate.nr; i++) {
-      free(s_candidate.popup_items[i]);
+      free(s_candidate.window_items[i]);
     }
-    free(s_candidate.popup_items);
+    free(s_candidate.window_items);
   }
 
   s_candidate.nr = UNDEFINED;
   s_candidate.limit = UNDEFINED;
-  s_candidate.popup_page_size = UNDEFINED;
+  s_candidate.window_page_size = UNDEFINED;
   s_candidate.nr_pages = UNDEFINED;
   s_candidate.index = UNDEFINED;
   s_candidate.page_strs = NULL;
   s_candidate.cand_col = NULL;
   s_candidate.page2index = NULL;
   s_candidate.index_col = NULL;
-  s_candidate.popup_items = NULL;
+  s_candidate.window_items = NULL;
 }
 
 /*
@@ -1293,13 +1293,13 @@ void callbacks_winch(void)
     free(s_candidate.cand_col);
     s_candidate.cand_col = NULL;
   }
-  if (s_candidate.popup_items != NULL) {
+  if (s_candidate.window_items != NULL) {
     int i;
     for (i = 0; i < s_candidate.nr; i++) {
-      free(s_candidate.popup_items[i]);
+      free(s_candidate.window_items[i]);
     }
-    free(s_candidate.popup_items);
-    s_candidate.popup_items = NULL;
+    free(s_candidate.window_items);
+    s_candidate.window_items = NULL;
   }
 
   current_index = s_candidate.index;

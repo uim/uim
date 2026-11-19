@@ -182,14 +182,14 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのf
     背景の復元を無効にします。libvterm の文字幅が端末の文字幅と異なる場合に
     使ってください。
 
-  o -p, --candidate-popup
-    候補一覧をpreeditカーソル付近のポップアップに表示します。ステータスラインには表示しません。
-    ポップアップは下、上の順に置き、横位置はcandidate-window-positionで変えられます。
+  o --candidate-window
+    候補一覧をpreeditカーソル付近の候補ウィンドウに表示します。ステータスラインには表示しません。
+    候補ウィンドウは下、上の順に置き、横位置はcandidate-window-positionで変えられます。
     caret(既定)はカーソル位置、leftはpreeditの先頭に合わせます。
-    ポップアップにはlibvtermによる背景復元が必要です。-pは-o、-S、-K、--no-restore-backgroundと併用できません。
+    候補ウィンドウにはlibvtermによる背景復元が必要です。--candidate-windowは-o、-S、-K、--no-restore-backgroundと併用できません。
 
-  o --ascii-popup-border
-    -p のポップアップの枠を ASCII 文字 (| - +) で描画します。罫線文字
+  o --ascii-window-border
+    --candidate-window の候補ウィンドウの枠を ASCII 文字 (| - +) で描画します。罫線文字
     (│ ─ など、東アジア圏で Ambiguous 幅の文字) を端末が全角幅で表示する場合に
     使ってください。
 

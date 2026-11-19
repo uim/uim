@@ -65,7 +65,7 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
-/* Horizontal position of the candidate popup (candidate-window-position) */
+/* Horizontal position of the candidate window (candidate-window-position) */
 enum {
   CANDWIN_POS_CARET,
   CANDWIN_POS_LEFT,
@@ -91,11 +91,11 @@ struct opt_tag {
   int print_key;
   /* プリエディット背景の復元を使わないか */
   int no_restore_background;
-  /* Show candidates in a popup near the cursor */
-  int candidate_popup;
-  /* Draw the popup frame with 1-column ASCII instead of box drawing */
-  int ascii_popup_border;
-  /* Column used when the popup is placed above or below the preedit: caret
+  /* Show candidates in a window near the cursor */
+  int candidate_window;
+  /* Draw the window frame with 1-column ASCII instead of box drawing */
+  int ascii_window_border;
+  /* Column used when the window is placed above or below the preedit: caret
    * (cursor) or left (preedit start) */
   int candidate_window_position;
 };
