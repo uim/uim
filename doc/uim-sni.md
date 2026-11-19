@@ -27,6 +27,9 @@ exec uim-sni
 The icons are added when the panel's tray is available and are added
 again when the panel restarts.
 
+Clicking an icon shows its menu, such as the input methods and the
+input modes, and choosing one switches to it.
+
 Turn on "Use icon for dark background"
 (`toolbar-icon-for-dark-background?`) for a panel with a dark
 background, such as Waybar by default. The change applies when
@@ -41,5 +44,9 @@ session bus, and another `uim-sni` exits.
 
 ## Limitations
 
-- Clicking an icon does nothing yet. Use `uim-im-switcher-cli` or
-  another toolbar to switch the input method or the input mode.
+- swaybar doesn't show the menus: it doesn't support
+  `com.canonical.dbusmenu`. Use `uim-im-switcher-cli` or another
+  toolbar to switch the input method or the input mode there.
+- The menus have no icons.
+- The menus don't have the commands of the other toolbars, such as
+  starting the input method switcher and the preferences.

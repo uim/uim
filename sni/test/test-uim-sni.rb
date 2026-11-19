@@ -38,6 +38,7 @@ require "tmpdir"
 
 class TestUimSni < Test::Unit::TestCase
   ITEM_INTERFACE = "org.kde.StatusNotifierItem"
+  MENU_INTERFACE = "com.canonical.dbusmenu"
   WATCHER_NAME = "org.kde.StatusNotifierWatcher"
   TIMEOUT = 5
 
@@ -166,11 +167,17 @@ class TestUimSni < Test::Unit::TestCase
     message.chomp("\n")
   end
 
-  # branches: [[indication_id, iconic_label, label_string], ...]
+  # branches: [[indication_id, iconic_label, label_string, leaves], ...]
+  # leaves (optional): [[indication_id, iconic_label, label_string,
+  #                      short_desc, action_id, activity], ...]
   def send_prop_list(branches, charset: "UTF-8")
     message = "prop_list_update\ncharset=#{charset}\n".b
-    branches.each do |branch|
+    branches.each do |indication_id, iconic_label, label_string, leaves = []|
+      branch = [indication_id, iconic_label, label_string]
       message << "branch\t#{branch.join("\t")}\n".encode(charset).b
+      leaves.each do |leaf|
+        message << "leaf\t#{leaf.join("\t")}\n".encode(charset).b
+      end
     end
     @helper.write(message + "\n")
   end
@@ -225,6 +232,12 @@ class TestUimSni < Test::Unit::TestCase
     object = @host_bus.service(service).object("/StatusNotifierItem")
     object.introspect
     object[ITEM_INTERFACE]
+  end
+
+  def menu(service)
+    object = @host_bus.service(service).object("/MenuBar")
+    object.introspect
+    object[MENU_INTERFACE]
   end
 
   def titles(services)
@@ -329,6 +342,162 @@ class TestUimSni < Test::Unit::TestCase
       drain(0.5)
       assert_equal([[services[1], "NewIcon"], [services[1], "NewToolTip"]],
                    @signals)
+    end
+
+    sub_test_case("menu") do
+      def setup
+        super do
+          read_helper_message # prop_list_get
+          send_prop_list([
+                           [
+                             "ja_hiragana",
+                             "あ",
+                             "Hiragana",
+                             [
+                               [
+                                 "ja_hiragana",
+                                 "あ",
+                                 "Hiragana",
+                                 "Hiragana mode",
+                                 "action_hiragana",
+                                 "*",
+                               ],
+                               [
+                                 "separator",
+                                 "",
+                                 "",
+                                 "",
+                                 "",
+                                 "",
+                               ],
+                               [
+                                 "ja_halfkana",
+                                 "ｱ",
+                                 "Half_kana",
+                                 "Half-width katakana mode",
+                                 "action_halfkana",
+                                 "",
+                               ],
+                             ],
+                           ],
+                         ])
+          @service = wait_registered(1)[0]
+          yield
+        end
+      end
+
+      test("Menu") do
+        assert_equal("/MenuBar", item(@service)["Menu"])
+      end
+
+      test("ItemIsMenu") do
+        assert_true(item(@service)["ItemIsMenu"])
+      end
+
+      test("layout") do
+        assert_equal([
+                       1,
+                       [
+                         0,
+                         {"children-display" => "submenu"},
+                         [
+                           [
+                             1,
+                             {
+                               "label" => "Hiragana",
+                               "toggle-type" => "radio",
+                               "toggle-state" => 1,
+                             },
+                             [],
+                           ],
+                           [2, {"type" => "separator"}, []],
+                           [
+                             3,
+                             {
+                               "label" => "Half__kana",
+                               "toggle-type" => "radio",
+                               "toggle-state" => 0,
+                             },
+                             [],
+                           ],
+                         ],
+                       ],
+                     ],
+                     menu(@service).GetLayout(0, -1, []))
+      end
+
+      test("GetGroupProperties") do
+        assert_equal([[[3, {
+                              "label" => "Half__kana",
+                              "toggle-type" => "radio",
+                              "toggle-state" => 0,
+                            }]]],
+                     menu(@service).GetGroupProperties([3, 4], []))
+      end
+
+      test("GetProperty") do
+        assert_equal(["Hiragana"], menu(@service).GetProperty(1, "label"))
+      end
+
+      test("clicked") do
+        menu(@service).Event(3, "clicked", DBus.variant("i", 0), 0)
+        assert_equal("prop_activate\naction_halfkana\n",
+                     read_helper_message)
+      end
+
+      test("GetLayout of a leaf") do
+        assert_equal([1, [2, {"type" => "separator"}, []]],
+                     menu(@service).GetLayout(2, -1, []))
+      end
+
+      test("GetLayout of an unknown item") do
+        assert_raise(DBus::Error) do
+          menu(@service).GetLayout(4, -1, [])
+        end
+      end
+
+      # The IDs change with the leaves so that an event for the menu
+      # shown before doesn't choose another leaf.
+      test("event for an old menu") do
+        send_prop_list([
+                         [
+                           "ja_katakana",
+                           "ア",
+                           "Katakana",
+                           [
+                             [
+                               "ja_katakana",
+                               "ア",
+                               "Katakana",
+                               "Katakana mode",
+                               "action_katakana",
+                               "*",
+                             ],
+                             [
+                               "ja_halfkana",
+                               "ｱ",
+                               "Half_kana",
+                               "Half-width katakana mode",
+                               "action_halfkana",
+                               "",
+                             ],
+                           ],
+                         ],
+                       ])
+        wait_until {menu(@service).GetLayout(0, -1, [])[0] == 2}
+        # 1 is "Hiragana" of the old menu.
+        menu(@service).Event(1, "clicked", DBus.variant("i", 0), 0)
+        # 5 is "Half_kana" of the new menu.
+        menu(@service).Event(5, "clicked", DBus.variant("i", 0), 0)
+        assert_equal("prop_activate\naction_halfkana\n",
+                     read_helper_message)
+      end
+
+      test("revision") do
+        send_prop_list([["ja_hiragana", "あ", "Hiragana", []]])
+        wait_until {menu(@service).GetLayout(0, -1, [])[0] == 2}
+        assert_equal([], menu(@service).GetLayout(0, -1, [])[1][2])
+      end
     end
 
     sub_test_case("dark background") do
