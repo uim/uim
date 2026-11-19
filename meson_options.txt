@@ -90,6 +90,10 @@ option('skk',
        type: 'boolean',
        value: true,
        description: 'build a plugin for SKK')
+option('sni',
+       type: 'feature',
+       value: 'auto',
+       description: 'build uim-sni (StatusNotifierItem tray icons)')
 option('sqlite3',
        type: 'feature',
        value: 'auto',

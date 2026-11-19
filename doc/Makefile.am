@@ -19,4 +19,5 @@ EXTRA_DIST = \
 	tutcode-utf8-migration-guide.md \
 	uim-custom-cli.md \
 	uim-im-switcher-cli.md \
+	uim-sni.md \
 	uim-wayland.md

@@ -99,6 +99,8 @@ gtk4 = dependency('gtk4', required: get_option('gtk4'))
 
 ibus = dependency('ibus-1.0', version: '>=1.5.0', required: get_option('ibus'))
 
+gio = dependency('gio-2.0', required: get_option('sni'))
+
 wayland_protocols = dependency('wayland-protocols',
                                version: '>=1.5',
                                required: get_option('wayland'))
@@ -527,6 +529,9 @@ endif
 if build_mozc
   subdir('mozc')
 endif
+if gio.found()
+  subdir('sni')
+endif
 if build_wayland
   subdir('wayland')
 endif
@@ -558,6 +563,7 @@ summary({
           'Notify': get_option('notify'),
           'Pref': build_pref,
           'SKK': get_option('skk'),
+          'SNI': gio.found(),
           'Wayland': build_wayland,
           'XIM': build_xim,
         },
