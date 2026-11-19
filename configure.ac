@@ -2037,6 +2037,7 @@ AC_CONFIG_FILES([Makefile
                  xim/Makefile
                  wayland/Makefile
                  ibus/Makefile
+                 sni/Makefile
                  fep/Makefile
                  emacs/Makefile
                  emacs/uim-version.el

@@ -18,4 +18,5 @@ tutcode-utf8-migration-guide.md    Tutcode UTF-8 migration guide
 tutcode-utf8-migration-guide-ja.md Tutcode UTF-8 migration guide in Japanese
 uim-custom-cli.md                  Set or list custom values from the command line
 uim-im-switcher-cli.md             Switch the input method from a shell
+uim-sni.md                         Toolbar for StatusNotifierItem trays
 uim-wayland.md                     Input method for Wayland compositors (zwp_input_method_v1)

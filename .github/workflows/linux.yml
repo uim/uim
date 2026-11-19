@@ -84,7 +84,8 @@ jobs:
             libssl-dev \
             meson \
             ninja-build \
-            ruby
+            ruby \
+            ruby-dbus
       - name: Setup
         run: |
           meson setup \
@@ -100,7 +101,9 @@ jobs:
             -Dlibnotify=enabled \
             -Dm17nlib=enabled \
             -Dopenssl=enabled \
+            -Dsni=enabled \
             -Dsqlite3=enabled \
+            -Dtests=enabled \
             build
       - name: Build
         run: |
