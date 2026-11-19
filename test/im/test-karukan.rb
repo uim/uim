@@ -1,0 +1,161 @@
+# Copyright (c) 2026 uim Project https://github.com/uim/uim
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the name of authors nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+# IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+require "json"
+require "rbconfig"
+require "tmpdir"
+
+require_relative "im-driver"
+
+class KarukanTest < Test::Unit::TestCase
+  include IMDriver::PreeditAttribute
+
+  RETURN = 0xff0d
+
+  def setup
+    omit("karukan isn't enabled") unless IMDriver.available?("karukan")
+    Dir.mktmpdir do |dir|
+      @log = File.join(dir, "requests.jsonl")
+      # karukan-server-command is a command without arguments.
+      server = File.join(dir, "karukan-imserver")
+      fake_server = File.join(__dir__, "fake-karukan-imserver.rb")
+      File.write(server, <<~SH)
+        #!/bin/sh
+        exec "#{RbConfig.ruby}" "#{fake_server}"
+      SH
+      File.chmod(0755, server)
+      @driver = IMDriver.new("karukan", <<~SCHEME,
+        (require-module "karukan")
+        (set! karukan-server-command "#{server}")
+      SCHEME
+                             env: {"FAKE_KARUKAN_IMSERVER_LOG" => @log})
+      begin
+        @driver.start
+        # Turn it on.
+        @driver.press("S-space")
+        yield
+      ensure
+        @driver.stop
+      end
+    end
+  end
+
+  def requests
+    File.readlines(@log).collect {|line| JSON.parse(line)}
+  end
+
+  def keysyms
+    requests.select {|request| request["method"] == "process_key"}
+            .collect {|request| request["params"]["keysym"]}
+  end
+
+  def test_preedit
+    @driver.type("ab")
+    assert_equal([[UNDERLINE, "ab"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  def test_commit
+    @driver.type("ab")
+    @driver.press("return")
+    assert_equal(["ab"], @driver.commits)
+  end
+
+  def test_commit_clears_preedit
+    @driver.type("ab")
+    @driver.press("return")
+    assert_equal([], @driver.preedit)
+  end
+
+  def test_requests
+    @driver.type("a")
+    assert_equal(["init", "reset", "process_key"],
+                 requests.collect {|request| request["method"]})
+  end
+
+  def test_off
+    @driver.type("a")
+    @driver.press("return", "S-space")
+    @driver.type("b")
+    assert_equal(["a".ord, RETURN], keysyms)
+  end
+
+  def test_focus_out
+    @driver.type("ab")
+    @driver.focus_out
+    assert_equal(["ab"], @driver.commits)
+  end
+
+  # "!" makes the fake server exit. The next key finds it and starts it
+  # again.
+  def test_restart
+    @driver.type("a!b")
+    assert_equal([[UNDERLINE, "b"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  sub_test_case("katakana mode") do
+    def test_preedit
+      @driver.press("C-k")
+      @driver.type("ab")
+      assert_equal([[UNDERLINE, "AB"], [CURSOR, ""]],
+                   @driver.preedit)
+    end
+
+    def test_on
+      @driver.press("C-k", "S-space", "S-space")
+      @driver.type("ab")
+      assert_equal([[UNDERLINE, "ab"], [CURSOR, ""]],
+                   @driver.preedit)
+    end
+  end
+
+  sub_test_case("conversion") do
+    def test_preedit
+      @driver.type("ab")
+      @driver.press("space")
+      assert_equal([[REVERSE | CURSOR, "AB"]],
+                   @driver.preedit)
+    end
+
+    def test_next_candidate
+      @driver.type("ab")
+      @driver.press("space", "space", "return")
+      assert_equal(["ab"], @driver.commits)
+    end
+
+    def test_focus_out
+      @driver.type("ab")
+      @driver.press("space")
+      @driver.focus_out
+      assert_equal([["AB"], []],
+                   [@driver.commits, @driver.preedit])
+    end
+  end
+end

@@ -12,6 +12,7 @@ RELEASING                          Release procedure
 UIM-SCM                            Usage of uim-scm API for developers
 UIM-SH                             How to use uim-sh to debug interactively
 UNIT-TEST                          usage of the unit testing framework for uim for developers
+karukan.md                         Japanese input method with neural kana-kanji conversion
 skk-utf8-migration-guide.md        SKK UTF-8 migration guide
 skk-utf8-migration-guide-ja.md     SKK UTF-8 migration guide in Japanese
 tutcode-utf8-migration-guide.md    Tutcode UTF-8 migration guide

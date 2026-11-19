@@ -56,6 +56,9 @@ scm_files = files(
   'mozc.scm',
   'mozc-custom.scm',
   'mozc-key-custom.scm',
+  'karukan.scm',
+  'karukan-custom.scm',
+  'karukan-key-custom.scm',
   'canna.scm',
   'cannav3-socket.scm',
   'canna-custom.scm',
@@ -152,6 +155,8 @@ module_names += [
   'viqr',
   'ipa-x-sampa',
   'look',
+  # IMs using a server that may not be installed
+  'karukan',
   # web based IMs
   'google-cgiapi-jp',
 ]

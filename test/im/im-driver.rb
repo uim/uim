@@ -96,6 +96,14 @@ class IMDriver
     run("action #{action}")
   end
 
+  def focus_in
+    run("focus in")
+  end
+
+  def focus_out
+    run("focus out")
+  end
+
   private
   def run(command)
     @io.puts(command)

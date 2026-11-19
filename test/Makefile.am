@@ -50,6 +50,7 @@ endif
 
 EXTRA_DIST = run.sh.in $(uim_tests) meson.build \
 	im/fake-dictionary.rb \
+	im/fake-karukan-imserver.rb \
 	im/im-driver.c \
 	im/im-driver.rb \
 	im/run.rb \
@@ -57,6 +58,7 @@ EXTRA_DIST = run.sh.in $(uim_tests) meson.build \
 	im/test-canna.rb \
 	im/test-elatin.rb \
 	im/test-google-cgiapi-jp.rb \
+	im/test-karukan.rb \
 	im/test-skk.rb
 
 DISTCLEANFILES = run.sh
