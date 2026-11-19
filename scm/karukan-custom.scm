@@ -47,6 +47,12 @@
                (N_ "karukan-imserver command")
                (N_ "Command name or path of karukan-imserver that converts"))
 
+(define-custom 'karukan-use-surrounding-text? #t
+               '(karukan karukan-server)
+               '(boolean)
+               (N_ "Use the text before the cursor for conversion")
+               (N_ "long description will be here."))
+
 ;;
 ;; toolbar
 ;;

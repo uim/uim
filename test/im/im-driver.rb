@@ -109,6 +109,11 @@ class IMDriver
     run("index #{index}")
   end
 
+  # Sets the text before the cursor that the input method acquires.
+  def text_before_cursor=(text)
+    run("text #{text}")
+  end
+
   private
   def run(command)
     @io.puts(command)

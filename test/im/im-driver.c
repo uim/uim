@@ -48,6 +48,8 @@
  *   focus in|out   Give or take the focus.
  *   index INDEX    Highlight the candidate at INDEX as a candidate
  *                  window does when it's clicked.
+ *   text TEXT      Make TEXT the text before the cursor that the input
+ *                  method acquires. It's empty at first.
  *
  * Output lines, separated by tabs:
  *   preedit[ ATTR TEXT]...
@@ -69,6 +71,8 @@
 #include <uim/uim-util.h>
 
 static uim_context uc;
+/* The text before the cursor in the primary text area. */
+static char text_before_cursor[256];
 
 static void
 commit_cb(void *ptr, const char *str)
@@ -177,6 +181,19 @@ parse_key(const char *name, int *key, int *state)
   return 0;
 }
 
+/* Only the text before the cursor in the primary text area is
+ * available. */
+static int
+text_acquire_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+                int former_len, int latter_len, char **former, char **latter)
+{
+  if (text_id != UTextArea_Primary || origin != UTextOrigin_Cursor)
+    return -1;
+  *former = strdup(text_before_cursor);
+  *latter = NULL;
+  return 0;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -210,6 +227,8 @@ main(int argc, char **argv)
                                 candidate_select_cb,
                                 candidate_shift_page_cb,
                                 candidate_deactivate_cb);
+  /* The text can't be deleted. */
+  uim_set_text_acquisition_cb(uc, text_acquire_cb, NULL);
   printf("ready\n");
 
   while (fgets(line, sizeof(line), stdin)) {
@@ -234,6 +253,8 @@ main(int argc, char **argv)
       uim_focus_out_context(uc);
     } else if (strcmp(line, "index") == 0) {
       uim_set_candidate_index(uc, atoi(argument));
+    } else if (strcmp(line, "text") == 0) {
+      snprintf(text_before_cursor, sizeof(text_before_cursor), "%s", argument);
     } else {
       fprintf(stderr, "invalid command: %s %s\n", line, argument);
       break;

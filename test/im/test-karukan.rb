@@ -53,6 +53,7 @@ class KarukanTest < Test::Unit::TestCase
       @driver = IMDriver.new("karukan", <<~SCHEME,
         (require-module "karukan")
         (set! karukan-server-command "#{server}")
+        #{custom_scheme}
       SCHEME
                              env: {"FAKE_KARUKAN_IMSERVER_LOG" => @log})
       begin
@@ -66,8 +67,18 @@ class KarukanTest < Test::Unit::TestCase
     end
   end
 
+  # Overridden to customize karukan.
+  def custom_scheme
+    ""
+  end
+
   def requests
     File.readlines(@log).collect {|line| JSON.parse(line)}
+  end
+
+  def surrounding_texts
+    requests.select {|request| request["method"] == "set_surrounding_text"}
+            .collect {|request| request["params"]}
   end
 
   def keysyms
@@ -95,7 +106,7 @@ class KarukanTest < Test::Unit::TestCase
 
   def test_requests
     @driver.type("a")
-    assert_equal(["init", "reset", "process_key"],
+    assert_equal(["init", "reset", "set_surrounding_text", "process_key"],
                  requests.collect {|request| request["method"]})
   end
 
@@ -133,6 +144,36 @@ class KarukanTest < Test::Unit::TestCase
       @driver.type("ab")
       assert_equal([[UNDERLINE, "ab"], [CURSOR, ""]],
                    @driver.preedit)
+    end
+  end
+
+  sub_test_case("karukan-use-surrounding-text?: #t") do
+    def test_text
+      @driver.text_before_cursor = "前の文"
+      @driver.type("a")
+      assert_equal([{"text" => "前の文", "cursor_pos" => 3}],
+                   surrounding_texts)
+    end
+
+    # It's sent when a composition starts.
+    def test_composing
+      @driver.type("ab")
+      @driver.press("return")
+      @driver.type("c")
+      assert_equal(2, surrounding_texts.size)
+    end
+  end
+
+  sub_test_case("karukan-use-surrounding-text?: #f") do
+    def custom_scheme
+      "(set! karukan-use-surrounding-text? #f)"
+    end
+
+    def test_text
+      @driver.text_before_cursor = "前の文"
+      @driver.type("a")
+      assert_equal([{"text" => "", "cursor_pos" => 0}],
+                   surrounding_texts)
     end
   end
 
