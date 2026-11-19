@@ -46,6 +46,8 @@
  *   action NAME    Activate an action such as
  *                  "action_google-cgiapi-jp_kana".
  *   focus in|out   Give or take the focus.
+ *   index INDEX    Highlight the candidate at INDEX as a candidate
+ *                  window does when it's clicked.
  *
  * Output lines, separated by tabs:
  *   preedit[ ATTR TEXT]...
@@ -131,6 +133,7 @@ static const struct {
   {"left", UKey_Left},
   {"return", UKey_Return},
   {"right", UKey_Right},
+  {"pagedown", UKey_Next},
   {"f6", UKey_F6},
   {"f7", UKey_F7},
   {"f8", UKey_F8},
@@ -229,6 +232,8 @@ main(int argc, char **argv)
       uim_focus_in_context(uc);
     } else if (strcmp(line, "focus") == 0 && strcmp(argument, "out") == 0) {
       uim_focus_out_context(uc);
+    } else if (strcmp(line, "index") == 0) {
+      uim_set_candidate_index(uc, atoi(argument));
     } else {
       fprintf(stderr, "invalid command: %s %s\n", line, argument);
       break;

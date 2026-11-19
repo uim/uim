@@ -197,13 +197,17 @@
   (append
    context-rec-spec
    (list
-    (list 'on      #f)
-    (list 'preedit '()))))  ; segments of the preedit shown now
+    (list 'on          #f)
+    (list 'preedit     '())  ; segments of the preedit shown now
+    ;; ((text . description) ...) of the page shown now, or ()
+    (list 'candidates  '())
+    (list 'cand-cursor 0))))
 (define-record 'karukan-context karukan-context-rec-spec)
 (define karukan-context-new-internal karukan-context-new)
 
 (define (karukan-context-composing? kc)
-  (not (null? (karukan-context-preedit kc))))
+  (or (not (null? (karukan-context-preedit kc)))
+      (not (null? (karukan-context-candidates kc)))))
 
 (define (karukan-context-owner? kc)
   (and karukan-server
@@ -279,7 +283,7 @@
   (let ((text (karukan-json-string-ref 'text action))
         (caret (karukan-json-ref 'caret action)))
     (if (string=? text "")
-        (karukan-clear kc)
+        (karukan-clear-preedit kc)
         (let ((segments (karukan-compose-preedit
                          text
                          (if (integer? caret) caret (string-length text))
@@ -287,19 +291,51 @@
           (karukan-context-set-preedit! kc segments)
           (context-update-preedit kc segments)))))
 
+(define (karukan-show-candidates kc action)
+  (let ((candidates (map (lambda (candidate)
+                           (cons (karukan-json-string-ref 'text candidate)
+                                 (karukan-json-string-ref 'description
+                                                          candidate)))
+                         (karukan-json-array-ref 'candidates action))))
+    (if (null? candidates)
+        (karukan-hide-candidates kc)
+        (let ((n (length candidates))
+              (cursor (or (karukan-json-ref 'cursor action) 0))
+              ;; The server sends only the page shown now. The
+              ;; candidates change with the page and as the reading
+              ;; grows.
+              (changed? (not (equal? (karukan-context-candidates kc)
+                                     candidates))))
+          ;; The frontend gets the candidates when it's activated.
+          (karukan-context-set-candidates! kc candidates)
+          (karukan-context-set-cand-cursor! kc cursor)
+          (if changed?
+              (im-activate-candidate-selector kc n n))
+          (im-select-candidate kc cursor)))))
+
+(define (karukan-hide-candidates kc)
+  (if (not (null? (karukan-context-candidates kc)))
+      (im-deactivate-candidate-selector kc))
+  (karukan-context-set-candidates! kc '())
+  (karukan-context-set-cand-cursor! kc 0))
+
 (define (karukan-apply-action kc action)
   (let ((type (karukan-json-string-ref 'type action)))
     (cond
      ((string=? type "update_preedit")
       (karukan-update-preedit kc action))
+     ((string=? type "show_candidates")
+      (karukan-show-candidates kc action))
+     ((string=? type "hide_candidates")
+      (karukan-hide-candidates kc))
      ((string=? type "commit")
       ;; karukan-imserver doesn't clear the preedit with a commit.
-      (karukan-clear kc)
+      (karukan-clear-preedit kc)
       (let ((text (karukan-json-string-ref 'text action)))
         (if (not (string=? text ""))
             (im-commit kc text))))
-     ;; The candidates aren't shown yet. The auxiliary text such as the
-     ;; conversion time has no place in uim.
+     ;; The auxiliary text such as the conversion time has no place in
+     ;; uim.
      (else
       #f))))
 
@@ -323,12 +359,16 @@
             (karukan-apply kc result)
             (karukan-clear kc)))))
 
-;; Forgets what KC composes.
-(define (karukan-clear kc)
+(define (karukan-clear-preedit kc)
   (if (not (null? (karukan-context-preedit kc)))
       (begin
         (karukan-context-set-preedit! kc '())
         (context-update-preedit kc '()))))
+
+;; Forgets what KC composes.
+(define (karukan-clear kc)
+  (karukan-clear-preedit kc)
+  (karukan-hide-candidates kc))
 
 (define (karukan-reset kc)
   (if (karukan-context-owner? kc)
@@ -540,6 +580,32 @@
 (define (karukan-displace-handler kc)
   (karukan-flush kc))
 
+(define (karukan-get-candidate-handler kc idx accel-enum-hint)
+  (let ((candidates (karukan-context-candidates kc)))
+    (if (< -1 idx (length candidates))
+        (let ((candidate (list-ref candidates idx)))
+          (list (car candidate)
+                (number->string (+ idx 1))
+                (cdr candidate)))
+        (list "" "" ""))))
+
+;; Frontends report every move of the highlight here. Selecting a
+;; candidate commits it in karukan-imserver, so this moves the cursor
+;; with the keys instead.
+(define (karukan-set-candidate-index-handler kc idx)
+  (let loop ()
+    (let ((cursor (karukan-context-cand-cursor kc)))
+      (if (and (< -1 idx (length (karukan-context-candidates kc)))
+               (not (= idx cursor))
+               (karukan-send-key kc
+                                 (if (< cursor idx)
+                                     (assq-cdr 'down karukan-keysym-alist)
+                                     (assq-cdr 'up karukan-keysym-alist))
+                                 0)
+               ;; Stop if the cursor doesn't move.
+               (not (= cursor (karukan-context-cand-cursor kc))))
+          (loop)))))
+
 (karukan-configure-widgets)
 
 (register-im
@@ -555,8 +621,8 @@
  karukan-press-key-handler
  karukan-release-key-handler
  karukan-reset-handler
- #f
- #f
+ karukan-get-candidate-handler
+ karukan-set-candidate-index-handler
  context-prop-activate-handler
  #f
  #f

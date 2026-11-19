@@ -47,8 +47,9 @@ turn it off while composing because Karukan uses Shift+Space then.
 
 The other keys are the ones of Karukan. See the
 [key bindings of Karukan](https://github.com/togatoga/karukan/blob/main/docs/key-bindings.md).
-For example, Space converts and selects the next candidate, and
-Return commits it.
+For example, Space converts and selects the next candidate, Ctrl+1
+to Ctrl+9 select a candidate on the page, and Return commits the
+selected one.
 
 ## Limitations
 
@@ -61,8 +62,8 @@ Return commits it.
   dictionary and models. uim-xim and uim-wayland run one for all
   applications. uim-fep runs one for each terminal, and the GTK and Qt
   input method modules run one for each application.
-- The candidate window isn't shown. The selected candidate is shown
-  in the preedit.
+- The candidate window shows only the page that Karukan shows now.
+  Page Up and Page Down turn the page.
 - Karukan's auxiliary text, such as the reading and the conversion
   time, isn't shown.
 - Karukan's katakana and alphanumeric modes aren't shown in the
