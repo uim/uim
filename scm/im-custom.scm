@@ -1,6 +1,6 @@
 ;;; im-custom.scm: Customization variables for im.scm
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -440,10 +440,7 @@
 	      (N_ "Adjacent to cursor"))
 	(list 'left
 	      (N_ "Left end of preedit area")
-	      (N_ "Left end of preedit area"))
-	(list 'right
-	      (N_ "Right end of preedit area")
-	      (N_ "Right end of preedit area")))
+	      (N_ "Left end of preedit area")))
   (N_ "Candidate window position")
   (N_ "long description will be here."))
 

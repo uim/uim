@@ -4797,10 +4797,6 @@ msgstr "カーソルに隣接"
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.scm:445 scm/im-custom.scm:446
-msgid "Right end of preedit area"
-msgstr "編集領域の右端"
-
 # 「候補ウィンドウの位置」では何を規定する位置なのか不明瞭な印象を受ける。具体例
 # が出たら追記する事 -- YamaKen 2005-12-07 
 #: scm/im-custom.scm:447

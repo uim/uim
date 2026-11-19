@@ -50,8 +50,7 @@ typedef struct _UIMCandWinGtkClass UIMCandWinGtkClass;
 
 typedef enum {
   UIM_CAND_WIN_POS_CARET,
-  UIM_CAND_WIN_POS_LEFT,
-  UIM_CAND_WIN_POS_RIGHT
+  UIM_CAND_WIN_POS_LEFT
 } UimCandWinPos;
 
 struct _UIMCandWinGtk {
@@ -139,9 +138,7 @@ void		uim_cand_win_gtk_set_scrollable		(UIMCandWinGtk *cwin,
 
 void		uim_cand_win_gtk_layout			(UIMCandWinGtk *cwin,
 							 gint topwin_x,
-							 gint topwin_y,
-							 gint topwin_width,
-							 gint topwin_height);
+							 gint topwin_y);
 void		uim_cand_win_gtk_set_cursor_location	(UIMCandWinGtk *cwin,
 							 GdkRectangle *area);
 void		uim_cand_win_gtk_set_preedit_start_location(UIMCandWinGtk *cwin,

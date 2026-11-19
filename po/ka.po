@@ -4718,10 +4718,6 @@ msgstr "კურსორთან ახლომდებარე"
 msgid "Left end of preedit area"
 msgstr "წინასწარი ჩასწორების არეს მარცხენა ბოლო"
 
-#: scm/im-custom.scm:445 scm/im-custom.scm:446
-msgid "Right end of preedit area"
-msgstr "წინასწარი ჩასწორების არეს მარჯვენა ბოლო"
-
 #: scm/im-custom.scm:447
 msgid "Candidate window position"
 msgstr "კანდიდატის ფანჯრის პოზიცია"

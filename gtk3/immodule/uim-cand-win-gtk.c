@@ -141,8 +141,6 @@ uim_cand_win_gtk_get_window_pos_type(UIMCandWinGtk *cwin)
   win_pos = uim_scm_symbol_value_str("candidate-window-position");
   if (win_pos && !strcmp(win_pos, "left")) {
     cwin->position = UIM_CAND_WIN_POS_LEFT;
-  } else if (win_pos && !strcmp(win_pos, "right")) {
-    cwin->position = UIM_CAND_WIN_POS_RIGHT;
   } else {
     cwin->position = UIM_CAND_WIN_POS_CARET;
   }
@@ -715,8 +713,7 @@ pagebutton_clicked(GtkButton *button, gpointer data)
 
 void
 uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
-			gint topwin_x, gint topwin_y,
-			gint topwin_width, gint topwin_height)
+			gint topwin_x, gint topwin_y)
 {
   GtkRequisition req;
   int  x, y;
@@ -737,9 +734,6 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   switch (cwin->position) {
   case UIM_CAND_WIN_POS_LEFT:
     cursor_x = cwin->preedit_start.x;
-    break;
-  case UIM_CAND_WIN_POS_RIGHT:
-    cursor_x = topwin_width - cw_wi;
     break;
   default:
     cursor_x = cwin->cursor.x;

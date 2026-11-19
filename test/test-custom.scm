@@ -549,7 +549,7 @@
 
     (define-custom 'candidate-window-position "caret"
       '(global)
-      '(string "^(caret|left|right)$")
+      '(string "^(caret|left)$")
       (_ "Candidate window position")
       (_ "long description will be here."))
     (define-custom-group 'anthy
