@@ -52,6 +52,7 @@
 #include <uim/gettext.h>
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
+#include <uim/uim-scm.h>
 
 /* The freedesktop.org draft names them org.freedesktop.*, but the
  * draft has never been finished and the implementations use the
@@ -111,13 +112,19 @@ typedef struct
   GDBusConnection *connection;
   guint registration_id;
   gchar *id;
-  gchar *icon_name;
+  /* The indication_id of the branch. The icon name is made from it. */
+  gchar *indication_id;
   gchar *title;
   /* The watcher_generation when the item was sent to the watcher. */
   guint generation;
 } Item;
 
 static GDBusNodeInfo *item_node_info;
+/* UIM_PIXMAPSDIR, or $UIM_SNI_PIXMAPSDIR for the tests that run before
+ * the icons are installed. */
+static const gchar *pixmaps_dir;
+/* toolbar-icon-for-dark-background? */
+static gboolean dark_background;
 /* Item *: the branches in the order of prop_list_update. */
 static GPtrArray *items;
 static gboolean watcher_found;
@@ -157,6 +164,34 @@ empty_pixmaps(void)
   return g_variant_new_array(G_VARIANT_TYPE("(iiay)"), NULL, 0);
 }
 
+static gboolean
+pixmap_exists(const gchar *name)
+{
+  /* The icons are installed as SVG at least. */
+  gchar *basename = g_strconcat(name, ".svg", NULL);
+  gchar *path = g_build_filename(pixmaps_dir, basename, NULL);
+  gboolean exists = g_file_test(path, G_FILE_TEST_IS_REGULAR);
+
+  g_free(basename);
+  g_free(path);
+  return exists;
+}
+
+/* Uses the icon for a dark background if it's preferred and exists as
+ * the other toolbars do. */
+static gchar *
+make_icon_name(const gchar *indication_id)
+{
+  if (dark_background) {
+    gchar *name = g_strconcat(indication_id, "_dark_background", NULL);
+
+    if (pixmap_exists(name))
+      return name;
+    g_free(name);
+  }
+  return g_strdup(indication_id);
+}
+
 static GVariant *
 item_get_property(GDBusConnection *connection,
                   const gchar *sender,
@@ -177,9 +212,9 @@ item_get_property(GDBusConnection *connection,
   if (g_str_equal(property_name, "Status"))
     return g_variant_new_string("Active");
   if (g_str_equal(property_name, "IconName"))
-    return g_variant_new_string(item->icon_name);
+    return g_variant_new_take_string(make_icon_name(item->indication_id));
   if (g_str_equal(property_name, "IconThemePath"))
-    return g_variant_new_string(UIM_PIXMAPSDIR);
+    return g_variant_new_string(pixmaps_dir);
   /* Some panels such as swaybar complain about missing properties. */
   if (g_str_equal(property_name, "IconPixmap"))
     return empty_pixmaps();
@@ -188,11 +223,12 @@ item_get_property(GDBusConnection *connection,
   if (g_str_equal(property_name, "AttentionIconPixmap"))
     return empty_pixmaps();
   if (g_str_equal(property_name, "ToolTip"))
-    return g_variant_new("(s@a(iiay)ss)",
-                         item->icon_name,
-                         empty_pixmaps(),
-                         item->title,
-                         "");
+    return g_variant_new(
+      "(@s@a(iiay)ss)",
+      g_variant_new_take_string(make_icon_name(item->indication_id)),
+      empty_pixmaps(),
+      item->title,
+      "");
   if (g_str_equal(property_name, "ItemIsMenu"))
     return g_variant_new_boolean(FALSE);
 
@@ -225,7 +261,7 @@ item_free(gpointer data)
     g_object_unref(item->connection);
   }
   g_free(item->id);
-  g_free(item->icon_name);
+  g_free(item->indication_id);
   g_free(item->title);
   g_free(item);
 }
@@ -246,7 +282,7 @@ item_new(guint index)
 
   item = g_new0(Item, 1);
   item->id = g_strdup_printf("uim-%u", index);
-  item->icon_name = g_strdup("");
+  item->indication_id = g_strdup("");
   item->title = g_strdup("");
   item->connection = g_dbus_connection_new_for_address_sync(
     address,
@@ -294,14 +330,14 @@ item_emit(Item *item, const gchar *signal_name)
 }
 
 static void
-item_update(Item *item, const gchar *icon_name, const gchar *title)
+item_update(Item *item, const gchar *indication_id, const gchar *title)
 {
-  gboolean icon_changed = !g_str_equal(item->icon_name, icon_name);
+  gboolean icon_changed = !g_str_equal(item->indication_id, indication_id);
   gboolean title_changed = !g_str_equal(item->title, title);
 
   if (icon_changed) {
-    g_free(item->icon_name);
-    item->icon_name = g_strdup(icon_name);
+    g_free(item->indication_id);
+    item->indication_id = g_strdup(indication_id);
     item_emit(item, "NewIcon");
   }
   if (title_changed) {
@@ -452,12 +488,69 @@ handle_prop_list_update(gchar **lines)
 }
 
 static void
+load_customs(void)
+{
+  dark_background =
+    uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
+}
+
+static void
+apply_customs(void)
+{
+  gboolean old_dark_background = dark_background;
+  guint i;
+
+  load_customs();
+  if (dark_background == old_dark_background)
+    return;
+  for (i = 0; i < items->len; i++) {
+    Item *item = g_ptr_array_index(items, i);
+
+    item_emit(item, "NewIcon");
+    /* The tool tip shows the icon too. */
+    item_emit(item, "NewToolTip");
+  }
+}
+
+/* uim-pref sends custom_reload_notify after saving the customs. */
+static void
+handle_custom_reload_notify(void)
+{
+  uim_prop_reload_configs();
+  apply_customs();
+}
+
+/* uim-custom-cli sends prop_update_custom with a value. */
+static void
+handle_prop_update_custom(gchar **lines)
+{
+  /* prop_update_custom \n custom_sym \n custom_value */
+  if (!(lines[1] && lines[2]))
+    return;
+  /* Only the customs that uim-sni uses: uim-sni can't catch an error of
+   * Scheme as uim_prop_update_custom() does, and it has no context to
+   * pass to it. The handler doesn't use the context. */
+  if (!g_str_equal(lines[1], "toolbar-icon-for-dark-background?"))
+    return;
+  uim_scm_callf("custom-prop-update-custom-handler",
+                "bys",
+                UIM_FALSE,
+                lines[1],
+                lines[2]);
+  apply_customs();
+}
+
+static void
 handle_message(gchar *message)
 {
   gchar **lines = g_strsplit(message, "\n", 0);
 
   if (lines[0] && g_str_equal(lines[0], "prop_list_update"))
     handle_prop_list_update(lines);
+  else if (lines[0] && g_str_equal(lines[0], "custom_reload_notify"))
+    handle_custom_reload_notify();
+  else if (lines[0] && g_str_equal(lines[0], "prop_update_custom"))
+    handle_prop_update_custom(lines);
 
   g_strfreev(lines);
 }
@@ -577,6 +670,10 @@ main(int argc, char *argv[])
   if (uim_init() < 0)
     return EXIT_FAILURE;
 
+  pixmaps_dir = g_getenv("UIM_SNI_PIXMAPSDIR");
+  if (!pixmaps_dir || !pixmaps_dir[0])
+    pixmaps_dir = UIM_PIXMAPSDIR;
+  load_customs();
   item_node_info = g_dbus_node_info_new_for_xml(item_xml, NULL);
   items = g_ptr_array_new_with_free_func(item_free);
   loop = g_main_loop_new(NULL, FALSE);
