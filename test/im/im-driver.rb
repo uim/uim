@@ -104,6 +104,11 @@ class IMDriver
     run("focus out")
   end
 
+  # Highlights a candidate as a candidate window does when it's clicked.
+  def highlight(index)
+    run("index #{index}")
+  end
+
   private
   def run(command)
     @io.puts(command)

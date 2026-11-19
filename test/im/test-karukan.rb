@@ -144,9 +144,39 @@ class KarukanTest < Test::Unit::TestCase
                    @driver.preedit)
     end
 
+    def test_candidates
+      @driver.type("ab")
+      @driver.press("space")
+      assert_equal([["AB", "ab"], 0],
+                   [@driver.candidates, @driver.candidate_index])
+    end
+
     def test_next_candidate
       @driver.type("ab")
       @driver.press("space", "space", "return")
+      assert_equal(["ab"], @driver.commits)
+    end
+
+    def test_next_page
+      @driver.type("ab")
+      @driver.press("space", "pagedown")
+      assert_equal([["Ab"], 0],
+                   [@driver.candidates, @driver.candidate_index])
+    end
+
+    def test_highlight
+      @driver.type("ab")
+      @driver.press("space")
+      @driver.highlight(1)
+      assert_equal([[], [[REVERSE | CURSOR, "ab"]]],
+                   [@driver.commits, @driver.preedit])
+    end
+
+    def test_commit_highlighted
+      @driver.type("ab")
+      @driver.press("space")
+      @driver.highlight(1)
+      @driver.press("return")
       assert_equal(["ab"], @driver.commits)
     end
 
@@ -154,8 +184,8 @@ class KarukanTest < Test::Unit::TestCase
       @driver.type("ab")
       @driver.press("space")
       @driver.focus_out
-      assert_equal([["AB"], []],
-                   [@driver.commits, @driver.preedit])
+      assert_equal([["AB"], [], nil],
+                   [@driver.commits, @driver.preedit, @driver.candidates])
     end
   end
 end

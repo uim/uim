@@ -31,8 +31,10 @@
 # version 1 of karukan-imserver a line at a time.
 #
 # The reading is what is typed as is. Space converts it: the
-# candidates are its upper case and itself. Space again moves the
-# cursor and Return commits the selected one. Ctrl+K enters the
+# candidates are its upper case, itself and its capitalized one, two on
+# a page. Space and Down move the cursor to the next one, Up moves it
+# to the previous one, Page Down moves it to the next page and Return
+# commits the selected one. Ctrl+K enters the
 # katakana mode, which is the upper case here, until a reset. Other
 # keys aren't consumed.
 # "!" makes it exit after the response as if it crashed.
@@ -44,6 +46,10 @@ require "json"
 
 class FakeKarukanIMServer
   RETURN = 0xff0d
+  UP = 0xff52
+  DOWN = 0xff54
+  PAGE_DOWN = 0xff56
+  PAGE_SIZE = 2
   SPACE = 0x20
   EXCLAMATION_MARK = 0x21
   K = 0x6b
@@ -117,7 +123,7 @@ class FakeKarukanIMServer
     case keysym
     when SPACE
       return key_result(false, []) if @reading.empty?
-      @candidates = [@reading.upcase, @reading]
+      @candidates = [@reading.upcase, @reading, @reading.capitalize]
       @cursor = 0
       key_result(true, conversion_actions)
     when RETURN
@@ -135,8 +141,14 @@ class FakeKarukanIMServer
 
   def convert_key(keysym)
     case keysym
-    when SPACE
+    when SPACE, DOWN
       @cursor = (@cursor + 1) % @candidates.size
+      key_result(true, conversion_actions)
+    when UP
+      @cursor = (@cursor - 1) % @candidates.size
+      key_result(true, conversion_actions)
+    when PAGE_DOWN
+      @cursor = (@cursor / PAGE_SIZE + 1) * PAGE_SIZE % @candidates.size
       key_result(true, conversion_actions)
     when RETURN
       key_result(true, commit)
@@ -156,15 +168,18 @@ class FakeKarukanIMServer
     ]
   end
 
+  # Like karukan-imserver, only the page of the cursor is sent.
   def conversion_actions
+    page = @cursor / PAGE_SIZE
+    candidates = @candidates[page * PAGE_SIZE, PAGE_SIZE]
     [
       preedit(@candidates[@cursor], "highlight"),
       {
         "type" => "show_candidates",
-        "candidates" => @candidates.collect {|text| {"text" => text}},
-        "cursor" => @cursor,
-        "page" => 0,
-        "total_pages" => 1,
+        "candidates" => candidates.collect {|text| {"text" => text}},
+        "cursor" => @cursor % PAGE_SIZE,
+        "page" => page,
+        "total_pages" => (@candidates.size + PAGE_SIZE - 1) / PAGE_SIZE,
       },
     ]
   end
