@@ -27,6 +27,15 @@ exec uim-sni
 The icons are added when the panel's tray is available and are added
 again when the panel restarts.
 
+Turn on "Use icon for dark background"
+(`toolbar-icon-for-dark-background?`) for a panel with a dark
+background, such as Waybar by default. The change applies when
+uim-pref saves it, or with `uim-custom-cli`:
+
+```console
+$ uim-custom-cli --save 'toolbar-icon-for-dark-background?' '#t'
+```
+
 Only one `uim-sni` runs in a session. It owns `org.uim.Sni` on the
 session bus, and another `uim-sni` exits.
 
@@ -34,5 +43,3 @@ session bus, and another `uim-sni` exits.
 
 - Clicking an icon does nothing yet. Use `uim-im-switcher-cli` or
   another toolbar to switch the input method or the input mode.
-- The icons for a dark background
-  (`toolbar-icon-for-dark-background?`) aren't used yet.

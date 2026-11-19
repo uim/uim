@@ -30,6 +30,8 @@ if get_option('tests').allowed()
            # ~/.uim and the user's customizations stay out of the test.
            'LIBUIM_VANILLA': '2',
            'UIM_SNI': uim_sni.full_path(),
+           # The icons aren't installed yet.
+           'UIM_SNI_PIXMAPSDIR': meson.project_source_root() / 'pixmaps',
          },
          suite: 'sni')
   endif

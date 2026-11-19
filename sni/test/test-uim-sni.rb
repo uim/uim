@@ -175,6 +175,10 @@ class TestUimSni < Test::Unit::TestCase
     @helper.write(message + "\n")
   end
 
+  def send_prop_update_custom(symbol, value)
+    @helper.write("prop_update_custom\n#{symbol}\n#{value}\n\n")
+  end
+
   def process_buffered_messages(bus)
     while (message = bus.message_queue.message_from_buffer_nonblock)
       bus.process(message)
@@ -263,6 +267,12 @@ class TestUimSni < Test::Unit::TestCase
       assert_equal("ja_hiragana", item(wait_registered(3)[1])["IconName"])
     end
 
+    test("IconThemePath") do
+      send_prop_list(BRANCHES)
+      assert_equal(ENV.fetch("UIM_SNI_PIXMAPSDIR"),
+                   item(wait_registered(3)[1])["IconThemePath"])
+    end
+
     test("IconPixmap") do
       send_prop_list(BRANCHES)
       assert_equal([], item(wait_registered(3)[1])["IconPixmap"])
@@ -319,6 +329,34 @@ class TestUimSni < Test::Unit::TestCase
       drain(0.5)
       assert_equal([[services[1], "NewIcon"], [services[1], "NewToolTip"]],
                    @signals)
+    end
+
+    sub_test_case("dark background") do
+      def setup
+        super do
+          send_prop_list(BRANCHES)
+          @services = wait_registered(3)
+          send_prop_update_custom("toolbar-icon-for-dark-background?", "#t")
+          drain(0.5)
+          yield
+        end
+      end
+
+      test("IconName") do
+        assert_equal("ja_hiragana_dark_background",
+                     item(@services[1])["IconName"])
+      end
+
+      # anthy has no icon for a dark background.
+      test("no icon") do
+        assert_equal("anthy", item(@services[0])["IconName"])
+      end
+
+      test("off") do
+        send_prop_update_custom("toolbar-icon-for-dark-background?", "#f")
+        drain(0.5)
+        assert_equal("ja_hiragana", item(@services[1])["IconName"])
+      end
     end
 
     test("failed registration") do
