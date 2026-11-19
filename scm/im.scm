@@ -161,7 +161,12 @@
               (lambda ()
                 (if (symbol-bound? 'mozc-emacs-helper-command)
                     mozc-emacs-helper-command
-                    "mozc_emacs_helper")))))
+                    "mozc_emacs_helper")))
+        (cons 'karukan
+              (lambda ()
+                (if (symbol-bound? 'karukan-server-command)
+                    karukan-server-command
+                    "karukan-imserver")))))
 
 ;; COMMAND is a path or a name to find in PATH.
 (define (im-command-available? command)

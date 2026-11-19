@@ -13,6 +13,7 @@ EXTRA_DIST = \
 	UIM-SCM \
 	UIM-SH \
 	UNIT-TEST \
+	karukan.md \
 	skk-utf8-migration-guide-ja.md \
 	skk-utf8-migration-guide.md \
 	tutcode-utf8-migration-guide-ja.md \

@@ -45,6 +45,7 @@
  *                  and Shift.
  *   action NAME    Activate an action such as
  *                  "action_google-cgiapi-jp_kana".
+ *   focus in|out   Give or take the focus.
  *
  * Output lines, separated by tabs:
  *   preedit[ ATTR TEXT]...
@@ -224,6 +225,10 @@ main(int argc, char **argv)
       uim_release_key(uc, key, state);
     } else if (strcmp(line, "action") == 0) {
       uim_prop_activate(uc, argument);
+    } else if (strcmp(line, "focus") == 0 && strcmp(argument, "in") == 0) {
+      uim_focus_in_context(uc);
+    } else if (strcmp(line, "focus") == 0 && strcmp(argument, "out") == 0) {
+      uim_focus_out_context(uc);
     } else {
       fprintf(stderr, "invalid command: %s %s\n", line, argument);
       break;

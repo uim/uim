@@ -62,6 +62,9 @@ scm/im-custom.scm
 scm/ipa-x-sampa.scm
 scm/iso-639-1.scm
 scm/japanese-custom.scm
+scm/karukan-custom.scm
+scm/karukan-key-custom.scm
+scm/karukan.scm
 scm/latin.scm
 scm/lolevel.scm
 scm/look-custom.scm
