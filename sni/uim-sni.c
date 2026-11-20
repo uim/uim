@@ -63,6 +63,8 @@
 #define WATCHER_INTERFACE "org.kde.StatusNotifierWatcher"
 #define ITEM_PATH         "/StatusNotifierItem"
 #define ITEM_INTERFACE    "org.kde.StatusNotifierItem"
+#define MENU_PATH         "/MenuBar"
+#define MENU_INTERFACE    "com.canonical.dbusmenu"
 /* Owned to run only one uim-sni in a session. */
 #define UIM_SNI_NAME "org.uim.Sni"
 
@@ -83,6 +85,7 @@ static const gchar item_xml[] =
   "    <property name='AttentionIconPixmap' type='a(iiay)' access='read'/>"
   "    <property name='ToolTip' type='(sa(iiay)ss)' access='read'/>"
   "    <property name='ItemIsMenu' type='b' access='read'/>"
+  "    <property name='Menu' type='o' access='read'/>"
   "    <method name='Activate'>"
   "      <arg name='x' type='i' direction='in'/>"
   "      <arg name='y' type='i' direction='in'/>"
@@ -105,21 +108,99 @@ static const gchar item_xml[] =
   "  </interface>"
   "</node>";
 
+/* The menu of an item: the leaves of the branch. */
+static const gchar menu_xml[] =
+  "<node>"
+  "  <interface name='" MENU_INTERFACE "'>"
+  "    <property name='Version' type='u' access='read'/>"
+  "    <property name='TextDirection' type='s' access='read'/>"
+  "    <property name='Status' type='s' access='read'/>"
+  "    <property name='IconThemePath' type='as' access='read'/>"
+  "    <method name='GetLayout'>"
+  "      <arg name='parentId' type='i' direction='in'/>"
+  "      <arg name='recursionDepth' type='i' direction='in'/>"
+  "      <arg name='propertyNames' type='as' direction='in'/>"
+  "      <arg name='revision' type='u' direction='out'/>"
+  "      <arg name='layout' type='(ia{sv}av)' direction='out'/>"
+  "    </method>"
+  "    <method name='GetGroupProperties'>"
+  "      <arg name='ids' type='ai' direction='in'/>"
+  "      <arg name='propertyNames' type='as' direction='in'/>"
+  "      <arg name='properties' type='a(ia{sv})' direction='out'/>"
+  "    </method>"
+  "    <method name='GetProperty'>"
+  "      <arg name='id' type='i' direction='in'/>"
+  "      <arg name='name' type='s' direction='in'/>"
+  "      <arg name='value' type='v' direction='out'/>"
+  "    </method>"
+  "    <method name='Event'>"
+  "      <arg name='id' type='i' direction='in'/>"
+  "      <arg name='eventId' type='s' direction='in'/>"
+  "      <arg name='data' type='v' direction='in'/>"
+  "      <arg name='timestamp' type='u' direction='in'/>"
+  "    </method>"
+  "    <method name='EventGroup'>"
+  "      <arg name='events' type='a(isvu)' direction='in'/>"
+  "      <arg name='idErrors' type='ai' direction='out'/>"
+  "    </method>"
+  "    <method name='AboutToShow'>"
+  "      <arg name='id' type='i' direction='in'/>"
+  "      <arg name='needUpdate' type='b' direction='out'/>"
+  "    </method>"
+  "    <method name='AboutToShowGroup'>"
+  "      <arg name='ids' type='ai' direction='in'/>"
+  "      <arg name='updatesNeeded' type='ai' direction='out'/>"
+  "      <arg name='idErrors' type='ai' direction='out'/>"
+  "    </method>"
+  "    <signal name='ItemsPropertiesUpdated'>"
+  "      <arg name='updatedProps' type='a(ia{sv})'/>"
+  "      <arg name='removedProps' type='a(ias)'/>"
+  "    </signal>"
+  "    <signal name='LayoutUpdated'>"
+  "      <arg name='revision' type='u'/>"
+  "      <arg name='parent' type='i'/>"
+  "    </signal>"
+  "    <signal name='ItemActivationRequested'>"
+  "      <arg name='id' type='i'/>"
+  "      <arg name='timestamp' type='u'/>"
+  "    </signal>"
+  "  </interface>"
+  "</node>";
+
+/* A leaf of prop_list_update: a menu item. */
+typedef struct
+{
+  gchar *indication_id;
+  gchar *label;
+  gchar *action_id;
+  gboolean selected;
+} Leaf;
+
 /* Each item has its own connection because StatusNotifierWatcher
  * forgets an item only when its connection is gone. */
 typedef struct
 {
   GDBusConnection *connection;
   guint registration_id;
+  guint menu_registration_id;
   gchar *id;
   /* The indication_id of the branch. The icon name is made from it. */
   gchar *indication_id;
   gchar *title;
   /* The watcher_generation when the item was sent to the watcher. */
   guint generation;
+  /* Leaf *: the menu items. The ID of a menu item is menu_id_base +
+   * the index + 1 because 0 is the root. */
+  GPtrArray *leaves;
+  /* Increased whenever the leaves change so that an event for a menu
+   * shown before doesn't choose another leaf. */
+  gint32 menu_id_base;
+  /* Incremented whenever the leaves change. */
+  guint menu_revision;
 } Item;
 
 static GDBusNodeInfo *item_node_info;
+static GDBusNodeInfo *menu_node_info;
 /* UIM_PIXMAPSDIR, or $UIM_SNI_PIXMAPSDIR for the tests that run before
  * the icons are installed. */
 static const gchar *pixmaps_dir;
@@ -153,7 +234,7 @@ item_handle_method_call(GDBusConnection *connection,
                         GDBusMethodInvocation *invocation,
                         gpointer user_data)
 {
-  /* Clicks do nothing yet. */
+  /* The panel shows the menu for a click because ItemIsMenu is true. */
   g_dbus_method_invocation_return_value(invocation, NULL);
 }
 
@@ -229,8 +310,11 @@ item_get_property(GDBusConnection *connection,
       empty_pixmaps(),
       item->title,
       "");
+  /* A click shows the menu as the other toolbars do. */
   if (g_str_equal(property_name, "ItemIsMenu"))
-    return g_variant_new_boolean(FALSE);
+    return g_variant_new_boolean(TRUE);
+  if (g_str_equal(property_name, "Menu"))
+    return g_variant_new_object_path(MENU_PATH);
 
   g_set_error(error,
               G_DBUS_ERROR,
@@ -247,6 +331,316 @@ static const GDBusInterfaceVTable item_vtable = {
   {NULL},
 };
 
+static Leaf *
+leaf_new(const gchar *indication_id,
+         const gchar *label,
+         const gchar *action_id,
+         gboolean selected)
+{
+  Leaf *leaf = g_new0(Leaf, 1);
+
+  leaf->indication_id = g_strdup(indication_id);
+  leaf->label = g_strdup(label);
+  leaf->action_id = g_strdup(action_id);
+  leaf->selected = selected;
+  return leaf;
+}
+
+static void
+leaf_free(gpointer data)
+{
+  Leaf *leaf = data;
+
+  g_free(leaf->indication_id);
+  g_free(leaf->label);
+  g_free(leaf->action_id);
+  g_free(leaf);
+}
+
+static gboolean
+leaf_equal(const Leaf *leaf1, const Leaf *leaf2)
+{
+  return g_str_equal(leaf1->indication_id, leaf2->indication_id) &&
+         g_str_equal(leaf1->label, leaf2->label) &&
+         g_str_equal(leaf1->action_id, leaf2->action_id) &&
+         leaf1->selected == leaf2->selected;
+}
+
+/* Returns the leaf of the menu item ID, or NULL. */
+static Leaf *
+item_get_leaf(Item *item, gint32 id)
+{
+  gint64 index = (gint64)id - item->menu_id_base - 1;
+
+  if (index < 0 || index >= item->leaves->len)
+    return NULL;
+  return g_ptr_array_index(item->leaves, index);
+}
+
+static GVariant *
+leaf_properties(Leaf *leaf)
+{
+  GVariantBuilder builder;
+
+  g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
+  /* An indication_id for "separator" makes a separator. */
+  if (g_str_equal(leaf->indication_id, "separator")) {
+    g_variant_builder_add(&builder,
+                          "{sv}",
+                          "type",
+                          g_variant_new_string("separator"));
+  } else {
+    /* "_" in a label marks the access key. */
+    gchar **parts = g_strsplit(leaf->label, "_", -1);
+    gchar *label = g_strjoinv("__", parts);
+
+    g_strfreev(parts);
+    g_variant_builder_add(&builder,
+                          "{sv}",
+                          "label",
+                          g_variant_new_take_string(label));
+    g_variant_builder_add(&builder,
+                          "{sv}",
+                          "toggle-type",
+                          g_variant_new_string("radio"));
+    g_variant_builder_add(&builder,
+                          "{sv}",
+                          "toggle-state",
+                          g_variant_new_int32(leaf->selected ? 1 : 0));
+  }
+  return g_variant_builder_end(&builder);
+}
+
+static GVariant *
+root_properties(void)
+{
+  GVariantBuilder builder;
+
+  g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
+  g_variant_builder_add(&builder,
+                        "{sv}",
+                        "children-display",
+                        g_variant_new_string("submenu"));
+  return g_variant_builder_end(&builder);
+}
+
+/* Returns the properties of the menu item ID, or NULL. */
+static GVariant *
+item_menu_properties(Item *item, gint32 id)
+{
+  Leaf *leaf;
+
+  if (id == 0)
+    return root_properties();
+  leaf = item_get_leaf(item, id);
+  return leaf ? leaf_properties(leaf) : NULL;
+}
+
+static GVariant *
+leaf_layout(gint32 id, Leaf *leaf)
+{
+  return g_variant_new("(i@a{sv}@av)",
+                       id,
+                       leaf_properties(leaf),
+                       g_variant_new_array(G_VARIANT_TYPE_VARIANT, NULL, 0));
+}
+
+/* The menu is a list of the leaves under the root. Returns the layout
+ * under the menu item ID, or NULL. */
+static GVariant *
+item_menu_layout(Item *item, gint32 id)
+{
+  GVariantBuilder children;
+  Leaf *leaf;
+  guint i;
+
+  if (id != 0) {
+    leaf = item_get_leaf(item, id);
+    return leaf ? leaf_layout(id, leaf) : NULL;
+  }
+  g_variant_builder_init(&children, G_VARIANT_TYPE("av"));
+  for (i = 0; i < item->leaves->len; i++) {
+    g_variant_builder_add(&children,
+                          "v",
+                          leaf_layout(item->menu_id_base + (gint32)i + 1,
+                                      g_ptr_array_index(item->leaves, i)));
+  }
+  return g_variant_new("(i@a{sv}av)", 0, root_properties(), &children);
+}
+
+static void
+helper_send(const gchar *message)
+{
+  if (helper_fd >= 0)
+    uim_helper_send_message(helper_fd, message);
+}
+
+/* Returns whether ID is a menu item. */
+static gboolean
+item_menu_event(Item *item, gint32 id, const gchar *event_id)
+{
+  Leaf *leaf;
+
+  if (id == 0)
+    return TRUE;
+  leaf = item_get_leaf(item, id);
+  if (!leaf)
+    return FALSE;
+  if (g_str_equal(event_id, "clicked") && leaf->action_id[0]) {
+    gchar *message = g_strdup_printf("prop_activate\n%s\n", leaf->action_id);
+
+    helper_send(message);
+    g_free(message);
+  }
+  return TRUE;
+}
+
+static void
+menu_handle_method_call(GDBusConnection *connection,
+                        const gchar *sender,
+                        const gchar *object_path,
+                        const gchar *interface_name,
+                        const gchar *method_name,
+                        GVariant *parameters,
+                        GDBusMethodInvocation *invocation,
+                        gpointer user_data)
+{
+  Item *item = user_data;
+
+  /* The menu is small, so the whole of it is always sent: the depth and
+   * the property names to send are ignored. */
+  if (g_str_equal(method_name, "GetLayout")) {
+    gint32 id;
+    GVariant *layout;
+
+    g_variant_get(parameters, "(iias)", &id, NULL, NULL);
+    layout = item_menu_layout(item, id);
+    if (layout)
+      g_dbus_method_invocation_return_value(
+        invocation,
+        g_variant_new("(u@(ia{sv}av))", item->menu_revision, layout));
+    else
+      g_dbus_method_invocation_return_error(invocation,
+                                            G_DBUS_ERROR,
+                                            G_DBUS_ERROR_INVALID_ARGS,
+                                            "Unknown menu item: %d",
+                                            id);
+  } else if (g_str_equal(method_name, "GetGroupProperties")) {
+    GVariantIter *ids;
+    gint32 id;
+    GVariantBuilder properties;
+
+    g_variant_get(parameters, "(aias)", &ids, NULL);
+    g_variant_builder_init(&properties, G_VARIANT_TYPE("a(ia{sv})"));
+    while (g_variant_iter_next(ids, "i", &id)) {
+      GVariant *item_properties = item_menu_properties(item, id);
+
+      if (item_properties)
+        g_variant_builder_add(&properties, "(i@a{sv})", id, item_properties);
+    }
+    g_variant_iter_free(ids);
+    g_dbus_method_invocation_return_value(
+      invocation,
+      g_variant_new("(a(ia{sv}))", &properties));
+  } else if (g_str_equal(method_name, "GetProperty")) {
+    gint32 id;
+    const gchar *name;
+    GVariant *item_properties;
+    GVariant *value = NULL;
+
+    g_variant_get(parameters, "(i&s)", &id, &name);
+    item_properties = item_menu_properties(item, id);
+    if (item_properties) {
+      value = g_variant_lookup_value(item_properties, name, NULL);
+      g_variant_unref(g_variant_ref_sink(item_properties));
+    }
+    if (value)
+      g_dbus_method_invocation_return_value(
+        invocation,
+        g_variant_new("(@v)", g_variant_new_variant(value)));
+    else
+      g_dbus_method_invocation_return_error(invocation,
+                                            G_DBUS_ERROR,
+                                            G_DBUS_ERROR_INVALID_ARGS,
+                                            "Unknown property: %d %s",
+                                            id,
+                                            name);
+    if (value)
+      g_variant_unref(value);
+  } else if (g_str_equal(method_name, "Event")) {
+    gint32 id;
+    const gchar *event_id;
+
+    g_variant_get(parameters, "(i&svu)", &id, &event_id, NULL, NULL);
+    item_menu_event(item, id, event_id);
+    g_dbus_method_invocation_return_value(invocation, NULL);
+  } else if (g_str_equal(method_name, "EventGroup")) {
+    GVariantIter *events;
+    gint32 id;
+    const gchar *event_id;
+    GVariantBuilder id_errors;
+
+    g_variant_get(parameters, "(a(isvu))", &events);
+    g_variant_builder_init(&id_errors, G_VARIANT_TYPE("ai"));
+    while (g_variant_iter_next(events, "(i&svu)", &id, &event_id, NULL, NULL)) {
+      if (!item_menu_event(item, id, event_id))
+        g_variant_builder_add(&id_errors, "i", id);
+    }
+    g_variant_iter_free(events);
+    g_dbus_method_invocation_return_value(invocation,
+                                          g_variant_new("(ai)", &id_errors));
+  } else if (g_str_equal(method_name, "AboutToShow")) {
+    /* The menu is updated with LayoutUpdated. */
+    g_dbus_method_invocation_return_value(invocation,
+                                          g_variant_new("(b)", FALSE));
+  } else if (g_str_equal(method_name, "AboutToShowGroup")) {
+    g_dbus_method_invocation_return_value(
+      invocation,
+      g_variant_new("(@ai@ai)",
+                    g_variant_new_array(G_VARIANT_TYPE_INT32, NULL, 0),
+                    g_variant_new_array(G_VARIANT_TYPE_INT32, NULL, 0)));
+  } else {
+    g_dbus_method_invocation_return_error(invocation,
+                                          G_DBUS_ERROR,
+                                          G_DBUS_ERROR_UNKNOWN_METHOD,
+                                          "Unknown method: %s",
+                                          method_name);
+  }
+}
+
+static GVariant *
+menu_get_property(GDBusConnection *connection,
+                  const gchar *sender,
+                  const gchar *object_path,
+                  const gchar *interface_name,
+                  const gchar *property_name,
+                  GError **error,
+                  gpointer user_data)
+{
+  if (g_str_equal(property_name, "Version"))
+    return g_variant_new_uint32(3);
+  if (g_str_equal(property_name, "TextDirection"))
+    return g_variant_new_string("ltr");
+  if (g_str_equal(property_name, "Status"))
+    return g_variant_new_string("normal");
+  if (g_str_equal(property_name, "IconThemePath"))
+    return g_variant_new_strv(NULL, 0);
+
+  g_set_error(error,
+              G_DBUS_ERROR,
+              G_DBUS_ERROR_UNKNOWN_PROPERTY,
+              "Unknown property: %s",
+              property_name);
+  return NULL;
+}
+
+static const GDBusInterfaceVTable menu_vtable = {
+  menu_handle_method_call,
+  menu_get_property,
+  NULL,
+  {NULL},
+};
+
 static void
 item_free(gpointer data)
 {
@@ -256,6 +650,9 @@ item_free(gpointer data)
     if (item->registration_id > 0)
       g_dbus_connection_unregister_object(item->connection,
                                           item->registration_id);
+    if (item->menu_registration_id > 0)
+      g_dbus_connection_unregister_object(item->connection,
+                                          item->menu_registration_id);
     /* The watcher removes the item when the connection is closed. */
     g_dbus_connection_close(item->connection, NULL, NULL, NULL);
     g_object_unref(item->connection);
@@ -263,6 +660,7 @@ item_free(gpointer data)
   g_free(item->id);
   g_free(item->indication_id);
   g_free(item->title);
+  g_ptr_array_unref(item->leaves);
   g_free(item);
 }
 
@@ -284,6 +682,7 @@ item_new(guint index)
   item->id = g_strdup_printf("uim-%u", index);
   item->indication_id = g_strdup("");
   item->title = g_strdup("");
+  item->leaves = g_ptr_array_new_with_free_func(leaf_free);
   item->connection = g_dbus_connection_new_for_address_sync(
     address,
     G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT |
@@ -309,6 +708,21 @@ item_new(guint index)
                                       &error);
   if (item->registration_id == 0) {
     g_warning("failed to register an item: %s", error->message);
+    g_error_free(error);
+    item_free(item);
+    return NULL;
+  }
+
+  item->menu_registration_id =
+    g_dbus_connection_register_object(item->connection,
+                                      MENU_PATH,
+                                      menu_node_info->interfaces[0],
+                                      &menu_vtable,
+                                      item,
+                                      NULL,
+                                      &error);
+  if (item->menu_registration_id == 0) {
+    g_warning("failed to register a menu: %s", error->message);
     g_error_free(error);
     item_free(item);
     return NULL;
@@ -348,6 +762,33 @@ item_update(Item *item, const gchar *indication_id, const gchar *title)
   /* The tool tip shows both of them. */
   if (icon_changed || title_changed)
     item_emit(item, "NewToolTip");
+}
+
+/* Takes LEAVES. */
+static void
+item_set_leaves(Item *item, GPtrArray *leaves)
+{
+  gboolean changed = leaves->len != item->leaves->len;
+  guint i;
+
+  for (i = 0; !changed && i < leaves->len; i++)
+    changed = !leaf_equal(g_ptr_array_index(leaves, i),
+                          g_ptr_array_index(item->leaves, i));
+  if (!changed) {
+    g_ptr_array_unref(leaves);
+    return;
+  }
+  item->menu_id_base += item->leaves->len;
+  g_ptr_array_unref(item->leaves);
+  item->leaves = leaves;
+  item->menu_revision++;
+  g_dbus_connection_emit_signal(item->connection,
+                                NULL,
+                                MENU_PATH,
+                                MENU_INTERFACE,
+                                "LayoutUpdated",
+                                g_variant_new("(ui)", item->menu_revision, 0),
+                                NULL);
 }
 
 static void
@@ -447,6 +888,9 @@ handle_prop_list_update(gchar **lines)
 {
   const gchar *charset = NULL;
   guint n_branches = 0;
+  /* The item of the branch and its leaves being read. */
+  Item *item = NULL;
+  GPtrArray *leaves = NULL;
   guint i;
 
   if (lines[1] && g_str_has_prefix(lines[1], "charset="))
@@ -463,7 +907,11 @@ handle_prop_list_update(gchar **lines)
 
     /* branch \t indication_id \t iconic_label \t label_string */
     if (g_strv_length(columns) >= 4 && g_str_equal(columns[0], "branch")) {
-      Item *item;
+      if (item)
+        item_set_leaves(item, leaves);
+      else if (leaves)
+        g_ptr_array_unref(leaves);
+      leaves = g_ptr_array_new_with_free_func(leaf_free);
 
       if (n_branches < items->len) {
         item = g_ptr_array_index(items, n_branches);
@@ -477,8 +925,22 @@ handle_prop_list_update(gchar **lines)
         n_branches++;
       }
     }
+    /* leaf \t indication_id \t iconic_label \t label_string \t
+     * short_desc \t action_id \t activity */
+    else if (g_strv_length(columns) >= 7 && g_str_equal(columns[0], "leaf") &&
+             leaves) {
+      g_ptr_array_add(leaves,
+                      leaf_new(columns[1],
+                               safe_gettext(columns[3]),
+                               columns[5],
+                               g_str_equal(columns[6], "*")));
+    }
     g_strfreev(columns);
   }
+  if (item)
+    item_set_leaves(item, leaves);
+  else if (leaves)
+    g_ptr_array_unref(leaves);
 
   /* The other input method may have fewer branches. */
   if (n_branches < items->len)
@@ -675,6 +1137,7 @@ main(int argc, char *argv[])
     pixmaps_dir = UIM_PIXMAPSDIR;
   load_customs();
   item_node_info = g_dbus_node_info_new_for_xml(item_xml, NULL);
+  menu_node_info = g_dbus_node_info_new_for_xml(menu_xml, NULL);
   items = g_ptr_array_new_with_free_func(item_free);
   loop = g_main_loop_new(NULL, FALSE);
 
@@ -700,6 +1163,7 @@ main(int argc, char *argv[])
   g_bus_unown_name(owner_id);
   g_ptr_array_unref(items);
   g_dbus_node_info_unref(item_node_info);
+  g_dbus_node_info_unref(menu_node_info);
   g_main_loop_unref(loop);
 
   uim_quit();
