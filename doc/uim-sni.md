@@ -27,8 +27,14 @@ exec uim-sni
 The icons are added when the panel's tray is available and are added
 again when the panel restarts.
 
-Clicking an icon shows its menu, such as the input methods and the
-input modes, and choosing one switches to it.
+Clicking an icon switches to the next one of what it shows, such as
+the next input mode, and scrolling on it switches to the next or the
+previous one. Right-clicking it shows the menu of them, such as the
+input methods and the input modes, and choosing one switches to it.
+
+The scroll direction depends on the panel: scrolling down switches to
+the next one in swaybar and Waybar, and scrolling up does in KDE
+Plasma.
 
 Turn on "Use icon for dark background"
 (`toolbar-icon-for-dark-background?`) for a panel with a dark
@@ -45,8 +51,8 @@ session bus, and another `uim-sni` exits.
 ## Limitations
 
 - swaybar doesn't show the menus: it doesn't support
-  `com.canonical.dbusmenu`. Use `uim-im-switcher-cli` or another
-  toolbar to switch the input method or the input mode there.
+  `com.canonical.dbusmenu`. Click or scroll on an icon to switch
+  there.
 - The menus have no icons.
 - The menus don't have the commands of the other toolbars, such as
   starting the input method switcher and the preferences.

@@ -391,7 +391,7 @@ class TestUimSni < Test::Unit::TestCase
       end
 
       test("ItemIsMenu") do
-        assert_true(item(@service)["ItemIsMenu"])
+        assert_false(item(@service)["ItemIsMenu"])
       end
 
       test("layout") do
@@ -497,6 +497,78 @@ class TestUimSni < Test::Unit::TestCase
         send_prop_list([["ja_hiragana", "あ", "Hiragana", []]])
         wait_until {menu(@service).GetLayout(0, -1, [])[0] == 2}
         assert_equal([], menu(@service).GetLayout(0, -1, [])[1][2])
+      end
+    end
+
+    sub_test_case("choose") do
+      def leaf(name, selected)
+        [
+          "ja_#{name}",
+          "",
+          name,
+          "#{name} mode",
+          "action_#{name}",
+          selected ? "*" : "",
+        ]
+      end
+
+      def send_leaves(selected)
+        send_prop_list([
+                         [
+                           "ja_#{selected}",
+                           "",
+                           selected,
+                           [
+                             leaf("hiragana", selected == "hiragana"),
+                             ["separator", "", "", "", "", ""],
+                             leaf("katakana", selected == "katakana"),
+                             leaf("halfkana", selected == "halfkana"),
+                           ],
+                         ],
+                       ])
+      end
+
+      def setup
+        super do
+          read_helper_message # prop_list_get
+          send_leaves("katakana")
+          @service = wait_registered(1)[0]
+          yield
+        end
+      end
+
+      test("Activate") do
+        item(@service).Activate(0, 0)
+        assert_equal("prop_activate\naction_halfkana\n",
+                     read_helper_message)
+      end
+
+      test("Activate: last") do
+        send_leaves("halfkana")
+        wait_until {item(@service)["Title"] == "halfkana"}
+        item(@service).Activate(0, 0)
+        assert_equal("prop_activate\naction_hiragana\n",
+                     read_helper_message)
+      end
+
+      test("Scroll: down") do
+        item(@service).Scroll(1, "vertical")
+        assert_equal("prop_activate\naction_halfkana\n",
+                     read_helper_message)
+      end
+
+      # The separator is skipped.
+      test("Scroll: up") do
+        item(@service).Scroll(-1, "vertical")
+        assert_equal("prop_activate\naction_hiragana\n",
+                     read_helper_message)
+      end
+
+      test("Scroll: horizontal") do
+        item(@service).Scroll(1, "horizontal")
+        item(@service).Scroll(-1, "vertical")
+        assert_equal("prop_activate\naction_hiragana\n",
+                     read_helper_message)
       end
     end
 
