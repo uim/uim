@@ -225,6 +225,51 @@ static guint watcher_id;
 static int exit_status = EXIT_SUCCESS;
 
 static void
+helper_send(const gchar *message)
+{
+  if (helper_fd >= 0)
+    uim_helper_send_message(helper_fd, message);
+}
+
+static void
+leaf_activate(const Leaf *leaf)
+{
+  gchar *message = g_strdup_printf("prop_activate\n%s\n", leaf->action_id);
+
+  helper_send(message);
+  g_free(message);
+}
+
+/* Chooses the next (STEP is 1) or previous (STEP is -1) leaf of the
+ * selected one, such as the next input mode. It wraps around. */
+static void
+item_step(Item *item, gint step)
+{
+  guint n_leaves = item->leaves->len;
+  guint selected = 0;
+  guint i;
+
+  for (i = 0; i < n_leaves; i++) {
+    const Leaf *leaf = g_ptr_array_index(item->leaves, i);
+
+    if (leaf->selected) {
+      selected = i;
+      break;
+    }
+  }
+  for (i = 1; i < n_leaves; i++) {
+    guint index = (selected + (step > 0 ? i : n_leaves - i)) % n_leaves;
+    const Leaf *leaf = g_ptr_array_index(item->leaves, index);
+
+    /* A separator has no action. */
+    if (leaf->action_id[0]) {
+      leaf_activate(leaf);
+      return;
+    }
+  }
+}
+
+static void
 item_handle_method_call(GDBusConnection *connection,
                         const gchar *sender,
                         const gchar *object_path,
@@ -234,7 +279,20 @@ item_handle_method_call(GDBusConnection *connection,
                         GDBusMethodInvocation *invocation,
                         gpointer user_data)
 {
-  /* The panel shows the menu for a click because ItemIsMenu is true. */
+  Item *item = user_data;
+
+  if (g_str_equal(method_name, "Activate")) {
+    item_step(item, 1);
+  } else if (g_str_equal(method_name, "Scroll")) {
+    gint32 delta;
+    const gchar *orientation;
+
+    g_variant_get(parameters, "(i&s)", &delta, &orientation);
+    if (g_ascii_strcasecmp(orientation, "vertical") == 0 && delta != 0)
+      item_step(item, delta > 0 ? 1 : -1);
+  }
+  /* SecondaryActivate and ContextMenu do nothing: there is nothing for
+   * a middle click, and the panel shows the menu. */
   g_dbus_method_invocation_return_value(invocation, NULL);
 }
 
@@ -310,9 +368,11 @@ item_get_property(GDBusConnection *connection,
       empty_pixmaps(),
       item->title,
       "");
-  /* A click shows the menu as the other toolbars do. */
+  /* A click is Activate, not showing the menu, for the panels that
+   * don't show the menu such as swaybar. The panels that show the menu
+   * do so for a right click. */
   if (g_str_equal(property_name, "ItemIsMenu"))
-    return g_variant_new_boolean(TRUE);
+    return g_variant_new_boolean(FALSE);
   if (g_str_equal(property_name, "Menu"))
     return g_variant_new_object_path(MENU_PATH);
 
@@ -468,13 +528,6 @@ item_menu_layout(Item *item, gint32 id)
   return g_variant_new("(i@a{sv}av)", 0, root_properties(), &children);
 }
 
-static void
-helper_send(const gchar *message)
-{
-  if (helper_fd >= 0)
-    uim_helper_send_message(helper_fd, message);
-}
-
 /* Returns whether ID is a menu item. */
 static gboolean
 item_menu_event(Item *item, gint32 id, const gchar *event_id)
@@ -486,12 +539,8 @@ item_menu_event(Item *item, gint32 id, const gchar *event_id)
   leaf = item_get_leaf(item, id);
   if (!leaf)
     return FALSE;
-  if (g_str_equal(event_id, "clicked") && leaf->action_id[0]) {
-    gchar *message = g_strdup_printf("prop_activate\n%s\n", leaf->action_id);
-
-    helper_send(message);
-    g_free(message);
-  }
+  if (g_str_equal(event_id, "clicked") && leaf->action_id[0])
+    leaf_activate(leaf);
   return TRUE;
 }
 
