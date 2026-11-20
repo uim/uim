@@ -51,6 +51,10 @@ For example, Space converts and selects the next candidate, Ctrl+1
 to Ctrl+9 select a candidate on the page, and Return commits the
 selected one.
 
+The text before the cursor is passed to Karukan for conversion when
+the application provides it. Turn off "Use the text before the cursor
+for conversion" (`karukan-use-surrounding-text?`) not to pass it.
+
 ## Limitations
 
 - A process of uim starts one `karukan-imserver` when Karukan is

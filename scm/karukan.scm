@@ -43,6 +43,7 @@
 (require "util.scm")
 (require "process.scm")
 (require "fileio.scm")
+(require "ustr.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "karukan-custom.scm")
 (require-custom "karukan-key-custom.scm")
@@ -388,6 +389,20 @@
            ;; karukan-flush may lose the server.
            karukan-server))))
 
+;; The text before the cursor helps the conversion. It's sent when a
+;; composition starts.
+(define (karukan-send-surrounding-text kc)
+  (let* ((ustr (and karukan-use-surrounding-text?
+                    (im-acquire-text kc 'primary 'cursor 'line 0)))
+         (former (and ustr (ustr-former-seq ustr)))
+         (text (if (and (pair? former) (string? (car former)))
+                   (car former)
+                   "")))
+    (karukan-server-notify karukan-server
+                           "set_surrounding_text"
+                           (list (cons 'text text)
+                                 (cons 'cursor_pos (string-length text))))))
+
 ;;; ------------------------------------------------------------------
 ;;; keys
 
@@ -454,11 +469,16 @@
 ;; Returns the result of the key, or #f.
 (define (karukan-process-key kc keysym key-state)
   (and (karukan-take-over kc)
-       (karukan-server-request
-        karukan-server
-        "process_key"
-        (list (cons 'keysym keysym)
-              (cons 'modifiers (karukan-modifiers key-state))))))
+       (begin
+         (if (not (karukan-context-composing? kc))
+             (karukan-send-surrounding-text kc))
+         ;; Sending the text may lose the server.
+         (and karukan-server
+              (karukan-server-request
+               karukan-server
+               "process_key"
+               (list (cons 'keysym keysym)
+                     (cons 'modifiers (karukan-modifiers key-state))))))))
 
 ;; Sends a key to the server. Returns whether it consumed the key.
 (define (karukan-send-key kc keysym key-state)
