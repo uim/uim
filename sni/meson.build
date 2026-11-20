@@ -33,6 +33,9 @@ if get_option('tests').allowed()
            # The icons aren't installed yet.
            'UIM_SNI_PIXMAPSDIR': meson.project_source_root() / 'pixmaps',
          },
-         suite: 'sni')
+         suite: 'sni',
+         # Each test starts D-Bus daemons and uim-sni: they take more
+         # than the default 30 seconds in total on CI.
+         timeout: 300)
   endif
 endif
