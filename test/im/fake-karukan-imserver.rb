@@ -33,8 +33,9 @@
 # The reading is what is typed as is. Space converts it: the
 # candidates are its upper case, itself and its capitalized one, two on
 # a page. Space and Down move the cursor to the next one, Up moves it
-# to the previous one, Page Down moves it to the next page and Return
-# commits the selected one. Ctrl+K enters the
+# to the previous one, Page Down moves it to the next page, Return
+# commits the selected one and Escape goes back to the reading.
+# BackSpace deletes the last character of the reading. Ctrl+K enters the
 # katakana mode, which is the upper case here, until a reset. Other
 # keys aren't consumed.
 # "!" makes it exit after the response as if it crashed.
@@ -45,7 +46,9 @@
 require "json"
 
 class FakeKarukanIMServer
+  BACKSPACE = 0xff08
   RETURN = 0xff0d
+  ESCAPE = 0xff1b
   UP = 0xff52
   DOWN = 0xff54
   PAGE_DOWN = 0xff56
@@ -129,6 +132,10 @@ class FakeKarukanIMServer
     when RETURN
       return key_result(false, []) if @reading.empty?
       key_result(true, commit)
+    when BACKSPACE
+      return key_result(false, []) if @reading.empty?
+      @reading = @reading[0..-2]
+      key_result(true, [preedit(@reading, "underline")])
     when 0x21..0x7e
       character = keysym.chr
       character = character.upcase if @katakana
@@ -152,6 +159,10 @@ class FakeKarukanIMServer
       key_result(true, conversion_actions)
     when RETURN
       key_result(true, commit)
+    when ESCAPE
+      @candidates = nil
+      key_result(true,
+                 [{"type" => "hide_candidates"}, preedit(@reading, "underline")])
     else
       key_result(true, [])
     end

@@ -45,3 +45,83 @@
                '(key)
                (N_ "[Karukan] off")
                (N_ "long description will be here"))
+
+;; These add keys to the ones of Karukan: a key is sent to Karukan as the
+;; key of Karukan that has the same meaning. The keys of Karukan such as
+;; "backspace" keep working.
+
+;; generic-commit-key has <Control>j, which is another key of Karukan.
+(define-custom 'karukan-commit-key '(generic-return-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] commit")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-cancel-key '(generic-cancel-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] cancel")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-backspace-key '(generic-backspace-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] backspace")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-delete-key '(generic-delete-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] delete")
+               (N_ "long description will be here"))
+
+;; generic-next-candidate-key has " ", which has other meanings in
+;; Karukan such as inserting a space in the alphanumeric mode.
+(define-custom 'karukan-next-candidate-key '("down" "<IgnoreCase><Control>n")
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] next candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-prev-candidate-key '(generic-prev-candidate-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] previous candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-next-page-key '(generic-next-page-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] next page of candidate window")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-prev-page-key '(generic-prev-page-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] previous page of candidate window")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-beginning-of-preedit-key
+               '(generic-beginning-of-preedit-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] beginning of preedit")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-end-of-preedit-key '(generic-end-of-preedit-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] end of preedit")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-go-left-key '(generic-go-left-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] go left")
+               (N_ "long description will be here"))
+
+(define-custom 'karukan-go-right-key '(generic-go-right-key)
+               '(karukan-keys)
+               '(key)
+               (N_ "[Karukan] go right")
+               (N_ "long description will be here"))
