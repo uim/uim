@@ -2482,7 +2482,7 @@
 ;;; カーソル位置の直前にある文字の打ち方を表示する。
 ;;; (surrounding text APIを使ってカーソル位置の直前にある文字を取得)
 (define (tutcode-help pc)
-  (let ((former-seq (tutcode-postfix-acquire-text pc 1)))
+  (let ((former-seq (tutcode-acquire-former-text pc 1)))
     (if (positive? (length former-seq))
       (tutcode-check-auto-help-window-begin pc former-seq () #t))))
 
@@ -3862,10 +3862,25 @@
               (not (member elem tutcode-postfix-mazegaki-terminate-char-list))))
           former-seq)))))
 
-;;; 確定済文字列を取得する
+;;; 後置型変換で使う確定済文字列を取得する。削除できない環境では、変換後に
+;;; 確定文字列と取得文字列が重複するため、変換を開始させず空リストを返す。
 ;;; @param len 取得する文字数
 ;;; @return 取得した文字列のリスト(逆順)
 (define (tutcode-postfix-acquire-text pc len)
+  (if (tutcode-postfix-deletable? pc)
+    (tutcode-acquire-former-text pc len)
+    ()))
+
+;;; 確定済文字列を削除できるか。子コンテキストでは内部バッファを削除するので常に可能。
+(define (tutcode-postfix-deletable? pc)
+  (or (not (null? (tutcode-context-parent-context pc)))
+      (im-delete-text-supported? pc)
+      tutcode-enable-fallback-surrounding-text?))
+
+;;; 確定済文字列を取得する(削除可否は問わない)
+;;; @param len 取得する文字数
+;;; @return 取得した文字列のリスト(逆順)
+(define (tutcode-acquire-former-text pc len)
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
       (case (tutcode-context-child-type ppc)

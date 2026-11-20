@@ -426,6 +426,18 @@ im_delete_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
 }
 
 static uim_lisp
+im_delete_text_supportedp(uim_lisp uc_)
+{
+  uim_context uc;
+
+  uc = retrieve_uim_context(uc_);
+
+  if (uc->delete_text_cb)
+    return uim_scm_t();
+  return uim_scm_f();
+}
+
+static uim_lisp
 raise_configuration_change(uim_lisp uc_)
 {
   uim_context uc;
@@ -494,6 +506,7 @@ uim_init_im_subrs(void)
 
   uim_scm_init_proc5("im-acquire-text-internal", im_acquire_text);
   uim_scm_init_proc5("im-delete-text-internal", im_delete_text);
+  uim_scm_init_proc1("im-delete-text-supported?", im_delete_text_supportedp);
 
   uim_scm_init_proc1("im-clear-mode-list",    im_clear_mode_list);
   uim_scm_init_proc2("im-pushback-mode-list", im_pushback_mode_list);
