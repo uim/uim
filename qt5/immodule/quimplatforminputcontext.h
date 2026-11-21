@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2012-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2012-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -106,6 +106,7 @@ private:
     QList<QInputMethodEvent::Attribute> getPreeditAttrs();
 
     void update();
+    QRect microFocus(QWidget *w);
 
     /// callbacks for uim
     static void commit_cb(void *ptr, const char *str);
@@ -136,6 +137,9 @@ private:
     bool candwinIsActive;
     bool m_candwin_assert;
     bool m_isAnimating;
+    // The horizontal position where the preedit starts, in the
+    // coordinates of the focused widget.
+    int m_preeditStartX;
 
     uim_context m_uc;
     QList<PreeditSegment> preeditSegments;
