@@ -53,6 +53,12 @@ session bus, and another `uim-sni` exits.
 - swaybar doesn't show the menus: it doesn't support
   `com.canonical.dbusmenu`. Click or scroll on an icon to switch
   there.
-- The menus have no icons.
-- The menus don't have the commands of the other toolbars, such as
-  starting the input method switcher and the preferences.
+- KDE Plasma sorts the icons by their titles, which are what they show
+  now such as "Hiragana". So the order of the icons changes when the
+  input mode and so on change.
+- An icon is given by its name. So the panel shows its substitute,
+  such as a sad face in swaybar, for one that uim has no image for,
+  such as the input mode icons of look. The other toolbars show its
+  label then.
+- The menus don't have the command of the other toolbars that starts
+  the preferences. Start `uim-pref-gtk3` and so on by hand.
