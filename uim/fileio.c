@@ -197,10 +197,11 @@ c_file_read(uim_lisp d_, uim_lisp nbytes_)
   struct c_file_read_args args;
 
   buf = uim_malloc(nbytes);
-  if ((nr = read(C_INT(d_), buf, nbytes)) == 0)
-    return uim_scm_eof();
-  if (nr < 0)
-    return uim_scm_f();
+  nr = read(C_INT(d_), buf, nbytes);
+  if (nr <= 0) {
+    free(buf);
+    return nr == 0 ? uim_scm_eof() : uim_scm_f();
+  }
 
   args.buf = buf;
   args.nr = nr;
@@ -353,10 +354,10 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
   }
 
   ret = poll(fds, nfds, timeout);
-  if (ret == -1)
-    return uim_scm_f();
-  else if (ret == 0)
-    return uim_scm_null();
+  if (ret <= 0) {
+    free(fds);
+    return ret == 0 ? uim_scm_null() : uim_scm_f();
+  }
 
   args.fds = fds;
   args.nfds = nfds;
