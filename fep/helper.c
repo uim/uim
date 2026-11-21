@@ -164,8 +164,10 @@ void helper_handler(void)
 
       } else if (str_has_prefix(message, "focus_in")) {
         debug(("focus_in\n"));
+        /* Clear the flag first so that a prop list update made by the
+         * focus-out handler is not sent after focus has moved away. */
         g_focus_in = FALSE;
-        /* printf("focus_out\r\n"); */
+        uim_focus_out_context(g_context);
       }
     }
 
@@ -235,5 +237,6 @@ void focus_in(void)
 {
   g_focus_in = TRUE;
   uim_helper_client_focus_in(g_context);
+  uim_focus_in_context(g_context);
   uim_prop_list_update(g_context);
 }

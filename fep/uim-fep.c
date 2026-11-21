@@ -598,9 +598,9 @@ opt_end:
   }
   init_helper();
   init_callbacks();
-  focus_in();
   init_draw(s_master, s_path_getmode);
   init_escseq(&attr_uim);
+  focus_in();
   if (g_opt.candidate_window && g_opt.no_report_cursor) {
     fprintf(stderr, "uim-fep: --candidate-window requires the terminal to report the cursor position\n");
     done(EXIT_FAILURE);
