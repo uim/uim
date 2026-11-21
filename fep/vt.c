@@ -390,6 +390,37 @@ void vt_scroll_up(int row, int col)
   vterm_input_write(s_vterm, seq, (size_t)len);
 }
 
+/*
+ * Applies ICH (op '@') or DCH (op 'P') of n cells at (row, col), which
+ * uim-fep emits to shift the cells of an on-the-spot preedit. DECSC and DECRC
+ * keep the model cursor, which is not synchronized with uim-fep's own moves.
+ */
+static void vt_edit_chars(int row, int col, int n, char op)
+{
+  char seq[64];
+  int len;
+
+  if (s_vterm == NULL || n <= 0) {
+    return;
+  }
+  len = snprintf(seq, sizeof(seq), "\033" "7\033[%d;%dH\033[%d%c\033" "8",
+                 row + 1, col + 1, n, op);
+  if (len < 0 || (size_t)len >= sizeof(seq)) {
+    return;
+  }
+  vterm_input_write(s_vterm, seq, (size_t)len);
+}
+
+void vt_insert_chars(int row, int col, int n)
+{
+  vt_edit_chars(row, col, n, '@');
+}
+
+void vt_delete_chars(int row, int col, int n)
+{
+  vt_edit_chars(row, col, n, 'P');
+}
+
 int vt_restore_region(int row, int col, int width, int guard_col)
 {
   struct byte_buffer buffer = {0};

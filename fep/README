@@ -119,7 +119,7 @@ How to USE
     The window is placed below the preedit, then above it. Its column is set
     by candidate-window-position: caret (default) or left.
     The window requires libvterm for background restoration. --candidate-window cannot be used
-    with -o, -S, -K, or --no-restore-background.
+    with -S, -K, or --no-restore-background.
 
   o --ascii-window-border
     This option draws the candidate window frame with ASCII characters (| - +),
