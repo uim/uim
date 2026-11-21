@@ -65,6 +65,7 @@ Supplementary explanation (only for help and not legal):
   * pixmaps/*.{svg,png} are also licensed under the 3-clause BSD
     license, but has different copyright holders. See
     pixmaps/{COPYING.BSDL,README,AUTHORS} for further information.
+    pixmaps/mozc*.png come from Mozc. See pixmaps/COPYING.Mozc.
 
   * wayland/protocol/*.xml come from wlroots, you can use, modify,
     distribute and sell them under the terms of the MIT license in

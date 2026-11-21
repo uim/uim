@@ -100,6 +100,10 @@ SVG_PNGS = unknown.png \
 
 NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png
 
+# From Mozc. See LIST.
+MOZC_PNGS = mozc.png mozc_tool_config_dialog.png \
+	    mozc_tool_dictionary_tool.png mozc_tool_selector.png
+
 SCIM_PNGS = scim-anthy.png scim-canna.png \
 	    scim-skk.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png
@@ -109,10 +113,10 @@ endif
 
 GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
 
-PNGS = $(NATIVE_PNGS) $(GENERATED_PNGS)
+PNGS = $(NATIVE_PNGS) $(MOZC_PNGS) $(GENERATED_PNGS)
 
-EXTRA_DIST = COPYING.BSDL COPYING.LGPL LIST indication-id.txt $(SCIM_PNGS) \
-	meson.build
+EXTRA_DIST = COPYING.BSDL COPYING.LGPL COPYING.Mozc LIST \
+	indication-id.txt $(SCIM_PNGS) meson.build
 
 dist_pixmaps_DATA = $(SVGS) $(PNGS)
 

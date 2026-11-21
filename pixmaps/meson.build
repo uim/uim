@@ -63,6 +63,11 @@ install_data(
   'uim-icon64.png',
   'uim-icon48.png',
   'uim-gray.png',
+  # From Mozc. See LIST.
+  'mozc.png',
+  'mozc_tool_config_dialog.png',
+  'mozc_tool_dictionary_tool.png',
+  'mozc_tool_selector.png',
   install_dir: uim_pixmapsdir)
 
 # Input methods without their own icons.

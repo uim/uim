@@ -8,6 +8,8 @@ Input methods
 - scim-canna.png (Canna)
 - scim-skk.png   (SKK)
 
+- mozc.png       (Mozc)
+
 - skk.svg        (another version for SKK)
 - tcode.svg      (T-Code)
 - tutcode.svg    (TUT-Code)
@@ -51,6 +53,10 @@ Tools
 - im_switcher.svg
 - uim-dict.svg
 
+- mozc_tool_selector.png        (Mozc)
+- mozc_tool_config_dialog.png   (Mozc)
+- mozc_tool_dictionary_tool.png (Mozc)
+
 Others
 ------
 
@@ -90,6 +96,18 @@ identifiability. No other meaning or functionality was added.
 
 So this icon only indicates that "this icon symbolizes Anthy" to
 users. There is no relation with its functionality or behavior.
+
+
+mozc.png, mozc_tool_*.png
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+They are copies of the icons of Mozc (https://github.com/google/mozc)
+in src/data/images/unix/. See COPYING.Mozc for their license.
+
+- mozc.png:                      ime_product_icon_opensource-32.png
+- mozc_tool_selector.png:        ui-properties.png
+- mozc_tool_config_dialog.png:   ui-tool.png
+- mozc_tool_dictionary_tool.png: ui-dictionary.png
 
 
 skk.svg
