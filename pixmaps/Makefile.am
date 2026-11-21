@@ -118,8 +118,12 @@ GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
 
 PNGS = $(NATIVE_PNGS) $(KARUKAN_PNGS) $(MOZC_PNGS) $(GENERATED_PNGS)
 
-EXTRA_DIST = COPYING.BSDL COPYING.Karukan COPYING.LGPL COPYING.Mozc LIST \
-	indication-id.txt $(SCIM_PNGS) meson.build
+# The license files are installed into docdir with their paths in the
+# source as Meson does.
+pixmapsdocdir = $(docdir)/pixmaps
+dist_pixmapsdoc_DATA = COPYING.BSDL COPYING.Karukan COPYING.LGPL COPYING.Mozc
+
+EXTRA_DIST = LIST indication-id.txt $(SCIM_PNGS) meson.build
 
 dist_pixmaps_DATA = $(SVGS) $(PNGS)
 
