@@ -63,6 +63,8 @@ install_data(
   'uim-icon64.png',
   'uim-icon48.png',
   'uim-gray.png',
+  # From Karukan. See LIST.
+  'karukan.png',
   # From Mozc. See LIST.
   'mozc.png',
   'mozc_tool_config_dialog.png',

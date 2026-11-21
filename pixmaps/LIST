@@ -8,6 +8,7 @@ Input methods
 - scim-canna.png (Canna)
 - scim-skk.png   (SKK)
 
+- karukan.png    (Karukan)
 - mozc.png       (Mozc)
 
 - skk.svg        (another version for SKK)
@@ -96,6 +97,17 @@ identifiability. No other meaning or functionality was added.
 
 So this icon only indicates that "this icon symbolizes Anthy" to
 users. There is no relation with its functionality or behavior.
+
+
+karukan.png
+~~~~~~~~~~~
+
+It is a copy of the icon of Karukan
+(https://github.com/togatoga/karukan):
+karukan-im/fcitx5/fcitx5-addon/icons/fcitx-karukan-32.png.
+
+Karukan is licensed under the MIT license or the Apache License 2.0.
+uim uses the icon under the MIT license. See COPYING.Karukan.
 
 
 mozc.png, mozc_tool_*.png
