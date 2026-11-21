@@ -412,6 +412,11 @@ main(int argc, char **argv)
   char path[MAXPATHLEN];
   int server_fd;
 
+  /* Detach from the launcher's session. Otherwise a hangup or signal
+   * sent to the launcher's process group also kills this server, which
+   * serves every client. */
+  setsid();
+
   uim_init_error();
 
   if (!uim_helper_get_pathname(path, sizeof(path)))
