@@ -168,6 +168,8 @@ void helper_handler(void)
          * focus-out handler is not sent after focus has moved away. */
         g_focus_in = FALSE;
         uim_focus_out_context(g_context);
+        /* Cancel after the handler so that a delay requested during focus-out is dropped too. */
+        cancel_delay_activating();
       }
     }
 
@@ -187,6 +189,7 @@ static void helper_handler_change_im(const char *str)
       if ((eol = strchr(imname, '\n')) != NULL) {
         *eol = '\0';
         uim_switch_im(g_context, imname);
+        cancel_delay_activating();
       }
     }
   }

@@ -1049,6 +1049,15 @@ static void start_pending_pty_sequence(void)
   }
 }
 
+/* Return whether a is earlier than b. */
+static int timespec_before(const struct timespec *a, const struct timespec *b)
+{
+  if (a->tv_sec != b->tv_sec) {
+    return a->tv_sec < b->tv_sec;
+  }
+  return a->tv_nsec < b->tv_nsec;
+}
+
 /* Return whether the pending sequence expired and report time remaining. */
 static int pending_pty_sequence_timeout(struct timespec *remaining)
 {
@@ -1162,6 +1171,7 @@ static void main_loop(void)
   while (TRUE) {
     struct timespec timeout;
     const struct timespec *timeout_ptr = NULL;
+    int pty_timeout_armed = FALSE;
     int selected;
 
     /* コミットされたときにプリエディットがあるか */
@@ -1193,18 +1203,35 @@ static void main_loop(void)
       FD_SET(g_helper_fd, &fds);
     }
 
-    /* Use the pending sequence deadline as the next pselect timeout. */
+    /* Use the nearest pending deadline as the next pselect timeout. */
     if (s_pending_pty_sequence_len > 0) {
       if (pending_pty_sequence_timeout(&timeout)) {
         flush_pending_pty_sequence();
         continue;
       }
       timeout_ptr = &timeout;
+      pty_timeout_armed = TRUE;
+    }
+    if (delay_activating_pending()) {
+      struct timespec delay_timeout;
+      if (delay_activating_timeout(&delay_timeout)) {
+        run_delay_activating();
+        draw();
+        continue;
+      }
+      if (timeout_ptr == NULL || timespec_before(&delay_timeout, &timeout)) {
+        timeout = delay_timeout;
+        timeout_ptr = &timeout;
+        pty_timeout_armed = FALSE;
+      }
     }
 
     selected = my_pselect(nfd, &fds, timeout_ptr, &s_orig_sigmask);
     if (selected == 0) {
-      flush_pending_pty_sequence();
+      /* Only the pty deadline may flush here; a delay timeout must not. */
+      if (pty_timeout_armed) {
+        flush_pending_pty_sequence();
+      }
       continue;
     }
     if (selected < 0) {

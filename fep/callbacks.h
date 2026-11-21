@@ -33,6 +33,7 @@
 
 #ifndef UIM_FEP_CALLBACKS_H
 #define UIM_FEP_CALLBACKS_H
+#include <time.h>
 
 /* Candidate window geometry shared by callbacks.c and draw.c */
 #define WINDOW_BORDER_ROWS  2 /* top and bottom border */
@@ -61,6 +62,10 @@ void init_callbacks(void);
 int press_key(int key, int key_state);
 void start_callbacks(void);
 int end_callbacks(void);
+void cancel_delay_activating(void);
+int delay_activating_pending(void);
+int delay_activating_timeout(struct timespec *remaining);
+void run_delay_activating(void);
 char *get_commit_str(void);
 char *get_statusline_str(void);
 char *get_candidate_str(void);
