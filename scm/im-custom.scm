@@ -234,16 +234,12 @@
 ;; Enabled IM list
 ;;
 
-(define usable-im-list
-  (lambda ()
-    (let ((imlist (filter (lambda (name)
-			    (memq name installed-im-list))
-			  enabled-im-list)))
-	 (if (not (null? imlist))
-	     imlist
-	     '(direct)))))
-
-(define-custom 'enabled-im-list (usable-im-list)
+;; The default is all the installed input methods. It isn't made from
+;; the current value: this file is loaded again when the full custom
+;; API is enabled, and the current value is the user's saved one then.
+(define-custom 'enabled-im-list (if (null? installed-im-list)
+                                    '(direct)
+                                    installed-im-list)
   '(global im-deployment)
   (cons
    'ordered-list
@@ -253,10 +249,15 @@
   (N_ "Enabled input methods")
   (N_ "long description will be here."))
 
+;; direct isn't a choice, and a saved list may have input methods that
+;; aren't installed any more.
 (custom-add-hook 'enabled-im-list
 		 'custom-get-hooks
 		 (lambda ()
-		   (set! enabled-im-list (delete 'direct enabled-im-list))))
+		   (set! enabled-im-list
+			 (filter (lambda (name)
+				   (memq name installed-im-list))
+				 enabled-im-list))))
 
 (define retrieve-im-for-custom-choice
   (lambda (name)
