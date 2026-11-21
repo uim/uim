@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -1814,10 +1814,11 @@ uim_custom_symbol_list_free(char **symbol_list)
 static const char *
 uim_custom_get_primary_group_by_custom(const char *custom_sym)
 {
-  uim_lisp groups;
-  groups = uim_scm_callf("custom-groups", "y", custom_sym);
+  /* The list isn't taken apart here: uim_scm_car() needs the GC ready
+   * stack, which a caller of the custom API doesn't have. */
+  UIM_EVAL_FSTRING1(NULL, "(car (custom-groups '%s))", custom_sym);
 
-  return uim_scm_refer_c_str(uim_scm_car(groups));
+  return uim_scm_refer_c_str(uim_scm_return_value());
 }
 
 static uim_lisp
