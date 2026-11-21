@@ -2557,4 +2557,29 @@
             (custom-value 'test-nr-candidate-max))
 (test-end)
 
+(test-begin "enabled-im-list default")
+(set! installed-im-list '(anthy skk karukan))
+;; The user's saved value. im-custom.scm is loaded again as enabling the
+;; full custom API does.
+(set! enabled-im-list '(skk direct))
+(load "im-custom.scm")
+(test-equal '(anthy skk karukan)
+            (custom-default-value 'enabled-im-list))
+(test-end)
+
+(test-begin "enabled-im-list default: no input methods")
+(set! installed-im-list '())
+(load "im-custom.scm")
+(test-equal '(direct)
+            (custom-default-value 'enabled-im-list))
+(test-end)
+
+(test-begin "enabled-im-list get hook")
+(set! installed-im-list '(anthy skk karukan))
+(set! enabled-im-list '(skk canna direct))
+(custom-call-hook-procs 'enabled-im-list custom-get-hooks)
+(test-equal '(skk)
+            enabled-im-list)
+(test-end)
+
 (test-report-result)
