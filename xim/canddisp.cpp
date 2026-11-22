@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -77,11 +77,8 @@ static const char *candwin_command(void)
 {
     static char candwin_prog[MAXPATHLEN];
     const char *user_config;
-    char *str, *style;
+    char *str;
 
-#ifdef NO_TOOLKIT
-    return NULL;
-#else
     /*
       Search order of candwin_command be summarized as follows
 	 1. UIM_CANDWIN_PROG -- mainly for debugging purpose
@@ -102,8 +99,11 @@ static const char *candwin_command(void)
     }
     free(str);
 
+#ifdef NO_TOOLKIT
+    return NULL;
+#else
 #define TYPELEN	20
-    style = uim_scm_symbol_value_str("candidate-window-style");
+    char *style = uim_scm_symbol_value_str("candidate-window-style");
     char type[TYPELEN] = "";
     if (style) {
 	if (!strcmp(style, "table"))
