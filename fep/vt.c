@@ -392,19 +392,22 @@ void vt_scroll_up(int row, int col)
 
 /*
  * Applies ICH (op '@') or DCH (op 'P') of n cells at (row, col), which
- * uim-fep emits to shift the cells of an on-the-spot preedit. DECSC and DECRC
- * keep the model cursor, which is not synchronized with uim-fep's own moves.
+ * uim-fep emits to shift the cells of an on-the-spot preedit. The model cursor
+ * is restored with CUP afterwards, so the child's cursor position is unchanged.
  */
 static void vt_edit_chars(int row, int col, int n, char op)
 {
   char seq[64];
+  VTermPos model_cursor;
   int len;
 
   if (s_vterm == NULL || n <= 0) {
     return;
   }
-  len = snprintf(seq, sizeof(seq), "\033" "7\033[%d;%dH\033[%d%c\033" "8",
-                 row + 1, col + 1, n, op);
+  vterm_state_get_cursorpos(vterm_obtain_state(s_vterm), &model_cursor);
+  len = snprintf(seq, sizeof(seq), "\033[%d;%dH\033[%d%c\033[%d;%dH",
+                 row + 1, col + 1, n, op,
+                 model_cursor.row + 1, model_cursor.col + 1);
   if (len < 0 || (size_t)len >= sizeof(seq)) {
     return;
   }
