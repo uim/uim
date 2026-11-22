@@ -16,4 +16,6 @@ endif
 
 FORCE:
 
-EXTRA_DIST =  uim-candwin-qt6.pro.in
+EXTRA_DIST =					\
+	meson.build				\
+	uim-candwin-qt6.pro.in

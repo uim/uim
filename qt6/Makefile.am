@@ -1,3 +1,5 @@
+EXTRA_DIST = meson.build
+
 SUBDIRS =					\
 	candwin					\
 	chardict				\
