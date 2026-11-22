@@ -263,6 +263,26 @@
     (let ((name (im-name (find-im-for-locale localestr))))
       (symbol->string name))))
 
+;; called from uim_is_disabled_im()
+(define (uim-im-disabled? name)
+  (let ((sym (string->symbol name)))
+    (and (memq sym installed-im-list)
+         (uim-im-not-enabled? sym))))
+
+(define (uim-im-not-enabled? sym)
+  (not (memq sym enabled-im-list)))
+
+(define (uim-disabled-im-symbols)
+  (filter uim-im-not-enabled? installed-im-list))
+
+;; called from uim_get_nr_disabled_im()
+(define (uim-n-disabled-ims)
+  (length (uim-disabled-im-symbols)))
+
+;; called from uim_get_disabled_im_name()
+(define (uim-nth-disabled-im-name n)
+  (symbol->string (list-ref (uim-disabled-im-symbols) n)))
+
 ;;
 ;; im-switching
 ;;

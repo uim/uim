@@ -766,6 +766,36 @@ const char *uim_get_default_im_name(const char *localename);
  */
 const char *uim_get_im_name_for_locale(const char *localename);
 
+/**
+ * Check whether an input method engine is installed but disabled.
+ *
+ * An input method is disabled when it is installed but not listed in
+ * enabled-im-list.
+ *
+ * @param im_name input method engine name
+ *
+ * @return non-zero if im_name is installed but disabled, otherwise zero.
+ */
+int uim_is_disabled_im(const char *im_name);
+
+/**
+ * Get the number of input method engines that are installed but disabled.
+ *
+ * @return number of installed but disabled input method engines
+ */
+int uim_get_nr_disabled_im(void);
+
+/**
+ * Get the name of nth installed but disabled input method engine.
+ *
+ * @warning you must not free the result
+ *
+ * @param nth index of installed but disabled input method engine
+ *
+ * @return name of nth disabled input method. only valid until next uim API call.
+ */
+const char *uim_get_disabled_im_name(int nth);
+
 /* candidate */
 /**
  * Set callback functions to be called when the candidate-selection occurs.

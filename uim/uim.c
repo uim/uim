@@ -725,6 +725,65 @@ uim_get_im_name_for_locale(const char *localename)
   return name;
 }
 
+int
+uim_is_disabled_im(const char *im_name)
+{
+  uim_lisp ret;
+  int disabled;
+
+  if (UIM_CATCH_ERROR_BEGIN())
+    return 0;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(im_name);
+
+  protected0 = ret = uim_scm_callf("uim-im-disabled?", "s", im_name);
+  disabled = C_BOOL(ret);
+
+  UIM_CATCH_ERROR_END();
+
+  return disabled;
+}
+
+int
+uim_get_nr_disabled_im(void)
+{
+  uim_lisp n_;
+  int n;
+
+  if (UIM_CATCH_ERROR_BEGIN())
+    return 0;
+
+  assert(uim_scm_gc_any_contextp());
+
+  protected0 = n_ = uim_scm_callf("uim-n-disabled-ims", "");
+  n = C_INT(n_);
+
+  UIM_CATCH_ERROR_END();
+
+  return n;
+}
+
+const char *
+uim_get_disabled_im_name(int nth)
+{
+  uim_lisp str_;
+  const char *str;
+
+  if (UIM_CATCH_ERROR_BEGIN())
+    return NULL;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(nth >= 0);
+
+  protected0 = str_ = uim_scm_callf("uim-nth-disabled-im-name", "i", nth);
+  str = REFER_C_STR(str_);
+
+  UIM_CATCH_ERROR_END();
+
+  return str;
+}
+
 #if !UIM_USE_NOTIFY_PLUGINS
 uim_bool
 uim_notify_info(const char *msg_fmt, ...)
