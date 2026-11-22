@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2012-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2012-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -62,7 +62,8 @@ QUimHelperManager *QUimPlatformInputContext::m_helperManager = 0;
 static int unicodeToUKey(ushort c);
 
 QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
-: candwinIsActive(false), m_isAnimating(false), m_uc(0)
+: candwinIsActive(false), m_isAnimating(false), m_preeditStartX(0),
+  m_uc(0)
 {
 #ifdef ENABLE_DEBUG
     qDebug("QUimPlatformInputContext()");
@@ -82,9 +83,6 @@ QUimPlatformInputContext::QUimPlatformInputContext(const char *imname)
 //	    createCandidateWindow();
 
     m_textUtil = new QUimTextUtil(this);
-
-    // read configuration
-    updatePosition();
 }
 
 QUimPlatformInputContext::~QUimPlatformInputContext()
@@ -168,6 +166,8 @@ void QUimPlatformInputContext::createCandidateWindow()
 
     proxy = __createCandidateWindow(this);
     proxy->hide();
+    // The proxy keeps the configuration.
+    updatePosition();
 }
 
 void QUimPlatformInputContext::setFocus()
@@ -490,14 +490,25 @@ void QUimPlatformInputContext::update()
 #endif
 
     if (w && proxy != NULL) {
-#if QT_VERSION < 0x060000
-        QRect mf = w->inputMethodQuery(Qt::ImMicroFocus).toRect();
-#else
-        QRect mf = w->inputMethodQuery(Qt::ImCursorRectangle).toRect();
-#endif
+        QRect mf = microFocus(w);
+        // "left" is the start of the preedit. The vertical position is
+        // still the cursor's one so that the window doesn't hide the
+        // wrapped preedit.
+        if (proxy->isAlwaysLeftPosition() && isAnimating())
+            mf.moveLeft(m_preeditStartX);
         QPoint p = w->mapToGlobal(mf.topLeft());
         proxy->layoutWindow(p.x(), p.y(), mf.height());
     }
+}
+
+// In the coordinates of the widget.
+QRect QUimPlatformInputContext::microFocus(QWidget *w)
+{
+#if QT_VERSION < 0x060000
+    return w->inputMethodQuery(Qt::ImMicroFocus).toRect();
+#else
+    return w->inputMethodQuery(Qt::ImCursorRectangle).toRect();
+#endif
 }
 
 // callbacks for uim
@@ -560,8 +571,11 @@ void QUimPlatformInputContext::cand_activate_cb(void *ptr, int nr, int displayLi
 
     QUimPlatformInputContext *ic = static_cast<QUimPlatformInputContext*>(ptr);
 
-    if (ic->proxy == NULL)
-	ic->proxy = __createCandidateWindow(ic);
+    if (ic->proxy == NULL) {
+        ic->createCandidateWindow();
+        // The preedit was updated before the candidate window existed.
+        ic->update();
+    }
     if (ic->proxy != NULL) {
         ic->m_candwin_assert = true;
 	ic->proxy->candidateActivate(nr, displayLimit);
@@ -664,6 +678,10 @@ void QUimPlatformInputContext::updatePreedit()
 
         // Start conversion
         m_isAnimating = true;
+        // The client reports only the cursor. It's where the preedit
+        // starts now.
+        QWidget *w = QApplication::focusWidget();
+        m_preeditStartX = w ? microFocus(w).left() : 0;
     }
 
     if (!newString.isEmpty()) {
@@ -705,11 +723,6 @@ QString QUimPlatformInputContext::getPreeditString()
 
 int QUimPlatformInputContext::getPreeditCursorPosition()
 {
-    if (proxy == NULL)
-    	return 0;
-    if (proxy->isAlwaysLeftPosition())
-        return 0;
-
     int cursorPos = 0;
     for (int i = 0, j = preeditSegments.count(); i < j; i++) {
         if (preeditSegments[i].attr & UPreeditAttr_Cursor) {
