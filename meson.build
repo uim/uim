@@ -31,6 +31,9 @@ package_bugreport = 'uim-en@googlegroups.com'
 
 prefix = get_option('prefix')
 datadir = get_option('datadir')
+# Meson has no option for this. The documents are installed into here
+# with their paths in the source as the license files are.
+docdir = datadir / 'doc' / meson.project_name()
 includedir = get_option('includedir')
 libdir = get_option('libdir')
 libexecdir = get_option('libexecdir')
@@ -519,6 +522,8 @@ endif
 if get_option('tests').allowed()
   subdir('test')
 endif
+install_data('NEWS.md', 'README', install_dir: docdir, install_tag: 'doc')
+subdir('doc')
 subdir('pixmaps')
 subdir('byeoru-data')
 subdir('examples')

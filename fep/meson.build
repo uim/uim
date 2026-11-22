@@ -32,3 +32,8 @@ executable('uim-fep-tick',
            include_directories: uim_include_directories,
            install: true,
            link_with: [libuim, libreplace])
+install_data('README',
+             'README.ja',
+             'README.key',
+             install_dir: docdir / 'fep',
+             install_tag: 'doc')

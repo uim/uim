@@ -73,3 +73,7 @@ if get_option('tests').allowed()
          timeout: 90)
   endif
 endif
+install_data('README',
+             'README.ja',
+             install_dir: docdir / 'emacs',
+             install_tag: 'doc')
