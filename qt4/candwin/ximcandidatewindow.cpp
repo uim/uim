@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+ Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
  All rights reserved.
 
@@ -41,13 +41,6 @@
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QStringList>
-#if QT_VERSION < 0x060000
-# include <QtCore/QTextCodec>
-#elif QT_VERSION < 0x060400
-# include <QTextCodec>
-#else
-# include <QStringDecoder>
-#endif
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
 # include <QtGui/QDesktopWidget>
@@ -162,27 +155,8 @@ void XimCandidateWindow::activateCand(const QStringList &list)
     cList->setRowCount(0);
     stores.clear();
 
-#if QT_VERSION < 0x060400
-    // get charset and create codec
-    QTextCodec *codec = 0;
-#else
-    // get charset and create decoder
-    QStringDecoder toUnicode = QStringDecoder();
-#endif
-    if (!list[1].isEmpty()
-        && list[1].startsWith(QLatin1String("charset")))
-    {
-#if QT_VERSION < 0x060000
-        const QStringList l = list[1].split('=', QString::SkipEmptyParts);
-#else
-        const QStringList l = list[1].split('=', Qt::SkipEmptyParts);
-#endif
-#if QT_VERSION < 0x060400
-        codec = QTextCodec::codecForName(l[1].toLatin1());
-#else
-        toUnicode = QStringDecoder(l[1].toLatin1());
-#endif
-    }
+    // list[1] is the charset. It's always UTF-8 and get_messages()
+    // has already decoded the message as UTF-8.
 
     // get display_limit
     if (!list[2].isEmpty()
@@ -210,31 +184,10 @@ void XimCandidateWindow::activateCand(const QStringList &list)
 
         // store data
         CandData d;
-        QString headString;
-#if QT_VERSION < 0x060400
-        if (codec)
-            headString = codec->toUnicode(l[0].toLatin1());
-#else
-        if (toUnicode.isValid())
-            headString = toUnicode(l[0].toLatin1());
-#endif
-        else
-            headString = l [0];
-
-        d.headingLabel = headString;
+        d.headingLabel = l[0];
 
         l.pop_front();
-        QString candString = l [0];
-
-#if QT_VERSION < 0x060400
-        if (codec)
-            d.str = codec->toUnicode(candString.toLatin1());
-#else
-        if (toUnicode.isValid())
-            d.str = toUnicode(candString.toLatin1());
-#endif
-        else
-            d.str = candString;
+        d.str = l[0];
 
         if (count >= 3) {
             l.pop_front();
@@ -364,27 +317,8 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
 
     int page = 0;
 
-#if QT_VERSION < 0x060400
-    // get charset and create codec
-    QTextCodec *codec = 0;
-#else
-    // get charset and create decoder
-    QStringDecoder toUnicode = QStringDecoder();
-#endif
-    if (!list[1].isEmpty()
-        && list[1].startsWith(QLatin1String("charset")))
-    {
-#if QT_VERSION < 0x060000
-        const QStringList l = list[1].split('=', QString::SkipEmptyParts);
-#else
-        const QStringList l = list[1].split('=', Qt::SkipEmptyParts);
-#endif
-#if QT_VERSION < 0x060400
-        codec = QTextCodec::codecForName(l[1].toLatin1());
-#else
-        toUnicode = QStringDecoder(l[1].toLatin1());
-#endif
-    }
+    // list[1] is the charset. It's always UTF-8 and get_messages()
+    // has already decoded the message as UTF-8.
 
     // get page
     if (!list[2].isEmpty()
@@ -410,31 +344,10 @@ void XimCandidateWindow::setPageCandidates(const QStringList &list)
 
         // store data
         CandData &d = stores[page * displayLimit + i - 3];
-        QString headString;
-#if QT_VERSION < 0x060400
-        if (codec)
-            headString = codec->toUnicode(l [0].toLatin1());
-#else
-        if (toUnicode.isValid())
-            headString = toUnicode(l [0].toLatin1());
-#endif
-        else
-            headString = l [0];
-
-        d.headingLabel = headString;
+        d.headingLabel = l[0];
 
         l.pop_front();
-        QString candString = l [0];
-
-#if QT_VERSION < 0x060400
-        if (codec)
-            d.str = codec->toUnicode(candString.toLatin1());
-#else
-        if (toUnicode.isValid())
-            d.str = toUnicode(candString.toLatin1());
-#endif
-        else
-            d.str = candString;
+        d.str = l[0];
 
         l.pop_front();
         QString annotString = l [0];
