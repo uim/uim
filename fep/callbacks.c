@@ -72,6 +72,11 @@ static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
 /* Incremented each time a candidate list is activated */
 static int s_candidate_list_id = 0;
+/* The delay deadline is kept in CLOCK_MONOTONIC. */
+static int s_delay_activating_pending = FALSE;
+static struct timespec s_delay_activating_deadline;
+
+#define NSEC_PER_SEC (1000L * 1000L * 1000L)
 
 static void update_current_im_name(void);
 static void configuration_changed_cb(void *ptr);
@@ -79,6 +84,7 @@ static void switch_app_global_im_cb(void *ptr, const char *name);
 static void switch_system_global_im_cb(void *ptr, const char *name);
 static void activate_cb(void *ptr, int nr, int display_limit);
 static void select_cb(void *ptr, int index);
+static void delay_activate_cb(void *ptr, int delay);
 static void shift_page_cb(void *ptr, int direction);
 static void deactivate_cb(void *ptr);
 static void clear_cb(void *ptr);
@@ -159,6 +165,7 @@ void init_callbacks(void)
   configuration_changed_cb(NULL);
   if (g_opt.status_type != NONE || g_opt.candidate_window) {
     uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
+    uim_set_delay_candidate_selector_cb(g_context, delay_activate_cb);
   }
 
   if (g_opt.ddskk) {
@@ -450,6 +457,7 @@ static void switch_system_global_im_cb(void *ptr, const char *name)
 static void activate_cb(void *ptr, int nr, int display_limit)
 {
   debug2(("activate_cb(nr = %d display_limit = %d)\n", nr, display_limit));
+  cancel_delay_activating();
   start_callbacks();
   s_candidate_list_id++;
   reset_candidate();
@@ -510,8 +518,77 @@ static void shift_page_cb(void *ptr, int direction)
 static void deactivate_cb(void *ptr)
 {
   debug2(("deactivate_cb()\n"));
+  cancel_delay_activating();
   start_callbacks();
   reset_candidate();
+}
+
+/*
+ * Called when the IM requests a delayed candidate window display.
+ * It runs inside uim_press_key(), so it only records the deadline and does not call uim.
+ */
+static void delay_activate_cb(void *ptr, int delay)
+{
+  debug2(("delay_activate_cb(delay = %d)\n", delay));
+  clock_gettime(CLOCK_MONOTONIC, &s_delay_activating_deadline);
+  if (delay > 0) {
+    s_delay_activating_deadline.tv_sec += delay;
+  }
+  s_delay_activating_pending = TRUE;
+}
+
+void cancel_delay_activating(void)
+{
+  s_delay_activating_pending = FALSE;
+}
+
+int delay_activating_pending(void)
+{
+  return s_delay_activating_pending;
+}
+
+/*
+ * Return TRUE if the deadline has passed. Otherwise store the remaining time
+ * in remaining and return FALSE.
+ */
+int delay_activating_timeout(struct timespec *remaining)
+{
+  struct timespec now;
+
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  remaining->tv_sec = s_delay_activating_deadline.tv_sec - now.tv_sec;
+  remaining->tv_nsec = s_delay_activating_deadline.tv_nsec - now.tv_nsec;
+  if (remaining->tv_nsec < 0) {
+    remaining->tv_sec--;
+    remaining->tv_nsec += NSEC_PER_SEC;
+  }
+  if (remaining->tv_sec < 0 ||
+      (remaining->tv_sec == 0 && remaining->tv_nsec == 0)) {
+    remaining->tv_sec = 0;
+    remaining->tv_nsec = 0;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/*
+ * Show the delayed candidate list after its deadline has passed.
+ * The caller redraws with draw().
+ */
+void run_delay_activating(void)
+{
+  int nr = 0;
+  int display_limit = 0;
+  int selected_index = -1;
+
+  cancel_delay_activating();
+  uim_delay_activating(g_context, &nr, &display_limit, &selected_index);
+  if (nr > 0) {
+    activate_cb(NULL, nr, display_limit);
+    if (0 <= selected_index && selected_index < nr) {
+      select_cb(NULL, selected_index);
+    }
+  }
 }
 
 

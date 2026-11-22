@@ -113,6 +113,17 @@ struct candidate_window_layout {
   char *footer;
 };
 
+/*
+ * The cells the candidate window is placed against: the preedit, or the cursor
+ * as an empty one-cell preedit before one starts.
+ */
+struct candidate_anchor {
+  struct point_tag head;
+  int lines;
+  const int *line2width;
+  int cursor_col;
+};
+
 static struct {
   int visible;
   int row;
@@ -134,7 +145,8 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
 static void restore_candidate_window(void);
 static void show_candidate_window(void);
 static int render_candidate_window(const struct candidate_window_layout *layout);
-static int candidate_window_position_available(int row, int col, int width, int height);
+static int candidate_window_position_available(const struct candidate_anchor *anchor,
+                                               int row, int col, int width, int height);
 static void draw_preedit(struct preedit_tag *preedit, struct preedit_tag *prev_preedit);
 static int is_eq_region(void);
 static void draw_subpreedit(struct preedit_tag *p, int start, int end);
@@ -264,9 +276,10 @@ static void restore_candidate_window(void)
 
 /*
  * Returns TRUE if a window of width x height at (row, col) fits on the screen
- * and does not cover the preedit.
+ * and does not cover the anchor.
  */
-static int candidate_window_position_available(int row, int col, int width, int height)
+static int candidate_window_position_available(const struct candidate_anchor *anchor,
+                                               int row, int col, int width, int height)
 {
   int line;
 
@@ -274,10 +287,10 @@ static int candidate_window_position_available(int row, int col, int width, int 
       col + width > g_win->ws_col) {
     return FALSE;
   }
-  for (line = 0; line < s_preedit_lines; line++) {
-    int preedit_row = s_head.row + line;
-    int preedit_start = line == 0 ? s_head.col : 0;
-    int preedit_end = s_line2width[line];
+  for (line = 0; line < anchor->lines; line++) {
+    int preedit_row = anchor->head.row + line;
+    int preedit_start = line == 0 ? anchor->head.col : 0;
+    int preedit_end = anchor->line2width[line];
 
     if (preedit_row >= row && preedit_row < row + height &&
         col < preedit_end && col + width > preedit_start) {
@@ -291,41 +304,42 @@ static int candidate_window_position_available(int row, int col, int width, int 
  * Returns the column where the window starts, following
  * candidate-window-position.
  */
-static int get_candidate_window_base_col(int cursor_col)
+static int get_candidate_window_base_col(const struct candidate_anchor *anchor)
 {
   switch (g_opt.candidate_window_position) {
   case CANDWIN_POS_LEFT:
-    return s_head.col;
+    return anchor->head.col;
   default:
-    return cursor_col;
+    return anchor->cursor_col;
   }
 }
 
 /*
- * Places the window left of the preedit start, or right of the preedit end if
+ * Places the window left of the anchor start, or right of the anchor end if
  * the left side does not fit. If neither side fits at full width, the wider
  * side is used (left on a tie) and the window is narrowed to its free columns.
  */
 static int place_candidate_window_beside_preedit(
-  struct candidate_window_layout *layout)
+  const struct candidate_anchor *anchor, struct candidate_window_layout *layout)
 {
-  int end_row = s_head.row;
-  int end_col = s_line2width[0];
-  int start_row = s_head.row;
+  int end_row = anchor->head.row;
+  int end_col = anchor->line2width[0];
+  int start_row = anchor->head.row;
   int max_row = g_win->ws_row - layout->place_height;
   int start_col;
   int end_avail = g_win->ws_col - end_col;
-  int start_avail = s_head.col;
+  int start_avail = anchor->head.col;
   int use_start;
   int i;
 
   end_row = min(end_row, max_row);
   start_row = min(start_row, max_row);
-  start_col = s_head.col - layout->place_width;
+  start_col = anchor->head.col - layout->place_width;
 
   for (i = 0; i < 2; i++) {
     use_start = i == 0;
     if (candidate_window_position_available(
+          anchor,
           use_start ? start_row : end_row,
           use_start ? start_col : end_col,
           layout->place_width, layout->place_height)) {
@@ -343,8 +357,8 @@ static int place_candidate_window_beside_preedit(
   }
   layout->width = min(layout->width, layout->place_width);
   layout->row = use_start ? start_row : end_row;
-  layout->col = use_start ? s_head.col - layout->place_width : end_col;
-  return candidate_window_position_available(layout->row, layout->col,
+  layout->col = use_start ? anchor->head.col - layout->place_width : end_col;
+  return candidate_window_position_available(anchor, layout->row, layout->col,
                                             layout->place_width,
                                             layout->place_height);
 }
@@ -361,6 +375,33 @@ static int decimal_width(int n)
 }
 
 /*
+ * Fills anchor with the cells the window is placed against: the preedit once
+ * one has started, and the cursor as an empty one-cell preedit before that.
+ * Returns FALSE if the cursor position is unknown.
+ */
+static int get_candidate_anchor(struct candidate_anchor *anchor)
+{
+  int row;
+
+  if (g_start_preedit) {
+    anchor->head = s_head;
+    anchor->lines = s_preedit_lines;
+    anchor->line2width = s_line2width;
+    return get_preedit_cursor_position(&row, &anchor->cursor_col);
+  }
+
+  anchor->head = get_cursor_position();
+  if (anchor->head.row == UNDEFINED || anchor->head.col == UNDEFINED) {
+    return FALSE;
+  }
+  anchor->cursor_col = anchor->head.col;
+  anchor->lines = 1;
+  /* The line ends at the cursor column, so its width is cursor_col. */
+  anchor->line2width = &anchor->cursor_col;
+  return TRUE;
+}
+
+/*
  * Draws the candidate window for the current page of candidates.
  * The window goes below the preedit, above it, or beside the cursor,
  * whichever fits first. It is silently skipped when it cannot be shown
@@ -369,6 +410,7 @@ static int decimal_width(int n)
 static void show_candidate_window(void)
 {
   struct candidate_window_layout layout = {0};
+  struct candidate_anchor anchor;
   int page_candidate_count;
   int selected;
   int page_first;
@@ -376,18 +418,16 @@ static void show_candidate_window(void)
   int page_size;
   int list_id;
   int visible_max;
-  int anchor_row;
-  int anchor_col;
   int col;
   int i;
 
   if (g_opt.no_report_cursor ||
       g_win->ws_row < WINDOW_MIN_ROWS ||
       g_win->ws_col < WINDOW_MIN_WIDTH ||
-      !get_preedit_cursor_position(&anchor_row, &anchor_col) ||
       !get_candidate_window_page(&page_first, &page_candidate_count,
                                 &selected, &layout.total) ||
-      page_candidate_count <= 0) {
+      page_candidate_count <= 0 ||
+      !get_candidate_anchor(&anchor)) {
     return;
   }
 
@@ -437,7 +477,7 @@ static void show_candidate_window(void)
   /* Keep the widest width seen in this list, so the window does not shrink
      while paging */
   s_candidate_window_size.text_width = max(s_candidate_window_size.text_width,
-                                          max_text_width);
+                                           max_text_width);
   layout.place_width = min(s_candidate_window_size.text_width + WINDOW_FRAME_COLS,
                            g_win->ws_col);
   /* Reserve a full page of height so the position does not move on a shorter
@@ -447,19 +487,19 @@ static void show_candidate_window(void)
   layout.height = layout.visible_count + WINDOW_FOOTER_ROWS + WINDOW_BORDER_ROWS;
 
   /* Try below the preedit, then above it, then beside the cursor */
-  col = get_candidate_window_base_col(anchor_col);
+  col = get_candidate_window_base_col(&anchor);
   col = min(col, g_win->ws_col - layout.place_width);
   if (candidate_window_position_available(
-        s_head.row + s_preedit_lines, col,
+        &anchor, anchor.head.row + anchor.lines, col,
         layout.place_width, layout.place_height)) {
-    layout.row = s_head.row + s_preedit_lines;
+    layout.row = anchor.head.row + anchor.lines;
     layout.col = col;
   } else if (candidate_window_position_available(
-               s_head.row - layout.place_height, col,
+               &anchor, anchor.head.row - layout.place_height, col,
                layout.place_width, layout.place_height)) {
-    layout.row = s_head.row - layout.place_height;
+    layout.row = anchor.head.row - layout.place_height;
     layout.col = col;
-  } else if (!place_candidate_window_beside_preedit(&layout)) {
+  } else if (!place_candidate_window_beside_preedit(&anchor, &layout)) {
     goto done;
   }
 
@@ -510,7 +550,7 @@ static const struct window_frame_glyphs *get_window_frame_glyphs(void)
  * before the row, and at col + width after it.
  */
 static int draw_candidate_window_row(int row, int col, int width,
-                                    const char *text, int attr, int framed)
+                                     const char *text, int attr, int framed)
 {
   const char *vertical = get_window_frame_glyphs()->vertical;
   int left_background = FALSE;
@@ -519,7 +559,7 @@ static int draw_candidate_window_row(int row, int col, int width,
 
   if (!candidate_window_left_background_needed(row, col, &left_background) ||
       !candidate_window_right_background_needed(row, col + width,
-                                               &right_background)) {
+                                                &right_background)) {
     return FALSE;
   }
   put_cursor_address(row, left_background ? col - 1 : col);
@@ -601,7 +641,7 @@ static int render_candidate_window_border(int row, int col, int width,
   line[offset] = '\0';
 
   ok = draw_candidate_window_row(row, col, width, line, UPreeditAttr_None,
-                                FALSE);
+                                 FALSE);
   free(line);
   return ok;
 }
@@ -626,26 +666,26 @@ static int render_candidate_window(const struct candidate_window_layout *layout)
   put_save_cursor();
   put_cursor_invisible();
   if (!render_candidate_window_border(layout->row, layout->col, layout->width,
-                                     glyphs->top_left, glyphs->top_right)) {
+                                      glyphs->top_left, glyphs->top_right)) {
     goto output_error;
   }
   for (i = 0; i < layout->visible_count; i++) {
     int selected = layout->selected != UNDEFINED && i == layout->selected;
     if (!render_candidate_window_line(row + i, layout->col, layout->width,
-                                     layout->items[i],
-                                     selected ? UPreeditAttr_Reverse :
-                                     UPreeditAttr_None)) {
+                                      layout->items[i],
+                                      selected ? UPreeditAttr_Reverse :
+                                      UPreeditAttr_None)) {
       goto output_error;
     }
   }
   if (!render_candidate_window_line(row + layout->visible_count,
-                                   layout->col, layout->width,
-                                   layout->footer, UPreeditAttr_None)) {
+                                    layout->col, layout->width,
+                                    layout->footer, UPreeditAttr_None)) {
     goto output_error;
   }
   if (!render_candidate_window_border(layout->row + layout->height - 1,
-                                     layout->col, layout->width,
-                                     glyphs->bottom_left, glyphs->bottom_right)) {
+                                      layout->col, layout->width,
+                                      glyphs->bottom_left, glyphs->bottom_right)) {
     goto output_error;
   }
   put_restore_cursor();
