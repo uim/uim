@@ -1912,6 +1912,21 @@ AC_SUBST(abs_top_builddir)
 ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([subprojects/sigscheme])
 
+AC_ARG_WITH(module-registry-dir,
+            AS_HELP_STRING([--with-module-registry-dir=DIR],
+                           [directory for installed-modules.scm and
+                            loader.scm, which uim-module-manager updates
+                            @<:@default=DATADIR/uim@:>@]))
+case "$with_module_registry_dir" in
+  yes|no)
+    AC_MSG_ERROR([--with-module-registry-dir needs a directory])
+    ;;
+esac
+AM_CONDITIONAL(MODULE_REGISTRY_DIR,
+               [test "x$with_module_registry_dir" != x])
+MODULE_REGISTRY_DIR=${with_module_registry_dir:-'${pkgdatadir}'}
+AC_SUBST(MODULE_REGISTRY_DIR)
+
 AC_ARG_WITH(libgcroots,
             AS_HELP_STRING([--with-libgcroots@<:@=WHICH@:>@],
                            [use alternative libgcroots instead of

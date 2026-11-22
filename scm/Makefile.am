@@ -1,8 +1,10 @@
 scmdir = $(pkgdatadir)
+# uim-module-manager updates $(GENERATED_SCM_FILES) after the installation.
+moduleregistrydir = $(MODULE_REGISTRY_DIR)
 
 MOSTLYCLEANFILES = $(GENERATED_SCM_FILES)
 dist_scm_DATA = $(SCM_FILES)
-scm_DATA = $(GENERATED_SCM_FILES)
+moduleregistry_DATA = $(GENERATED_SCM_FILES)
 GENERATED_SCM_FILES = installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  im-switcher.scm \

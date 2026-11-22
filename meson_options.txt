@@ -70,6 +70,10 @@ option('m17nlib',
        type: 'feature',
        value: 'auto',
        description: 'build a plugin for m17n-lib')
+option('module_registry_dir',
+       type: 'string',
+       value: '',
+       description: 'directory for installed-modules.scm and loader.scm, which uim-module-manager updates (default: localstatedir/lib/uim)')
 option('mozc',
        type: 'feature',
        value: 'auto',

@@ -41,8 +41,14 @@ uim_include_directories = [
 uim_c_args = [
   '-DSCMLIBDIR="@0@"'.format(prefix / pkgdatadir / 'lib'),
 ]
+# installed-modules.scm and loader.scm are loaded from
+# module_registry_dir.
+scm_files_path = prefix / pkgdatadir
+if prefix / module_registry_dir != scm_files_path
+  scm_files_path = prefix / module_registry_dir + ':' + scm_files_path
+endif
 uim_defs = [
-  '-DSCM_FILES="@0@"'.format(prefix / pkgdatadir),
+  '-DSCM_FILES="@0@"'.format(scm_files_path),
 ]
 
 libreplace = static_library('replace',
@@ -203,7 +209,7 @@ program_definitions = [
   ['uim-help', [], [libuim_scm, libuim]],
   ['uim-im-switcher-cli', [], [libuim]],
   ['uim-module-manager',
-   ['-DUIM_DATADIR="@0@"'.format(prefix / pkgdatadir)],
+   ['-DUIM_MODULE_REGISTRY_DIR="@0@"'.format(prefix / module_registry_dir)],
    [libuim_scm, libuim]],
   ['uim-sh', [], [libuim_scm, libuim]],
 ]
