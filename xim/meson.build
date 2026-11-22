@@ -24,3 +24,4 @@ executable('uim-xim',
            install: true,
            link_with: [libuim_scm, libuim, libuim_x_util])
 install_man('uim-xim.1')
+install_data('README', install_dir: docdir / 'xim', install_tag: 'doc')

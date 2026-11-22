@@ -2,6 +2,9 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 if MOZC
 bin_PROGRAMS = uim-mozc-helper
+
+mozcdocdir = $(docdir)/mozc
+mozcdoc_DATA = README.md
 endif
 
 PROTO_FILES = \

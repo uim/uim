@@ -2,6 +2,9 @@ EXTRA_DIST = uim-xim.1 meson.build
 
 if XIM
 
+ximdocdir = $(docdir)/xim
+ximdoc_DATA = README
+
 AM_CPPFLAGS =					\
 	-I$(top_builddir)/uim			\
 	-I$(top_srcdir)/replace			\

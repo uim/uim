@@ -8,6 +8,9 @@ EXTRA_DIST =			\
 	uim-version.el.in
 
 if UIM_EL
+emacsdocdir = $(docdir)/emacs
+emacsdoc_DATA = README README.ja
+
 AM_CPPFLAGS =					\
 	-I$(top_builddir)/uim			\
 	-I$(top_srcdir)/replace			\

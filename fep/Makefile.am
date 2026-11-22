@@ -3,6 +3,9 @@ EXTRA_DIST = README.ja README.key meson.build
 
 if UIM_FEP
 
+fepdocdir = $(docdir)/fep
+fepdoc_DATA = README README.ja README.key
+
 AM_CPPFLAGS =					\
 	-I$(top_builddir)/uim			\
 	-I$(top_srcdir)/replace			\

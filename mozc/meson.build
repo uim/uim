@@ -19,3 +19,4 @@ executable('uim-mozc-helper',
            dependencies: protobuf,
            install: true,
            override_options: ['cpp_std=c++17'])
+install_data('README.md', install_dir: docdir / 'mozc', install_tag: 'doc')
