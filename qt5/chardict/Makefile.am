@@ -15,4 +15,4 @@ if QT5
 endif
 	-rm -f Makefile uim-chardict-qt5.pro
 
-EXTRA_DIST =  uim-chardict-qt5.pro.in
+EXTRA_DIST =  uim-chardict-qt5.pro.in meson.build

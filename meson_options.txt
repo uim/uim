@@ -86,6 +86,13 @@ option('pref',
        type: 'feature',
        value: 'auto',
        description: 'build a graphical utility to edit user settings')
+option('qt5',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a Qt 5 immodule')
+option('qt5_plugins_dir',
+       type: 'string',
+       description: 'path to Qt5 plugins dir, (default to output of `qmake5 -query QT_INSTALL_PLUGINS`')
 option('skk',
        type: 'boolean',
        value: true,

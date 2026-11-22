@@ -20,4 +20,5 @@ EXTRA_DIST =					\
 	quimplatforminputcontext.cpp		\
 	quimplatforminputcontext.h		\
 	quimplatforminputcontextplugin.pro.in	\
+	meson.build                             \
 	uim.json

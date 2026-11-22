@@ -542,6 +542,7 @@ endif
 if gtk4.found()
   subdir('gtk4')
 endif
+subdir('qt5')
 if ibus.found()
   subdir('ibus')
 endif
@@ -575,6 +576,7 @@ summary({
           'FEP': curses.found(),
           'GTK 3': gtk3.found(),
           'GTK 4': gtk4.found(),
+          'Qt5': qt5_dep.found(),
           'IBus': ibus.found(),
           'libvterm': libvterm.found(),
           'Mozc': build_mozc,
