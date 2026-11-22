@@ -176,10 +176,7 @@ protocol within uim.
     indication_id is an identifier that specifies visual appearance of the
     item. The ID roughly considerable as "icon name", and so the message
     receiver can use it to form filename for the corresponding icon
-    (e.g. "anthy" -> "/path/to/somewhere/32x32/anthy.png"). There is a special
-    ID. If the ID is "separator", message receivers should display the leaf as
-    toolkit-native separator. But it is not necessary since the "separator"
-    appears as dummy item with no action if the receiver is not aware of it.
+    (e.g. "anthy" -> "/path/to/somewhere/32x32/anthy.png").
 
     iconic_label is a very short string typically 1 character to be used as
     icon. For example, "a" means 'direct input'. This field should be
@@ -212,7 +209,7 @@ protocol within uim.
     leaf = "leaf\t" indication_id "\t" iconic_label "\t"
            label_string "\t" short_desc "\t" action_id "\t" activity "\n"
 
-    indication_id = identifier | "separator"
+    indication_id = identifier
     iconic_label = str
     label_string = str
     short_desc = str

@@ -1,6 +1,6 @@
 ;;; action.scm: Handles user-operable actions of input methods
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -507,15 +507,6 @@
  (indicator-new (lambda (owner)
 		  fallback-indication))
  #f) ;; has no actions
-
-;; should be replaced with real separator by helper tool implementations
-(register-action 'action_separator
-		 (list 'separator ;; dummy indication
-		       "--"
-		       "--------"
-		       "")
-		 #f  ;; has no activity
-		 #f) ;; has no handler
 
 
 ;;
