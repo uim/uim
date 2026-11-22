@@ -9,7 +9,6 @@ EXTRA_DIST = \
 	KEY \
 	PACKAGING \
 	PLUGIN \
-	RELEASING \
 	UIM-SCM \
 	UIM-SH \
 	UNIT-TEST \
@@ -37,7 +36,6 @@ docdoc_DATA = \
 	KEY \
 	PACKAGING \
 	PLUGIN \
-	RELEASING \
 	UIM-SCM \
 	UIM-SH \
 	UNIT-TEST \

@@ -8,7 +8,6 @@ docs = [
   'KEY',
   'PACKAGING',
   'PLUGIN',
-  'RELEASING',
   'UIM-SCM',
   'UIM-SH',
   'UNIT-TEST',
