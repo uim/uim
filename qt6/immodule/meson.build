@@ -49,3 +49,19 @@ qt6_immodule = shared_module('uimplatforminputcontextplugin',
     ],
   override_options: qt6_opts,
   )
+
+qt6_test_load = executable('test-load',
+  'test-load.cpp',
+  dependencies: qt6_dep,
+  override_options: qt6_opts,
+  )
+
+test('qt6-immodule-load',
+  qt6_test_load,
+  args: [qt6_immodule],
+  env: uim_build_tree_env + {
+    'LIBUIM_VANILLA': '2',
+    'QT_QPA_PLATFORM': 'offscreen',
+    'QT_DEBUG_PLUGINS': '1',
+    },
+  suite: 'qt6')

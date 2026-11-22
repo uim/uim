@@ -48,3 +48,18 @@ qt5_immodule = shared_module('uimplatforminputcontextplugin',
     libuim_counted_init
     ],
   )
+
+qt5_test_load = executable('test-load',
+  '../../qt6/immodule/test-load.cpp',
+  dependencies: qt5_dep,
+  )
+
+test('qt5-immodule-load',
+  qt5_test_load,
+  args: [qt5_immodule],
+  env: uim_build_tree_env + {
+    'LIBUIM_VANILLA': '2',
+    'QT_QPA_PLATFORM': 'offscreen',
+    'QT_DEBUG_PLUGINS': '1',
+    },
+  suite: 'qt5')

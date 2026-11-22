@@ -18,4 +18,5 @@ FORCE:
 
 EXTRA_DIST =					\
 	meson.build                             \
+	test-load.cpp                           \
 	quimplatforminputcontextplugin.pro.in
