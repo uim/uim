@@ -59,8 +59,14 @@
   #define CANDWIN_PROG_SUFFIX	"-tqt"
 #elif defined(USE_QT4_CANDWIN)
   #define CANDWIN_PROG_SUFFIX	"-qt4"
+#elif defined(USE_QT5_CANDWIN)
+  #define CANDWIN_PROG_SUFFIX	"-qt5"
+#elif defined(USE_QT6_CANDWIN)
+  #define CANDWIN_PROG_SUFFIX	"-qt6"
 #elif defined(USE_GTK3_CANDWIN)
   #define CANDWIN_PROG_SUFFIX	"-gtk3"
+  // Only GTK 3 has a program for each style.
+  #define CANDWIN_PROG_HAS_STYLES
 #else
   #define NO_TOOLKIT
 #endif
@@ -112,10 +118,12 @@ static const char *candwin_command(void)
     char *style = uim_scm_symbol_value_str("candidate-window-style");
     char type[TYPELEN] = "";
     if (style) {
+#ifdef CANDWIN_PROG_HAS_STYLES
 	if (!strcmp(style, "table"))
 	    strlcpy(type, "-tbl", TYPELEN);
 	else if (!strcmp(style, "horizontal"))
 	    strlcpy(type, "-horizontal", TYPELEN);
+#endif
     }
     snprintf(candwin_prog, MAXPATHLEN, "%s%s%s", CANDWIN_PROG_PREFIX, type, CANDWIN_PROG_SUFFIX);
 
