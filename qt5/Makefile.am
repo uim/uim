@@ -7,3 +7,5 @@ SUBDIRS =					\
 	pref					\
 	switcher				\
 	toolbar
+
+EXTRA_DIST = meson.build

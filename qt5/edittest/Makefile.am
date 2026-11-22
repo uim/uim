@@ -13,3 +13,5 @@ if QT5_IMMODULE
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 endif
 	-rm -f Makefile
+
+EXTRA_DIST = meson.build

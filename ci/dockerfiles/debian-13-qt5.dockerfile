@@ -24,6 +24,8 @@ RUN \
     libx11-dev \
     libxft-dev \
     make \
+    meson \
+    ninja-build \
     pkg-config \
     qt5-qmake \
     qtbase5-dev \

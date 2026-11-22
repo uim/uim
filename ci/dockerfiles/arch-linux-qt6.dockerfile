@@ -8,11 +8,13 @@ RUN \
     libedit \
     librsvg \
     make \
+    meson \
     ncurses \
     perl \
     pkgconf \
     qt6 \
     ruby \
+    ruby-test-unit \
     sudo \
     tzdata
 

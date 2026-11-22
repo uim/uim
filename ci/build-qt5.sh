@@ -2,11 +2,13 @@
 
 set -eu
 
+mkdir -p autotools
+cd autotools
 echo "::group::configure"
 set -x
 /source/configure \
   --enable-maintainer-mode \
-  --prefix=/tmp/local \
+  --prefix=/tmp/autotools \
   --with-qt5 \
   --with-qt5-immodule
 set +x
@@ -23,3 +25,7 @@ set -x
 sudo make install
 set +x
 echo "::endgroup::"
+
+cd -
+/source/ci/build-meson.sh \
+	-Dqt5=enabled

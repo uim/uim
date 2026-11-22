@@ -22,6 +22,8 @@ RUN \
     libx11-dev \
     libxft-dev \
     make \
+    meson \
+    ninja-build \
     pkg-config \
     qt6-base-private-dev \
     qt6-declarative-dev \
