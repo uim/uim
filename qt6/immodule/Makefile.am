@@ -17,4 +17,5 @@ endif
 FORCE:
 
 EXTRA_DIST =					\
+	meson.build                             \
 	quimplatforminputcontextplugin.pro.in

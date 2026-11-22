@@ -16,4 +16,4 @@ endif
 
 FORCE:
 
-EXTRA_DIST =  uim-pref-qt6.pro.in
+EXTRA_DIST =  uim-pref-qt6.pro.in meson.build
