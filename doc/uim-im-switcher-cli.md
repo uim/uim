@@ -18,7 +18,7 @@ uim-im-switcher-cli [-l|--list]
 | --- | --- |
 | `-s SCOPE`, `--scope SCOPE` | Select the scope in which to change the input method. The default is `desktop`. |
 | `-h`, `--help` | Display the usage information. This is also displayed when no argument is given. |
-| `-l`, `--list` | Display the available input methods. |
+| `-l`, `--list` | Display the available input methods, followed by the installed input methods that are not enabled. |
 
 ### Scope values
 
