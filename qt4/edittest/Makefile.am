@@ -16,4 +16,4 @@ endif
 
 FORCE:
 
-EXTRA_DIST = README edittest.pro main.cpp
+EXTRA_DIST = edittest.pro main.cpp
