@@ -45,6 +45,8 @@ int vt_init(uint16_t cols, uint16_t rows);
 void vt_feed(const char *data, size_t len);
 void vt_resize(uint16_t cols, uint16_t rows);
 void vt_scroll_up(int row, int col);
+void vt_insert_chars(int row, int col, int n);
+void vt_delete_chars(int row, int col, int n);
 int vt_restore_region(int row, int col, int width, int guard_col);
 int vt_is_wide_tail(int row, int col, int *is_tail);
 int vt_put_background_space(int row, int col);
@@ -56,6 +58,8 @@ void vt_quit(void);
 #define vt_feed(data, len) ((void)0)
 #define vt_resize(cols, rows) ((void)0)
 #define vt_scroll_up(row, col) ((void)0)
+#define vt_insert_chars(row, col, n) ((void)0)
+#define vt_delete_chars(row, col, n) ((void)0)
 #define vt_restore_region(row, col, width, guard_col) 0
 #define vt_is_wide_tail(row, col, is_tail) ((*(is_tail) = 0), 1)
 #define vt_put_background_space(row, col) 1

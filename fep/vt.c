@@ -390,6 +390,40 @@ void vt_scroll_up(int row, int col)
   vterm_input_write(s_vterm, seq, (size_t)len);
 }
 
+/*
+ * Applies ICH (op '@') or DCH (op 'P') of n cells at (row, col), which
+ * uim-fep emits to shift the cells of an on-the-spot preedit. The model cursor
+ * is restored with CUP afterwards, so the child's cursor position is unchanged.
+ */
+static void vt_edit_chars(int row, int col, int n, char op)
+{
+  char seq[64];
+  VTermPos model_cursor;
+  int len;
+
+  if (s_vterm == NULL || n <= 0) {
+    return;
+  }
+  vterm_state_get_cursorpos(vterm_obtain_state(s_vterm), &model_cursor);
+  len = snprintf(seq, sizeof(seq), "\033[%d;%dH\033[%d%c\033[%d;%dH",
+                 row + 1, col + 1, n, op,
+                 model_cursor.row + 1, model_cursor.col + 1);
+  if (len < 0 || (size_t)len >= sizeof(seq)) {
+    return;
+  }
+  vterm_input_write(s_vterm, seq, (size_t)len);
+}
+
+void vt_insert_chars(int row, int col, int n)
+{
+  vt_edit_chars(row, col, n, '@');
+}
+
+void vt_delete_chars(int row, int col, int n)
+{
+  vt_edit_chars(row, col, n, 'P');
+}
+
 int vt_restore_region(int row, int col, int width, int guard_col)
 {
   struct byte_buffer buffer = {0};

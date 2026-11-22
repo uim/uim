@@ -1461,6 +1461,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
   struct point_tag start_point = width2point_col(start_width);
   int margin = g_win->ws_col - start_point.col;
   int lineno = start_point.row - s_head.row;
+  int cell_col = start_point.col;
   char *seg_str = pseg->str;
   int seg_w = strwidth(seg_str);
 
@@ -1480,9 +1481,13 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
         put_uim_str_len(seg_str, pseg->attr, byte);
         if (width < margin2) {
           put_cursor_address(s_head.row + lineno, s_prev_line2width[lineno]);
+          vt_insert_chars(s_head.row + lineno, s_prev_line2width[lineno],
+                          s_line2width[lineno] - s_prev_line2width[lineno]);
           put_insert(s_line2width[lineno] - s_prev_line2width[lineno]);
           put_cursor_address(s_head.row + lineno, s_prev_line2width[lineno] - (margin2 - width));
         } else {
+          vt_insert_chars(s_head.row + lineno, cell_col,
+                          s_line2width[lineno] - s_prev_line2width[lineno]);
           put_insert(s_line2width[lineno] - s_prev_line2width[lineno]);
         }
         seg_str += byte;
@@ -1526,6 +1531,7 @@ static void draw_pseg(struct preedit_segment_tag *pseg, int start_width)
     seg_str += byte;
     seg_w -= width;
     margin = g_win->ws_col;
+    cell_col = 0;
     lineno++;
   }
 }
@@ -1590,6 +1596,7 @@ static void restore_preedit_region_or_erase(int row, int col, int width, int gua
   int restored = FALSE;
 
   if (g_opt.on_the_spot) {
+    vt_delete_chars(row, col, width);
     put_delete(width);
   } else {
     if (!g_opt.no_report_cursor) {

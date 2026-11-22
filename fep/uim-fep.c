@@ -444,8 +444,8 @@ opt_end:
   }
 
   if (g_opt.candidate_window &&
-      (g_opt.on_the_spot || g_opt.no_report_cursor || g_opt.no_restore_background)) {
-    fprintf(stderr, "uim-fep: --candidate-window cannot be used with -o, -S, -K, or --no-restore-background\n");
+      (g_opt.no_report_cursor || g_opt.no_restore_background)) {
+    fprintf(stderr, "uim-fep: --candidate-window cannot be used with -S, -K, or --no-restore-background\n");
     return EXIT_FAILURE;
   }
 
@@ -609,7 +609,9 @@ opt_end:
     fprintf(stderr, "uim-fep: --candidate-window requires the terminal to report the cursor position\n");
     done(EXIT_FAILURE);
   }
-  if (!g_opt.no_report_cursor && !g_opt.on_the_spot && !g_opt.no_restore_background) {
+  /* -o alone needs no model; with --candidate-window the model follows ICH/DCH */
+  if (!g_opt.no_report_cursor && (!g_opt.on_the_spot || g_opt.candidate_window) &&
+      !g_opt.no_restore_background) {
     if (!vt_init(g_win->ws_col, g_win->ws_row) && g_opt.candidate_window) {
       fprintf(stderr, "uim-fep: --candidate-window requires libvterm background restoration\n");
       done(EXIT_FAILURE);

@@ -186,7 +186,7 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのf
     候補一覧をpreeditカーソル付近の候補ウィンドウに表示します。ステータスラインには表示しません。
     候補ウィンドウは下、上の順に置き、横位置はcandidate-window-positionで変えられます。
     caret(既定)はカーソル位置、leftはpreeditの先頭に合わせます。
-    候補ウィンドウにはlibvtermによる背景復元が必要です。--candidate-windowは-o、-S、-K、--no-restore-backgroundと併用できません。
+    候補ウィンドウにはlibvtermによる背景復元が必要です。--candidate-windowは-S、-K、--no-restore-backgroundと併用できません。
 
   o --ascii-window-border
     --candidate-window の候補ウィンドウの枠を ASCII 文字 (| - +) で描画します。罫線文字
