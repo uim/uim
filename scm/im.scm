@@ -272,8 +272,10 @@
 (define (uim-im-not-enabled? sym)
   (not (memq sym enabled-im-list)))
 
+;; im-list is built by prepending, so it is in the reverse order of
+;; installed-im-list. Reverse it to match the order of the available list.
 (define (uim-disabled-im-symbols)
-  (filter uim-im-not-enabled? installed-im-list))
+  (filter uim-im-not-enabled? (reverse installed-im-list)))
 
 ;; called from uim_get_nr_disabled_im()
 (define (uim-n-disabled-ims)
