@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -88,6 +88,9 @@ static const char *candwin_command(void)
 	 2. value in 'uim-candwin-prog' symbol (deprecated)
 	 3. default toolkit's candwin program determined by ./configure
 	    and the style is selected from 'candidate-window-style' symbol
+
+      The value of 1. and 2. is the name of a program in
+      UIM_LIBEXECDIR or the absolute path of a program.
      */
 
     user_config = getenv("UIM_CANDWIN_PROG");
@@ -95,7 +98,10 @@ static const char *candwin_command(void)
 	    uim_scm_symbol_value_str("uim-candwin-prog");
 
     if (str && *str) {
-	snprintf(candwin_prog, MAXPATHLEN, UIM_LIBEXECDIR "/%s", str);
+	if (str[0] == '/')
+	    strlcpy(candwin_prog, str, MAXPATHLEN);
+	else
+	    snprintf(candwin_prog, MAXPATHLEN, UIM_LIBEXECDIR "/%s", str);
 	free(str);
 
 	return candwin_prog;

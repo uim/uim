@@ -48,6 +48,13 @@ How to use uim-xim
      sh:  UIM_CANDWIN_PROG=uim-candwin-qt export UIM_CANDWIN_PROG
      csh: setenv UIM_CANDWIN_PROG uim-candwin-qt
 
+    The value is the name of a program installed with uim.  You can
+    also use the absolute path of a program that isn't installed with
+    uim such as one under development.
+
+     sh:  UIM_CANDWIN_PROG=/path/to/candwin export UIM_CANDWIN_PROG
+     csh: setenv UIM_CANDWIN_PROG /path/to/candwin
+
     If nothing specified, uim-candwin-gtk or uim-candwin-qt becomes
     default depending on the selected toolkit.  If uim is not
     configured either with GTK+ or Qt, candidate helper is not used.
