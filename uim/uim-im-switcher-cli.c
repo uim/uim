@@ -91,6 +91,21 @@ scope_message(enum switch_scope scope)
 }
 
 static void
+print_disabled_im_list(void)
+{
+  int nr_disabled = uim_get_nr_disabled_im();
+  int i;
+
+  if (nr_disabled == 0)
+    return;
+
+  printf("\nInstalled but not enabled:\n");
+  for (i = 0; i < nr_disabled; i++)
+    printf("  %s\n", uim_get_disabled_im_name(i));
+  printf("\nEnable them with \"Enabled input methods\" of uim-pref.\n");
+}
+
+static void
 print_im_list(uim_context uc)
 {
   const char *current_im_name;
@@ -119,6 +134,8 @@ print_im_list(uim_context uc)
 
   if (nr_printed == 0)
     printf("  (none)\n");
+
+  print_disabled_im_list();
 }
 
 static int
@@ -220,7 +237,13 @@ main(int argc, char **argv)
 
   if (!im_list_contains(uc, im_name)) {
     print_im_list(uc);
-    fprintf(stderr, "uim-im-switcher-cli: unknown input method: %s\n", im_name);
+    if (uim_is_disabled_im(im_name)) {
+      fprintf(stderr,
+              "\nuim-im-switcher-cli: %s is installed but disabled\n",
+              im_name);
+    } else {
+      fprintf(stderr, "\nuim-im-switcher-cli: unknown input method: %s\n", im_name);
+    }
     uim_release_context(uc);
     uim_quit();
     return EXIT_FAILURE;

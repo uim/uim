@@ -844,4 +844,15 @@
 	    (custom-im-list-as-choice-rec '()))
 (test-end)
 
+(test-begin "uim-im-disabled?")
+(set! installed-im-list '(anthy skk latin))
+(set! enabled-im-list '(anthy))
+(test-true  (uim-im-disabled? "skk"))
+(test-false (uim-im-disabled? "anthy"))
+(test-false (uim-im-disabled? "karukan"))
+(test-equal 2 (uim-n-disabled-ims))
+(test-equal "latin" (uim-nth-disabled-im-name 0))
+(test-equal "skk" (uim-nth-disabled-im-name 1))
+(test-end)
+
 (test-report-result)
