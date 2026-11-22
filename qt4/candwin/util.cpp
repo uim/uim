@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2012-2013 uim Project https://github.com/uim/uim
+ Copyright (c) 2012-2026 uim Project https://github.com/uim/uim
 
  All rights reserved.
 
@@ -42,19 +42,20 @@
 QString get_messages(int fd)
 {
     char buf[4096];
-    QString message;
+    // Decode all the read data at once: a multibyte character may be
+    // split between read()s.
+    QByteArray message;
     while (uim_helper_fd_readable(fd) > 0) {
-        int n = read(fd, buf, 4096 - 1);
+        int n = read(fd, buf, sizeof(buf));
         if (n == 0) {
             ::close(fd);
             ::exit(0);
         }
         if (n == -1)
-            return message;
-        buf[n] = '\0';
-        message += QString::fromUtf8(buf);
+            break;
+        message.append(buf, n);
     }
-    return message;
+    return QString::fromUtf8(message);
 }
 
 QList<QStringList> parse_messages(const QString &message)
