@@ -86,6 +86,10 @@ option('pref',
        type: 'feature',
        value: 'auto',
        description: 'build a graphical utility to edit user settings')
+option('qt6',
+       type: 'feature',
+       value: 'auto',
+       description: 'build the Qt 6 immodule and its candidate window')
 option('skk',
        type: 'boolean',
        value: true,

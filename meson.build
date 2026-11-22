@@ -114,6 +114,22 @@ gtk3 = dependency('gtk+-3.0',
                     x11.found(), error_message: 'X11 is needed'))
 gtk4 = dependency('gtk4', required: get_option('gtk4'))
 
+# The immodule uses X11 for the Compose file and key handling as the
+# one for GTK 3 does. Qt older than 6.4 needs Qt5Compat, which isn't
+# supported here.
+qt6_option = get_option('qt6').require(x11.found(),
+                                       error_message: 'X11 is needed')
+# The private headers are for QPlatformInputContext. Only qmake knows
+# where Qt loads its plugins from.
+qt6 = dependency('qt6',
+                 method: 'config-tool',
+                 modules: ['Core', 'Gui', 'Widgets'],
+                 private_headers: true,
+                 required: qt6_option,
+                 version: '>=6.4.0')
+build_qt6 = (qt6.found() and
+             add_languages('cpp', native: false, required: qt6_option))
+
 ibus = dependency('ibus-1.0', version: '>=1.5.0', required: get_option('ibus'))
 
 gio = dependency('gio-2.0', required: get_option('sni'))
@@ -545,6 +561,9 @@ endif
 if ibus.found()
   subdir('ibus')
 endif
+if build_qt6
+  subdir('qt6')
+endif
 if build_mozc
   subdir('mozc')
 endif
@@ -581,6 +600,7 @@ summary({
           'NLS': intl.found(),
           'Notify': get_option('notify'),
           'Pref': build_pref,
+          'Qt 6': build_qt6,
           'SKK': get_option('skk'),
           'SNI': gio.found(),
           'Wayland': build_wayland,

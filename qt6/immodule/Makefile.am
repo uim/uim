@@ -17,4 +17,6 @@ endif
 FORCE:
 
 EXTRA_DIST =					\
-	quimplatforminputcontextplugin.pro.in
+	meson.build				\
+	quimplatforminputcontextplugin.pro.in	\
+	test-load.cpp
