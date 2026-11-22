@@ -242,7 +242,11 @@ static void init_uim(const char *engine)
     }
   }
   if (i == nr) {
-    printf("%s is not an available input method\n\n", engine);
+    if (uim_is_disabled_im(engine)) {
+      printf("%s is installed but disabled\n\n", engine);
+    } else {
+      printf("%s is not an available input method\n\n", engine);
+    }
     usage();
     exit(EXIT_FAILURE);
   }
@@ -1880,6 +1884,15 @@ static void usage(void)
     }
     printf("%s", uim_get_im_short_desc(context, i));
     printf("\n");
+  }
+
+  nr = uim_get_nr_disabled_im();
+  if (nr > 0) {
+    printf("\nInstalled but not enabled:\n");
+    for (i = 0; i < nr; i++) {
+      printf("  %s\n", uim_get_disabled_im_name(i));
+    }
+    printf("\nEnable them with \"Enabled input methods\" of uim-pref.\n");
   }
 
   uim_quit();
