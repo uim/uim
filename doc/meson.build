@@ -1,7 +1,6 @@
 docs = [
   '00INDEX',
   'COMPATIBILITY',
-  'CUSTOM',
   'DOT-UIM',
   'ENV',
   'HELPER-PROTOCOL',
@@ -12,6 +11,7 @@ docs = [
   'UIM-SH',
   'UNIT-TEST',
   'action.md',
+  'custom.md',
   'karukan.md',
   'tutcode-utf8-migration-guide-ja.md',
   'tutcode-utf8-migration-guide.md',

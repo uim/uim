@@ -1,7 +1,6 @@
 EXTRA_DIST = \
 	00INDEX \
 	COMPATIBILITY \
-	CUSTOM \
 	DOT-UIM \
 	ENV \
 	HELPER-CANDWIN \
@@ -13,6 +12,7 @@ EXTRA_DIST = \
 	UIM-SH \
 	UNIT-TEST \
 	action.md \
+	custom.md \
 	karukan.md \
 	skk-utf8-migration-guide-ja.md \
 	skk-utf8-migration-guide.md \
@@ -30,7 +30,6 @@ docdocdir = $(docdir)/doc
 docdoc_DATA = \
 	00INDEX \
 	COMPATIBILITY \
-	CUSTOM \
 	DOT-UIM \
 	ENV \
 	HELPER-PROTOCOL \
@@ -41,6 +40,7 @@ docdoc_DATA = \
 	UIM-SH \
 	UNIT-TEST \
 	action.md \
+	custom.md \
 	karukan.md \
 	tutcode-utf8-migration-guide-ja.md \
 	tutcode-utf8-migration-guide.md \
