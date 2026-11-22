@@ -2,11 +2,25 @@ project('uim',
         'c',
         version: '2.0.1',
         license: 'BSD-3-Clause',
-        # The bundled libgcroots is linked into libuim-scm as configure
-        # does, so that uim needs no shared library of its own for it.
-        default_options: ['libgcroots:default_library=static'],
-        # The same as subprojects/sigscheme.
-        meson_version: '>=0.63.0')
+        # They are installed into licensedir with these paths.
+        license_files: [
+          'COPYING',
+          'pixmaps/COPYING.BSDL',
+          'pixmaps/COPYING.Karukan',
+          'pixmaps/COPYING.LGPL',
+          'pixmaps/COPYING.Mozc',
+        ],
+        default_options: [
+          # The bundled libgcroots is linked into libuim-scm as
+          # configure does, so that uim needs no shared library of its
+          # own for it.
+          'libgcroots:default_library=static',
+          # Meson doesn't install the license files by default. This
+          # is docdir of configure.
+          'licensedir=share/doc/uim',
+        ],
+        # license_files needs 1.1.0.
+        meson_version: '>=1.1.0')
 
 fs = import('fs')
 

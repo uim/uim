@@ -14,6 +14,10 @@ EXTRA_DIST = .editorconfig RELNOTE Rakefile autogen.sh setup.sh \
 	uim.pc.in uim.desktop \
 	meson.build meson_options.txt
 
+# The license files are installed into docdir with their paths in the
+# source as Meson does.
+dist_doc_DATA = COPYING
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc
 
