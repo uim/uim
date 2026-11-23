@@ -507,6 +507,24 @@
       (context-update-widgets c)
       result)))
 
+;; The names of the input methods whose key handlers are called for a
+;; modifier key alone such as Shift. The key handlers of the others
+;; aren't called for it.
+(define im-modifier-key-receivers '())
+
+;; A modifier key alone is always passed to the application whatever
+;; the key handlers do, so that the application doesn't miss a press
+;; or a release of it: an input method can't consume it.
+(define (im-receive-modifier-keys! name)
+  (if (not (memq name im-modifier-key-receivers))
+      (set! im-modifier-key-receivers
+            (cons name im-modifier-key-receivers))))
+
+(define (im-receive-modifier-keys? im)
+  (and im
+       (memq (im-name im) im-modifier-key-receivers)
+       #t))
+
 ;; Returns #t if input is filtered.
 ;; Don't discard unnecessary key events. They are necessary for
 ;; proper GUI widget handling. More correction over entire uim
@@ -524,6 +542,8 @@
 	     (switch-im-key? key state))
 	(switch-im uc (im-name im)))
        ((modifier-key? key state)
+	(if (im-receive-modifier-keys? im)
+	    (invoke-handler im-key-press-handler uc key state))
 	;; don't discard modifier press/release edge for apps
 	(im-commit-raw c))
        (else
@@ -533,10 +553,13 @@
 ;; Returns #t if input is filtered.
 (define key-release-handler
   (lambda (uc key state)
-    (let ((c (im-retrieve-context uc)))
+    (let* ((c (im-retrieve-context uc))
+	   (im (and c (context-im c))))
       (context-set-key-passthrough! c #f)
       (cond
        ((modifier-key? key state)
+	(if (im-receive-modifier-keys? im)
+	    (invoke-handler im-key-release-handler uc key state))
 	;; don't discard modifier press/release edge for apps
 	(im-commit-raw c))
        (else

@@ -57,6 +57,9 @@
  *   candidates[ CANDIDATE]...
  *   select INDEX
  *   deactivate
+ *   pass press|release
+ *                  The input method didn't consume the key, so that
+ *                  the application gets it.
  *   end            The command has been processed.
  *
  * "ready" is written when the input method can take commands.
@@ -140,6 +143,8 @@ static const struct {
   {"right", UKey_Right},
   {"down", UKey_Down},
   {"pagedown", UKey_Next},
+  {"shift_l", UKey_Shift_L},
+  {"shift_r", UKey_Shift_R},
   {"f4", UKey_F4},
   {"f6", UKey_F6},
   {"f7", UKey_F7},
@@ -246,8 +251,10 @@ main(int argc, char **argv)
     }
     *argument++ = '\0';
     if (strcmp(line, "key") == 0 && parse_key(argument, &key, &state)) {
-      uim_press_key(uc, key, state);
-      uim_release_key(uc, key, state);
+      if (uim_press_key(uc, key, state))
+        printf("pass\tpress\n");
+      if (uim_release_key(uc, key, state))
+        printf("pass\trelease\n");
     } else if (strcmp(line, "action") == 0) {
       uim_prop_activate(uc, argument);
     } else if (strcmp(line, "focus") == 0 && strcmp(argument, "in") == 0) {

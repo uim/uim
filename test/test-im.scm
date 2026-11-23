@@ -855,4 +855,19 @@
 (test-equal "skk" (uim-nth-disabled-im-name 1))
 (test-end)
 
+(test-begin "im-receive-modifier-keys?")
+(setup)
+(set! im-modifier-key-receivers '())
+(test-false (im-receive-modifier-keys? (retrieve-im 'direct)))
+(im-receive-modifier-keys! 'direct)
+(test-eq #t (im-receive-modifier-keys? (retrieve-im 'direct)))
+;; Another input method.
+(test-false (im-receive-modifier-keys? (retrieve-im 'test-im)))
+(test-false (im-receive-modifier-keys? #f))
+;; Registering it again doesn't duplicate it.
+(im-receive-modifier-keys! 'direct)
+(test-equal '(direct) im-modifier-key-receivers)
+(set! im-modifier-key-receivers '())
+(test-end)
+
 (test-report-result)
