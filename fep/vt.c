@@ -348,6 +348,126 @@ int vt_is_wide_tail(int row, int col, int *is_tail)
   return TRUE;
 }
 
+static int is_blank_cell(const VTermScreenCell *cell)
+{
+  return cell->chars[0] == 0 || cell->chars[0] == ' ';
+}
+
+/* Returns the first column of the count characters before col, or -1 if a
+ * cell cannot be read. Right halves of wide characters are not counted. */
+static int former_start_col(int row, int col, int count)
+{
+  VTermScreenCell cell;
+  int start = col;
+
+  while (start > 0 && count > 0) {
+    start--;
+    if (!get_cell(row, start, &cell)) {
+      return -1;
+    }
+    if (!is_wide_tail(&cell)) {
+      count--;
+    }
+  }
+  return start;
+}
+
+/* Returns the column just past the count characters from col, or -1 if a
+ * cell cannot be read. Right halves of wide characters are not counted. */
+static int latter_end_col(int row, int col, int count)
+{
+  VTermScreenCell cell;
+  int end = col;
+
+  while (end < s_cols && count > 0) {
+    if (!get_cell(row, end, &cell)) {
+      return -1;
+    }
+    end++;
+    if (!is_wide_tail(&cell)) {
+      count--;
+    }
+  }
+  return end;
+}
+
+/* Returns the column just past the last non-blank cell at or after col, or
+ * -1 if a cell cannot be read. */
+static int trimmed_end_col(int row, int col)
+{
+  VTermScreenCell cell;
+  int end = s_cols;
+
+  while (end > col) {
+    if (!get_cell(row, end - 1, &cell)) {
+      return -1;
+    }
+    if (is_wide_tail(&cell) || !is_blank_cell(&cell)) {
+      break;
+    }
+    end--;
+  }
+  return end;
+}
+
+/* Appends the text of the cells in [from, to) on row to buffer, then a NUL
+ * terminator, so nothing may be appended to buffer afterwards. Right halves of
+ * wide characters are skipped. Returns FALSE if a cell cannot be read or the
+ * append fails. */
+static int append_row_text(struct byte_buffer *buffer, int row, int from, int to)
+{
+  VTermScreenCell cell;
+  int x;
+
+  for (x = from; x < to; x++) {
+    if (!get_cell(row, x, &cell)) {
+      return FALSE;
+    }
+    if (!is_wide_tail(&cell) && !append_cell_text(buffer, &cell)) {
+      return FALSE;
+    }
+  }
+  return append_data(buffer, "", 1);
+}
+
+/* Sets *former to the text before (row, col) and *latter to the text from
+ * skip_cols cells after (row, col) onward, both on row. The skipped cells are
+ * not read. A negative count takes the row to its edge; otherwise it is the
+ * number of characters. The caller frees both UTF-8 strings. Returns FALSE if
+ * the model is unavailable or (row, col) is outside it. */
+int vt_get_surrounding_text(int row, int col, int former_count,
+                            int latter_count, int skip_cols, char **former,
+                            char **latter)
+{
+  struct byte_buffer former_buf = {0};
+  struct byte_buffer latter_buf = {0};
+  int latter_start;
+  int start;
+  int end;
+
+  *former = NULL;
+  *latter = NULL;
+  if (s_vterm == NULL || row < 0 || row >= s_rows ||
+      col < 0 || col >= s_cols) {
+    return FALSE;
+  }
+
+  latter_start = col + skip_cols < s_cols ? col + skip_cols : s_cols;
+  start = former_count < 0 ? 0 : former_start_col(row, col, former_count);
+  end = latter_count < 0 ? trimmed_end_col(row, latter_start)
+                         : latter_end_col(row, latter_start, latter_count);
+  if (start < 0 || end < 0 ||
+      !append_row_text(&former_buf, row, start, col) ||
+      !append_row_text(&latter_buf, row, latter_start, end)) {
+    free(former_buf.data);
+    free(latter_buf.data);
+    return FALSE;
+  }
+  *former = former_buf.data;
+  *latter = latter_buf.data;
+  return TRUE;
+}
+
 void vt_feed(const char *data, size_t len)
 {
   if (s_vterm != NULL && len > 0) {

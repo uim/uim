@@ -50,6 +50,9 @@ void vt_delete_chars(int row, int col, int n);
 int vt_restore_region(int row, int col, int width, int guard_col);
 int vt_is_wide_tail(int row, int col, int *is_tail);
 int vt_put_background_space(int row, int col);
+int vt_get_surrounding_text(int row, int col, int former_count,
+                            int latter_count, int skip_cols, char **former,
+                            char **latter);
 void vt_quit(void);
 
 #else
@@ -63,6 +66,7 @@ void vt_quit(void);
 #define vt_restore_region(row, col, width, guard_col) 0
 #define vt_is_wide_tail(row, col, is_tail) ((*(is_tail) = 0), 1)
 #define vt_put_background_space(row, col) 1
+#define vt_get_surrounding_text(row, col, former_count, latter_count, skip_cols, former, latter) 0
 #define vt_quit() ((void)0)
 
 #endif

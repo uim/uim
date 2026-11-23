@@ -183,6 +183,39 @@ int get_preedit_cursor_position(int *row, int *col)
   return TRUE;
 }
 
+/* Returns the number of blank cells that an on-the-spot preedit has put in the
+ * terminal model at its start (row, col), or 0 for any other position. */
+int get_on_the_spot_blank_cells(int row, int col)
+{
+  if (!g_start_preedit || !g_opt.on_the_spot || g_opt.no_report_cursor ||
+      s_prev_line2width == NULL || row != s_head.row || col != s_head.col) {
+    return 0;
+  }
+  return s_prev_line2width[0] - s_head.col;
+}
+
+/* Sets (*row, *col) to the application's insertion point and returns TRUE, or
+ * returns FALSE if it is unknown. During a preedit it is the preedit start. */
+int get_insertion_point(int *row, int *col)
+{
+  struct point_tag pos;
+
+  if (g_opt.no_report_cursor) {
+    return FALSE;
+  }
+  if (g_start_preedit) {
+    pos = s_head;
+  } else {
+    pos = get_cursor_position();
+    if (pos.row == UNDEFINED || pos.col == UNDEFINED) {
+      return FALSE;
+    }
+  }
+  *row = pos.row;
+  *col = pos.col;
+  return TRUE;
+}
+
 /* Returns TRUE if (row, col) is a cell of the preedit text. */
 static int is_candidate_window_preedit_cell(int row, int col)
 {

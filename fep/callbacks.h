@@ -59,6 +59,7 @@ struct preedit_tag {
 };
 
 void init_callbacks(void);
+void init_text_acquisition(void);
 int press_key(int key, int key_state);
 void start_callbacks(void);
 int end_callbacks(void);
