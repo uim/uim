@@ -65,6 +65,9 @@ scm/japanese-custom.scm
 scm/karukan-custom.scm
 scm/karukan-key-custom.scm
 scm/karukan.scm
+scm/rime-custom.scm
+scm/rime-key-custom.scm
+scm/rime.scm
 scm/latin.scm
 scm/lolevel.scm
 scm/look-custom.scm

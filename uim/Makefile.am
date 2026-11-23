@@ -12,6 +12,7 @@ DEFS += $(SSCM_DEFS)
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = encoding-table.c test-gc.c version.h.in \
+	rime.c \
 	config.h.meson meson.build
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"

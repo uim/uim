@@ -52,15 +52,22 @@ im_driver = executable('im-driver',
 # Ruby is required only when the tests are enabled explicitly.
 ruby = find_program('ruby', required: get_option('tests').enabled())
 if ruby.found()
+  im_test_env = uim_build_tree_env + {
+    'IM_DRIVER': im_driver.full_path(),
+    # ~/.uim and the user's customizations stay out of the test.
+    'LIBUIM_VANILLA': '2',
+  }
+  if rime.found()
+    # The tests of Rime use the schemas that are installed.
+    im_test_env += {
+      'RIME_SHARED_DATA_DIR': rime.get_variable(pkgconfig: 'pkgdatadir'),
+    }
+  endif
   test('im',
        ruby,
        args: [files('im' / 'run.rb')],
        depends: im_driver,
-       env: uim_build_tree_env + {
-         'IM_DRIVER': im_driver.full_path(),
-         # ~/.uim and the user's customizations stay out of the test.
-         'LIBUIM_VANILLA': '2',
-       },
+       env: im_test_env,
        # Each test starts im-driver. It takes about 1 second on CI.
        timeout: 300,
        suite: 'uim')

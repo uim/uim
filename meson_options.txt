@@ -90,6 +90,10 @@ option('qt6',
        type: 'feature',
        value: 'auto',
        description: 'build the Qt 6 immodule and its candidate window')
+option('rime',
+       type: 'feature',
+       value: 'auto',
+       description: 'build a plugin for Rime')
 option('skk',
        type: 'boolean',
        value: true,

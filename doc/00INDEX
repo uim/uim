@@ -13,6 +13,7 @@ UNIT-TEST                          usage of the unit testing framework for uim f
 action.md                          Reference of the action handling framework for input method developers
 custom.md                          Usage of uim-custom API for developers
 karukan.md                         Japanese input method with neural kana-kanji conversion
+rime.md                            Chinese input methods of Rime
 skk-utf8-migration-guide.md        SKK UTF-8 migration guide
 skk-utf8-migration-guide-ja.md     SKK UTF-8 migration guide in Japanese
 tutcode-utf8-migration-guide.md    Tutcode UTF-8 migration guide

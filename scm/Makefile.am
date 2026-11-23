@@ -27,6 +27,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
  mozc.scm mozc-custom.scm mozc-key-custom.scm \
  karukan.scm karukan-custom.scm karukan-key-custom.scm \
+ rime.scm rime-custom.scm rime-key-custom.scm \
  canna.scm cannav3-socket.scm canna-custom.scm canna-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
  tcode.scm trycode.scm \
