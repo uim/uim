@@ -183,7 +183,17 @@
     (prior             . #xff55)
     (next              . #xff56)
     (end               . #xff57)
-    (insert            . #xff63)))
+    (insert            . #xff63)
+    ;; librime switches to the ASCII mode when one of them is pressed
+    ;; and released without another key. A key without a side, which
+    ;; is from a bridge that doesn't tell the side, is passed as the
+    ;; left one.
+    (Shift_key         . #xffe1)
+    (Shift_L_key       . #xffe1)
+    (Shift_R_key       . #xffe2)
+    (Control_key       . #xffe3)
+    (Control_L_key     . #xffe3)
+    (Control_R_key     . #xffe4)))
 
 ;; F1 is #xffbe and F35 is #xffe0.
 (define (rime-function-keysym key)
@@ -347,6 +357,8 @@
           (rime-update rc)))))
 
 (rime-configure-widgets)
+
+(im-receive-modifier-keys! 'rime)
 
 (register-im
  'rime

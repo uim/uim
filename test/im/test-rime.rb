@@ -135,6 +135,48 @@ class RimeTest < Test::Unit::TestCase
     assert_equal([], @driver.preedit)
   end
 
+  # Left Shift is "inline_ascii" by default: what is typed after it
+  # is added as ASCII while composing.
+  def test_left_shift
+    @driver.type("ni")
+    @driver.press("shift_l")
+    @driver.type("ab")
+    assert_equal([[REVERSE, "niab"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  # It switches to the ASCII mode while not composing.
+  def test_left_shift_ascii_mode
+    @driver.press("shift_l")
+    @driver.type("ni")
+    assert_equal([], @driver.preedit)
+  end
+
+  def test_left_shift_twice
+    @driver.press("shift_l")
+    @driver.press("shift_l")
+    @driver.type("ni")
+    assert_equal([[REVERSE, "ni"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  # Shift from a bridge that doesn't tell the side is Left Shift.
+  def test_shift_without_side
+    @driver.type("ni")
+    @driver.press("shift")
+    @driver.type("ab")
+    assert_equal([[REVERSE, "niab"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  # Right Shift is "commit_text" by default: what is composed is
+  # committed as it's converted.
+  def test_right_shift
+    @driver.type("ni")
+    @driver.press("shift_r")
+    assert_equal(["你"], @driver.commits)
+  end
+
   # The menu of Rime to switch schemas and options.
   def test_menu
     @driver.press("f4")
