@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -406,6 +406,24 @@ enum UKey {
   UKey_Meta,
   UKey_Super,
   UKey_Hyper,
+
+  /*
+   * left and right modifier keys: UKey_Shift and so on are for the
+   * ones whose side isn't known.
+   */
+  UKey_Shift_L = 0x8100,
+  UKey_Control_L,
+  UKey_Alt_L,
+  UKey_Meta_L,
+  UKey_Super_L,
+  UKey_Hyper_L,
+
+  UKey_Shift_R = 0x8200,
+  UKey_Control_R,
+  UKey_Alt_R,
+  UKey_Meta_R,
+  UKey_Super_R,
+  UKey_Hyper_R,
 
   /* lock modifier keys: unstable */
   UKey_Caps_Lock = 0x9000,

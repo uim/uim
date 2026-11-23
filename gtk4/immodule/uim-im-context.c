@@ -912,28 +912,40 @@ convert_key_event(guint keyval, GdkModifierType mod, int *ukey, int *umod)
       *ukey = UKey_Mode_switch;
       break;
     case GDK_KEY_Shift_L:
+      *ukey = UKey_Shift_L;
+      break;
     case GDK_KEY_Shift_R:
-      *ukey = UKey_Shift_key;
+      *ukey = UKey_Shift_R;
       break;
     case GDK_KEY_Control_L:
+      *ukey = UKey_Control_L;
+      break;
     case GDK_KEY_Control_R:
-      *ukey = UKey_Control_key;
+      *ukey = UKey_Control_R;
       break;
     case GDK_KEY_Alt_L:
+      *ukey = UKey_Alt_L;
+      break;
     case GDK_KEY_Alt_R:
-      *ukey = UKey_Alt_key;
+      *ukey = UKey_Alt_R;
       break;
     case GDK_KEY_Meta_L:
+      *ukey = UKey_Meta_L;
+      break;
     case GDK_KEY_Meta_R:
-      *ukey = UKey_Meta_key;
+      *ukey = UKey_Meta_R;
       break;
     case GDK_KEY_Super_L:
+      *ukey = UKey_Super_L;
+      break;
     case GDK_KEY_Super_R:
-      *ukey = UKey_Super_key;
+      *ukey = UKey_Super_R;
       break;
     case GDK_KEY_Hyper_L:
+      *ukey = UKey_Hyper_L;
+      break;
     case GDK_KEY_Hyper_R:
-      *ukey = UKey_Hyper_key;
+      *ukey = UKey_Hyper_R;
       break;
     case GDK_KEY_Caps_Lock:
       *ukey = UKey_Caps_Lock;

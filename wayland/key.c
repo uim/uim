@@ -102,23 +102,29 @@ keysym_to_ukey(xkb_keysym_t sym)
   case XKB_KEY_Mode_switch:
     return UKey_Mode_switch;
   case XKB_KEY_Shift_L:
+    return UKey_Shift_L;
   case XKB_KEY_Shift_R:
-    return UKey_Shift_key;
+    return UKey_Shift_R;
   case XKB_KEY_Control_L:
+    return UKey_Control_L;
   case XKB_KEY_Control_R:
-    return UKey_Control_key;
+    return UKey_Control_R;
   case XKB_KEY_Alt_L:
+    return UKey_Alt_L;
   case XKB_KEY_Alt_R:
-    return UKey_Alt_key;
+    return UKey_Alt_R;
   case XKB_KEY_Meta_L:
+    return UKey_Meta_L;
   case XKB_KEY_Meta_R:
-    return UKey_Meta_key;
+    return UKey_Meta_R;
   case XKB_KEY_Super_L:
+    return UKey_Super_L;
   case XKB_KEY_Super_R:
-    return UKey_Super_key;
+    return UKey_Super_R;
   case XKB_KEY_Hyper_L:
+    return UKey_Hyper_L;
   case XKB_KEY_Hyper_R:
-    return UKey_Hyper_key;
+    return UKey_Hyper_R;
   case XKB_KEY_Caps_Lock:
     return UKey_Caps_Lock;
   case XKB_KEY_Num_Lock:

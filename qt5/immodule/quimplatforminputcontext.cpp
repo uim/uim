@@ -40,6 +40,8 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
 
+#include <X11/keysym.h>
+
 #include <uim/uim-helper.h>
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
@@ -215,6 +217,19 @@ void QUimPlatformInputContext::commit()
 #endif
 }
 
+// Qt::Key_Shift and so on don't tell the side of a modifier key, so
+// the keysym is used. KEY is returned when the side isn't known.
+static int modifierKey(quint32 nativeKey,
+                       quint32 leftKeysym, quint32 rightKeysym,
+                       int key, int leftKey, int rightKey)
+{
+    if (nativeKey == leftKeysym)
+        return leftKey;
+    if (nativeKey == rightKeysym)
+        return rightKey;
+    return key;
+}
+
 bool QUimPlatformInputContext::filterEvent(const QEvent *event)
 {
 #ifdef ENABLE_DEBUG
@@ -229,6 +244,8 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
 
     const QKeyEvent *keyevent = static_cast<const QKeyEvent *>(event);
     int qkey = keyevent->key();
+    // The keysym on X11 and Wayland: XK_Shift_L and so on.
+    quint32 nativeKey = keyevent->nativeVirtualKey();
 
     int modifier = 0;
     if (keyevent->modifiers() & Qt::ShiftModifier)
@@ -338,19 +355,36 @@ bool QUimPlatformInputContext::filterEvent(const QEvent *event)
                 // Qt4 seems to add its own modifier even the event is
                 // KeyPress, which differs from ordinary model.  So remove
                 // them for uim.
-                case Qt::Key_Shift: key = UKey_Shift_key; 
+                case Qt::Key_Shift:
+                    key = modifierKey(nativeKey, XK_Shift_L, XK_Shift_R,
+                                      UKey_Shift,
+                                      UKey_Shift_L, UKey_Shift_R);
                     if (type == QEvent::KeyPress)
                         modifier &= ~UMod_Shift;
                     break;
-                case Qt::Key_Control: key = UKey_Control_key;
+                case Qt::Key_Control:
+                    key = modifierKey(nativeKey, XK_Control_L, XK_Control_R,
+                                      UKey_Control,
+                                      UKey_Control_L, UKey_Control_R);
                     if (type == QEvent::KeyPress)
                         modifier &= ~UMod_Control;
                     break;
-                case Qt::Key_Alt: key = UKey_Alt_key;
+                case Qt::Key_Alt:
+                    key = modifierKey(nativeKey, XK_Alt_L, XK_Alt_R,
+                                      UKey_Alt,
+                                      UKey_Alt_L, UKey_Alt_R);
                     if (type == QEvent::KeyPress)
                         modifier &= ~UMod_Alt;
                     break;
-                case Qt::Key_Meta: key = UKey_Meta_key;
+                case Qt::Key_Meta:
+                    key = modifierKey(nativeKey, XK_Meta_L, XK_Meta_R,
+                                      UKey_Meta,
+                                      UKey_Meta_L, UKey_Meta_R);
+                    // Qt::Key_Meta is for Super too.
+                    if (key == UKey_Meta)
+                        key = modifierKey(nativeKey, XK_Super_L, XK_Super_R,
+                                          UKey_Meta,
+                                          UKey_Meta_L, UKey_Meta_R);
 #if defined(Q_WS_X11) || defined(Q_OS_UNIX)
                     if (type == QEvent::KeyPress)
                         modifier &= ~UMod_Meta;

@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+;;; Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -70,15 +70,39 @@
   (lambda (state)
     (> state 0)))
 
+;; The left and right modifier keys and the ones without a side. A
+;; bridge that doesn't tell the side passes a key without a side.
+(define sided-modifier-key-alist
+  '((Shift_L_key   . Shift_key)
+    (Shift_R_key   . Shift_key)
+    (Control_L_key . Control_key)
+    (Control_R_key . Control_key)
+    (Alt_L_key     . Alt_key)
+    (Alt_R_key     . Alt_key)
+    (Meta_L_key    . Meta_key)
+    (Meta_R_key    . Meta_key)
+    (Super_L_key   . Super_key)
+    (Super_R_key   . Super_key)
+    (Hyper_L_key   . Hyper_key)
+    (Hyper_R_key   . Hyper_key)))
+
+;; Returns the modifier key without a side for a left or right
+;; modifier key, and KEY as is for the others.
+(define (key-without-side key)
+  (or (and (symbol? key)
+           (assq-cdr key sided-modifier-key-alist))
+      key))
+
 (define modifier-key?
   (lambda (key key-state)
-    (or
-     (eq? key 'Shift_key)
-     (eq? key 'Control_key)
-     (eq? key 'Alt_key)
-     (eq? key 'Meta_key)
-     (eq? key 'Super_key)
-     (eq? key 'Hyper_key))))
+    (let ((key (key-without-side key)))
+      (or
+       (eq? key 'Shift_key)
+       (eq? key 'Control_key)
+       (eq? key 'Alt_key)
+       (eq? key 'Meta_key)
+       (eq? key 'Super_key)
+       (eq? key 'Hyper_key)))))
 
 (define key-state-alist
   '((Shift_key   . 1)
@@ -254,12 +278,20 @@
 	     (translated (apply apply-translators (cdr parsed)))
 	     (translators  (nth 1 parsed))
 	     (target-key   (nth 1 translated))
-	     (target-state (nth 2 translated)))
+	     (target-state (nth 2 translated))
+	     ;; A modifier key without a side such as Shift_key matches
+	     ;; the left one and the right one too. Shift_L_key and
+	     ;; Shift_R_key match only the one of the side.
+	     (target-without-side? (and (modifier-key? target-key 0)
+					(eq? target-key
+					     (key-without-side target-key)))))
 	(lambda (key key-state)
 	  (let* ((translated (apply-translators translators key key-state))
 		 (key       (nth 1 translated))
 		 (key-state (nth 2 translated)))
-	    (and (eqv? key target-key)
+	    (and (or (eqv? key target-key)
+		     (and target-without-side?
+			  (eqv? (key-without-side key) target-key)))
 		 (eqv? key-state target-state))))))
      ((symbol? source)
       (let ((predicate-sym source))

@@ -133,23 +133,29 @@ keyval_to_ukey(guint keyval)
   case IBUS_KEY_Mode_switch:
     return UKey_Mode_switch;
   case IBUS_KEY_Shift_L:
+    return UKey_Shift_L;
   case IBUS_KEY_Shift_R:
-    return UKey_Shift_key;
+    return UKey_Shift_R;
   case IBUS_KEY_Control_L:
+    return UKey_Control_L;
   case IBUS_KEY_Control_R:
-    return UKey_Control_key;
+    return UKey_Control_R;
   case IBUS_KEY_Alt_L:
+    return UKey_Alt_L;
   case IBUS_KEY_Alt_R:
-    return UKey_Alt_key;
+    return UKey_Alt_R;
   case IBUS_KEY_Meta_L:
+    return UKey_Meta_L;
   case IBUS_KEY_Meta_R:
-    return UKey_Meta_key;
+    return UKey_Meta_R;
   case IBUS_KEY_Super_L:
+    return UKey_Super_L;
   case IBUS_KEY_Super_R:
-    return UKey_Super_key;
+    return UKey_Super_R;
   case IBUS_KEY_Hyper_L:
+    return UKey_Hyper_L;
   case IBUS_KEY_Hyper_R:
-    return UKey_Hyper_key;
+    return UKey_Hyper_R;
   case IBUS_KEY_Caps_Lock:
     return UKey_Caps_Lock;
   case IBUS_KEY_Num_Lock:

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -269,6 +269,18 @@ static struct key_entry key_tab[] = {
   {UKey_Meta_key, "Meta_key"},
   {UKey_Super_key, "Super_key"},
   {UKey_Hyper_key, "Hyper_key"},
+  {UKey_Shift_L, "Shift_L_key"},
+  {UKey_Alt_L, "Alt_L_key"},
+  {UKey_Control_L, "Control_L_key"},
+  {UKey_Meta_L, "Meta_L_key"},
+  {UKey_Super_L, "Super_L_key"},
+  {UKey_Hyper_L, "Hyper_L_key"},
+  {UKey_Shift_R, "Shift_R_key"},
+  {UKey_Alt_R, "Alt_R_key"},
+  {UKey_Control_R, "Control_R_key"},
+  {UKey_Meta_R, "Meta_R_key"},
+  {UKey_Super_R, "Super_R_key"},
+  {UKey_Hyper_R, "Hyper_R_key"},
 
   {UKey_Caps_Lock, "caps-lock"},
   {UKey_Num_Lock, "num-lock"},

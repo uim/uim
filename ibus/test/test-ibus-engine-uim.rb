@@ -53,6 +53,7 @@ module Keyboard
   KEYVAL_X = 0x78
   KEYVAL_RETURN = 0xff0d
   KEYVAL_SHIFT_L = 0xffe1
+  KEYVAL_SHIFT_R = 0xffe2
   KEYVAL_CONTROL_L = 0xffe3
   KEYCODE_A = 30
   KEYCODE_B = 48
@@ -64,6 +65,7 @@ module Keyboard
   KEYCODE_X = 45
   KEYCODE_LEFTCTRL = 29
   KEYCODE_LEFTSHIFT = 42
+  KEYCODE_RIGHTSHIFT = 54
 
   CONTROL_MASK = IBus::ModifierType::CONTROL_MASK.to_i
   RELEASE_MASK = IBus::ModifierType::RELEASE_MASK.to_i
@@ -150,8 +152,10 @@ class IBusSession
   # What the panel shows, Property each.
   attr_reader :properties
 
-  def initialize(default_im_name)
+  # user_scm is what the test adds to the configuration of uim.
+  def initialize(default_im_name, user_scm="")
     @default_im_name = default_im_name
+    @user_scm = user_scm
     @dir = nil
     @daemon = nil
     @connection = nil
@@ -503,6 +507,7 @@ class IBusSession
 (load "#{File.join(__dir__, "candidates.scm")}")
 (load "#{File.join(__dir__, "surrounding-text.scm")}")
 (define default-im-name '#{@default_im_name})
+#{@user_scm}
     SCM
   end
 end
@@ -522,8 +527,12 @@ class TestIBusEngineUim < Test::Unit::TestCase
     "skk"
   end
 
+  def user_scm
+    ""
+  end
+
   def setup
-    @ibus = IBusSession.new(default_im_name)
+    @ibus = IBusSession.new(default_im_name, user_scm)
     begin
       @ibus.start
       yield
@@ -930,6 +939,38 @@ class TestIBusEngineUim < Test::Unit::TestCase
       @ibus.type(KEYVAL_A, KEYCODE_A)
       @ibus.type(KEYVAL_X, KEYCODE_X)
       assert_equal("hide-lookup-table", @ibus.events.last)
+    end
+  end
+
+  # The input method commits with "a" and only Right Shift turns it
+  # off, so the commit says which Shift the bridge handed to uim.
+  sub_test_case("modifier key side") do
+    def default_im_name
+      "surrounding-text"
+    end
+
+    def user_scm
+      <<-SCM
+(define enable-im-toggle? #t)
+(define toggle-im-alt-im 'direct)
+(define-key toggle-im-key? "Shift_R_key")
+      SCM
+    end
+
+    def commits
+      @ibus.events.grep(/\Acommit /)
+    end
+
+    def test_left
+      @ibus.type(KEYVAL_SHIFT_L, KEYCODE_LEFTSHIFT)
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal(["commit []"], commits)
+    end
+
+    def test_right
+      @ibus.type(KEYVAL_SHIFT_R, KEYCODE_RIGHTSHIFT)
+      @ibus.type(KEYVAL_A, KEYCODE_A)
+      assert_equal([], commits)
     end
   end
 end

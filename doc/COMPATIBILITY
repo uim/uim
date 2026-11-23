@@ -57,6 +57,53 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Left and right modifier keys are told
+Affects: Bridge developers
+Updates: C API, Scheme API
+Version: 2.0.1
+Revision:
+Date: 2026-11-23
+Modifier: Sutou Kouhei
+Related:
+URL:
+Changes:
+  (new) UKey_Shift_L
+  (new) UKey_Control_L
+  (new) UKey_Alt_L
+  (new) UKey_Meta_L
+  (new) UKey_Super_L
+  (new) UKey_Hyper_L
+  (new) UKey_Shift_R
+  (new) UKey_Control_R
+  (new) UKey_Alt_R
+  (new) UKey_Meta_R
+  (new) UKey_Super_R
+  (new) UKey_Hyper_R
+  (new) Shift_L_key
+  (new) Control_L_key
+  (new) Alt_L_key
+  (new) Meta_L_key
+  (new) Super_L_key
+  (new) Hyper_L_key
+  (new) Shift_R_key
+  (new) Control_R_key
+  (new) Alt_R_key
+  (new) Meta_R_key
+  (new) Super_R_key
+  (new) Hyper_R_key
+Description:
+  A bridge can pass a left modifier key as UKey_Shift_L and so on and
+  a right one as UKey_Shift_R and so on. UKey_Shift and so on are for
+  the ones whose side isn't known. A bridge that passes UKey_Shift for
+  both of the Shift keys keeps working.
+
+  A key without a side in a key definition matches all of them as
+  before: "<Control>Shift_key" matches Left Shift and Right Shift.
+  "<Control>Shift_L_key" matches only Left Shift and
+  "<Control>Shift_R_key" matches only Right Shift. They can be used
+  for the keys of uim such as switch-im-key. They don't match a
+  modifier key from a bridge that doesn't tell the side.
+------------------------------------------------------------------------------
 Summary: The separator of the property menu is removed
 Affects: IM developers, Helper program developers
 Updates: Scheme API, Helper protocol

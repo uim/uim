@@ -30,9 +30,22 @@ Key-bindings
     (define-key anthy-hankaku-kana-key? '("<Control>q" "<Control>Q"))
     (define-key anthy-on-key? '("<Control>j" "<Control>J" generic-on-key?))
 
+ 8. a modifier key alone can be a key. Shift_key, Control_key,
+    Alt_key, Meta_key, Super_key and Hyper_key match both of the
+    left one and the right one. Shift_L_key and so on match only the
+    left one, and Shift_R_key and so on match only the right one
+    (define-key switch-im-key? "<Control>Shift_key")
+    (define-key my-switch-im-key? "<Control>Shift_R_key") ;only Right Shift
+
+    The side is known only with a bridge that tells it: the GTK 3,
+    GTK 4, Qt 5 and Qt 6 immodules, uim-xim, uim-wayland and
+    ibus-engine-uim. The others such as the Qt 4 immodule pass a
+    modifier key without a side, which Shift_L_key and Shift_R_key
+    don't match.
+
  And some advanced rules.
 
- 8. it also accepts define-time dereference rather than runtime dereference
+ 9. it also accepts define-time dereference rather than runtime dereference
     (define-key my-on-key? generic-on-key?)
     ;after now, redefinition of generic-on-key? not affects my-on-key?
 
@@ -42,7 +55,7 @@ Key-bindings
     ;bad definition: causes infinite loop
     (define-key generic-on-key? (list "<Alt>`" 'generic-on-key?))
 
- 9. it also accepts emacs-like syntax
+10. it also accepts emacs-like syntax
     (define-key my-delete-key? "C-d")
     (define-key reset-key? "C-A-delete")
     (define-key baz-key? "S-home")

@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2007-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2007-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -78,18 +78,18 @@ uim_x_keysym2ukey(KeySym xkeysym)
 	case XK_MultipleCandidate: ukey = UKey_MultipleCandidate; break;
 	case XK_PreviousCandidate: ukey = UKey_PreviousCandidate; break;
 	case XK_Mode_switch: ukey = UKey_Mode_switch; break;
-	case XK_Shift_L: ukey = UKey_Shift_key; break;
-	case XK_Shift_R: ukey = UKey_Shift_key; break;
-	case XK_Control_L: ukey = UKey_Control_key; break;
-	case XK_Control_R: ukey = UKey_Control_key; break;
-	case XK_Alt_L: ukey = UKey_Alt_key; break;
-	case XK_Alt_R: ukey = UKey_Alt_key; break;
-	case XK_Meta_L: ukey = UKey_Meta_key; break;
-	case XK_Meta_R: ukey = UKey_Meta_key; break;
-	case XK_Super_L: ukey = UKey_Super_key; break;
-	case XK_Super_R: ukey = UKey_Super_key; break;
-	case XK_Hyper_L: ukey = UKey_Hyper_key; break;
-	case XK_Hyper_R: ukey = UKey_Hyper_key; break;
+	case XK_Shift_L: ukey = UKey_Shift_L; break;
+	case XK_Shift_R: ukey = UKey_Shift_R; break;
+	case XK_Control_L: ukey = UKey_Control_L; break;
+	case XK_Control_R: ukey = UKey_Control_R; break;
+	case XK_Alt_L: ukey = UKey_Alt_L; break;
+	case XK_Alt_R: ukey = UKey_Alt_R; break;
+	case XK_Meta_L: ukey = UKey_Meta_L; break;
+	case XK_Meta_R: ukey = UKey_Meta_R; break;
+	case XK_Super_L: ukey = UKey_Super_L; break;
+	case XK_Super_R: ukey = UKey_Super_R; break;
+	case XK_Hyper_L: ukey = UKey_Hyper_L; break;
+	case XK_Hyper_R: ukey = UKey_Hyper_R; break;
 	case XK_Caps_Lock: ukey = UKey_Caps_Lock; break;
 	case XK_Num_Lock: ukey = UKey_Num_Lock; break;
 	case XK_Scroll_Lock: ukey = UKey_Scroll_Lock; break;
