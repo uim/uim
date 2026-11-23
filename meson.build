@@ -129,6 +129,15 @@ qt6 = dependency('qt6',
                  version: '>=6.4.0')
 build_qt6 = (qt6.found() and
              add_languages('cpp', native: false, required: qt6_option))
+if build_qt6
+  # private_headers only adds the include directories of the private
+  # headers. It doesn't check that they exist: they are in a separated
+  # package such as qt6-base-private-dev on Debian.
+  build_qt6 = meson.get_compiler('cpp').has_header(
+    'qpa/qplatforminputcontextplugin_p.h',
+    dependencies: qt6,
+    required: qt6_option)
+endif
 
 ibus = dependency('ibus-1.0', version: '>=1.5.0', required: get_option('ibus'))
 
