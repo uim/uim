@@ -83,6 +83,13 @@ services:
       dockerfile: debian-13-qt6.dockerfile
     volumes:
       - .:/source:delegated
+  debian-13-rime:
+    image: uim/uim-debian-13-rime
+    build:
+      context: ci/dockerfiles
+      dockerfile: debian-13-rime.dockerfile
+    volumes:
+      - .:/source:delegated
   debian-13-release:
     image: uim/uim-debian-13-release
     build:

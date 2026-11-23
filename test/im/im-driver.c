@@ -134,10 +134,13 @@ static const struct {
   int key;
 } keys[] = {
   {"space", ' '},
+  {"escape", UKey_Escape},
   {"left", UKey_Left},
   {"return", UKey_Return},
   {"right", UKey_Right},
+  {"down", UKey_Down},
   {"pagedown", UKey_Next},
+  {"f4", UKey_F4},
   {"f6", UKey_F6},
   {"f7", UKey_F7},
   {"f8", UKey_F8},

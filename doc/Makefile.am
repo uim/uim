@@ -14,6 +14,7 @@ EXTRA_DIST = \
 	action.md \
 	custom.md \
 	karukan.md \
+	rime.md \
 	skk-utf8-migration-guide-ja.md \
 	skk-utf8-migration-guide.md \
 	meson.build \

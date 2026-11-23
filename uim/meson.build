@@ -157,6 +157,10 @@ if m17nlib.found()
   plugin_definitions += [['m17nlib', ['m17nlib.c'], [], [m17nlib]]]
 endif
 optional_plugins += {'m17nlib': m17nlib.found()}
+if rime.found()
+  plugin_definitions += [['rime', ['rime.c'], [], [rime]]]
+endif
+optional_plugins += {'rime': rime.found()}
 # EB Library has no pkg-config file.
 eb = cc.find_library('eb',
                      has_headers: ['eb/eb.h'],

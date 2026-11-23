@@ -59,6 +59,9 @@ scm_files = files(
   'karukan.scm',
   'karukan-custom.scm',
   'karukan-key-custom.scm',
+  'rime.scm',
+  'rime-custom.scm',
+  'rime-key-custom.scm',
   'canna.scm',
   'cannav3-socket.scm',
   'canna-custom.scm',
@@ -157,6 +160,11 @@ module_names += [
   'look',
   # IMs using a server that may not be installed
   'karukan',
+]
+if rime.found()
+  module_names += ['rime']
+endif
+module_names += [
   # web based IMs
   'google-cgiapi-jp',
 ]

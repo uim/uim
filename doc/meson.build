@@ -26,6 +26,9 @@ endif
 if gio.found()
   docs += ['uim-sni.md']
 endif
+if rime.found()
+  docs += ['rime.md']
+endif
 if build_wayland
   docs += ['uim-wayland.md']
 endif

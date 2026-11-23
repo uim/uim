@@ -178,6 +178,7 @@ build_dict = dict_option.require(
   dict_anthy.found() or dict_canna.found(),
   error_message: 'Anthy or Canna is needed').allowed()
 
+rime = dependency('rime', required: get_option('rime'))
 m17nlib = dependency('m17n-shell',
                      required: get_option('m17nlib'),
                      version: '>=1.3.1')
@@ -498,6 +499,12 @@ config_data.set_quoted('UIM_PIXMAPSDIR', prefix / uim_pixmapsdir)
 
 if anthy_utf8_capable
   config_data.set('LIBANTHY_UTF8_CAPABLE', 1)
+endif
+
+if rime.found()
+  # The schemas of Rime are here.
+  config_data.set_quoted('RIME_SHARED_DATA_DIR',
+                         rime.get_variable(pkgconfig: 'pkgdatadir'))
 endif
 
 if have_xkb
