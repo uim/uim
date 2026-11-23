@@ -607,4 +607,37 @@
 (test-false (valid-strict-key-str? "J-I-return"))
 (test-end)
 
+(test-begin "make-key-predicate with modifier keys")
+;; A modifier key without a side matches all of the keys.
+(test-eq #t ((make-key-predicate '("<Control>Shift_key"))
+             'Shift_key test-control-state))
+(test-eq #t ((make-key-predicate '("<Control>Shift_key"))
+             'Shift_L_key test-control-state))
+(test-eq #t ((make-key-predicate '("<Control>Shift_key"))
+             'Shift_R_key test-control-state))
+;; A left modifier key matches only the left one.
+(test-eq #t ((make-key-predicate '("<Control>Shift_L_key"))
+             'Shift_L_key test-control-state))
+(test-false ((make-key-predicate '("<Control>Shift_L_key"))
+             'Shift_R_key test-control-state))
+;; The side isn't known.
+(test-false ((make-key-predicate '("<Control>Shift_L_key"))
+             'Shift_key test-control-state))
+;; A right modifier key matches only the right one.
+(test-eq #t ((make-key-predicate '("<Control>Shift_R_key"))
+             'Shift_R_key test-control-state))
+(test-false ((make-key-predicate '("<Control>Shift_R_key"))
+             'Shift_L_key test-control-state))
+(test-false ((make-key-predicate '("<Control>Shift_R_key"))
+             'Shift_key test-control-state))
+;; Another modifier key.
+(test-false ((make-key-predicate '("<Control>Shift_key"))
+             'Alt_R_key test-control-state))
+;; The state must match too.
+(test-false ((make-key-predicate '("<Control>Shift_key"))
+             'Shift_R_key 0))
+(test-eq #t ((make-key-predicate '("Alt_R_key"))
+             'Alt_R_key 0))
+(test-end)
+
 (test-report-result)

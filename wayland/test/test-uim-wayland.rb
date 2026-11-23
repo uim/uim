@@ -321,6 +321,8 @@ module Keyboard
   KEY_J = 36
   KEY_K = 37
   KEY_L = 38
+  KEY_LEFT_SHIFT = 42
+  KEY_RIGHT_SHIFT = 54
 
   RELEASED = 0
   PRESSED = 1
@@ -367,6 +369,8 @@ class Compositor
         <AC07> = #{KEY_J + 8};
         <AC08> = #{KEY_K + 8};
         <AC09> = #{KEY_L + 8};
+        <LFSH> = #{KEY_LEFT_SHIFT + 8};
+        <RTSH> = #{KEY_RIGHT_SHIFT + 8};
       };
       xkb_types "uim-test" {
         type "ONE_LEVEL" {
@@ -390,6 +394,8 @@ class Compositor
         key <AC07> { type = "ALPHABETIC", [ j, J ] };
         key <AC08> { type = "ALPHABETIC", [ k, K ] };
         key <AC09> { type = "ALPHABETIC", [ l, L ] };
+        key <LFSH> { type = "ONE_LEVEL", [ Shift_L ] };
+        key <RTSH> { type = "ONE_LEVEL", [ Shift_R ] };
         modifier_map Control { Control_L };
       };
     };
@@ -451,9 +457,12 @@ class Compositor
   # protocol is :v1, :v2 or :both, the input method protocols offered.
   # fractional_scale also offers wp_fractional_scale_manager_v1 and
   # wp_viewporter, and cursor_shape wp_cursor_shape_manager_v1.
+  # user_scm is what the test adds to the configuration of uim.
   def initialize(default_im_name, environment={}, protocol: :v1,
-                 fractional_scale: false, cursor_shape: false)
+                 fractional_scale: false, cursor_shape: false,
+                 user_scm: "")
     @default_im_name = default_im_name
+    @user_scm = user_scm
     @environment = environment
     @protocol = protocol
     @fractional_scale = fractional_scale
@@ -728,6 +737,7 @@ class Compositor
       file.puts("(load #{scheme_string(File.join(__dir__, im))})")
     end
     file.puts("(define default-im-name '#{@default_im_name})")
+    file.puts(@user_scm)
     file.flush
     file
   end
@@ -996,7 +1006,8 @@ class UimWaylandTest < Test::Unit::TestCase
     @compositor = Compositor.new(default_im_name, uim_wayland_environment,
                                  protocol: protocol,
                                  fractional_scale: fractional_scale?,
-                                 cursor_shape: cursor_shape?)
+                                 cursor_shape: cursor_shape?,
+                                 user_scm: user_scm)
     begin
       @compositor.start
       yield
@@ -1007,6 +1018,10 @@ class UimWaylandTest < Test::Unit::TestCase
 
   def uim_wayland_environment
     {}
+  end
+
+  def user_scm
+    ""
   end
 
   def protocol
@@ -1590,6 +1605,37 @@ class UimWaylandTest < Test::Unit::TestCase
       def test_background
         assert_equal([255, 255, 255], candidate_window_background)
       end
+    end
+  end
+
+  # The input method commits with "a" and only Right Shift turns it
+  # off, so the commit says which Shift the bridge handed to uim.
+  sub_test_case("modifier key side") do
+    def default_im_name
+      "surrounding-text"
+    end
+
+    def user_scm
+      <<-SCM
+(define enable-im-toggle? #t)
+(define toggle-im-alt-im 'direct)
+(define-key toggle-im-key? "Shift_R_key")
+      SCM
+    end
+
+    def test_left
+      @compositor.type(KEY_LEFT_SHIFT)
+      @compositor.type(KEY_A)
+      @compositor.wait_for {@compositor.commits == ["[]"]}
+      assert_equal(["[]"], @compositor.commits)
+    end
+
+    def test_right
+      @compositor.type(KEY_RIGHT_SHIFT)
+      @compositor.type(KEY_A)
+      forwarded_key = [KEY_A, PRESSED]
+      @compositor.wait_for {@compositor.forwarded_keys.include?(forwarded_key)}
+      assert_equal([], @compositor.commits)
     end
   end
 end

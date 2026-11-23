@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2018 uim Project https://github.com/uim/uim
+  Copyright (c) 2003-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -168,7 +168,7 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       else
 	g_modifier_state &= ~UMod_Shift;
 #endif
-      *ukey = UKey_Shift_key;
+      *ukey = (keyval == GDK_Shift_R) ? UKey_Shift_R : UKey_Shift_L;
       break;
     case GDK_Control_L:
     case GDK_Control_R:
@@ -178,7 +178,7 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       else
 	g_modifier_state &= ~UMod_Control;
 #endif
-      *ukey = UKey_Control_key;
+      *ukey = (keyval == GDK_Control_R) ? UKey_Control_R : UKey_Control_L;
       break;
     case GDK_Alt_L:
     case GDK_Alt_R:
@@ -188,7 +188,7 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       else
 	g_modifier_state &= ~UMod_Alt;
 #endif
-      *ukey = UKey_Alt_key;
+      *ukey = (keyval == GDK_Alt_R) ? UKey_Alt_R : UKey_Alt_L;
       break;
     case GDK_Meta_L:
     case GDK_Meta_R:
@@ -198,7 +198,7 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       else
 	g_modifier_state &= ~UMod_Meta;
 #endif
-      *ukey = UKey_Meta_key;
+      *ukey = (keyval == GDK_Meta_R) ? UKey_Meta_R : UKey_Meta_L;
       break;
     case GDK_Super_L:
     case GDK_Super_R:
@@ -208,7 +208,7 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       else
 	g_modifier_state &= ~UMod_Super;
 #endif
-      *ukey = UKey_Super_key;
+      *ukey = (keyval == GDK_Super_R) ? UKey_Super_R : UKey_Super_L;
       break;
     case GDK_Hyper_L:
     case GDK_Hyper_R:
@@ -218,7 +218,7 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       else
 	g_modifier_state &= ~UMod_Hyper;
 #endif
-      *ukey = UKey_Hyper_key;
+      *ukey = (keyval == GDK_Hyper_R) ? UKey_Hyper_R : UKey_Hyper_L;
       break;
     case GDK_Caps_Lock:
       *ukey = UKey_Caps_Lock;

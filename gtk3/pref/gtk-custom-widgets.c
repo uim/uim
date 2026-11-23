@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -1399,12 +1399,44 @@ key_pref_selection_changed(GtkTreeSelection *selection,
   return TRUE;
 }
 
+/*
+ * The key editor doesn't tell the side of a modifier key:
+ * "Shift_key" is for both of them.
+ */
+static gint
+key_without_side(gint ukey)
+{
+  switch (ukey) {
+  case UKey_Shift_L:
+  case UKey_Shift_R:
+    return UKey_Shift;
+  case UKey_Control_L:
+  case UKey_Control_R:
+    return UKey_Control;
+  case UKey_Alt_L:
+  case UKey_Alt_R:
+    return UKey_Alt;
+  case UKey_Meta_L:
+  case UKey_Meta_R:
+    return UKey_Meta;
+  case UKey_Super_L:
+  case UKey_Super_R:
+    return UKey_Super;
+  case UKey_Hyper_L:
+  case UKey_Hyper_R:
+    return UKey_Hyper;
+  default:
+    return ukey;
+  }
+}
+
 static void
 key_pref_set_value(gint ukey, gint umod)
 {
   GString *keystr;
   const char *sym;
 
+  ukey = key_without_side(ukey);
   keystr = g_string_new("");
   /*
    * Ignore Shift modifier for printable char keys for
