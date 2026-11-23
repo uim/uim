@@ -410,6 +410,27 @@ static int trimmed_end_col(int row, int col)
   return end;
 }
 
+/* Returns the column just past the latter text on row: count characters from
+ * col, or the row's edge when count is negative, but never past the last
+ * non-blank cell. Returns -1 if a cell cannot be read. */
+static int latter_text_end_col(int row, int col, int count)
+{
+  int trimmed = trimmed_end_col(row, col);
+  int end;
+
+  if (trimmed < 0) {
+    return -1;
+  }
+  if (count < 0) {
+    return trimmed;
+  }
+  end = latter_end_col(row, col, count);
+  if (end < 0) {
+    return -1;
+  }
+  return min(end, trimmed);
+}
+
 /* Appends the text of the cells in [from, to) on row to buffer, then a NUL
  * terminator, so nothing may be appended to buffer afterwards. Right halves of
  * wide characters are skipped. Returns FALSE if a cell cannot be read or the
@@ -434,7 +455,8 @@ static int append_row_text(struct byte_buffer *buffer, int row, int from, int to
  * skip_cols cells after (row, col) onward, both on row. The skipped cells are
  * not read. A negative count takes the row to its edge; otherwise it is the
  * number of characters. The caller frees both UTF-8 strings. Returns FALSE if
- * the model is unavailable or (row, col) is outside it. */
+ * the model is unavailable or (row, col) is outside it. Trailing blank cells
+ * are never included in *latter. */
 int vt_get_surrounding_text(int row, int col, int former_count,
                             int latter_count, int skip_cols, char **former,
                             char **latter)
@@ -454,8 +476,7 @@ int vt_get_surrounding_text(int row, int col, int former_count,
 
   latter_start = col + skip_cols < s_cols ? col + skip_cols : s_cols;
   start = former_count < 0 ? 0 : former_start_col(row, col, former_count);
-  end = latter_count < 0 ? trimmed_end_col(row, latter_start)
-                         : latter_end_col(row, latter_start, latter_count);
+  end = latter_text_end_col(row, latter_start, latter_count);
   if (start < 0 || end < 0 ||
       !append_row_text(&former_buf, row, start, col) ||
       !append_row_text(&latter_buf, row, latter_start, end)) {
