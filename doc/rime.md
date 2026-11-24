@@ -50,6 +50,12 @@ For example, Terra Pinyin (`terra_pinyin`) takes tones: `-` is the 1st
 tone, `/` is the 2nd, `<` is the 3rd and `\` is the 4th. `pi\` shows
 only the candidates of "pì" such as 屁.
 
+Shift switches Rime between the Chinese mode and the ASCII mode by
+default. `rime` is still on in the ASCII mode: the keys are processed
+by Rime. Left Shift and Right Shift can have different actions as the
+settings of Rime say. The Qt 3, TQt and Qt 4 immodules don't tell the
+side, so both of them are Left Shift with them.
+
 Rime also has its own menu to switch schemas and options such as the
 ASCII mode, Ctrl+\` or F4 by default.
 
@@ -67,9 +73,9 @@ Put the user settings of Rime such as `default.custom.yaml` into
 
 ## Limitations
 
-- A modifier key alone can't be used, such as Shift to switch to the
-  ASCII mode: uim doesn't pass it to an input method. Use the off key
-  of uim or the menu of Rime instead.
+- Shift alone doesn't reach Rime with uim-fep and uim.el: a terminal
+  and Emacs don't send a modifier key alone. Use the off key of uim or
+  the menu of Rime instead.
 - Rime is started when `rime` is turned on for the first time. It
   deploys the schemas then if they are changed. It takes time when the
   shared data directory doesn't have prebuilt schemas.

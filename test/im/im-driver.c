@@ -143,6 +143,7 @@ static const struct {
   {"right", UKey_Right},
   {"down", UKey_Down},
   {"pagedown", UKey_Next},
+  {"shift", UKey_Shift},
   {"shift_l", UKey_Shift_L},
   {"shift_r", UKey_Shift_R},
   {"f4", UKey_F4},
