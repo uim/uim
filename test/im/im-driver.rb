@@ -51,6 +51,9 @@ class IMDriver
   # [[attribute, text], ...]
   attr_reader :preedit
   attr_reader :commits
+  # "press" or "release" for each key that the input method didn't
+  # consume, so that the application gets it.
+  attr_reader :passed_keys
   # nil while the candidate window isn't shown.
   attr_reader :candidates
   attr_reader :candidate_index
@@ -63,6 +66,7 @@ class IMDriver
     @env = env
     @preedit = []
     @commits = []
+    @passed_keys = []
     @candidates = nil
     @candidate_index = nil
   end
@@ -134,6 +138,8 @@ class IMDriver
         end
       when "commit"
         @commits << values[0]
+      when "pass"
+        @passed_keys << values[0]
       when "candidates"
         @candidates = values
         @candidate_index = nil

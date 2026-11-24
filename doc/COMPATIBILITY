@@ -57,6 +57,28 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: An input method can receive a modifier key alone
+Affects: IM developers
+Updates: Scheme API
+Version: 2.0.1
+Revision:
+Date: 2026-11-24
+Modifier: Sutou Kouhei
+Related:
+URL:
+Changes:
+  (new) im-receive-modifier-keys!
+Description:
+  An input method doesn't receive a modifier key alone such as Shift
+  by default as before. The key handlers of an input method that calls
+  (im-receive-modifier-keys! NAME) are called for it with Shift_L_key,
+  Shift_R_key and so on, or with Shift_key and so on when the bridge
+  doesn't tell the side.
+
+  A modifier key alone is always passed to the application as before
+  whatever the key handlers do, so that the application doesn't miss a
+  press or a release of it: an input method can't consume it.
+------------------------------------------------------------------------------
 Summary: Add im-delete-text-supported? to check the delete callback
 Affects: IM developers, Bridge developers
 Updates: Scheme API
