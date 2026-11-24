@@ -38,6 +38,7 @@ class KarukanTest < Test::Unit::TestCase
 
   RETURN = 0xff0d
   ESCAPE = 0xff1b
+  ALT_R = 0xffea
 
   def setup
     omit("karukan isn't enabled") unless IMDriver.available?("karukan")
@@ -118,6 +119,20 @@ class KarukanTest < Test::Unit::TestCase
     assert_equal(["a".ord, RETURN], keysyms)
   end
 
+  # karukan-imserver goes back to the hiragana mode with a right
+  # modifier key.
+  def test_right_modifier_key
+    @driver.press("alt_r")
+    assert_equal([ALT_R], keysyms)
+  end
+
+  # The other modifier keys aren't sent.
+  def test_left_modifier_key
+    @driver.press("shift_l")
+    @driver.type("a")
+    assert_equal(["a".ord], keysyms)
+  end
+
   def test_focus_out
     @driver.type("ab")
     @driver.focus_out
@@ -162,6 +177,18 @@ class KarukanTest < Test::Unit::TestCase
       @driver.press("return")
       @driver.type("c")
       assert_equal(2, surrounding_texts.size)
+    end
+  end
+
+  sub_test_case("karukan-off-key?: a modifier key alone") do
+    def custom_scheme
+      '(define-key karukan-off-key? "Shift_R_key")'
+    end
+
+    def test_off
+      @driver.press("shift_r")
+      @driver.type("a")
+      assert_equal([], keysyms)
     end
   end
 

@@ -432,7 +432,13 @@
     (zenkaku           . #xff28)
     (hankaku           . #xff29)
     (zenkaku-hankaku   . #xff2a)
-    (eisu-toggle       . #xff30)))
+    (eisu-toggle       . #xff30)
+    ;; karukan-imserver goes back to the hiragana mode from the
+    ;; alphanumeric mode with one of the right modifier keys.
+    (Meta_R_key        . #xffe8)
+    (Alt_R_key         . #xffea)
+    (Super_R_key       . #xffec)
+    (Hyper_R_key       . #xffee)))
 
 ;; F1 is #xffbe and F35 is #xffe0.
 (define (karukan-function-keysym key)
@@ -529,8 +535,9 @@
 ;;; modes
 
 ;; The input mode of Karukan goes back to hiragana. The toolbar doesn't
-;; show the katakana mode of Ctrl+K and uim can't send the keys that
-;; leave it, such as Right Alt.
+;; show the alphanumeric mode of Karukan, and a bridge that can't pass
+;; a right modifier key alone such as uim-fep can't send the keys that
+;; leave it.
 (define (karukan-set-on kc)
   (karukan-context-set-on! kc #t)
   ;; The models start loading now.
@@ -596,6 +603,11 @@
    ((and (karukan-off-key? key key-state)
          (not (karukan-context-composing? kc)))
     (karukan-set-off kc))
+   ;; uim also passes a modifier key alone to the application.
+   ((modifier-key? key key-state)
+    (let ((translated (karukan-translate-key key key-state)))
+      (if translated
+          (karukan-send-key kc (car translated) (cdr translated)))))
    (else
     (let ((translated (karukan-translate-key key key-state)))
       (if (not (and translated
@@ -656,6 +668,9 @@
           (loop)))))
 
 (karukan-configure-widgets)
+
+;; For the right modifier keys.
+(im-receive-modifier-keys! 'karukan)
 
 (register-im
  'karukan

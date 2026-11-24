@@ -82,6 +82,9 @@ for conversion" (`karukan-use-surrounding-text?`) not to pass it.
   time, isn't shown.
 - Karukan's katakana and alphanumeric modes aren't shown in the
   toolbar. The toolbar shows only whether Karukan is on. Turning
-  Karukan on goes back to the hiragana mode: Right Alt and Right
-  Super, which leave the katakana mode of Ctrl+K, don't reach
-  Karukan.
+  Karukan on goes back to the hiragana mode. The right modifier keys
+  such as Right Alt and Right Super, which go back to the hiragana
+  mode from the alphanumeric mode of Shift and a letter, reach Karukan
+  except with uim-fep, which can't pass a modifier key alone, and the
+  Qt 3, TQt and Qt 4 immodules, which don't tell the side of a
+  modifier key.
