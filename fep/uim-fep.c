@@ -146,8 +146,8 @@ struct opt_tag g_opt = {
   FALSE,            /* no_report_cursor          */
   FALSE,            /* print_key                 */
   FALSE,            /* no_restore_background     */
-  FALSE,            /* candidate_window           */
-  FALSE,            /* ascii_window_border        */
+  FALSE,            /* candidate_window          */
+  FALSE,            /* ascii_window_border       */
   CANDWIN_POS_CARET /* candidate_window_position */
 };
 int g_win_in = STDIN_FILENO;
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
   const char *win_str;
   struct stat stat_buf;
   const char *errstr;
-
+  int vt_enabled = FALSE;
   int op;
 
   if ((command[0] = getenv("SHELL")) == NULL || *command[0] == '\0') {
@@ -609,13 +609,15 @@ opt_end:
     fprintf(stderr, "uim-fep: --candidate-window requires the terminal to report the cursor position\n");
     done(EXIT_FAILURE);
   }
-  /* -o alone needs no model; with --candidate-window the model follows ICH/DCH */
-  if (!g_opt.no_report_cursor && (!g_opt.on_the_spot || g_opt.candidate_window) &&
-      !g_opt.no_restore_background) {
-    if (!vt_init(g_win->ws_col, g_win->ws_row) && g_opt.candidate_window) {
+  if (!g_opt.no_report_cursor && !g_opt.no_restore_background) {
+    vt_enabled = vt_init(g_win->ws_col, g_win->ws_row);
+    if (!vt_enabled && g_opt.candidate_window) {
       fprintf(stderr, "uim-fep: --candidate-window requires libvterm background restoration\n");
       done(EXIT_FAILURE);
     }
+  }
+  if (vt_enabled) {
+    init_text_acquisition();
   }
   set_signal_handler();
 

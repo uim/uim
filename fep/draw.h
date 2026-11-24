@@ -61,6 +61,8 @@ void draw_commit_and_preedit(void);
 int has_pending_preedit(void);
 void draw_winch(struct winsize *prevwin);
 int get_preedit_cursor_position(int *row, int *col);
+int get_on_the_spot_blank_cells(int row, int col);
+int get_insertion_point(int *row, int *col);
 void draw_candidate_window_refresh(void);
 void draw_candidate_window_clear(void);
 

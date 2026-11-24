@@ -52,7 +52,9 @@
 #include "uim-fep.h"
 #include "str.h"
 #include "callbacks.h"
+#include "draw.h"
 #include "helper.h"
+#include "vt.h"
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-helper.h>
 #include <uim/uim-util.h>
@@ -140,6 +142,44 @@ static struct candidate_tag s_candidate = {
   UNDEFINED, /* window_page_size */
 };
 
+static int text_extent_count(int extent, int *count)
+{
+  if (extent == UTextExtent_Line) {
+    *count = -1;
+    return TRUE;
+  }
+  if (extent >= 0) {
+    *count = extent;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/* The terminal model covers only the cursor's row, so text is never taken
+ * from other rows. Under an on-the-spot preedit, the blank cells that the
+ * preedit occupies are skipped. */
+static int acquire_text_cb(void *ptr, enum UTextArea text_id,
+                           enum UTextOrigin origin, int former_len,
+                           int latter_len, char **former, char **latter)
+{
+  int former_count;
+  int latter_count;
+  int row;
+  int col;
+
+  if (text_id != UTextArea_Primary || origin != UTextOrigin_Cursor ||
+      !text_extent_count(former_len, &former_count) ||
+      !text_extent_count(latter_len, &latter_count)) {
+    return -1;
+  }
+  if (!get_insertion_point(&row, &col)) {
+    return -1;
+  }
+  return vt_get_surrounding_text(row, col, former_count, latter_count,
+                                 get_on_the_spot_blank_cells(row, col),
+                                 former, latter) ? 0 : -1;
+}
+
 /*
  * 初期化
  */
@@ -183,6 +223,15 @@ void init_callbacks(void)
       done(EXIT_FAILURE);
     }
   }
+}
+
+/*
+ * acquire_text_cb reads the terminal model, which vt_init() creates after
+ * init_callbacks(), so the callback is registered only when the model is ready.
+ */
+void init_text_acquisition(void)
+{
+  uim_set_text_acquisition_cb(g_context, acquire_text_cb, NULL);
 }
 
 int press_key(int key, int key_state)

@@ -484,11 +484,12 @@
       (im-delete-text mc 'primary 'cursor 'line 0)
       (im-delete-text mc 'selection 'beginning 0 'full)))
 
+;; UNDO and CONVERT_REVERSE remove text, so they are not run without delete support.
 (define (mozc-execute-callback mc output)
   (let* ((callback (mozc-alist-ref 'callback output))
          (command (and callback (mozc-alist-ref 'session-command callback)))
          (type (and command (mozc-alist-ref 'type command))))
-    (case type
+    (case (and (im-delete-text-supported? mc) type)
       ((undo)
        (let ((new-output (mozc-context-send-command mc '((type . undo)))))
          (if new-output
@@ -747,8 +748,10 @@
            (mozc-update mc output)
            #t))))
 
+;; Reconversion removes the acquired text afterwards, so it needs delete support.
 (define (mozc-reconvert mc)
   (and (mozc-context-session-ready? mc)
+       (im-delete-text-supported? mc)
        (let ((text (mozc-acquire-text mc #t)))
          (and text
               (begin

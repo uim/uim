@@ -57,6 +57,27 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Add im-delete-text-supported? to check the delete callback
+Affects: IM developers, Bridge developers
+Updates: Scheme API
+Version: 2.0.1
+Revision:
+Date: 2026-11-23
+Modifier: yamam
+Related: #607
+URL:
+Changes:
+  (new) im-delete-text-supported?
+Description:
+  im-delete-text-supported? returns #t if the bridge registered a delete
+  text callback with uim_set_text_acquisition_cb(), and #f otherwise.
+
+  Postfix conversion of tutcode and reconversion of mozc remove the text
+  they acquired after the conversion. Without a delete callback, the text
+  would be duplicated, so these conversions are no longer started. mozc's
+  UNDO and CONVERT_REVERSE commands, which also remove text, are not
+  executed without a delete callback either.
+------------------------------------------------------------------------------
 Summary: Left and right modifier keys are told
 Affects: Bridge developers
 Updates: C API, Scheme API
