@@ -82,7 +82,12 @@
          'on
          "中"
          (N_ "on")
-         (N_ "Rime Input Mode"))))
+         (N_ "Rime Input Mode"))
+   (list 'action_rime_ascii
+         'ascii
+         "A"
+         (N_ "ASCII")
+         (N_ "Rime ASCII Mode"))))
 
 (define-custom 'rime-widgets '(widget_rime_input_mode)
   '(rime toolbar)
