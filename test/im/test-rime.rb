@@ -233,6 +233,57 @@ class RimeTest < Test::Unit::TestCase
     assert_equal("on", input_mode)
   end
 
+  def test_custom_schema
+    omit_unless_installed("terra_pinyin")
+    @driver.set_custom("rime-schema", "\"terra_pinyin\"")
+    @driver.type("pi\\")
+    assert_equal([[REVERSE, "pì"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  def test_custom_schema_indication
+    omit_unless_installed("terra_pinyin")
+    @driver.set_custom("rime-schema", "\"terra_pinyin\"")
+    assert_equal("rime_schema_terra_pinyin", schema_indication)
+  end
+
+  # What is composed is committed as choosing a schema in the toolbar
+  # does.
+  def test_custom_schema_composing
+    omit_unless_installed("terra_pinyin")
+    @driver.type("ni")
+    @driver.set_custom("rime-schema", "\"terra_pinyin\"")
+    assert_equal([["你"], []],
+                 [@driver.commits, @driver.preedit])
+  end
+
+  # uim-pref makes the hooks of all customs called even if they aren't
+  # changed. The schema chosen in the toolbar is kept then.
+  def test_custom_schema_same
+    omit_unless_installed("terra_pinyin")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    @driver.set_custom("rime-schema", "\"luna_pinyin\"")
+    assert_equal("rime_schema_terra_pinyin", schema_indication)
+  end
+
+  # Rime isn't turned on unlike choosing a schema in the toolbar.
+  def test_custom_schema_off
+    omit_unless_installed("terra_pinyin")
+    @driver.activate("action_rime_off")
+    @driver.set_custom("rime-schema", "\"terra_pinyin\"")
+    assert_equal(["off", "rime_schema_terra_pinyin"],
+                 [input_mode, schema_indication])
+  end
+
+  # librime chooses the schema when it's empty. The schema used now is
+  # kept.
+  def test_custom_schema_empty
+    omit_unless_installed("terra_pinyin")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    @driver.set_custom("rime-schema", "\"\"")
+    assert_equal("rime_schema_terra_pinyin", schema_indication)
+  end
+
   def test_input_mode
     assert_equal("on", input_mode)
   end

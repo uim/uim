@@ -84,6 +84,7 @@
              (if session
                  (begin
                    (rime-context-set-session! rc session)
+                   (set! rime-applied-schema rime-schema)
                    (if (not (string=? rime-schema ""))
                        (rime-lib-select-schema session rime-schema))))
              session))))
@@ -341,10 +342,10 @@
         (rime-context-set-schema-id! rc id))
     (rime-context-schema-id rc)))
 
-;; Turns RC on with the schema. What is composed is committed as it's
-;; converted, as turning RC off does: librime discards it.
-(define (rime-select-schema rc schema-id)
-  (rime-set-on rc)
+;; Switches the session of RC to the schema. What is composed is
+;; committed as it's converted, as turning RC off does: librime
+;; discards it.
+(define (rime-switch-schema rc schema-id)
   (let ((session (rime-context-session rc)))
     (if (and session
              (not (equal? (rime-current-schema-id rc) schema-id)))
@@ -352,6 +353,31 @@
           (rime-flush rc)
           (rime-lib-select-schema session schema-id)
           (rime-update rc)))))
+
+;; Turns RC on with the schema.
+(define (rime-select-schema rc schema-id)
+  (rime-set-on rc)
+  (rime-switch-schema rc schema-id))
+
+;; rime-schema that the existing sessions follow. It's needed because
+;; uim-pref makes the hooks of all customs called even if they aren't
+;; changed.
+(define rime-applied-schema #f)
+
+;; Switches the existing sessions to rime-schema when it's changed.
+;; They keep the schema chosen in a toolbar while it isn't changed.
+(define (rime-apply-schema-custom)
+  (if (not (equal? rime-schema rime-applied-schema))
+      (begin
+        (set! rime-applied-schema rime-schema)
+        (if (assoc rime-schema rime-schemas)
+            (for-each
+             (lambda (context)
+               (if (eq? (im-name (context-im context)) 'rime)
+                   (begin
+                     (rime-switch-schema context rime-schema)
+                     (context-update-widgets context))))
+             context-list)))))
 
 (define (rime-schema-action-id schema-id)
   (string->symbol (string-append "action_rime_schema_" schema-id)))

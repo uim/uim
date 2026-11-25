@@ -50,6 +50,9 @@
  *                  window does when it's clicked.
  *   text TEXT      Make TEXT the text before the cursor that the input
  *                  method acquires. It's empty at first.
+ *   custom NAME VALUE
+ *                  Set the custom NAME to VALUE such as "\"luna_pinyin\""
+ *                  as uim-custom-cli does.
  *
  * Output lines, separated by tabs:
  *   preedit[ ATTR TEXT]...
@@ -295,6 +298,10 @@ main(int argc, char **argv)
       uim_focus_out_context(uc);
     } else if (strcmp(line, "index") == 0) {
       uim_set_candidate_index(uc, atoi(argument));
+    } else if (strcmp(line, "custom") == 0 && strchr(argument, ' ')) {
+      char *value = strchr(argument, ' ');
+      *value++ = '\0';
+      uim_prop_update_custom(uc, argument, value);
     } else if (strcmp(line, "text") == 0) {
       snprintf(text_before_cursor, sizeof(text_before_cursor), "%s", argument);
     } else {

@@ -117,6 +117,12 @@ class IMDriver
     run("index #{index}")
   end
 
+  # Sets the custom NAME to VALUE as uim-custom-cli does. VALUE is a
+  # literal of Scheme such as "\"luna_pinyin\"".
+  def set_custom(name, value)
+    run("custom #{name} #{value}")
+  end
+
   # Sets the text before the cursor that the input method acquires.
   def text_before_cursor=(text)
     run("text #{text}")
