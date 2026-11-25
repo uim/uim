@@ -272,6 +272,23 @@
                  (lambda (rc)
                    (rime-set-off rc)))
 
+;; Whether librime is in its ASCII mode. Shift switches it by default.
+(define (rime-ascii-mode? rc)
+  (let* ((session (rime-context-session rc))
+         (status (and session
+                      (rime-lib-get-status session))))
+    (and status
+         (list-ref status 2))))
+
+;; Turns RC on in the ASCII mode or the mode of the schema.
+(define (rime-set-ascii-mode rc ascii-mode?)
+  (rime-set-on rc)
+  (let ((session (rime-context-session rc)))
+    (if session
+        (begin
+          (rime-lib-set-option session "ascii_mode" ascii-mode?)
+          (rime-update rc)))))
+
 (register-action 'action_rime_on
                  (lambda (rc)
                    (list
@@ -280,9 +297,23 @@
                     (N_ "on")
                     (N_ "Rime Input Mode")))
                  (lambda (rc)
-                   (rime-context-on rc))
+                   (and (rime-context-on rc)
+                        (not (rime-ascii-mode? rc))))
                  (lambda (rc)
-                   (rime-set-on rc)))
+                   (rime-set-ascii-mode rc #f)))
+
+(register-action 'action_rime_ascii
+                 (lambda (rc)
+                   (list
+                    'ascii
+                    "A"
+                    (N_ "ASCII")
+                    (N_ "Rime ASCII Mode")))
+                 (lambda (rc)
+                   (and (rime-context-on rc)
+                        (rime-ascii-mode? rc)))
+                 (lambda (rc)
+                   (rime-set-ascii-mode rc #t)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the

@@ -57,6 +57,8 @@
  *   candidates[ CANDIDATE]...
  *   select INDEX
  *   deactivate
+ *   mode[ ID]...   The indication ID of each widget such as the
+ *                  input mode: what a toolbar shows.
  *   pass press|release
  *                  The input method didn't consume the key, so that
  *                  the application gets it.
@@ -104,15 +106,21 @@ preedit_update_cb(void *ptr)
 static void
 candidate_activate_cb(void *ptr, int nr, int display_limit)
 {
+  uim_candidate *candidates;
   int i;
 
+  /* Getting a candidate may call another callback that writes a
+   * line. */
+  candidates = malloc(sizeof(uim_candidate) * (nr > 0 ? nr : 1));
+  for (i = 0; i < nr; i++)
+    candidates[i] = uim_get_candidate(uc, i, i);
   printf("candidates");
   for (i = 0; i < nr; i++) {
-    uim_candidate cand = uim_get_candidate(uc, i, i);
-    printf("\t%s", uim_candidate_get_cand_str(cand));
-    uim_candidate_free(cand);
+    printf("\t%s", uim_candidate_get_cand_str(candidates[i]));
+    uim_candidate_free(candidates[i]);
   }
   printf("\n");
+  free(candidates);
 }
 
 static void
@@ -130,6 +138,27 @@ static void
 candidate_deactivate_cb(void *ptr)
 {
   printf("deactivate\n");
+}
+
+/* PROP_LIST is lines. A widget starts with a line of
+ * "branch\tINDICATION-ID\tICONIC-LABEL\tLABEL". */
+static void
+prop_list_update_cb(void *ptr, const char *prop_list)
+{
+  const char *line;
+
+  printf("mode");
+  for (line = prop_list; line && *line; ) {
+    const char *end = strchr(line, '\n');
+
+    if (strncmp(line, "branch\t", strlen("branch\t")) == 0) {
+      const char *id = line + strlen("branch\t");
+
+      printf("\t%.*s", (int)strcspn(id, "\t\n"), id);
+    }
+    line = end ? end + 1 : NULL;
+  }
+  printf("\n");
 }
 
 static const struct {
@@ -237,6 +266,7 @@ main(int argc, char **argv)
                                 candidate_select_cb,
                                 candidate_shift_page_cb,
                                 candidate_deactivate_cb);
+  uim_set_prop_list_update_cb(uc, prop_list_update_cb);
   /* The text can't be deleted. */
   uim_set_text_acquisition_cb(uc, text_acquire_cb, NULL);
   printf("ready\n");

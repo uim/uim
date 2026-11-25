@@ -169,6 +169,45 @@ class RimeTest < Test::Unit::TestCase
                  @driver.preedit)
   end
 
+  # What the toolbar shows as the input mode.
+  def input_mode
+    @driver.modes.last
+  end
+
+  def test_input_mode
+    assert_equal("on", input_mode)
+  end
+
+  def test_input_mode_ascii
+    @driver.press("shift_l")
+    assert_equal("ascii", input_mode)
+  end
+
+  def test_input_mode_off
+    @driver.activate("action_rime_off")
+    assert_equal("off", input_mode)
+  end
+
+  def test_action_ascii
+    @driver.activate("action_rime_ascii")
+    @driver.type("ni")
+    assert_equal([], @driver.preedit)
+  end
+
+  def test_action_ascii_input_mode
+    @driver.activate("action_rime_ascii")
+    assert_equal("ascii", input_mode)
+  end
+
+  # It leaves the ASCII mode.
+  def test_action_on
+    @driver.activate("action_rime_ascii")
+    @driver.activate("action_rime_on")
+    @driver.type("ni")
+    assert_equal([[REVERSE, "ni"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
   # Right Shift is "commit_text" by default: what is composed is
   # committed as it's converted.
   def test_right_shift

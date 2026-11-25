@@ -56,6 +56,9 @@ by Rime. Left Shift and Right Shift can have different actions as the
 settings of Rime say. The Qt 3, TQt and Qt 4 immodules don't tell the
 side, so both of them are Left Shift with them.
 
+The input mode of the toolbar shows "A" in the ASCII mode. It can also
+be used to switch the modes.
+
 Rime also has its own menu to switch schemas and options such as the
 ASCII mode, Ctrl+\` or F4 by default.
 

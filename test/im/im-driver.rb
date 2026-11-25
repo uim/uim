@@ -54,6 +54,9 @@ class IMDriver
   # "press" or "release" for each key that the input method didn't
   # consume, so that the application gets it.
   attr_reader :passed_keys
+  # The indication ID of each widget such as "on" of the input mode:
+  # what a toolbar shows.
+  attr_reader :modes
   # nil while the candidate window isn't shown.
   attr_reader :candidates
   attr_reader :candidate_index
@@ -67,6 +70,7 @@ class IMDriver
     @preedit = []
     @commits = []
     @passed_keys = []
+    @modes = []
     @candidates = nil
     @candidate_index = nil
   end
@@ -140,6 +144,8 @@ class IMDriver
         @commits << values[0]
       when "pass"
         @passed_keys << values[0]
+      when "mode"
+        @modes = values
       when "candidates"
         @candidates = values
         @candidate_index = nil
