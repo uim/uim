@@ -67,6 +67,12 @@
                (N_ "Schema")
                (N_ "The ID of the schema to use such as luna_pinyin. The default one of Rime is used if this is empty."))
 
+;; rime-apply-schema-custom is defined in rime.scm.
+(custom-add-hook 'rime-schema
+                 'custom-set-hooks
+                 (lambda ()
+                   (rime-apply-schema-custom)))
+
 ;;
 ;; toolbar
 ;;

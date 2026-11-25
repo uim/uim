@@ -46,6 +46,8 @@ uim-pref, or with `uim-custom-cli`:
 $ uim-custom-cli --save rime-schema terra_pinyin
 ```
 
+The text fields that are used now also switch to it.
+
 For example, Terra Pinyin (`terra_pinyin`) takes tones: `-` is the 1st
 tone, `/` is the 2nd, `<` is the 3rd and `\` is the 4th. `pi\` shows
 only the candidates of "pì" such as 屁.
