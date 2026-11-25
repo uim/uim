@@ -89,12 +89,15 @@
          (N_ "ASCII")
          (N_ "Rime ASCII Mode"))))
 
-(define-custom 'rime-widgets '(widget_rime_input_mode)
+(define-custom 'rime-widgets '(widget_rime_input_mode widget_rime_schema)
   '(rime toolbar)
   (list 'ordered-list
         (list 'widget_rime_input_mode
               (N_ "Input mode")
-              (N_ "Input mode")))
+              (N_ "Input mode"))
+        (list 'widget_rime_schema
+              (N_ "Schema")
+              (N_ "Schema")))
   (N_ "Enabled toolbar buttons")
   (N_ "long description will be here."))
 

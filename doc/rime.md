@@ -59,6 +59,14 @@ side, so both of them are Left Shift with them.
 The input mode of the toolbar shows "A" in the ASCII mode. It can also
 be used to switch the modes.
 
+The toolbar also shows the schema that is used now with the first
+character of its name such as "朙" of 朙月拼音, and it can be used to
+choose another schema. The schemas are shown after `rime` is turned on
+for the first time, because Rime is started then. The schema that is
+chosen there is only for the text field that is used now. Use
+`rime-schema` or the menu of Rime to choose the schema of the text
+fields that are used later.
+
 Rime also has its own menu to switch schemas and options such as the
 ASCII mode, Ctrl+\` or F4 by default.
 
