@@ -332,6 +332,44 @@ class RimeTest < Test::Unit::TestCase
     assert_equal("朙月拼音", @driver.candidates[0])
   end
 
+  # The menu is closed and what was composed before it was shown is
+  # committed.
+  def test_menu_off
+    @driver.type("ni")
+    @driver.press("f4")
+    @driver.activate("action_rime_off")
+    assert_equal([["你"], []],
+                 [@driver.commits, @driver.preedit])
+  end
+
+  def test_menu_focus_out
+    @driver.type("ni")
+    @driver.press("f4")
+    @driver.focus_out
+    assert_equal([["你"], []],
+                 [@driver.commits, @driver.preedit])
+  end
+
+  def test_menu_action_schema
+    omit_unless_installed("terra_pinyin")
+    @driver.type("ni")
+    @driver.press("f4")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    @driver.type("pi\\")
+    assert_equal([["你"], [[REVERSE, "pì"], [CURSOR, ""]]],
+                 [@driver.commits, @driver.preedit])
+  end
+
+  def test_menu_custom_schema
+    omit_unless_installed("terra_pinyin")
+    @driver.type("ni")
+    @driver.press("f4")
+    @driver.set_custom("rime-schema", "\"terra_pinyin\"")
+    @driver.type("pi\\")
+    assert_equal([["你"], [[REVERSE, "pì"], [CURSOR, ""]]],
+                 [@driver.commits, @driver.preedit])
+  end
+
   class TerraPinyinTest < self
     def schema
       "terra_pinyin"
