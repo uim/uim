@@ -171,7 +171,66 @@ class RimeTest < Test::Unit::TestCase
 
   # What the toolbar shows as the input mode.
   def input_mode
-    @driver.modes.last
+    @driver.modes[1]
+  end
+
+  # What the toolbar shows as the schema.
+  def schema_indication
+    @driver.modes[2]
+  end
+
+  def omit_unless_installed(schema)
+    schema_file = File.join(ENV["RIME_SHARED_DATA_DIR"],
+                            "#{schema}.schema.yaml")
+    omit("#{schema} isn't installed") unless File.exist?(schema_file)
+  end
+
+  def test_schema_indication
+    assert_equal("rime_schema_luna_pinyin", schema_indication)
+  end
+
+  # librime reports the schema of its menu while it's shown.
+  def test_schema_indication_menu
+    @driver.press("f4")
+    assert_equal("rime_schema_luna_pinyin", schema_indication)
+  end
+
+  def test_action_schema
+    omit_unless_installed("terra_pinyin")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    @driver.type("pi\\")
+    assert_equal([[REVERSE, "pì"], [CURSOR, ""]],
+                 @driver.preedit)
+  end
+
+  def test_action_schema_indication
+    omit_unless_installed("terra_pinyin")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    assert_equal("rime_schema_terra_pinyin", schema_indication)
+  end
+
+  # What is composed is committed as turning Rime off does.
+  def test_action_schema_composing
+    omit_unless_installed("terra_pinyin")
+    @driver.type("ni")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    assert_equal([["你"], []],
+                 [@driver.commits, @driver.preedit])
+  end
+
+  # Choosing the schema that is used now does nothing.
+  def test_action_schema_same
+    @driver.type("ni")
+    @driver.activate("action_rime_schema_luna_pinyin")
+    assert_equal([[], [[REVERSE, "ni"], [CURSOR, ""]]],
+                 [@driver.commits, @driver.preedit])
+  end
+
+  # It also turns Rime on.
+  def test_action_schema_off
+    @driver.activate("action_rime_off")
+    @driver.activate("action_rime_schema_luna_pinyin")
+    assert_equal("on", input_mode)
   end
 
   def test_input_mode

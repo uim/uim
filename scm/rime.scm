@@ -49,6 +49,7 @@
    (list
     (list 'on          #f)
     (list 'session     #f)
+    (list 'schema-id   #f)   ; the last schema that is known
     (list 'preedit     '())  ; segments of the preedit shown now
     ;; ((text comment label) ...) of the page shown now, or ()
     (list 'candidates  '())
@@ -59,10 +60,19 @@
 ;; Whether librime could be started.
 (define rime-initialized? #f)
 
+;; ((id . name) ...) of the schemas that librime has. They are known
+;; after librime is started.
+(define rime-schemas '())
+
 (define (rime-ensure-initialized)
   (if (not rime-initialized?)
-      (set! rime-initialized?
-            (rime-lib-init rime-shared-data-dir rime-user-data-dir)))
+      (begin
+        (set! rime-initialized?
+              (rime-lib-init rime-shared-data-dir rime-user-data-dir))
+        (if rime-initialized?
+            (begin
+              (set! rime-schemas (rime-lib-get-schema-list))
+              (rime-refresh-schema-widget)))))
   rime-initialized?)
 
 ;; Returns the session of RC, or #f. It's created when it's needed
@@ -315,6 +325,105 @@
                  (lambda (rc)
                    (rime-set-ascii-mode rc #t)))
 
+;;; ------------------------------------------------------------------
+;;; schemas
+
+;; Returns the ID of the schema that RC uses, or #f. librime doesn't
+;; report one of the schemas while it shows its menu, so the last one
+;; is kept.
+(define (rime-current-schema-id rc)
+  (let* ((session (rime-context-session rc))
+         (status (and session
+                      (rime-lib-get-status session)))
+         (id (and status
+                  (list-ref status 0))))
+    (if (assoc id rime-schemas)
+        (rime-context-set-schema-id! rc id))
+    (rime-context-schema-id rc)))
+
+;; Turns RC on with the schema. What is composed is committed as it's
+;; converted, as turning RC off does: librime discards it.
+(define (rime-select-schema rc schema-id)
+  (rime-set-on rc)
+  (let ((session (rime-context-session rc)))
+    (if (and session
+             (not (equal? (rime-current-schema-id rc) schema-id)))
+        (begin
+          (rime-flush rc)
+          (rime-lib-select-schema session schema-id)
+          (rime-update rc)))))
+
+(define (rime-schema-action-id schema-id)
+  (string->symbol (string-append "action_rime_schema_" schema-id)))
+
+;; The first character of the name is shown in a toolbar.
+(define (rime-schema-indication schema)
+  (let ((id (car schema))
+        (name (cdr schema)))
+    (list (string->symbol (string-append "rime_schema_" id))
+          (if (string=? name "")
+              "?"
+              (substring name 0 1))
+          name
+          (string-append name " (" id ")"))))
+
+;; librime isn't started yet.
+(define rime-schema-unknown-indication
+  (list 'rime_schema_unknown
+        "-"
+        (N_ "Schema")
+        (N_ "The schemas of Rime are shown after Rime is turned on")))
+
+;; Registers an action for each schema and returns their IDs.
+(define (rime-register-schema-actions)
+  (map (lambda (schema)
+         (let ((id (car schema))
+               (action-id (rime-schema-action-id (car schema)))
+               (indication (rime-schema-indication schema)))
+           (register-action action-id
+                            (lambda (rc)
+                              indication)
+                            (lambda (rc)
+                              (equal? (rime-current-schema-id rc) id))
+                            (lambda (rc)
+                              (rime-select-schema rc id)))
+           action-id))
+       rime-schemas))
+
+(define (rime-register-schema-widget)
+  (let ((action-ids (rime-register-schema-actions)))
+    (register-widget 'widget_rime_schema
+                     (indicator-new
+                      (lambda (rc)
+                        (let ((schema (assoc (rime-current-schema-id rc)
+                                             rime-schemas)))
+                          (if schema
+                              (rime-schema-indication schema)
+                              rime-schema-unknown-indication))))
+                     (actions-new action-ids))))
+
+;; Shows the schemas that are known now in the existing contexts. Only
+;; the widget of the schemas is replaced: creating the other widgets
+;; again resets what they show, such as the input mode.
+(define (rime-refresh-schema-widget)
+  (define (schema-widget? widget)
+    (eq? (widget-id widget) 'widget_rime_schema))
+  (rime-register-schema-widget)
+  (for-each
+   (lambda (context)
+     (if (and (eq? (im-name (context-im context)) 'rime)
+              (find schema-widget? (context-widgets context)))
+         (begin
+           (context-set-widgets!
+            context
+            (map (lambda (widget)
+                   (if (schema-widget? widget)
+                       (widget-new 'widget_rime_schema context)
+                       widget))
+                 (context-widgets context)))
+           (context-propagate-widget-configuration context))))
+   context-list))
+
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
 ;; custom API
@@ -322,6 +431,7 @@
   (register-widget 'widget_rime_input_mode
                    (activity-indicator-new rime-input-mode-actions)
                    (actions-new rime-input-mode-actions))
+  (rime-register-schema-widget)
   (context-list-replace-widgets! 'rime rime-widgets))
 
 ;;; ------------------------------------------------------------------
