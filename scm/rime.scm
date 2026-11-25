@@ -160,11 +160,30 @@
   (or (not (null? (rime-context-preedit rc)))
       (not (null? (rime-context-candidates rc)))))
 
+;; librime reports the schema ID of the engine of its menu while the
+;; menu is shown.
+(define rime-menu-schema-id ".default")
+
+(define (rime-menu-shown? session)
+  (let ((status (rime-lib-get-status session)))
+    (and status
+         (string=? (list-ref status 0) rime-menu-schema-id))))
+
+;; Closes the menu of Rime with Escape. librime keeps it even if what
+;; is composed is committed or discarded. What was composed before it
+;; was shown comes back.
+(define (rime-close-menu session)
+  (if (rime-menu-shown? session)
+      (rime-lib-process-key session
+                            (assq-cdr 'escape rime-keysym-alist)
+                            0)))
+
 ;; Commits what is composed as is.
 (define (rime-flush rc)
   (let ((session (rime-context-session rc)))
     (if session
         (begin
+          (rime-close-menu session)
           (rime-lib-commit-composition session)
           (rime-update rc)))))
 
@@ -173,6 +192,7 @@
   (let ((session (rime-context-session rc)))
     (if session
         (begin
+          (rime-close-menu session)
           (rime-lib-clear-composition session)
           (rime-update rc)))))
 
