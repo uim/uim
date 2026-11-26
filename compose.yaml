@@ -20,6 +20,13 @@ services:
       dockerfile: arch-linux-qt6.dockerfile
     volumes:
       - .:/source:delegated
+  arch-linux-rime:
+    image: uim/uim-arch-linux-rime
+    build:
+      context: ci/dockerfiles
+      dockerfile: arch-linux-rime.dockerfile
+    volumes:
+      - .:/source:delegated
   arch-linux-tqt:
     image: uim/uim-arch-linux-tqt
     build:
