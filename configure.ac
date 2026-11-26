@@ -242,6 +242,31 @@ if test "x$with_mozc" = xyes; then
 fi
 AM_CONDITIONAL(MOZC, test "x$with_mozc" = xyes)
 
+# **********************
+# *** Tests for Rime ***
+# **********************
+AC_ARG_WITH([rime],
+  AS_HELP_STRING([--with-rime],
+                 [build a plugin for Rime (librime) [default=auto]]),
+  [with_rime=$withval],
+  [with_rime=auto])
+if test "x$with_rime" != xno; then
+  PKG_CHECK_MODULES([RIME], [rime], [rime_found=yes], [rime_found=no])
+  if test "x$rime_found" = xyes; then
+    with_rime=yes
+    # The schemas of Rime are here.
+    PKG_CHECK_VAR([RIME_SHARED_DATA_DIR], [rime], [pkgdatadir])
+    AC_DEFINE_UNQUOTED(RIME_SHARED_DATA_DIR, "$RIME_SHARED_DATA_DIR",
+                       [the shared data directory of librime])
+  else
+    if test "x$with_rime" = xyes; then
+      AC_MSG_ERROR([--with-rime requires librime])
+    fi
+    with_rime=no
+  fi
+fi
+AM_CONDITIONAL(RIME, test "x$with_rime" = xyes)
+
 # ***********************
 # *** Tests for expat ***
 # ***********************
@@ -2186,6 +2211,7 @@ Configure Result :
    Canna           : ${with_canna}
    SKK             : ${with_skk}
    Mozc            : ${with_mozc}
+   Rime            : ${with_rime}
    m17n-lib        : ${with_m17nlib}
    expat           : ${expat_found}
    OpenSSL         : ${enable_openssl}

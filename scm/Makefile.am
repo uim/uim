@@ -86,6 +86,9 @@ module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
 #"hangul"
 # IMs using a server that may not be installed
 module_names += "karukan"
+if RIME
+  module_names += "rime"
+endif
 # web based IMs
   module_names += "google-cgiapi-jp"
 
