@@ -206,8 +206,16 @@
 ;;
 ;; Change keymap of uim-mode
 ;;
+;; The keymap of uim-mode is moved to the head because a minor mode
+;; that is loaded after uim.el is put before it. Such a minor mode
+;; that binds a key with ESC such as C-M-x makes a meta key such as
+;; M-x undefined while uim-mode is on: M-x is looked up as ESC and x
+;; then, and ESC of uim-mode, which isn't a prefix key, hides ESC of
+;; the global map.
+;;
 (defun uim-set-keymap (map)
-  (setcdr (assq 'uim-mode minor-mode-map-alist) 
+  (uim-reorder-minor-mode-map-alist)
+  (setcdr (assq 'uim-mode minor-mode-map-alist)
 	  map))
 
 ;;
@@ -255,14 +263,17 @@
   )
 
 
+;; minor-mode-map-alist isn't changed destructively because the list
+;; may be shared, for example, with uim-minor-mode-map-alist.
 (defun uim-reorder-minor-mode-map-alist ()
   (interactive)
   (let ((inhibit-quit t) member)
     (setq member (assq 'uim-mode minor-mode-map-alist))
-    (if member
+    (if (and member
+	     (not (eq member (car minor-mode-map-alist))))
 	(setq minor-mode-map-alist 
 	      (cons member 
-		    (delq member minor-mode-map-alist))))))
+		    (remq member minor-mode-map-alist))))))
 
 
 (defun uim-reset-keymap ()

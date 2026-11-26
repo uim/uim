@@ -68,3 +68,23 @@ candidates were shown, and the text once uim-mode is off again."
 
 (ert-deftest uim-test-candidates ()
   (should (plist-get (uim-test-type "candidates" "a") :candidate-displayed)))
+
+;; A minor mode that is defined after uim.el and binds a key with ESC
+;; as inf-ruby-minor-mode does with C-M-x. It's put before uim-mode in
+;; minor-mode-map-alist.
+(defvar uim-test-esc-prefix-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-M-x") #'ignore)
+    map))
+(define-minor-mode uim-test-esc-prefix-mode
+  "A minor mode that binds a key with ESC.")
+
+;; M-x must reach uim.el, which passes it to Emacs, not be undefined.
+(ert-deftest uim-test-meta-key-with-esc-prefix-minor-mode ()
+  (setq uim-default-im-engine "skk")
+  (ert-with-test-buffer-selected ()
+    (uim-test-esc-prefix-mode 1)
+    (uim-mode 1)
+    (unwind-protect
+        (should (eq 'uim-process-input (key-binding [?\M-x] t)))
+      (uim-mode 0))))
