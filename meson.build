@@ -9,6 +9,7 @@ project('uim',
           'pixmaps/COPYING.Karukan',
           'pixmaps/COPYING.LGPL',
           'pixmaps/COPYING.Mozc',
+          'pixmaps/COPYING.Rime',
         ],
         default_options: [
           # The bundled libgcroots is linked into libuim-scm as

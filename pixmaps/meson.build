@@ -70,6 +70,8 @@ install_data(
   'mozc_tool_config_dialog.png',
   'mozc_tool_dictionary_tool.png',
   'mozc_tool_selector.png',
+  # From librime. See LIST.
+  'rime.png',
   install_dir: uim_pixmapsdir)
 
 # Input methods without their own icons.
