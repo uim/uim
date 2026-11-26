@@ -107,6 +107,9 @@ KARUKAN_PNGS = karukan.png
 MOZC_PNGS = mozc.png mozc_tool_config_dialog.png \
 	    mozc_tool_dictionary_tool.png mozc_tool_selector.png
 
+# From librime. See LIST.
+RIME_PNGS = rime.png
+
 SCIM_PNGS = scim-anthy.png scim-canna.png \
 	    scim-skk.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png
@@ -116,12 +119,14 @@ endif
 
 GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
 
-PNGS = $(NATIVE_PNGS) $(KARUKAN_PNGS) $(MOZC_PNGS) $(GENERATED_PNGS)
+PNGS = $(NATIVE_PNGS) $(KARUKAN_PNGS) $(MOZC_PNGS) $(RIME_PNGS) \
+       $(GENERATED_PNGS)
 
 # The license files are installed into docdir with their paths in the
 # source as Meson does.
 pixmapsdocdir = $(docdir)/pixmaps
-dist_pixmapsdoc_DATA = COPYING.BSDL COPYING.Karukan COPYING.LGPL COPYING.Mozc
+dist_pixmapsdoc_DATA = COPYING.BSDL COPYING.Karukan COPYING.LGPL COPYING.Mozc \
+		       COPYING.Rime
 
 EXTRA_DIST = LIST indication-id.txt $(SCIM_PNGS) meson.build
 

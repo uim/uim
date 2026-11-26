@@ -10,6 +10,7 @@ Input methods
 
 - karukan.png    (Karukan)
 - mozc.png       (Mozc)
+- rime.png       (Rime)
 
 - skk.svg        (another version for SKK)
 - tcode.svg      (T-Code)
@@ -120,6 +121,15 @@ in src/data/images/unix/. See COPYING.Mozc for their license.
 - mozc_tool_selector.png:        ui-properties.png
 - mozc_tool_config_dialog.png:   ui-tool.png
 - mozc_tool_dictionary_tool.png: ui-dictionary.png
+
+
+rime.png
+~~~~~~~~
+
+It is the logo of Rime in librime (https://github.com/rime/librime):
+doc/rime-icon.png. It's scaled from 96x96 to 32x32.
+
+librime is licensed under the 3-clause BSD license. See COPYING.Rime.
 
 
 skk.svg

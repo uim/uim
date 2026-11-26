@@ -68,6 +68,7 @@ Supplementary explanation (only for help and not legal):
     pixmaps/karukan.png comes from Karukan. See
     pixmaps/COPYING.Karukan.
     pixmaps/mozc*.png come from Mozc. See pixmaps/COPYING.Mozc.
+    pixmaps/rime.png comes from librime. See pixmaps/COPYING.Rime.
 
   * wayland/protocol/*.xml come from wlroots, you can use, modify,
     distribute and sell them under the terms of the MIT license in
