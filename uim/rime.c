@@ -38,12 +38,15 @@
 #include <config.h>
 
 #include <errno.h>
+#include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <rime_api.h>
 
@@ -57,6 +60,18 @@ static RimeApi *api;
 /* librime can be set up only once in a process. */
 static uim_bool set_up;
 static uim_bool initialized;
+
+/*
+ * librime breaks the user dictionaries that another process has opened:
+ * it takes them as broken and recovers them, and what the process learns
+ * is lost. So only one process has sessions at a time. This lock in the
+ * user data directory is held while a process has a session.
+ */
+static char *lock_path;
+static int lock_fd = -1;
+static int n_sessions;
+/* Whether the schemas are deployed in this process. */
+static uim_bool deployed;
 
 static RimeSessionId
 c_session(uim_lisp session_)
@@ -88,11 +103,36 @@ make_directory(const char *dir)
   return succeeded;
 }
 
+static uim_bool
+lock_user_data_dir(void)
+{
+  if (lock_fd != -1)
+    return UIM_TRUE;
+  lock_fd = open(lock_path, O_RDWR | O_CREAT | O_CLOEXEC, 0600);
+  if (lock_fd == -1)
+    return UIM_FALSE;
+  if (flock(lock_fd, LOCK_EX | LOCK_NB) == -1) {
+    close(lock_fd);
+    lock_fd = -1;
+    return UIM_FALSE;
+  }
+  return UIM_TRUE;
+}
+
+static void
+unlock_user_data_dir(void)
+{
+  if (lock_fd != -1) {
+    close(lock_fd);
+    lock_fd = -1;
+  }
+}
+
 /*
  * (rime-lib-init shared-data-dir user-data-dir)
  *
- * Starts librime. It deploys the schemas when they are changed, which
- * takes time when shared-data-dir doesn't have prebuilt ones.
+ * Starts librime. The schemas are deployed when the first session is
+ * created.
  */
 static uim_lisp
 rime_lib_init(uim_lisp shared_data_dir_, uim_lisp user_data_dir_)
@@ -106,6 +146,11 @@ rime_lib_init(uim_lisp shared_data_dir_, uim_lisp user_data_dir_)
   api = rime_get_api();
   if (!api || !make_directory(user_data_dir))
     return uim_scm_f();
+  free(lock_path);
+  lock_path = malloc(strlen(user_data_dir) + sizeof("/uim.lock"));
+  if (!lock_path)
+    return uim_scm_f();
+  sprintf(lock_path, "%s/uim.lock", user_data_dir);
 
   traits.shared_data_dir = REFER_C_STR(shared_data_dir_);
   traits.user_data_dir = user_data_dir;
@@ -121,8 +166,7 @@ rime_lib_init(uim_lisp shared_data_dir_, uim_lisp user_data_dir_)
     set_up = UIM_TRUE;
   }
   api->initialize(&traits);
-  if (api->start_maintenance(False))
-    api->join_maintenance_thread();
+  deployed = UIM_FALSE;
   initialized = UIM_TRUE;
   return uim_scm_t();
 }
@@ -134,24 +178,46 @@ rime_lib_default_shared_data_dir(void)
   return MAKE_STR(RIME_SHARED_DATA_DIR);
 }
 
+/*
+ * (rime-lib-create-session)
+ *
+ * Returns a new session, or #f. It's #f while another process has a
+ * session. The schemas are deployed first for the first session when
+ * they are changed, which takes time when the shared data directory
+ * doesn't have prebuilt ones.
+ */
 static uim_lisp
 rime_lib_create_session(void)
 {
   RimeSessionId session;
 
-  if (!initialized)
+  if (!initialized || !lock_user_data_dir())
     return uim_scm_f();
+  if (!deployed) {
+    if (api->start_maintenance(False))
+      api->join_maintenance_thread();
+    deployed = UIM_TRUE;
+  }
   session = api->create_session();
-  if (!session)
+  if (!session) {
+    if (n_sessions == 0)
+      unlock_user_data_dir();
     return uim_scm_f();
+  }
+  n_sessions++;
   return MAKE_PTR((void *)(uintptr_t)session);
 }
 
+/* Another process can have a session after the last one is destroyed. */
 static uim_lisp
 rime_lib_destroy_session(uim_lisp session_)
 {
-  if (initialized)
+  if (initialized) {
     api->destroy_session(c_session(session_));
+    n_sessions--;
+    if (n_sessions == 0)
+      unlock_user_data_dir();
+  }
   return uim_scm_f();
 }
 
@@ -383,4 +449,8 @@ uim_plugin_instance_quit(void)
     api->finalize();
     initialized = UIM_FALSE;
   }
+  n_sessions = 0;
+  unlock_user_data_dir();
+  free(lock_path);
+  lock_path = NULL;
 }
