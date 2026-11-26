@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.9.7\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2026-10-18 07:58+0000\n"
+"POT-Creation-Date: 2026-11-26 18:31+0900\n"
 "PO-Revision-Date: 2026-10-03 07:07+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
@@ -370,36 +370,36 @@ msgstr "გამორთულია"
 msgid "Disabled items"
 msgstr "გამორთული ელემენტები"
 
-#: gtk3/pref/gtk-custom-widgets.c:1371 gtk3/pref/gtk-custom-widgets.c:1905
-#: gtk3/pref/gtk-custom-widgets.c:2337 qt4/pref/customwidgets.cpp:383
+#: gtk3/pref/gtk-custom-widgets.c:1371 gtk3/pref/gtk-custom-widgets.c:1937
+#: gtk3/pref/gtk-custom-widgets.c:2369 qt4/pref/customwidgets.cpp:383
 #: qt4/pref/customwidgets.cpp:666 qt4/pref/customwidgets.cpp:1233
 #: qt4/pref/keyeditformbase.cpp:67 tqt/pref/customwidgets.cpp:1194
 msgid "Edit..."
 msgstr "ჩასწორება..."
 
-#: gtk3/pref/gtk-custom-widgets.c:1525 qt3/pref/customwidgets.cpp:886
+#: gtk3/pref/gtk-custom-widgets.c:1557 qt3/pref/customwidgets.cpp:886
 #: qt4/pref/customwidgets.cpp:922 tqt/pref/customwidgets.cpp:886
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "დააჭირეთ ჩასაჭერ ღილაკებს (მაგ: <Control>a)"
 
-#: gtk3/pref/gtk-custom-widgets.c:1526
+#: gtk3/pref/gtk-custom-widgets.c:1558
 msgid "Grabbing keys"
 msgstr "ღილაკების ჩაჭერა"
 
-#: gtk3/pref/gtk-custom-widgets.c:1747
+#: gtk3/pref/gtk-custom-widgets.c:1779
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - ღილაკის მორგება"
 
-#: gtk3/pref/gtk-custom-widgets.c:1786
+#: gtk3/pref/gtk-custom-widgets.c:1818
 msgid "Key preference"
 msgstr "ღილაკის პრიორიტეტი"
 
-#: gtk3/pref/gtk-custom-widgets.c:1833
+#: gtk3/pref/gtk-custom-widgets.c:1865
 msgid "Key:"
 msgstr "გასაღები:"
 
-#: gtk3/pref/gtk-custom-widgets.c:1850
+#: gtk3/pref/gtk-custom-widgets.c:1882
 msgid "Grab..."
 msgstr "ჩაჭერა..."
 
@@ -484,12 +484,12 @@ msgid "uim input method switcher"
 msgstr "UIM-ის შეყვანის მეთოდის გადამრთველი"
 
 #: gtk3/switcher/gtk.c:387 qt3/switcher/qt.cpp:118 qt4/switcher/qt4.cpp:151
-#: scm/im-custom.scm:517 tqt/switcher/qt.cpp:118
+#: scm/im-custom.scm:515 tqt/switcher/qt.cpp:118
 msgid "Effective coverage"
 msgstr "ეფექტური დაფარვა"
 
 #: gtk3/switcher/gtk.c:395 qt3/switcher/qt.cpp:119 qt4/switcher/qt4.cpp:141
-#: scm/im-custom.scm:509 tqt/switcher/qt.cpp:119
+#: scm/im-custom.scm:507 tqt/switcher/qt.cpp:119
 msgid "whole desktop"
 msgstr "მთელი სამუშაო მაგიდა"
 
@@ -585,14 +585,14 @@ msgstr "გეომეტრიის სტრიქონის '%s' და�
 msgid "Input method"
 msgstr "შეყვანის მეთოდი"
 
-#: ibus/property.c:156 scm/anthy-utf8-custom.scm:196
-#: scm/anthy-utf8-custom.scm:197 scm/m17nlib-custom.scm:62
-#: scm/m17nlib-custom.scm:63 scm/mozc-custom.scm:160 scm/mozc-custom.scm:161
-#: scm/skk-custom.scm:234 scm/skk-custom.scm:235 scm/anthy-custom.scm:189
-#: scm/anthy-custom.scm:190 scm/baidu-olime-jp-custom.scm:194
-#: scm/baidu-olime-jp-custom.scm:195 scm/canna-custom.scm:194
-#: scm/canna-custom.scm:195 scm/google-cgiapi-jp-custom.scm:194
-#: scm/google-cgiapi-jp-custom.scm:195
+#: ibus/property.c:156 scm/anthy-custom.scm:189 scm/anthy-custom.scm:190
+#: scm/anthy-utf8-custom.scm:196 scm/anthy-utf8-custom.scm:197
+#: scm/canna-custom.scm:194 scm/canna-custom.scm:195
+#: scm/google-cgiapi-jp-custom.scm:194 scm/google-cgiapi-jp-custom.scm:195
+#: scm/karukan-custom.scm:77 scm/karukan-custom.scm:78 scm/rime-custom.scm:102
+#: scm/rime-custom.scm:103 scm/m17nlib-custom.scm:62 scm/m17nlib-custom.scm:63
+#: scm/mozc-custom.scm:160 scm/mozc-custom.scm:161 scm/skk-custom.scm:234
+#: scm/skk-custom.scm:235
 msgid "Input mode"
 msgstr "შეყვანის რეჟიმი"
 
@@ -2253,11 +2253,11 @@ msgstr "'%1'-ის გაშვება შეუძლებელია."
 msgid "unknown"
 msgstr "უცნობი"
 
-#: scm/action.scm:542
+#: scm/action.scm:533
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr "იაპონური კანა კანჯის გადაყვანის ძრავა. მაგალიტად"
 
-#: scm/action.scm:547 scm/action.scm:548
+#: scm/action.scm:538 scm/action.scm:539
 msgid "exec im-switcher"
 msgstr "exec im-switcher"
 
@@ -2273,22 +2273,26 @@ msgstr "ანოტაციის ჩართვა"
 #: scm/annotation-custom.scm:158 scm/annotation-custom.scm:186
 #: scm/annotation-custom.scm:201 scm/annotation-custom.scm:214
 #: scm/annotation-custom.scm:220 scm/annotation-custom.scm:226
-#: scm/annotation-custom.scm:232 scm/anthy-key-custom.scm:37
-#: scm/anthy-key-custom.scm:41 scm/anthy-key-custom.scm:45
-#: scm/anthy-key-custom.scm:49 scm/anthy-utf8-custom.scm:55
-#: scm/anthy-utf8-custom.scm:65 scm/anthy-utf8-custom.scm:71
-#: scm/anthy-utf8-custom.scm:86 scm/anthy-utf8-custom.scm:98
-#: scm/anthy-utf8-custom.scm:104 scm/anthy-utf8-custom.scm:202
-#: scm/anthy-utf8-custom.scm:221 scm/anthy-utf8-custom.scm:230
-#: scm/anthy-utf8-custom.scm:272 scm/anthy-utf8-custom.scm:281
-#: scm/anthy-utf8-custom.scm:319 scm/anthy-utf8-custom.scm:325
-#: scm/anthy-utf8-custom.scm:331 scm/anthy-utf8-custom.scm:337
-#: scm/anthy-utf8-custom.scm:369 scm/anthy-utf8-custom.scm:375
-#: scm/anthy-utf8-custom.scm:381 scm/baidu-olime-jp-key-custom.scm:36
-#: scm/baidu-olime-jp-key-custom.scm:40 scm/baidu-olime-jp-key-custom.scm:44
-#: scm/baidu-olime-jp-key-custom.scm:48 scm/byeoru-custom.scm:84
-#: scm/byeoru-custom.scm:88 scm/byeoru-custom.scm:92 scm/byeoru-custom.scm:96
-#: scm/byeoru-custom.scm:100 scm/byeoru-custom.scm:115
+#: scm/annotation-custom.scm:232 scm/anthy-custom.scm:48
+#: scm/anthy-custom.scm:58 scm/anthy-custom.scm:64 scm/anthy-custom.scm:79
+#: scm/anthy-custom.scm:91 scm/anthy-custom.scm:97 scm/anthy-custom.scm:195
+#: scm/anthy-custom.scm:214 scm/anthy-custom.scm:223 scm/anthy-custom.scm:265
+#: scm/anthy-custom.scm:274 scm/anthy-custom.scm:312 scm/anthy-custom.scm:318
+#: scm/anthy-custom.scm:324 scm/anthy-custom.scm:330 scm/anthy-custom.scm:362
+#: scm/anthy-custom.scm:368 scm/anthy-custom.scm:374
+#: scm/anthy-key-custom.scm:37 scm/anthy-key-custom.scm:41
+#: scm/anthy-key-custom.scm:45 scm/anthy-key-custom.scm:49
+#: scm/anthy-utf8-custom.scm:55 scm/anthy-utf8-custom.scm:65
+#: scm/anthy-utf8-custom.scm:71 scm/anthy-utf8-custom.scm:86
+#: scm/anthy-utf8-custom.scm:98 scm/anthy-utf8-custom.scm:104
+#: scm/anthy-utf8-custom.scm:202 scm/anthy-utf8-custom.scm:221
+#: scm/anthy-utf8-custom.scm:230 scm/anthy-utf8-custom.scm:272
+#: scm/anthy-utf8-custom.scm:281 scm/anthy-utf8-custom.scm:319
+#: scm/anthy-utf8-custom.scm:325 scm/anthy-utf8-custom.scm:331
+#: scm/anthy-utf8-custom.scm:337 scm/anthy-utf8-custom.scm:369
+#: scm/anthy-utf8-custom.scm:375 scm/anthy-utf8-custom.scm:381
+#: scm/byeoru-custom.scm:84 scm/byeoru-custom.scm:88 scm/byeoru-custom.scm:92
+#: scm/byeoru-custom.scm:96 scm/byeoru-custom.scm:100 scm/byeoru-custom.scm:115
 #: scm/byeoru-custom.scm:122 scm/byeoru-custom.scm:125
 #: scm/byeoru-custom.scm:128 scm/byeoru-custom.scm:130
 #: scm/byeoru-custom.scm:142 scm/byeoru-custom.scm:148
@@ -2297,7 +2301,15 @@ msgstr "ანოტაციის ჩართვა"
 #: scm/byeoru-custom.scm:184 scm/byeoru-custom.scm:191
 #: scm/byeoru-custom.scm:198 scm/byeoru-custom.scm:204
 #: scm/byeoru-custom.scm:216 scm/byeoru-key-custom.scm:37
-#: scm/byeoru-key-custom.scm:41 scm/canna-key-custom.scm:37
+#: scm/byeoru-key-custom.scm:41 scm/canna-custom.scm:44 scm/canna-custom.scm:48
+#: scm/canna-custom.scm:52 scm/canna-custom.scm:62 scm/canna-custom.scm:68
+#: scm/canna-custom.scm:83 scm/canna-custom.scm:95 scm/canna-custom.scm:101
+#: scm/canna-custom.scm:200 scm/canna-custom.scm:219 scm/canna-custom.scm:228
+#: scm/canna-custom.scm:270 scm/canna-custom.scm:279 scm/canna-custom.scm:328
+#: scm/canna-custom.scm:334 scm/canna-custom.scm:340 scm/canna-custom.scm:402
+#: scm/canna-custom.scm:408 scm/canna-custom.scm:414 scm/canna-custom.scm:421
+#: scm/canna-custom.scm:427 scm/canna-custom.scm:433 scm/canna-custom.scm:439
+#: scm/canna-custom.scm:445 scm/canna-key-custom.scm:37
 #: scm/canna-key-custom.scm:41 scm/canna-key-custom.scm:45
 #: scm/canna-key-custom.scm:49 scm/elatin-custom.scm:44
 #: scm/elatin-custom.scm:53 scm/elatin-custom.scm:56 scm/elatin-custom.scm:59
@@ -2335,7 +2347,19 @@ msgstr "ანოტაციის ჩართვა"
 #: scm/generic-custom.scm:43 scm/generic-custom.scm:55
 #: scm/generic-custom.scm:61 scm/generic-custom.scm:67
 #: scm/generic-custom.scm:73 scm/generic-key-custom.scm:37
-#: scm/generic-key-custom.scm:41 scm/google-cgiapi-jp-key-custom.scm:36
+#: scm/generic-key-custom.scm:41 scm/google-cgiapi-jp-custom.scm:44
+#: scm/google-cgiapi-jp-custom.scm:48 scm/google-cgiapi-jp-custom.scm:52
+#: scm/google-cgiapi-jp-custom.scm:62 scm/google-cgiapi-jp-custom.scm:68
+#: scm/google-cgiapi-jp-custom.scm:83 scm/google-cgiapi-jp-custom.scm:95
+#: scm/google-cgiapi-jp-custom.scm:101 scm/google-cgiapi-jp-custom.scm:200
+#: scm/google-cgiapi-jp-custom.scm:219 scm/google-cgiapi-jp-custom.scm:228
+#: scm/google-cgiapi-jp-custom.scm:270 scm/google-cgiapi-jp-custom.scm:279
+#: scm/google-cgiapi-jp-custom.scm:322 scm/google-cgiapi-jp-custom.scm:328
+#: scm/google-cgiapi-jp-custom.scm:339 scm/google-cgiapi-jp-custom.scm:345
+#: scm/google-cgiapi-jp-custom.scm:351 scm/google-cgiapi-jp-custom.scm:358
+#: scm/google-cgiapi-jp-custom.scm:364 scm/google-cgiapi-jp-custom.scm:370
+#: scm/google-cgiapi-jp-custom.scm:387 scm/google-cgiapi-jp-custom.scm:393
+#: scm/google-cgiapi-jp-key-custom.scm:36
 #: scm/google-cgiapi-jp-key-custom.scm:40
 #: scm/google-cgiapi-jp-key-custom.scm:44
 #: scm/google-cgiapi-jp-key-custom.scm:48 scm/im-custom.scm:49
@@ -2347,21 +2371,28 @@ msgstr "ანოტაციის ჩართვა"
 #: scm/im-custom.scm:123 scm/im-custom.scm:128 scm/im-custom.scm:133
 #: scm/im-custom.scm:138 scm/im-custom.scm:143 scm/im-custom.scm:148
 #: scm/im-custom.scm:153 scm/im-custom.scm:158 scm/im-custom.scm:170
-#: scm/im-custom.scm:180 scm/im-custom.scm:254 scm/im-custom.scm:328
-#: scm/im-custom.scm:334 scm/im-custom.scm:340 scm/im-custom.scm:346
-#: scm/im-custom.scm:362 scm/im-custom.scm:368 scm/im-custom.scm:374
-#: scm/im-custom.scm:384 scm/im-custom.scm:412 scm/im-custom.scm:432
-#: scm/im-custom.scm:448 scm/im-custom.scm:454 scm/im-custom.scm:467
-#: scm/im-custom.scm:470 scm/im-custom.scm:473 scm/im-custom.scm:475
-#: scm/im-custom.scm:536 scm/im-custom.scm:542 scm/im-custom.scm:548
-#: scm/im-custom.scm:554 scm/im-custom.scm:560 scm/im-custom.scm:567
-#: scm/im-custom.scm:570 scm/im-custom.scm:572 scm/im-custom.scm:578
-#: scm/im-custom.scm:589 scm/im-custom.scm:595 scm/im-custom.scm:602
-#: scm/im-custom.scm:605 scm/im-custom.scm:607 scm/im-custom.scm:635
-#: scm/im-custom.scm:641 scm/im-custom.scm:657 scm/im-custom.scm:667
-#: scm/im-custom.scm:677 scm/im-custom.scm:687 scm/im-custom.scm:697
-#: scm/im-custom.scm:720 scm/im-custom.scm:736 scm/im-custom.scm:763
-#: scm/im-custom.scm:769 scm/im-custom.scm:781 scm/look-custom.scm:40
+#: scm/im-custom.scm:180 scm/im-custom.scm:250 scm/im-custom.scm:329
+#: scm/im-custom.scm:335 scm/im-custom.scm:341 scm/im-custom.scm:347
+#: scm/im-custom.scm:363 scm/im-custom.scm:369 scm/im-custom.scm:375
+#: scm/im-custom.scm:385 scm/im-custom.scm:413 scm/im-custom.scm:433
+#: scm/im-custom.scm:446 scm/im-custom.scm:452 scm/im-custom.scm:465
+#: scm/im-custom.scm:468 scm/im-custom.scm:471 scm/im-custom.scm:473
+#: scm/im-custom.scm:534 scm/im-custom.scm:540 scm/im-custom.scm:546
+#: scm/im-custom.scm:552 scm/im-custom.scm:558 scm/im-custom.scm:565
+#: scm/im-custom.scm:568 scm/im-custom.scm:570 scm/im-custom.scm:576
+#: scm/im-custom.scm:587 scm/im-custom.scm:593 scm/im-custom.scm:600
+#: scm/im-custom.scm:603 scm/im-custom.scm:605 scm/im-custom.scm:633
+#: scm/im-custom.scm:639 scm/im-custom.scm:655 scm/im-custom.scm:665
+#: scm/im-custom.scm:675 scm/im-custom.scm:685 scm/im-custom.scm:695
+#: scm/im-custom.scm:718 scm/im-custom.scm:734 scm/im-custom.scm:761
+#: scm/im-custom.scm:767 scm/im-custom.scm:779 scm/japanese-custom.scm:461
+#: scm/japanese-custom.scm:465 scm/japanese-custom.scm:473
+#: scm/japanese-custom.scm:483 scm/japanese-custom.scm:489
+#: scm/karukan-custom.scm:42 scm/karukan-custom.scm:54
+#: scm/karukan-custom.scm:80 scm/karukan-custom.scm:94
+#: scm/karukan-custom.scm:103 scm/karukan-key-custom.scm:35
+#: scm/rime-custom.scm:43 scm/rime-custom.scm:108 scm/rime-custom.scm:122
+#: scm/rime-custom.scm:131 scm/rime-key-custom.scm:36 scm/look-custom.scm:40
 #: scm/look-custom.scm:47 scm/look-custom.scm:54 scm/look-custom.scm:60
 #: scm/look-custom.scm:66 scm/look-custom.scm:77 scm/look-custom.scm:83
 #: scm/look-custom.scm:89 scm/m17nlib-custom.scm:65 scm/m17nlib-custom.scm:83
@@ -2385,9 +2416,9 @@ msgstr "ანოტაციის ჩართვა"
 #: scm/skk-custom.scm:390 scm/skk-custom.scm:401 scm/skk-custom.scm:417
 #: scm/skk-custom.scm:444 scm/skk-custom.scm:461 scm/skk-custom.scm:478
 #: scm/skk-custom.scm:510 scm/skk-custom.scm:516 scm/skk-custom.scm:522
-#: scm/skk-custom.scm:528 scm/skk-custom.scm:534 scm/skk-custom.scm:540
-#: scm/skk-custom.scm:552 scm/skk-custom.scm:567 scm/skk-custom.scm:573
-#: scm/skk-custom.scm:594 scm/skk-custom.scm:600 scm/skk-custom.scm:607
+#: scm/skk-custom.scm:528 scm/skk-custom.scm:534 scm/skk-custom.scm:546
+#: scm/skk-custom.scm:558 scm/skk-custom.scm:573 scm/skk-custom.scm:579
+#: scm/skk-custom.scm:600 scm/skk-custom.scm:606 scm/skk-custom.scm:613
 #: scm/skk-key-custom.scm:65 scm/skk-key-custom.scm:69
 #: scm/skk-key-custom.scm:73 scm/skk-key-custom.scm:78
 #: scm/skk-key-custom.scm:82 scm/skk-key-custom.scm:86
@@ -2420,46 +2451,6 @@ msgstr "ანოტაციის ჩართვა"
 #: scm/tutcode-key-custom.scm:42 scm/tutcode-key-custom.scm:46
 #: scm/tutcode-rule-custom.scm:46 scm/tutcode-rule-custom.scm:52
 #: scm/tutcode-rule-custom.scm:58 scm/tutcode-rule-custom.scm:64
-#: scm/anthy-custom.scm:48 scm/anthy-custom.scm:58 scm/anthy-custom.scm:64
-#: scm/anthy-custom.scm:79 scm/anthy-custom.scm:91 scm/anthy-custom.scm:97
-#: scm/anthy-custom.scm:195 scm/anthy-custom.scm:214 scm/anthy-custom.scm:223
-#: scm/anthy-custom.scm:265 scm/anthy-custom.scm:274 scm/anthy-custom.scm:312
-#: scm/anthy-custom.scm:318 scm/anthy-custom.scm:324 scm/anthy-custom.scm:330
-#: scm/anthy-custom.scm:362 scm/anthy-custom.scm:368 scm/anthy-custom.scm:374
-#: scm/baidu-olime-jp-custom.scm:44 scm/baidu-olime-jp-custom.scm:48
-#: scm/baidu-olime-jp-custom.scm:52 scm/baidu-olime-jp-custom.scm:62
-#: scm/baidu-olime-jp-custom.scm:68 scm/baidu-olime-jp-custom.scm:83
-#: scm/baidu-olime-jp-custom.scm:95 scm/baidu-olime-jp-custom.scm:101
-#: scm/baidu-olime-jp-custom.scm:200 scm/baidu-olime-jp-custom.scm:219
-#: scm/baidu-olime-jp-custom.scm:228 scm/baidu-olime-jp-custom.scm:270
-#: scm/baidu-olime-jp-custom.scm:279 scm/baidu-olime-jp-custom.scm:322
-#: scm/baidu-olime-jp-custom.scm:328 scm/baidu-olime-jp-custom.scm:341
-#: scm/baidu-olime-jp-custom.scm:347 scm/baidu-olime-jp-custom.scm:353
-#: scm/baidu-olime-jp-custom.scm:360 scm/baidu-olime-jp-custom.scm:366
-#: scm/baidu-olime-jp-custom.scm:372 scm/baidu-olime-jp-custom.scm:389
-#: scm/baidu-olime-jp-custom.scm:395 scm/canna-custom.scm:44
-#: scm/canna-custom.scm:48 scm/canna-custom.scm:52 scm/canna-custom.scm:62
-#: scm/canna-custom.scm:68 scm/canna-custom.scm:83 scm/canna-custom.scm:95
-#: scm/canna-custom.scm:101 scm/canna-custom.scm:200 scm/canna-custom.scm:219
-#: scm/canna-custom.scm:228 scm/canna-custom.scm:270 scm/canna-custom.scm:279
-#: scm/canna-custom.scm:328 scm/canna-custom.scm:334 scm/canna-custom.scm:340
-#: scm/canna-custom.scm:402 scm/canna-custom.scm:408 scm/canna-custom.scm:414
-#: scm/canna-custom.scm:421 scm/canna-custom.scm:427 scm/canna-custom.scm:433
-#: scm/canna-custom.scm:439 scm/canna-custom.scm:445
-#: scm/google-cgiapi-jp-custom.scm:44 scm/google-cgiapi-jp-custom.scm:48
-#: scm/google-cgiapi-jp-custom.scm:52 scm/google-cgiapi-jp-custom.scm:62
-#: scm/google-cgiapi-jp-custom.scm:68 scm/google-cgiapi-jp-custom.scm:83
-#: scm/google-cgiapi-jp-custom.scm:95 scm/google-cgiapi-jp-custom.scm:101
-#: scm/google-cgiapi-jp-custom.scm:200 scm/google-cgiapi-jp-custom.scm:219
-#: scm/google-cgiapi-jp-custom.scm:228 scm/google-cgiapi-jp-custom.scm:270
-#: scm/google-cgiapi-jp-custom.scm:279 scm/google-cgiapi-jp-custom.scm:322
-#: scm/google-cgiapi-jp-custom.scm:328 scm/google-cgiapi-jp-custom.scm:339
-#: scm/google-cgiapi-jp-custom.scm:345 scm/google-cgiapi-jp-custom.scm:351
-#: scm/google-cgiapi-jp-custom.scm:358 scm/google-cgiapi-jp-custom.scm:364
-#: scm/google-cgiapi-jp-custom.scm:370 scm/google-cgiapi-jp-custom.scm:387
-#: scm/google-cgiapi-jp-custom.scm:393 scm/japanese-custom.scm:467
-#: scm/japanese-custom.scm:471 scm/japanese-custom.scm:479
-#: scm/japanese-custom.scm:489 scm/japanese-custom.scm:495
 msgid "long description will be here."
 msgstr "გრძელი აღწერა აქ იქნება."
 
@@ -2584,6 +2575,287 @@ msgstr "მორგებული ფილტრის ინიციალ�
 msgid "invalid annotation agent name"
 msgstr "არასწორი ანოტაციის აგენტის სახელი"
 
+#: scm/anthy-custom.scm:35 scm/anthy-utf8-custom.scm:35
+msgid "Anthy"
+msgstr "ანთი"
+
+#: scm/anthy-custom.scm:36 scm/anthy-utf8-custom.scm:36
+#: scm/anthy-utf8-custom.scm:39 scm/canna-custom.scm:36
+#: scm/google-cgiapi-jp-custom.scm:36
+msgid "A multi-segment kana-kanji conversion engine"
+msgstr "მრავალსეგმენტიანი კანა-კანჯის გადაყვანის ძრავა"
+
+#: scm/anthy-custom.scm:43 scm/anthy-utf8-custom.scm:50
+msgid "Anthy (advanced)"
+msgstr "Anthy (გაფართოებული)"
+
+#: scm/anthy-custom.scm:44 scm/anthy-utf8-custom.scm:51
+msgid "Advanced settings for Anthy"
+msgstr "დამატებითი პარამეტრები Anthy-სთვის"
+
+#: scm/anthy-custom.scm:47 scm/anthy-utf8-custom.scm:54 scm/canna-custom.scm:51
+#: scm/google-cgiapi-jp-custom.scm:51 scm/tutcode-custom.scm:55
+msgid "Prediction"
+msgstr "პროგნოზი"
+
+#: scm/anthy-custom.scm:57 scm/anthy-utf8-custom.scm:64 scm/canna-custom.scm:61
+#: scm/google-cgiapi-jp-custom.scm:61 scm/mozc-custom.scm:52
+msgid "Show segment separator"
+msgstr "სეგმენტის გამყოფის ჩვენება"
+
+#: scm/anthy-custom.scm:63 scm/anthy-utf8-custom.scm:70 scm/canna-custom.scm:67
+#: scm/google-cgiapi-jp-custom.scm:67 scm/im-custom.scm:102
+#: scm/mozc-custom.scm:58
+msgid "Segment separator"
+msgstr "სეგმენტის გამყოფი"
+
+#: scm/anthy-custom.scm:78 scm/anthy-utf8-custom.scm:85 scm/canna-custom.scm:82
+#: scm/generic-custom.scm:42 scm/google-cgiapi-jp-custom.scm:82
+#: scm/m17nlib-custom.scm:135 scm/skk-custom.scm:68 scm/tutcode-custom.scm:261
+msgid "Use candidate window"
+msgstr "კანდიდატის ფანჯრის გამოყენება"
+
+#: scm/anthy-custom.scm:84 scm/anthy-utf8-custom.scm:91 scm/canna-custom.scm:88
+#: scm/google-cgiapi-jp-custom.scm:88 scm/skk-custom.scm:94
+#: scm/tutcode-custom.scm:294
+msgid "Conversion key press count to show candidate window"
+msgstr "გადაყვანის ღილაკის დაჭერის რაოდენობა კანდიდატის ფანჯრის საჩვენებლად"
+
+#: scm/anthy-custom.scm:85 scm/anthy-utf8-custom.scm:92 scm/canna-custom.scm:89
+#: scm/google-cgiapi-jp-custom.scm:89 scm/skk-custom.scm:95
+#: scm/tutcode-custom.scm:295
+msgid "0 shows the candidate window at the first conversion key press."
+msgstr ""
+"0 ნიშნავს, რომ კანდიდატის ფანჯარა გადაყვანის ღილაკის პირველივე დაჭერისას "
+"გამოჩნდება."
+
+#: scm/anthy-custom.scm:90 scm/anthy-utf8-custom.scm:97 scm/canna-custom.scm:94
+#: scm/generic-custom.scm:54 scm/google-cgiapi-jp-custom.scm:94
+#: scm/skk-custom.scm:100 scm/tutcode-custom.scm:300
+msgid "Number of candidates in candidate window at a time"
+msgstr "ერთდროული კანდიდატების რაოდენობა კანდიდატების ფანჯარაში"
+
+#: scm/anthy-custom.scm:96 scm/anthy-utf8-custom.scm:103
+#: scm/canna-custom.scm:100 scm/elatin-custom.scm:264 scm/generic-custom.scm:60
+#: scm/google-cgiapi-jp-custom.scm:100
+msgid "Select candidate by numeral keys"
+msgstr "კანდიდატის არჩევა ციფრის ღილაკებით"
+
+#: scm/anthy-custom.scm:126 scm/anthy-utf8-custom.scm:133
+#: scm/canna-custom.scm:130 scm/google-cgiapi-jp-custom.scm:130
+#: scm/karukan-custom.scm:65 scm/mozc-custom.scm:77 scm/skk-custom.scm:178
+msgid "Direct input"
+msgstr "პირდაპირი შეყვანა"
+
+#: scm/anthy-custom.scm:127 scm/anthy-utf8-custom.scm:134
+#: scm/canna-custom.scm:131 scm/google-cgiapi-jp-custom.scm:131
+#: scm/karukan-custom.scm:66 scm/m17nlib-custom.scm:49 scm/mozc-custom.scm:78
+#: scm/skk-custom.scm:179
+msgid "Direct input mode"
+msgstr "პირდაპირი შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:131 scm/anthy-utf8-custom.scm:138
+#: scm/canna-custom.scm:135 scm/google-cgiapi-jp-custom.scm:135
+#: scm/karukan-custom.scm:70 scm/mozc-custom.scm:82 scm/skk-custom.scm:183
+msgid "Hiragana"
+msgstr "ჰირაგანა"
+
+#: scm/anthy-custom.scm:132 scm/anthy-utf8-custom.scm:139
+#: scm/canna-custom.scm:136 scm/google-cgiapi-jp-custom.scm:136
+#: scm/karukan-custom.scm:71 scm/mozc-custom.scm:83 scm/skk-custom.scm:184
+msgid "Hiragana input mode"
+msgstr "ჰირაგანას შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:136 scm/anthy-utf8-custom.scm:143
+#: scm/canna-custom.scm:140 scm/google-cgiapi-jp-custom.scm:140
+#: scm/mozc-custom.scm:87 scm/skk-custom.scm:188
+msgid "Katakana"
+msgstr "კატაკანა"
+
+#: scm/anthy-custom.scm:137 scm/anthy-utf8-custom.scm:144
+#: scm/canna-custom.scm:141 scm/google-cgiapi-jp-custom.scm:141
+#: scm/mozc-custom.scm:88 scm/skk-custom.scm:189
+msgid "Katakana input mode"
+msgstr "კატაკანას შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:141 scm/anthy-utf8-custom.scm:148
+#: scm/canna-custom.scm:145 scm/google-cgiapi-jp-custom.scm:145
+#: scm/mozc-custom.scm:92 scm/skk-custom.scm:193
+msgid "Halfwidth Katakana"
+msgstr "ნახევარსიგანიანი კატაკანა"
+
+#: scm/anthy-custom.scm:142 scm/anthy-utf8-custom.scm:149
+#: scm/canna-custom.scm:146 scm/google-cgiapi-jp-custom.scm:146
+#: scm/mozc-custom.scm:93 scm/skk-custom.scm:194
+msgid "Halfwidth Katakana input mode"
+msgstr "ნახევარსიგანიანი კატაკანას შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:146 scm/anthy-utf8-custom.scm:153
+#: scm/canna-custom.scm:150 scm/google-cgiapi-jp-custom.scm:150
+#: scm/mozc-custom.scm:97
+msgid "Halfwidth Alphanumeric"
+msgstr "ნახევარსიგანიანი ალფარიცხვითი"
+
+#: scm/anthy-custom.scm:147 scm/anthy-utf8-custom.scm:154
+#: scm/canna-custom.scm:151 scm/google-cgiapi-jp-custom.scm:151
+#: scm/mozc-custom.scm:98
+msgid "Halfwidth Alphanumeric input mode"
+msgstr "ნახევარსიგანიანი ალფარიცხვითის შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:151 scm/anthy-utf8-custom.scm:158
+#: scm/canna-custom.scm:156 scm/google-cgiapi-jp-custom.scm:156
+#: scm/mozc-custom.scm:102 scm/skk-custom.scm:198
+msgid "Fullwidth Alphanumeric"
+msgstr "სრულსიგანიანი ალფარიცხვითი"
+
+#: scm/anthy-custom.scm:152 scm/anthy-utf8-custom.scm:159
+#: scm/canna-custom.scm:157 scm/google-cgiapi-jp-custom.scm:157
+#: scm/mozc-custom.scm:103 scm/skk-custom.scm:199
+msgid "Fullwidth Alphanumeric input mode"
+msgstr "სრულსიგანიანი ალფარიცხვითის შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:159 scm/anthy-utf8-custom.scm:166
+#: scm/canna-custom.scm:164 scm/google-cgiapi-jp-custom.scm:164
+#: scm/mozc-custom.scm:110 scm/skk-custom.scm:206
+msgid "Romaji"
+msgstr "რომაჯი"
+
+#: scm/anthy-custom.scm:160 scm/anthy-utf8-custom.scm:167
+#: scm/canna-custom.scm:165 scm/google-cgiapi-jp-custom.scm:165
+#: scm/mozc-custom.scm:111 scm/skk-custom.scm:207
+msgid "Romaji input mode"
+msgstr "რომაჯის შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:164 scm/anthy-utf8-custom.scm:171
+#: scm/canna-custom.scm:169 scm/google-cgiapi-jp-custom.scm:169
+#: scm/mozc-custom.scm:115
+msgid "Kana"
+msgstr "კანა"
+
+#: scm/anthy-custom.scm:165 scm/anthy-utf8-custom.scm:172
+#: scm/canna-custom.scm:170 scm/google-cgiapi-jp-custom.scm:170
+#: scm/mozc-custom.scm:116
+msgid "Kana input mode"
+msgstr "კანას შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:169 scm/anthy-utf8-custom.scm:176
+#: scm/canna-custom.scm:174 scm/google-cgiapi-jp-custom.scm:174
+#: scm/skk-custom.scm:212
+msgid "AZIK"
+msgstr "AZIK"
+
+#: scm/anthy-custom.scm:170 scm/anthy-utf8-custom.scm:177
+#: scm/canna-custom.scm:175 scm/google-cgiapi-jp-custom.scm:175
+#: scm/skk-custom.scm:213
+msgid "AZIK extended romaji input mode"
+msgstr "AZIK გაფართოებული რომაჯის შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:174 scm/anthy-utf8-custom.scm:181
+#: scm/canna-custom.scm:179 scm/google-cgiapi-jp-custom.scm:179
+#: scm/skk-custom.scm:218
+msgid "ACT"
+msgstr "ACT"
+
+#: scm/anthy-custom.scm:175 scm/anthy-utf8-custom.scm:182
+#: scm/canna-custom.scm:180 scm/google-cgiapi-jp-custom.scm:180
+#: scm/skk-custom.scm:219
+msgid "ACT extended romaji input mode"
+msgstr "ACT გაფართოებული რომაჯის შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:179 scm/anthy-utf8-custom.scm:186
+#: scm/canna-custom.scm:184 scm/google-cgiapi-jp-custom.scm:184
+#: scm/skk-custom.scm:224
+msgid "KZIK"
+msgstr "KZIK"
+
+#: scm/anthy-custom.scm:180 scm/anthy-utf8-custom.scm:187
+#: scm/canna-custom.scm:185 scm/google-cgiapi-jp-custom.scm:185
+#: scm/skk-custom.scm:225
+msgid "KZIK extended romaji input mode"
+msgstr "KZIK გაფართოებული რომაჯის შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:192 scm/anthy-custom.scm:193
+#: scm/anthy-utf8-custom.scm:199 scm/anthy-utf8-custom.scm:200
+#: scm/canna-custom.scm:197 scm/canna-custom.scm:198
+#: scm/google-cgiapi-jp-custom.scm:197 scm/google-cgiapi-jp-custom.scm:198
+#: scm/mozc-custom.scm:163 scm/mozc-custom.scm:164 scm/skk-custom.scm:237
+#: scm/skk-custom.scm:238
+msgid "Kana input method"
+msgstr "კანას შეყვანის მეთოდი"
+
+#: scm/anthy-custom.scm:194 scm/anthy-utf8-custom.scm:201
+#: scm/canna-custom.scm:199 scm/google-cgiapi-jp-custom.scm:199
+#: scm/karukan-custom.scm:79 scm/rime-custom.scm:107 scm/m17nlib-custom.scm:64
+#: scm/mozc-custom.scm:168 scm/skk-custom.scm:239
+msgid "Enabled toolbar buttons"
+msgstr "ხელსაწყოთა ზოლის ჩართული ღილაკები"
+
+#: scm/anthy-custom.scm:213 scm/anthy-utf8-custom.scm:220
+#: scm/canna-custom.scm:218 scm/google-cgiapi-jp-custom.scm:218
+#: scm/karukan-custom.scm:93 scm/rime-custom.scm:121 scm/m17nlib-custom.scm:82
+#: scm/mozc-custom.scm:187 scm/skk-custom.scm:258
+msgid "Default input mode"
+msgstr "ნაგულისხმევი შეყვანის რეჟიმი"
+
+#: scm/anthy-custom.scm:222 scm/anthy-utf8-custom.scm:229
+#: scm/canna-custom.scm:227 scm/google-cgiapi-jp-custom.scm:227
+#: scm/karukan-custom.scm:102 scm/rime-custom.scm:130 scm/m17nlib-custom.scm:91
+#: scm/mozc-custom.scm:196 scm/skk-custom.scm:267
+msgid "Input mode menu items"
+msgstr "შეყვანის რეჟიმის მენიუს პუნქტები"
+
+#: scm/anthy-custom.scm:264 scm/anthy-utf8-custom.scm:271
+#: scm/canna-custom.scm:269 scm/google-cgiapi-jp-custom.scm:269
+#: scm/mozc-custom.scm:238 scm/skk-custom.scm:298
+msgid "Default kana input method"
+msgstr "ნაგულისხმევი კანას შეყვანის მეთოდი"
+
+#: scm/anthy-custom.scm:273 scm/anthy-utf8-custom.scm:280
+#: scm/canna-custom.scm:278 scm/google-cgiapi-jp-custom.scm:278
+#: scm/mozc-custom.scm:247 scm/skk-custom.scm:307
+msgid "Kana input method menu items"
+msgstr "კანას შეყვანის მეთოდის მენიუს პუნქტები"
+
+#: scm/anthy-custom.scm:311 scm/anthy-utf8-custom.scm:318
+#: scm/canna-custom.scm:420 scm/google-cgiapi-jp-custom.scm:357
+msgid "Enable input prediction"
+msgstr "შეყვანის წინასწარი ამოცნობის ჩართვა"
+
+#: scm/anthy-custom.scm:317 scm/anthy-utf8-custom.scm:324
+#: scm/canna-custom.scm:426 scm/google-cgiapi-jp-custom.scm:363
+msgid "Select prediction candidate by numeral keys"
+msgstr "პროგნოზის კანდიდატის არჩევა ციფრის ღილაკებით"
+
+#: scm/anthy-custom.scm:323 scm/anthy-utf8-custom.scm:330
+#: scm/canna-custom.scm:432 scm/google-cgiapi-jp-custom.scm:369
+msgid "Show selected prediction candidate in preedit area"
+msgstr "მონიშნული პროგნოზის კანდიდატის ჩვენება წინასწარი ჩასწორების არეში"
+
+#: scm/anthy-custom.scm:329 scm/anthy-utf8-custom.scm:336
+#: scm/canna-custom.scm:444 scm/google-cgiapi-jp-custom.scm:392
+#: scm/tutcode-custom.scm:427
+msgid "Character count to start input prediction"
+msgstr "სიმბოლოების რაოდენობა შეყვანის პროგნოზის დასაწყებად"
+
+#: scm/anthy-custom.scm:361 scm/anthy-utf8-custom.scm:368
+#: scm/canna-custom.scm:401 scm/google-cgiapi-jp-custom.scm:338
+#: scm/mozc-custom.scm:295 scm/skk-custom.scm:599 scm/tutcode-custom.scm:124
+msgid "Enable vi-cooperative mode"
+msgstr "vi-სთან კოოპერაციის რეჟიმის ჩართვა"
+
+#: scm/anthy-custom.scm:367 scm/anthy-utf8-custom.scm:374
+#: scm/canna-custom.scm:407 scm/google-cgiapi-jp-custom.scm:344
+#: scm/skk-custom.scm:527
+msgid "Enable auto conversion with punctuation marks"
+msgstr "პუნქტუაციის ნიშნებით ავტომატური გადაყვანის ჩართვა"
+
+#: scm/anthy-custom.scm:373 scm/anthy-utf8-custom.scm:380
+#: scm/canna-custom.scm:413 scm/google-cgiapi-jp-custom.scm:350
+msgid "Enable input mode transition keys in direct (off state) input mode"
+msgstr ""
+"შეყვანის რეჟიმის გადაყვანის ღილაკების ჩართვა პირდაპირ (გამორთულ) შეყვანის "
+"რეჟიმში"
+
 #: scm/anthy-key-custom.scm:36
 msgid "Anthy key bindings 1"
 msgstr "Anthy-ის ღილაკების ასახვა 1"
@@ -2622,66 +2894,47 @@ msgstr "[Anthy] შემდეგი სეგმენტი"
 #: scm/anthy-key-custom.scm:247 scm/anthy-key-custom.scm:253
 #: scm/anthy-key-custom.scm:259 scm/anthy-key-custom.scm:265
 #: scm/anthy-key-custom.scm:271 scm/anthy-key-custom.scm:277
-#: scm/anthy-key-custom.scm:283 scm/baidu-olime-jp-key-custom.scm:54
-#: scm/baidu-olime-jp-key-custom.scm:60 scm/baidu-olime-jp-key-custom.scm:66
-#: scm/baidu-olime-jp-key-custom.scm:72 scm/baidu-olime-jp-key-custom.scm:78
-#: scm/baidu-olime-jp-key-custom.scm:84 scm/baidu-olime-jp-key-custom.scm:90
-#: scm/baidu-olime-jp-key-custom.scm:96 scm/baidu-olime-jp-key-custom.scm:102
-#: scm/baidu-olime-jp-key-custom.scm:108 scm/baidu-olime-jp-key-custom.scm:117
-#: scm/baidu-olime-jp-key-custom.scm:124 scm/baidu-olime-jp-key-custom.scm:130
-#: scm/baidu-olime-jp-key-custom.scm:136 scm/baidu-olime-jp-key-custom.scm:142
-#: scm/baidu-olime-jp-key-custom.scm:148 scm/baidu-olime-jp-key-custom.scm:154
-#: scm/baidu-olime-jp-key-custom.scm:160 scm/baidu-olime-jp-key-custom.scm:166
-#: scm/baidu-olime-jp-key-custom.scm:175 scm/baidu-olime-jp-key-custom.scm:181
-#: scm/baidu-olime-jp-key-custom.scm:187 scm/baidu-olime-jp-key-custom.scm:193
-#: scm/baidu-olime-jp-key-custom.scm:199 scm/baidu-olime-jp-key-custom.scm:205
-#: scm/baidu-olime-jp-key-custom.scm:211 scm/baidu-olime-jp-key-custom.scm:217
-#: scm/baidu-olime-jp-key-custom.scm:223 scm/baidu-olime-jp-key-custom.scm:233
-#: scm/baidu-olime-jp-key-custom.scm:239 scm/baidu-olime-jp-key-custom.scm:245
-#: scm/baidu-olime-jp-key-custom.scm:251 scm/baidu-olime-jp-key-custom.scm:257
-#: scm/baidu-olime-jp-key-custom.scm:263 scm/baidu-olime-jp-key-custom.scm:269
-#: scm/baidu-olime-jp-key-custom.scm:275 scm/baidu-olime-jp-key-custom.scm:281
-#: scm/byeoru-key-custom.scm:48 scm/byeoru-key-custom.scm:54
-#: scm/byeoru-key-custom.scm:60 scm/byeoru-key-custom.scm:66
-#: scm/byeoru-key-custom.scm:72 scm/byeoru-key-custom.scm:78
-#: scm/byeoru-key-custom.scm:84 scm/byeoru-key-custom.scm:90
-#: scm/byeoru-key-custom.scm:96 scm/byeoru-key-custom.scm:102
-#: scm/byeoru-key-custom.scm:108 scm/byeoru-key-custom.scm:114
-#: scm/byeoru-key-custom.scm:120 scm/byeoru-key-custom.scm:126
-#: scm/byeoru-key-custom.scm:132 scm/canna-key-custom.scm:55
-#: scm/canna-key-custom.scm:61 scm/canna-key-custom.scm:67
-#: scm/canna-key-custom.scm:73 scm/canna-key-custom.scm:79
-#: scm/canna-key-custom.scm:85 scm/canna-key-custom.scm:91
-#: scm/canna-key-custom.scm:97 scm/canna-key-custom.scm:103
-#: scm/canna-key-custom.scm:109 scm/canna-key-custom.scm:118
-#: scm/canna-key-custom.scm:125 scm/canna-key-custom.scm:131
-#: scm/canna-key-custom.scm:137 scm/canna-key-custom.scm:143
-#: scm/canna-key-custom.scm:149 scm/canna-key-custom.scm:155
-#: scm/canna-key-custom.scm:161 scm/canna-key-custom.scm:167
-#: scm/canna-key-custom.scm:176 scm/canna-key-custom.scm:182
-#: scm/canna-key-custom.scm:188 scm/canna-key-custom.scm:194
-#: scm/canna-key-custom.scm:200 scm/canna-key-custom.scm:206
-#: scm/canna-key-custom.scm:212 scm/canna-key-custom.scm:218
-#: scm/canna-key-custom.scm:224 scm/canna-key-custom.scm:234
-#: scm/canna-key-custom.scm:240 scm/canna-key-custom.scm:246
-#: scm/canna-key-custom.scm:252 scm/canna-key-custom.scm:258
-#: scm/canna-key-custom.scm:264 scm/canna-key-custom.scm:270
-#: scm/canna-key-custom.scm:276 scm/canna-key-custom.scm:282
-#: scm/elatin-custom.scm:292 scm/elatin-custom.scm:298
-#: scm/elatin-custom.scm:304 scm/elatin-custom.scm:310
-#: scm/elatin-custom.scm:316 scm/elatin-custom.scm:322
-#: scm/elatin-custom.scm:328 scm/elatin-custom.scm:334
-#: scm/elatin-custom.scm:340 scm/elatin-custom.scm:346
-#: scm/generic-key-custom.scm:48 scm/generic-key-custom.scm:54
-#: scm/generic-key-custom.scm:60 scm/generic-key-custom.scm:66
-#: scm/generic-key-custom.scm:72 scm/generic-key-custom.scm:78
-#: scm/generic-key-custom.scm:84 scm/generic-key-custom.scm:90
-#: scm/generic-key-custom.scm:96 scm/generic-key-custom.scm:106
-#: scm/generic-key-custom.scm:112 scm/generic-key-custom.scm:118
-#: scm/generic-key-custom.scm:124 scm/generic-key-custom.scm:130
-#: scm/generic-key-custom.scm:136 scm/generic-key-custom.scm:142
-#: scm/generic-key-custom.scm:148 scm/generic-key-custom.scm:154
-#: scm/google-cgiapi-jp-key-custom.scm:54
+#: scm/anthy-key-custom.scm:283 scm/byeoru-key-custom.scm:48
+#: scm/byeoru-key-custom.scm:54 scm/byeoru-key-custom.scm:60
+#: scm/byeoru-key-custom.scm:66 scm/byeoru-key-custom.scm:72
+#: scm/byeoru-key-custom.scm:78 scm/byeoru-key-custom.scm:84
+#: scm/byeoru-key-custom.scm:90 scm/byeoru-key-custom.scm:96
+#: scm/byeoru-key-custom.scm:102 scm/byeoru-key-custom.scm:108
+#: scm/byeoru-key-custom.scm:114 scm/byeoru-key-custom.scm:120
+#: scm/byeoru-key-custom.scm:126 scm/byeoru-key-custom.scm:132
+#: scm/canna-key-custom.scm:55 scm/canna-key-custom.scm:61
+#: scm/canna-key-custom.scm:67 scm/canna-key-custom.scm:73
+#: scm/canna-key-custom.scm:79 scm/canna-key-custom.scm:85
+#: scm/canna-key-custom.scm:91 scm/canna-key-custom.scm:97
+#: scm/canna-key-custom.scm:103 scm/canna-key-custom.scm:109
+#: scm/canna-key-custom.scm:118 scm/canna-key-custom.scm:125
+#: scm/canna-key-custom.scm:131 scm/canna-key-custom.scm:137
+#: scm/canna-key-custom.scm:143 scm/canna-key-custom.scm:149
+#: scm/canna-key-custom.scm:155 scm/canna-key-custom.scm:161
+#: scm/canna-key-custom.scm:167 scm/canna-key-custom.scm:176
+#: scm/canna-key-custom.scm:182 scm/canna-key-custom.scm:188
+#: scm/canna-key-custom.scm:194 scm/canna-key-custom.scm:200
+#: scm/canna-key-custom.scm:206 scm/canna-key-custom.scm:212
+#: scm/canna-key-custom.scm:218 scm/canna-key-custom.scm:224
+#: scm/canna-key-custom.scm:234 scm/canna-key-custom.scm:240
+#: scm/canna-key-custom.scm:246 scm/canna-key-custom.scm:252
+#: scm/canna-key-custom.scm:258 scm/canna-key-custom.scm:264
+#: scm/canna-key-custom.scm:270 scm/canna-key-custom.scm:276
+#: scm/canna-key-custom.scm:282 scm/elatin-custom.scm:292
+#: scm/elatin-custom.scm:298 scm/elatin-custom.scm:304
+#: scm/elatin-custom.scm:310 scm/elatin-custom.scm:316
+#: scm/elatin-custom.scm:322 scm/elatin-custom.scm:328
+#: scm/elatin-custom.scm:334 scm/elatin-custom.scm:340
+#: scm/elatin-custom.scm:346 scm/generic-key-custom.scm:48
+#: scm/generic-key-custom.scm:54 scm/generic-key-custom.scm:60
+#: scm/generic-key-custom.scm:66 scm/generic-key-custom.scm:72
+#: scm/generic-key-custom.scm:78 scm/generic-key-custom.scm:84
+#: scm/generic-key-custom.scm:90 scm/generic-key-custom.scm:96
+#: scm/generic-key-custom.scm:106 scm/generic-key-custom.scm:112
+#: scm/generic-key-custom.scm:118 scm/generic-key-custom.scm:124
+#: scm/generic-key-custom.scm:130 scm/generic-key-custom.scm:136
+#: scm/generic-key-custom.scm:142 scm/generic-key-custom.scm:148
+#: scm/generic-key-custom.scm:154 scm/google-cgiapi-jp-key-custom.scm:54
 #: scm/google-cgiapi-jp-key-custom.scm:60
 #: scm/google-cgiapi-jp-key-custom.scm:66
 #: scm/google-cgiapi-jp-key-custom.scm:72
@@ -2717,83 +2970,90 @@ msgstr "[Anthy] შემდეგი სეგმენტი"
 #: scm/google-cgiapi-jp-key-custom.scm:263
 #: scm/google-cgiapi-jp-key-custom.scm:269
 #: scm/google-cgiapi-jp-key-custom.scm:275
-#: scm/google-cgiapi-jp-key-custom.scm:281 scm/im-custom.scm:424
-#: scm/im-custom.scm:427 scm/im-custom.scm:430 scm/look-custom.scm:95
-#: scm/look-custom.scm:101 scm/look-custom.scm:107 scm/look-custom.scm:113
-#: scm/look-custom.scm:119 scm/look-custom.scm:125 scm/look-custom.scm:131
-#: scm/look-custom.scm:137 scm/look-custom.scm:143 scm/look-custom.scm:149
-#: scm/look-custom.scm:155 scm/mozc-key-custom.scm:48
-#: scm/mozc-key-custom.scm:54 scm/mozc-key-custom.scm:60
-#: scm/mozc-key-custom.scm:78 scm/predict-custom.scm:82
-#: scm/predict-custom.scm:88 scm/predict-custom.scm:117
-#: scm/predict-custom.scm:133 scm/predict-custom.scm:170
-#: scm/predict-custom.scm:191 scm/skk-key-custom.scm:93
-#: scm/skk-key-custom.scm:99 scm/skk-key-custom.scm:105
-#: scm/skk-key-custom.scm:111 scm/skk-key-custom.scm:117
-#: scm/skk-key-custom.scm:123 scm/skk-key-custom.scm:129
-#: scm/skk-key-custom.scm:135 scm/skk-key-custom.scm:141
-#: scm/skk-key-custom.scm:147 scm/skk-key-custom.scm:153
-#: scm/skk-key-custom.scm:163 scm/skk-key-custom.scm:169
-#: scm/skk-key-custom.scm:175 scm/skk-key-custom.scm:181
-#: scm/skk-key-custom.scm:187 scm/skk-key-custom.scm:193
-#: scm/skk-key-custom.scm:199 scm/skk-key-custom.scm:205
-#: scm/skk-key-custom.scm:211 scm/skk-key-custom.scm:217
-#: scm/skk-key-custom.scm:223 scm/skk-key-custom.scm:229
-#: scm/skk-key-custom.scm:241 scm/skk-key-custom.scm:259
-#: scm/skk-key-custom.scm:265 scm/skk-key-custom.scm:271
-#: scm/skk-key-custom.scm:277 scm/skk-key-custom.scm:283
-#: scm/skk-key-custom.scm:289 scm/skk-key-custom.scm:295
-#: scm/tutcode-key-custom.scm:52 scm/tutcode-key-custom.scm:58
-#: scm/tutcode-key-custom.scm:64 scm/tutcode-key-custom.scm:70
-#: scm/tutcode-key-custom.scm:76 scm/tutcode-key-custom.scm:82
-#: scm/tutcode-key-custom.scm:88 scm/tutcode-key-custom.scm:94
-#: scm/tutcode-key-custom.scm:100 scm/tutcode-key-custom.scm:106
-#: scm/tutcode-key-custom.scm:112 scm/tutcode-key-custom.scm:118
-#: scm/tutcode-key-custom.scm:124 scm/tutcode-key-custom.scm:130
-#: scm/tutcode-key-custom.scm:136 scm/tutcode-key-custom.scm:142
-#: scm/tutcode-key-custom.scm:148 scm/tutcode-key-custom.scm:154
-#: scm/tutcode-key-custom.scm:160 scm/tutcode-key-custom.scm:166
-#: scm/tutcode-key-custom.scm:172 scm/tutcode-key-custom.scm:178
-#: scm/tutcode-key-custom.scm:184 scm/tutcode-key-custom.scm:190
-#: scm/tutcode-key-custom.scm:196 scm/tutcode-key-custom.scm:202
-#: scm/tutcode-key-custom.scm:208 scm/tutcode-key-custom.scm:214
-#: scm/tutcode-key-custom.scm:220 scm/tutcode-key-custom.scm:226
-#: scm/tutcode-key-custom.scm:232 scm/tutcode-key-custom.scm:238
-#: scm/tutcode-key-custom.scm:244 scm/tutcode-key-custom.scm:250
-#: scm/tutcode-key-custom.scm:256 scm/tutcode-key-custom.scm:262
-#: scm/tutcode-key-custom.scm:268 scm/tutcode-key-custom.scm:274
-#: scm/tutcode-key-custom.scm:280 scm/tutcode-key-custom.scm:286
-#: scm/tutcode-key-custom.scm:292 scm/tutcode-key-custom.scm:298
-#: scm/tutcode-key-custom.scm:304 scm/tutcode-key-custom.scm:310
-#: scm/tutcode-key-custom.scm:316 scm/tutcode-key-custom.scm:322
-#: scm/tutcode-key-custom.scm:328 scm/tutcode-key-custom.scm:334
-#: scm/tutcode-key-custom.scm:340 scm/tutcode-key-custom.scm:346
-#: scm/tutcode-key-custom.scm:352 scm/tutcode-key-custom.scm:358
-#: scm/tutcode-key-custom.scm:364 scm/tutcode-key-custom.scm:370
-#: scm/tutcode-key-custom.scm:376 scm/tutcode-key-custom.scm:382
-#: scm/tutcode-key-custom.scm:388 scm/tutcode-key-custom.scm:394
-#: scm/tutcode-key-custom.scm:400 scm/tutcode-key-custom.scm:406
-#: scm/tutcode-key-custom.scm:412 scm/tutcode-key-custom.scm:418
-#: scm/tutcode-key-custom.scm:424 scm/tutcode-key-custom.scm:430
-#: scm/tutcode-key-custom.scm:436 scm/tutcode-key-custom.scm:442
-#: scm/tutcode-key-custom.scm:448 scm/tutcode-key-custom.scm:454
-#: scm/tutcode-key-custom.scm:460 scm/tutcode-key-custom.scm:466
-#: scm/tutcode-key-custom.scm:472 scm/tutcode-key-custom.scm:478
-#: scm/tutcode-key-custom.scm:484 scm/tutcode-key-custom.scm:490
-#: scm/tutcode-key-custom.scm:496 scm/tutcode-key-custom.scm:502
-#: scm/tutcode-key-custom.scm:508 scm/tutcode-key-custom.scm:514
-#: scm/tutcode-key-custom.scm:520 scm/tutcode-key-custom.scm:526
-#: scm/tutcode-key-custom.scm:532 scm/tutcode-key-custom.scm:574
-#: scm/tutcode-key-custom.scm:580 scm/tutcode-key-custom.scm:586
-#: scm/tutcode-key-custom.scm:592 scm/tutcode-key-custom.scm:598
-#: scm/tutcode-key-custom.scm:604 scm/tutcode-key-custom.scm:610
-#: scm/tutcode-key-custom.scm:616 scm/tutcode-key-custom.scm:622
-#: scm/tutcode-key-custom.scm:628 scm/tutcode-key-custom.scm:634
-#: scm/tutcode-key-custom.scm:640 scm/tutcode-key-custom.scm:646
-#: scm/tutcode-key-custom.scm:652 scm/tutcode-key-custom.scm:658
-#: scm/tutcode-key-custom.scm:664 scm/tutcode-key-custom.scm:670
-#: scm/tutcode-key-custom.scm:676 scm/tutcode-key-custom.scm:682
-#: scm/tutcode-key-custom.scm:688
+#: scm/google-cgiapi-jp-key-custom.scm:281 scm/im-custom.scm:425
+#: scm/im-custom.scm:428 scm/im-custom.scm:431 scm/karukan-key-custom.scm:41
+#: scm/karukan-key-custom.scm:47 scm/karukan-key-custom.scm:58
+#: scm/karukan-key-custom.scm:64 scm/karukan-key-custom.scm:70
+#: scm/karukan-key-custom.scm:76 scm/karukan-key-custom.scm:84
+#: scm/karukan-key-custom.scm:90 scm/karukan-key-custom.scm:96
+#: scm/karukan-key-custom.scm:102 scm/karukan-key-custom.scm:109
+#: scm/karukan-key-custom.scm:115 scm/karukan-key-custom.scm:121
+#: scm/karukan-key-custom.scm:127 scm/rime-key-custom.scm:45
+#: scm/rime-key-custom.scm:51 scm/look-custom.scm:95 scm/look-custom.scm:101
+#: scm/look-custom.scm:107 scm/look-custom.scm:113 scm/look-custom.scm:119
+#: scm/look-custom.scm:125 scm/look-custom.scm:131 scm/look-custom.scm:137
+#: scm/look-custom.scm:143 scm/look-custom.scm:149 scm/look-custom.scm:155
+#: scm/mozc-key-custom.scm:48 scm/mozc-key-custom.scm:54
+#: scm/mozc-key-custom.scm:60 scm/mozc-key-custom.scm:78
+#: scm/predict-custom.scm:82 scm/predict-custom.scm:88
+#: scm/predict-custom.scm:117 scm/predict-custom.scm:133
+#: scm/predict-custom.scm:170 scm/predict-custom.scm:191
+#: scm/skk-key-custom.scm:93 scm/skk-key-custom.scm:99
+#: scm/skk-key-custom.scm:105 scm/skk-key-custom.scm:111
+#: scm/skk-key-custom.scm:117 scm/skk-key-custom.scm:123
+#: scm/skk-key-custom.scm:129 scm/skk-key-custom.scm:135
+#: scm/skk-key-custom.scm:141 scm/skk-key-custom.scm:147
+#: scm/skk-key-custom.scm:153 scm/skk-key-custom.scm:163
+#: scm/skk-key-custom.scm:169 scm/skk-key-custom.scm:175
+#: scm/skk-key-custom.scm:181 scm/skk-key-custom.scm:187
+#: scm/skk-key-custom.scm:193 scm/skk-key-custom.scm:199
+#: scm/skk-key-custom.scm:205 scm/skk-key-custom.scm:211
+#: scm/skk-key-custom.scm:217 scm/skk-key-custom.scm:223
+#: scm/skk-key-custom.scm:229 scm/skk-key-custom.scm:241
+#: scm/skk-key-custom.scm:259 scm/skk-key-custom.scm:265
+#: scm/skk-key-custom.scm:271 scm/skk-key-custom.scm:277
+#: scm/skk-key-custom.scm:283 scm/skk-key-custom.scm:289
+#: scm/skk-key-custom.scm:295 scm/tutcode-key-custom.scm:52
+#: scm/tutcode-key-custom.scm:58 scm/tutcode-key-custom.scm:64
+#: scm/tutcode-key-custom.scm:70 scm/tutcode-key-custom.scm:76
+#: scm/tutcode-key-custom.scm:82 scm/tutcode-key-custom.scm:88
+#: scm/tutcode-key-custom.scm:94 scm/tutcode-key-custom.scm:100
+#: scm/tutcode-key-custom.scm:106 scm/tutcode-key-custom.scm:112
+#: scm/tutcode-key-custom.scm:118 scm/tutcode-key-custom.scm:124
+#: scm/tutcode-key-custom.scm:130 scm/tutcode-key-custom.scm:136
+#: scm/tutcode-key-custom.scm:142 scm/tutcode-key-custom.scm:148
+#: scm/tutcode-key-custom.scm:154 scm/tutcode-key-custom.scm:160
+#: scm/tutcode-key-custom.scm:166 scm/tutcode-key-custom.scm:172
+#: scm/tutcode-key-custom.scm:178 scm/tutcode-key-custom.scm:184
+#: scm/tutcode-key-custom.scm:190 scm/tutcode-key-custom.scm:196
+#: scm/tutcode-key-custom.scm:202 scm/tutcode-key-custom.scm:208
+#: scm/tutcode-key-custom.scm:214 scm/tutcode-key-custom.scm:220
+#: scm/tutcode-key-custom.scm:226 scm/tutcode-key-custom.scm:232
+#: scm/tutcode-key-custom.scm:238 scm/tutcode-key-custom.scm:244
+#: scm/tutcode-key-custom.scm:250 scm/tutcode-key-custom.scm:256
+#: scm/tutcode-key-custom.scm:262 scm/tutcode-key-custom.scm:268
+#: scm/tutcode-key-custom.scm:274 scm/tutcode-key-custom.scm:280
+#: scm/tutcode-key-custom.scm:286 scm/tutcode-key-custom.scm:292
+#: scm/tutcode-key-custom.scm:298 scm/tutcode-key-custom.scm:304
+#: scm/tutcode-key-custom.scm:310 scm/tutcode-key-custom.scm:316
+#: scm/tutcode-key-custom.scm:322 scm/tutcode-key-custom.scm:328
+#: scm/tutcode-key-custom.scm:334 scm/tutcode-key-custom.scm:340
+#: scm/tutcode-key-custom.scm:346 scm/tutcode-key-custom.scm:352
+#: scm/tutcode-key-custom.scm:358 scm/tutcode-key-custom.scm:364
+#: scm/tutcode-key-custom.scm:370 scm/tutcode-key-custom.scm:376
+#: scm/tutcode-key-custom.scm:382 scm/tutcode-key-custom.scm:388
+#: scm/tutcode-key-custom.scm:394 scm/tutcode-key-custom.scm:400
+#: scm/tutcode-key-custom.scm:406 scm/tutcode-key-custom.scm:412
+#: scm/tutcode-key-custom.scm:418 scm/tutcode-key-custom.scm:424
+#: scm/tutcode-key-custom.scm:430 scm/tutcode-key-custom.scm:436
+#: scm/tutcode-key-custom.scm:442 scm/tutcode-key-custom.scm:448
+#: scm/tutcode-key-custom.scm:454 scm/tutcode-key-custom.scm:460
+#: scm/tutcode-key-custom.scm:466 scm/tutcode-key-custom.scm:472
+#: scm/tutcode-key-custom.scm:478 scm/tutcode-key-custom.scm:484
+#: scm/tutcode-key-custom.scm:490 scm/tutcode-key-custom.scm:496
+#: scm/tutcode-key-custom.scm:502 scm/tutcode-key-custom.scm:508
+#: scm/tutcode-key-custom.scm:514 scm/tutcode-key-custom.scm:520
+#: scm/tutcode-key-custom.scm:526 scm/tutcode-key-custom.scm:532
+#: scm/tutcode-key-custom.scm:574 scm/tutcode-key-custom.scm:580
+#: scm/tutcode-key-custom.scm:586 scm/tutcode-key-custom.scm:592
+#: scm/tutcode-key-custom.scm:598 scm/tutcode-key-custom.scm:604
+#: scm/tutcode-key-custom.scm:610 scm/tutcode-key-custom.scm:616
+#: scm/tutcode-key-custom.scm:622 scm/tutcode-key-custom.scm:628
+#: scm/tutcode-key-custom.scm:634 scm/tutcode-key-custom.scm:640
+#: scm/tutcode-key-custom.scm:646 scm/tutcode-key-custom.scm:652
+#: scm/tutcode-key-custom.scm:658 scm/tutcode-key-custom.scm:664
+#: scm/tutcode-key-custom.scm:670 scm/tutcode-key-custom.scm:676
+#: scm/tutcode-key-custom.scm:682 scm/tutcode-key-custom.scm:688
 msgid "long description will be here"
 msgstr "გრძელი აღწერა აქ იქნება"
 
@@ -2941,466 +3201,9 @@ msgstr "[Anthy] ამოცნობის შემდეგი კანდ�
 msgid "[Anthy] Previous prediction candidate"
 msgstr "[Anthy] ამოცნობის წინა კანდიდატი"
 
-#: scm/anthy-utf8-custom.scm:35 scm/anthy-custom.scm:35
-msgid "Anthy"
-msgstr "ანთი"
-
-#: scm/anthy-utf8-custom.scm:36 scm/anthy-utf8-custom.scm:39
-#: scm/anthy-custom.scm:36 scm/baidu-olime-jp-custom.scm:36
-#: scm/canna-custom.scm:36 scm/google-cgiapi-jp-custom.scm:36
-msgid "A multi-segment kana-kanji conversion engine"
-msgstr "მრავალსეგმენტიანი კანა-კანჯის გადაყვანის ძრავა"
-
 #: scm/anthy-utf8-custom.scm:38
 msgid "Anthy (UTF-8)"
 msgstr "Anthy (UTF-8)"
-
-#: scm/anthy-utf8-custom.scm:50 scm/anthy-custom.scm:43
-msgid "Anthy (advanced)"
-msgstr "Anthy (გაფართოებული)"
-
-#: scm/anthy-utf8-custom.scm:51 scm/anthy-custom.scm:44
-msgid "Advanced settings for Anthy"
-msgstr "დამატებითი პარამეტრები Anthy-სთვის"
-
-#: scm/anthy-utf8-custom.scm:54 scm/tutcode-custom.scm:55
-#: scm/anthy-custom.scm:47 scm/baidu-olime-jp-custom.scm:51
-#: scm/canna-custom.scm:51 scm/google-cgiapi-jp-custom.scm:51
-msgid "Prediction"
-msgstr "პროგნოზი"
-
-#: scm/anthy-utf8-custom.scm:64 scm/mozc-custom.scm:52 scm/anthy-custom.scm:57
-#: scm/baidu-olime-jp-custom.scm:61 scm/canna-custom.scm:61
-#: scm/google-cgiapi-jp-custom.scm:61
-msgid "Show segment separator"
-msgstr "სეგმენტის გამყოფის ჩვენება"
-
-#: scm/anthy-utf8-custom.scm:70 scm/im-custom.scm:102 scm/mozc-custom.scm:58
-#: scm/anthy-custom.scm:63 scm/baidu-olime-jp-custom.scm:67
-#: scm/canna-custom.scm:67 scm/google-cgiapi-jp-custom.scm:67
-msgid "Segment separator"
-msgstr "სეგმენტის გამყოფი"
-
-#: scm/anthy-utf8-custom.scm:85 scm/generic-custom.scm:42
-#: scm/m17nlib-custom.scm:135 scm/skk-custom.scm:68 scm/tutcode-custom.scm:261
-#: scm/anthy-custom.scm:78 scm/baidu-olime-jp-custom.scm:82
-#: scm/canna-custom.scm:82 scm/google-cgiapi-jp-custom.scm:82
-msgid "Use candidate window"
-msgstr "კანდიდატის ფანჯრის გამოყენება"
-
-#: scm/anthy-utf8-custom.scm:91 scm/skk-custom.scm:94
-#: scm/tutcode-custom.scm:294 scm/anthy-custom.scm:84
-#: scm/baidu-olime-jp-custom.scm:88 scm/canna-custom.scm:88
-#: scm/google-cgiapi-jp-custom.scm:88
-msgid "Conversion key press count to show candidate window"
-msgstr "გადაყვანის ღილაკის დაჭერის რაოდენობა კანდიდატის ფანჯრის საჩვენებლად"
-
-#: scm/anthy-utf8-custom.scm:92 scm/skk-custom.scm:95
-#: scm/tutcode-custom.scm:295 scm/anthy-custom.scm:85
-#: scm/baidu-olime-jp-custom.scm:89 scm/canna-custom.scm:89
-#: scm/google-cgiapi-jp-custom.scm:89
-msgid "0 shows the candidate window at the first conversion key press."
-msgstr ""
-"0 ნიშნავს, რომ კანდიდატის ფანჯარა გადაყვანის ღილაკის პირველივე დაჭერისას "
-"გამოჩნდება."
-
-#: scm/anthy-utf8-custom.scm:97 scm/generic-custom.scm:54
-#: scm/skk-custom.scm:100 scm/tutcode-custom.scm:300 scm/anthy-custom.scm:90
-#: scm/baidu-olime-jp-custom.scm:94 scm/canna-custom.scm:94
-#: scm/google-cgiapi-jp-custom.scm:94
-msgid "Number of candidates in candidate window at a time"
-msgstr "ერთდროული კანდიდატების რაოდენობა კანდიდატების ფანჯარაში"
-
-#: scm/anthy-utf8-custom.scm:103 scm/elatin-custom.scm:264
-#: scm/generic-custom.scm:60 scm/anthy-custom.scm:96
-#: scm/baidu-olime-jp-custom.scm:100 scm/canna-custom.scm:100
-#: scm/google-cgiapi-jp-custom.scm:100
-msgid "Select candidate by numeral keys"
-msgstr "კანდიდატის არჩევა ციფრის ღილაკებით"
-
-#: scm/anthy-utf8-custom.scm:133 scm/mozc-custom.scm:77 scm/skk-custom.scm:178
-#: scm/anthy-custom.scm:126 scm/baidu-olime-jp-custom.scm:130
-#: scm/canna-custom.scm:130 scm/google-cgiapi-jp-custom.scm:130
-msgid "Direct input"
-msgstr "პირდაპირი შეყვანა"
-
-#: scm/anthy-utf8-custom.scm:134 scm/m17nlib-custom.scm:49
-#: scm/mozc-custom.scm:78 scm/skk-custom.scm:179 scm/anthy-custom.scm:127
-#: scm/baidu-olime-jp-custom.scm:131 scm/canna-custom.scm:131
-#: scm/google-cgiapi-jp-custom.scm:131
-msgid "Direct input mode"
-msgstr "პირდაპირი შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:138 scm/mozc-custom.scm:82 scm/skk-custom.scm:183
-#: scm/anthy-custom.scm:131 scm/baidu-olime-jp-custom.scm:135
-#: scm/canna-custom.scm:135 scm/google-cgiapi-jp-custom.scm:135
-msgid "Hiragana"
-msgstr "ჰირაგანა"
-
-#: scm/anthy-utf8-custom.scm:139 scm/mozc-custom.scm:83 scm/skk-custom.scm:184
-#: scm/anthy-custom.scm:132 scm/baidu-olime-jp-custom.scm:136
-#: scm/canna-custom.scm:136 scm/google-cgiapi-jp-custom.scm:136
-msgid "Hiragana input mode"
-msgstr "ჰირაგანას შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:143 scm/mozc-custom.scm:87 scm/skk-custom.scm:188
-#: scm/anthy-custom.scm:136 scm/baidu-olime-jp-custom.scm:140
-#: scm/canna-custom.scm:140 scm/google-cgiapi-jp-custom.scm:140
-msgid "Katakana"
-msgstr "კატაკანა"
-
-#: scm/anthy-utf8-custom.scm:144 scm/mozc-custom.scm:88 scm/skk-custom.scm:189
-#: scm/anthy-custom.scm:137 scm/baidu-olime-jp-custom.scm:141
-#: scm/canna-custom.scm:141 scm/google-cgiapi-jp-custom.scm:141
-msgid "Katakana input mode"
-msgstr "კატაკანას შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:148 scm/mozc-custom.scm:92 scm/skk-custom.scm:193
-#: scm/anthy-custom.scm:141 scm/baidu-olime-jp-custom.scm:145
-#: scm/canna-custom.scm:145 scm/google-cgiapi-jp-custom.scm:145
-msgid "Halfwidth Katakana"
-msgstr "ნახევარსიგანიანი კატაკანა"
-
-#: scm/anthy-utf8-custom.scm:149 scm/mozc-custom.scm:93 scm/skk-custom.scm:194
-#: scm/anthy-custom.scm:142 scm/baidu-olime-jp-custom.scm:146
-#: scm/canna-custom.scm:146 scm/google-cgiapi-jp-custom.scm:146
-msgid "Halfwidth Katakana input mode"
-msgstr "ნახევარსიგანიანი კატაკანას შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:153 scm/mozc-custom.scm:97
-#: scm/anthy-custom.scm:146 scm/baidu-olime-jp-custom.scm:150
-#: scm/canna-custom.scm:150 scm/google-cgiapi-jp-custom.scm:150
-msgid "Halfwidth Alphanumeric"
-msgstr "ნახევარსიგანიანი ალფარიცხვითი"
-
-#: scm/anthy-utf8-custom.scm:154 scm/mozc-custom.scm:98
-#: scm/anthy-custom.scm:147 scm/baidu-olime-jp-custom.scm:151
-#: scm/canna-custom.scm:151 scm/google-cgiapi-jp-custom.scm:151
-msgid "Halfwidth Alphanumeric input mode"
-msgstr "ნახევარსიგანიანი ალფარიცხვითის შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:158 scm/mozc-custom.scm:102 scm/skk-custom.scm:198
-#: scm/anthy-custom.scm:151 scm/baidu-olime-jp-custom.scm:156
-#: scm/canna-custom.scm:156 scm/google-cgiapi-jp-custom.scm:156
-msgid "Fullwidth Alphanumeric"
-msgstr "სრულსიგანიანი ალფარიცხვითი"
-
-#: scm/anthy-utf8-custom.scm:159 scm/mozc-custom.scm:103 scm/skk-custom.scm:199
-#: scm/anthy-custom.scm:152 scm/baidu-olime-jp-custom.scm:157
-#: scm/canna-custom.scm:157 scm/google-cgiapi-jp-custom.scm:157
-msgid "Fullwidth Alphanumeric input mode"
-msgstr "სრულსიგანიანი ალფარიცხვითის შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:166 scm/mozc-custom.scm:110 scm/skk-custom.scm:206
-#: scm/anthy-custom.scm:159 scm/baidu-olime-jp-custom.scm:164
-#: scm/canna-custom.scm:164 scm/google-cgiapi-jp-custom.scm:164
-msgid "Romaji"
-msgstr "რომაჯი"
-
-#: scm/anthy-utf8-custom.scm:167 scm/mozc-custom.scm:111 scm/skk-custom.scm:207
-#: scm/anthy-custom.scm:160 scm/baidu-olime-jp-custom.scm:165
-#: scm/canna-custom.scm:165 scm/google-cgiapi-jp-custom.scm:165
-msgid "Romaji input mode"
-msgstr "რომაჯის შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:171 scm/mozc-custom.scm:115
-#: scm/anthy-custom.scm:164 scm/baidu-olime-jp-custom.scm:169
-#: scm/canna-custom.scm:169 scm/google-cgiapi-jp-custom.scm:169
-msgid "Kana"
-msgstr "კანა"
-
-#: scm/anthy-utf8-custom.scm:172 scm/mozc-custom.scm:116
-#: scm/anthy-custom.scm:165 scm/baidu-olime-jp-custom.scm:170
-#: scm/canna-custom.scm:170 scm/google-cgiapi-jp-custom.scm:170
-msgid "Kana input mode"
-msgstr "კანას შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:176 scm/skk-custom.scm:212
-#: scm/anthy-custom.scm:169 scm/baidu-olime-jp-custom.scm:174
-#: scm/canna-custom.scm:174 scm/google-cgiapi-jp-custom.scm:174
-msgid "AZIK"
-msgstr "AZIK"
-
-#: scm/anthy-utf8-custom.scm:177 scm/skk-custom.scm:213
-#: scm/anthy-custom.scm:170 scm/baidu-olime-jp-custom.scm:175
-#: scm/canna-custom.scm:175 scm/google-cgiapi-jp-custom.scm:175
-msgid "AZIK extended romaji input mode"
-msgstr "AZIK გაფართოებული რომაჯის შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:181 scm/skk-custom.scm:218
-#: scm/anthy-custom.scm:174 scm/baidu-olime-jp-custom.scm:179
-#: scm/canna-custom.scm:179 scm/google-cgiapi-jp-custom.scm:179
-msgid "ACT"
-msgstr "ACT"
-
-#: scm/anthy-utf8-custom.scm:182 scm/skk-custom.scm:219
-#: scm/anthy-custom.scm:175 scm/baidu-olime-jp-custom.scm:180
-#: scm/canna-custom.scm:180 scm/google-cgiapi-jp-custom.scm:180
-msgid "ACT extended romaji input mode"
-msgstr "ACT გაფართოებული რომაჯის შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:186 scm/skk-custom.scm:224
-#: scm/anthy-custom.scm:179 scm/baidu-olime-jp-custom.scm:184
-#: scm/canna-custom.scm:184 scm/google-cgiapi-jp-custom.scm:184
-msgid "KZIK"
-msgstr "KZIK"
-
-#: scm/anthy-utf8-custom.scm:187 scm/skk-custom.scm:225
-#: scm/anthy-custom.scm:180 scm/baidu-olime-jp-custom.scm:185
-#: scm/canna-custom.scm:185 scm/google-cgiapi-jp-custom.scm:185
-msgid "KZIK extended romaji input mode"
-msgstr "KZIK გაფართოებული რომაჯის შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:199 scm/anthy-utf8-custom.scm:200
-#: scm/mozc-custom.scm:163 scm/mozc-custom.scm:164 scm/skk-custom.scm:237
-#: scm/skk-custom.scm:238 scm/anthy-custom.scm:192 scm/anthy-custom.scm:193
-#: scm/baidu-olime-jp-custom.scm:197 scm/baidu-olime-jp-custom.scm:198
-#: scm/canna-custom.scm:197 scm/canna-custom.scm:198
-#: scm/google-cgiapi-jp-custom.scm:197 scm/google-cgiapi-jp-custom.scm:198
-msgid "Kana input method"
-msgstr "კანას შეყვანის მეთოდი"
-
-#: scm/anthy-utf8-custom.scm:201 scm/m17nlib-custom.scm:64
-#: scm/mozc-custom.scm:168 scm/skk-custom.scm:239 scm/anthy-custom.scm:194
-#: scm/baidu-olime-jp-custom.scm:199 scm/canna-custom.scm:199
-#: scm/google-cgiapi-jp-custom.scm:199
-msgid "Enabled toolbar buttons"
-msgstr "ხელსაწყოთა ზოლის ჩართული ღილაკები"
-
-#: scm/anthy-utf8-custom.scm:220 scm/m17nlib-custom.scm:82
-#: scm/mozc-custom.scm:187 scm/skk-custom.scm:258 scm/anthy-custom.scm:213
-#: scm/baidu-olime-jp-custom.scm:218 scm/canna-custom.scm:218
-#: scm/google-cgiapi-jp-custom.scm:218
-msgid "Default input mode"
-msgstr "ნაგულისხმევი შეყვანის რეჟიმი"
-
-#: scm/anthy-utf8-custom.scm:229 scm/m17nlib-custom.scm:91
-#: scm/mozc-custom.scm:196 scm/skk-custom.scm:267 scm/anthy-custom.scm:222
-#: scm/baidu-olime-jp-custom.scm:227 scm/canna-custom.scm:227
-#: scm/google-cgiapi-jp-custom.scm:227
-msgid "Input mode menu items"
-msgstr "შეყვანის რეჟიმის მენიუს პუნქტები"
-
-#: scm/anthy-utf8-custom.scm:271 scm/mozc-custom.scm:238 scm/skk-custom.scm:298
-#: scm/anthy-custom.scm:264 scm/baidu-olime-jp-custom.scm:269
-#: scm/canna-custom.scm:269 scm/google-cgiapi-jp-custom.scm:269
-msgid "Default kana input method"
-msgstr "ნაგულისხმევი კანას შეყვანის მეთოდი"
-
-#: scm/anthy-utf8-custom.scm:280 scm/mozc-custom.scm:247 scm/skk-custom.scm:307
-#: scm/anthy-custom.scm:273 scm/baidu-olime-jp-custom.scm:278
-#: scm/canna-custom.scm:278 scm/google-cgiapi-jp-custom.scm:278
-msgid "Kana input method menu items"
-msgstr "კანას შეყვანის მეთოდის მენიუს პუნქტები"
-
-#: scm/anthy-utf8-custom.scm:318 scm/anthy-custom.scm:311
-#: scm/baidu-olime-jp-custom.scm:359 scm/canna-custom.scm:420
-#: scm/google-cgiapi-jp-custom.scm:357
-msgid "Enable input prediction"
-msgstr "შეყვანის წინასწარი ამოცნობის ჩართვა"
-
-#: scm/anthy-utf8-custom.scm:324 scm/anthy-custom.scm:317
-#: scm/baidu-olime-jp-custom.scm:365 scm/canna-custom.scm:426
-#: scm/google-cgiapi-jp-custom.scm:363
-msgid "Select prediction candidate by numeral keys"
-msgstr "პროგნოზის კანდიდატის არჩევა ციფრის ღილაკებით"
-
-#: scm/anthy-utf8-custom.scm:330 scm/anthy-custom.scm:323
-#: scm/baidu-olime-jp-custom.scm:371 scm/canna-custom.scm:432
-#: scm/google-cgiapi-jp-custom.scm:369
-msgid "Show selected prediction candidate in preedit area"
-msgstr "მონიშნული პროგნოზის კანდიდატის ჩვენება წინასწარი ჩასწორების არეში"
-
-#: scm/anthy-utf8-custom.scm:336 scm/tutcode-custom.scm:427
-#: scm/anthy-custom.scm:329 scm/baidu-olime-jp-custom.scm:394
-#: scm/canna-custom.scm:444 scm/google-cgiapi-jp-custom.scm:392
-msgid "Character count to start input prediction"
-msgstr "სიმბოლოების რაოდენობა შეყვანის პროგნოზის დასაწყებად"
-
-#: scm/anthy-utf8-custom.scm:368 scm/mozc-custom.scm:295 scm/skk-custom.scm:593
-#: scm/tutcode-custom.scm:124 scm/anthy-custom.scm:361
-#: scm/baidu-olime-jp-custom.scm:340 scm/canna-custom.scm:401
-#: scm/google-cgiapi-jp-custom.scm:338
-msgid "Enable vi-cooperative mode"
-msgstr "vi-სთან კოოპერაციის რეჟიმის ჩართვა"
-
-#: scm/anthy-utf8-custom.scm:374 scm/skk-custom.scm:527
-#: scm/anthy-custom.scm:367 scm/baidu-olime-jp-custom.scm:346
-#: scm/canna-custom.scm:407 scm/google-cgiapi-jp-custom.scm:344
-msgid "Enable auto conversion with punctuation marks"
-msgstr "პუნქტუაციის ნიშნებით ავტომატური გადაყვანის ჩართვა"
-
-#: scm/anthy-utf8-custom.scm:380 scm/anthy-custom.scm:373
-#: scm/baidu-olime-jp-custom.scm:352 scm/canna-custom.scm:413
-#: scm/google-cgiapi-jp-custom.scm:350
-msgid "Enable input mode transition keys in direct (off state) input mode"
-msgstr ""
-"შეყვანის რეჟიმის გადაყვანის ღილაკების ჩართვა პირდაპირ (გამორთულ) შეყვანის "
-"რეჟიმში"
-
-#: scm/baidu-olime-jp-key-custom.scm:35
-msgid "Baidu-OnlineIME-Jp key bindings 1"
-msgstr "Baidu-OnlineIME-Jp ღილაკების ასახვა 1"
-
-#: scm/baidu-olime-jp-key-custom.scm:39
-msgid "Baidu-OnlineIME-Jp key bindings 2"
-msgstr "Baidu-OnlineIME-Jp ღილაკების ასახვა 2"
-
-#: scm/baidu-olime-jp-key-custom.scm:43
-msgid "Baidu-OnlineIME-Jp key bindings 3"
-msgstr "Baidu-OnlineIME-Jp ღილაკების ასახვა 3"
-
-#: scm/baidu-olime-jp-key-custom.scm:47
-msgid "Baidu-OnlineIME-Jp key bindings 4"
-msgstr "Baidu-OnlineIME-Jp ღილაკების ასახვა 4"
-
-#: scm/baidu-olime-jp-key-custom.scm:53
-msgid "[Baidu-OnlineIME-Jp] next segment"
-msgstr "[Baidu-OnlineIME-Jp] შემდეგი სეგმენტი"
-
-#: scm/baidu-olime-jp-key-custom.scm:59
-msgid "[Baidu-OnlineIME-Jp] previous segment"
-msgstr "[Baidu-OnlineIME-Jp] წინა სეგმენტი"
-
-#: scm/baidu-olime-jp-key-custom.scm:65
-msgid "[Baidu-OnlineIME-Jp] extend segment"
-msgstr "[Baidu-OnlineIME-Jp] სეგმენტის გაფართოება"
-
-#: scm/baidu-olime-jp-key-custom.scm:71
-msgid "[Baidu-OnlineIME-Jp] shrink segment"
-msgstr "[Baidu-OnlineIME-Jp] სეგმენტის შემცირება"
-
-#: scm/baidu-olime-jp-key-custom.scm:77
-msgid "[Baidu-OnlineIME-Jp] convert to hiragana"
-msgstr "[Baidu-OnlineIME-Jp] ჰირაგანაში გადაყვანა"
-
-#: scm/baidu-olime-jp-key-custom.scm:83
-msgid "[Baidu-OnlineIME-Jp] convert to katakana"
-msgstr "[Baidu-OnlineIME-Jp] კატაკანაში გადაყვანა"
-
-#: scm/baidu-olime-jp-key-custom.scm:89
-msgid "[Baidu-OnlineIME-Jp] convert to halfwidth katakana"
-msgstr "[Baidu-OnlineIME-Jp] გადაყვანა ნახევარსიგანიან კატაკანაში"
-
-#: scm/baidu-olime-jp-key-custom.scm:95
-msgid "[Baidu-OnlineIME-Jp] convert to halfwidth alphanumeric"
-msgstr "[Baidu-OnlineIME-Jp] გადაყვანა ნახევარსიგანიან ალფარიცხვითში"
-
-#: scm/baidu-olime-jp-key-custom.scm:101
-msgid "[Baidu-OnlineIME-Jp] convert to fullwidth alphanumeric"
-msgstr "[Baidu-OnlineIME-Jp] გადაყვანა სრულსიგანიან ალფარიცხვითში"
-
-#: scm/baidu-olime-jp-key-custom.scm:107
-msgid "[Baidu-OnlineIME-Jp] commit as transposed kana"
-msgstr "[Baidu-OnlineIME-Jp] გადაცემა ტრანსპონირებული კანას სახით"
-
-#: scm/baidu-olime-jp-key-custom.scm:116
-msgid "[Baidu-OnlineIME-Jp] on"
-msgstr "[Baidu-OnlineIME-Jp] ჩართ"
-
-#: scm/baidu-olime-jp-key-custom.scm:123
-msgid "[Baidu-OnlineIME-Jp] off"
-msgstr "[Baidu-OnlineIME-Jp] გამორთ"
-
-#: scm/baidu-olime-jp-key-custom.scm:129
-msgid "[Baidu-OnlineIME-Jp] begin conversion"
-msgstr "[Baidu-OnlineIME-Jp] გადაყვანის დაწყება"
-
-#: scm/baidu-olime-jp-key-custom.scm:135
-msgid "[Baidu-OnlineIME-Jp] commit"
-msgstr "[Baidu-OnlineIME-Jp] გადაცემა"
-
-#: scm/baidu-olime-jp-key-custom.scm:141
-msgid "[Baidu-OnlineIME-Jp] cancel"
-msgstr "[Baidu-OnlineIME-Jp] გაუქმება"
-
-#: scm/baidu-olime-jp-key-custom.scm:147
-msgid "[Baidu-OnlineIME-Jp] next candidate"
-msgstr "[Baidu-OnlineIME-Jp] შემდეგი კანდიდატი"
-
-#: scm/baidu-olime-jp-key-custom.scm:153
-msgid "[Baidu-OnlineIME-Jp] previous candidate"
-msgstr "[Baidu-OnlineIME-Jp] წინა კანდიდატი"
-
-#: scm/baidu-olime-jp-key-custom.scm:159
-msgid "[Baidu-OnlineIME-Jp] next page of candidate window"
-msgstr "[Baidu-OnlineIME-Jp] კანდიდატის ფანჯრის შემდეგი გვერდი"
-
-#: scm/baidu-olime-jp-key-custom.scm:165
-msgid "[Baidu-OnlineIME-Jp] previous page of candidate window"
-msgstr "[Baidu-OnlineIME-Jp] კანდიდატის ფანჯრის წინა გვერდი"
-
-#: scm/baidu-olime-jp-key-custom.scm:174
-msgid "[Baidu-OnlineIME-Jp] beginning of preedit"
-msgstr "[Baidu-OnlineIME-Jp] წინასწარი ჩასწორების დასაწყისი"
-
-#: scm/baidu-olime-jp-key-custom.scm:180
-msgid "[Baidu-OnlineIME-Jp] end of preedit"
-msgstr "[Baidu-OnlineIME-Jp] წინასწარი ჩასწორების დასასრული"
-
-#: scm/baidu-olime-jp-key-custom.scm:186
-msgid "[Baidu-OnlineIME-Jp] erase after cursor"
-msgstr "[Baidu-OnlineIME-Jp] წაშლა კურსორის შემდეგ"
-
-#: scm/baidu-olime-jp-key-custom.scm:192
-msgid "[Baidu-OnlineIME-Jp] erase before cursor"
-msgstr "[Baidu-OnlineIME-Jp] წაშლა კურსორამდე"
-
-#: scm/baidu-olime-jp-key-custom.scm:198
-msgid "[Baidu-OnlineIME-Jp] backspace"
-msgstr "[Baidu-OnlineIME-Jp] კურსორის წინა სიმბოლოს წაშლა"
-
-#: scm/baidu-olime-jp-key-custom.scm:204
-msgid "[Baidu-OnlineIME-Jp] delete"
-msgstr "[Baidu-OnlineIME-Jp] წაშლა"
-
-#: scm/baidu-olime-jp-key-custom.scm:210
-msgid "[Baidu-OnlineIME-Jp] go left"
-msgstr "[Baidu-OnlineIME-Jp] მარცხნივ გადასვლა"
-
-#: scm/baidu-olime-jp-key-custom.scm:216
-msgid "[Baidu-OnlineIME-Jp] go right"
-msgstr "[Baidu-OnlineIME-Jp] მარჯვნივ გადასვლა"
-
-#: scm/baidu-olime-jp-key-custom.scm:222
-msgid "[Baidu-OnlineIME-Jp] ESC keys on vi-cooperative mode"
-msgstr "[Baidu-OnlineIME-Jp] ESC ღილაკები vi-სთან კოოპერაციის რეჟიმში"
-
-#: scm/baidu-olime-jp-key-custom.scm:232
-msgid "[Baidu-OnlineIME-Jp] hiragana mode"
-msgstr "[Baidu-OnlineIME-Jp] ჰირაგანას რეჟიმი"
-
-#: scm/baidu-olime-jp-key-custom.scm:238
-msgid "[Baidu-OnlineIME-Jp] katakana mode"
-msgstr "[Baidu-OnlineIME-Jp] კატაკანას რეჟიმი"
-
-#: scm/baidu-olime-jp-key-custom.scm:244
-msgid "[Baidu-OnlineIME-Jp] halfwidth katakana mode"
-msgstr "[Baidu-OnlineIME-Jp] ნახევარსიგანიანი კატაკანას რეჟიმი"
-
-#: scm/baidu-olime-jp-key-custom.scm:250
-msgid "[Baidu-OnlineIME-Jp] halfwidth alphanumeric mode"
-msgstr "[Baidu-OnlineIME-Jp] ნახევარსიგანიანი ალფარიცხვითი რეჟიმი"
-
-#: scm/baidu-olime-jp-key-custom.scm:256
-msgid "[Baidu-OnlineIME-Jp] fullwidth alphanumeric mode"
-msgstr "[Baidu-OnlineIME-Jp] სრულსიგანიანი ალფარიცხვითი რეჟიმი"
-
-#: scm/baidu-olime-jp-key-custom.scm:262
-msgid "[Baidu-OnlineIME-Jp] toggle hiragana/katakana mode"
-msgstr "[Baidu-OnlineIME-Jp] ჰირაგანას/კატაკანას რეჟიმის გადართვა"
-
-#: scm/baidu-olime-jp-key-custom.scm:268
-msgid "[Baidu-OnlineIME-Jp] toggle kana/alphanumeric mode"
-msgstr "[Baidu-OnlineIME-Jp] კანას/ალფარიცხვითი რეჟიმის გადართვა"
-
-#: scm/baidu-olime-jp-key-custom.scm:274
-msgid "[Baidu-OnlineIME-Jp] Next prediction candidate"
-msgstr "[Baidu-OnlineIME-Jp] შემდეგი პროგნოზის კანდიდატი"
-
-#: scm/baidu-olime-jp-key-custom.scm:280
-msgid "[Baidu-OnlineIME-Jp] Previous prediction candidate"
-msgstr "[Baidu-OnlineIME-Jp] წინა პროგნოზის კანდიდატი"
 
 #: scm/byeoru-custom.scm:36
 msgid "Byeoru"
@@ -3643,6 +3446,34 @@ msgstr "[სამელნე ქვა] სიტყვის დასაწ�
 msgid "[Byeoru] end of word"
 msgstr "[სამელნე ქვა] სიტყვის ბოლო"
 
+#: scm/canna-custom.scm:35
+msgid "Canna"
+msgstr "კანა"
+
+#: scm/canna-custom.scm:43
+msgid "Canna server"
+msgstr "კანას სერვერი"
+
+#: scm/canna-custom.scm:47
+msgid "Canna (advanced)"
+msgstr "კანა (დამატებით)"
+
+#: scm/canna-custom.scm:327
+msgid "Specify Canna server"
+msgstr "მიუთითეთ კანას სერვერი"
+
+#: scm/canna-custom.scm:333
+msgid "Canna server name"
+msgstr "კანას სერვერის სახელი"
+
+#: scm/canna-custom.scm:339
+msgid "Canna user name"
+msgstr "კანას მომხმარებლის სახელი"
+
+#: scm/canna-custom.scm:438 scm/google-cgiapi-jp-custom.scm:386
+msgid "Number of cache of prediction candidates"
+msgstr "პროგნოზი კანდიდატების კეში რაოდენობა"
+
 #: scm/canna-key-custom.scm:36
 msgid "Canna key bindings 1"
 msgstr "კანას ღილაკების ასახვა 1"
@@ -3807,7 +3638,7 @@ msgstr "[კანა] ამოცნობის შემდეგი კა�
 msgid "[Canna] Previous prediction candidate"
 msgstr "[კანა] ამოცნობის წინა კანდიდატი"
 
-#: scm/cannav3-socket.scm:259
+#: scm/cannav3-socket.scm:261
 msgid "Initialize failed."
 msgstr "ინიციალიზაცია ცავარდა."
 
@@ -3851,7 +3682,8 @@ msgstr "dict: სერვერთან დაკავშირება შ�
 msgid "direct"
 msgstr "პირდაპი"
 
-#: scm/direct.scm:54 scm/generic.scm:72 scm/m17nlib.scm:50
+#: scm/direct.scm:54 scm/generic.scm:72 scm/rime-custom.scm:86 scm/rime.scm:300
+#: scm/m17nlib.scm:50
 msgid "Direct Input Mode"
 msgstr "პირდაპირი შეყვანის რეჟიმი"
 
@@ -4323,13 +4155,35 @@ msgstr "[გლობალური] დაბრუნება"
 msgid "unknown prediction method"
 msgstr "უცნობი პროგნოზირების მეთოდი"
 
-#: scm/generic.scm:71 scm/m17nlib-custom.scm:48 scm/m17nlib.scm:49
+#: scm/generic.scm:71 scm/rime-custom.scm:85 scm/rime.scm:299
+#: scm/m17nlib-custom.scm:48 scm/m17nlib.scm:49
 msgid "off"
 msgstr "გამორთ"
 
-#: scm/generic.scm:84 scm/m17nlib-custom.scm:53 scm/m17nlib.scm:61
+#: scm/generic.scm:84 scm/rime-custom.scm:90 scm/rime.scm:328
+#: scm/m17nlib-custom.scm:53 scm/m17nlib.scm:61
 msgid "on"
 msgstr "ჩართული"
+
+#: scm/google-cgiapi-jp-custom.scm:35
+msgid "Google-CGIAPI-Jp"
+msgstr "Google-CGIAPI-Jp"
+
+#: scm/google-cgiapi-jp-custom.scm:43
+msgid "Google-CGIAPI-Jp server"
+msgstr "Google-CGIAPI-Jp სერვერი"
+
+#: scm/google-cgiapi-jp-custom.scm:47
+msgid "Google-CGIAPI-Jp (advanced)"
+msgstr "Google-CGIAPI-Jp (დამატებით)"
+
+#: scm/google-cgiapi-jp-custom.scm:321
+msgid "Google-CGIAPI-Jp server address"
+msgstr "Google-CGIAPI-Jp სერვერის მისამართი"
+
+#: scm/google-cgiapi-jp-custom.scm:327
+msgid "Use SSL"
+msgstr "SSL-ის გამოყენება"
 
 #: scm/google-cgiapi-jp-key-custom.scm:35
 msgid "Google-CGIAPI-Jp key bindings 1"
@@ -4636,129 +4490,129 @@ msgstr "ჩვენების ქცევა"
 msgid "Specify default IM"
 msgstr "ნაგულისხმევი IM-ის მითითება"
 
-#: scm/im-custom.scm:253
+#: scm/im-custom.scm:249
 msgid "Enabled input methods"
 msgstr "ჩართული შეყვანის მეთოდები"
 
-#: scm/im-custom.scm:327
+#: scm/im-custom.scm:328
 msgid "Input method switching"
 msgstr "შეყვანის მეთოდის გადართვა"
 
-#: scm/im-custom.scm:333
+#: scm/im-custom.scm:334
 msgid "Enable IM switching by hotkey"
 msgstr "IM-ის კლავიატურის მალსახმობით გადართვის ჩართვა"
 
-#: scm/im-custom.scm:339
+#: scm/im-custom.scm:340
 msgid "IM switching key"
 msgstr "IM-ის გადართვის ღილაკი"
 
-#: scm/im-custom.scm:345
+#: scm/im-custom.scm:346
 msgid "Skip direct method for IM switching by hotkey"
 msgstr "პირდაპირი მეთოდის გამოტოვება IM-ის კლავიატურის მალსახმობით გადართვით"
 
-#: scm/im-custom.scm:361
+#: scm/im-custom.scm:362
 msgid "Input method toggle"
 msgstr "შეყვანის მეთოდის გადართვა"
 
-#: scm/im-custom.scm:367
+#: scm/im-custom.scm:368
 msgid "Enable input method toggle by hot keys"
 msgstr "შეყვანის მეთოდის კლავიატურის მალსახმობით გადართვის ჩართვა"
 
-#: scm/im-custom.scm:373
+#: scm/im-custom.scm:374
 msgid "Input method toggle key"
 msgstr "შეყვანის მეთოდის გადართვის ღილაკი"
 
-#: scm/im-custom.scm:383
+#: scm/im-custom.scm:384
 msgid "Alternative input method"
 msgstr "ალტერნატიული შეყვანის მეთოდი"
 
-#: scm/im-custom.scm:409 scm/skk-custom.scm:80 scm/skk-custom.scm:508
-#: scm/japanese-custom.scm:476
+#: scm/im-custom.scm:410 scm/japanese-custom.scm:470 scm/skk-custom.scm:80
+#: scm/skk-custom.scm:508
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.scm:409 scm/skk-custom.scm:80 scm/skk-custom.scm:508
-#: scm/japanese-custom.scm:476
+#: scm/im-custom.scm:410 scm/japanese-custom.scm:470 scm/skk-custom.scm:80
+#: scm/skk-custom.scm:508
 msgid "uim native"
 msgstr "uim-ის საკუთარი"
 
-#: scm/im-custom.scm:410
+#: scm/im-custom.scm:411
 msgid "ATOK like"
 msgstr "ATOK-ის მსგავსი"
 
-#: scm/im-custom.scm:410
+#: scm/im-custom.scm:411
 msgid "Similar to ATOK"
 msgstr "ATOK-ის მსგავსი"
 
-#: scm/im-custom.scm:411
+#: scm/im-custom.scm:412
 msgid "Preedit color"
 msgstr "წინასწარი ჩასწორების ფერი"
 
-#: scm/im-custom.scm:423
+#: scm/im-custom.scm:424
 msgid "Vertical"
 msgstr "ვერტიკალური"
 
-#: scm/im-custom.scm:426
+#: scm/im-custom.scm:427
 msgid "Horizontal"
 msgstr "ჰორიზონტალური"
 
-#: scm/im-custom.scm:429
+#: scm/im-custom.scm:430
 msgid "Table style"
 msgstr "ცხრილის სტილი"
 
-#: scm/im-custom.scm:431
+#: scm/im-custom.scm:432
 msgid "Candidate window type"
 msgstr "კანდიდატის ფანჯრის ტიპი"
 
-#: scm/im-custom.scm:439 scm/im-custom.scm:440
+#: scm/im-custom.scm:440 scm/im-custom.scm:441
 msgid "Adjacent to cursor"
 msgstr "კურსორთან ახლომდებარე"
 
-#: scm/im-custom.scm:442 scm/im-custom.scm:443
+#: scm/im-custom.scm:443 scm/im-custom.scm:444
 msgid "Left end of preedit area"
 msgstr "წინასწარი ჩასწორების არეს მარცხენა ბოლო"
 
-#: scm/im-custom.scm:447
+#: scm/im-custom.scm:445
 msgid "Candidate window position"
 msgstr "კანდიდატის ფანჯრის პოზიცია"
 
-#: scm/im-custom.scm:453
+#: scm/im-custom.scm:451
 msgid "Enable lazy input method loading for fast startup"
 msgstr "ზარმაცი ჭკვიანი მეთოდის ჩატვირთვის ჩართვა სწრაფი გაშვებისთვის"
 
-#: scm/im-custom.scm:466
+#: scm/im-custom.scm:464
 msgid "Always"
 msgstr "ყოველთვის"
 
-#: scm/im-custom.scm:469
+#: scm/im-custom.scm:467
 msgid "Based on mode"
 msgstr "დაფუძნებულია რეჟიმზე"
 
-#: scm/im-custom.scm:472 scm/tutcode-custom.scm:287
+#: scm/im-custom.scm:470 scm/tutcode-custom.scm:287
 msgid "Never"
 msgstr "არასდროს"
 
-#: scm/im-custom.scm:474
+#: scm/im-custom.scm:472
 msgid "Display"
 msgstr "ჩვენება"
 
-#: scm/im-custom.scm:502
+#: scm/im-custom.scm:500
 msgid "Enable menu-based input method switcher"
 msgstr "მენიუზე დაფუძნებული შეყვანის მეთოდის გადამრთველის ჩართვა"
 
-#: scm/im-custom.scm:503
+#: scm/im-custom.scm:501
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "მენიუზე დაფუძნებული IM-ის გადამრთველის ჩვენება ხელსაწყოთა პანელზე."
 
-#: scm/im-custom.scm:510
+#: scm/im-custom.scm:508
 msgid "All input method of text areas on the system are changed."
 msgstr "სისტემის ყველა ტექსტის არის შეყვანის მეთოდი შეიცვლება."
 
-#: scm/im-custom.scm:512
+#: scm/im-custom.scm:510
 msgid "focused application only"
 msgstr "მხოლოდ, ფოკუსის მქონე აპლიკაციები"
 
-#: scm/im-custom.scm:513
+#: scm/im-custom.scm:511
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
@@ -4766,11 +4620,11 @@ msgstr ""
 "შეიცვლება მხოლოდ ფოკუსის მქონე აპლიკაციის შეყვანის მეთოდი. დანარჩენი ტექსტის "
 "არეები უცვლელი რჩება."
 
-#: scm/im-custom.scm:515
+#: scm/im-custom.scm:513
 msgid "focused text area only"
 msgstr "მხოლოდ, ფოკუსის მქონე ტექსტის არე"
 
-#: scm/im-custom.scm:516
+#: scm/im-custom.scm:514
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
@@ -4778,15 +4632,15 @@ msgstr ""
 "შეიცვლება მხოლოდ ფოკუსის მქონე ტექსტის არის შეყვანის მეთოდი. დანარჩენი "
 "ტექსტის არეები უცვლელი რჩება."
 
-#: scm/im-custom.scm:518
+#: scm/im-custom.scm:516
 msgid "Specify where the IM switching takes effect."
 msgstr "მიუთითეთ, სად იმოქმედებს IM-ის გადართვა."
 
-#: scm/im-custom.scm:529
+#: scm/im-custom.scm:527
 msgid "full-featured input method switcher"
 msgstr "მრავალფუნქციური შეყვანის მეთოდის გადამრთველი"
 
-#: scm/im-custom.scm:530
+#: scm/im-custom.scm:528
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
@@ -4794,141 +4648,141 @@ msgstr ""
 "ხელსაწყოთა პანელზე იმ ღილაკის ჩვენება, რომელიც IM-ის გადასართავად uim-im-"
 "switcher აპლიკაციას გაუშვებს."
 
-#: scm/im-custom.scm:535
+#: scm/im-custom.scm:533
 msgid "preference tool"
 msgstr "მორგების პროგრამა"
 
-#: scm/im-custom.scm:541
+#: scm/im-custom.scm:539
 msgid "Japanese dictionary tool"
 msgstr "იაპონური ლექსიკონის ხელსაწყო"
 
-#: scm/im-custom.scm:547
+#: scm/im-custom.scm:545
 msgid "input pad"
 msgstr "შეყვანის ბალიში"
 
-#: scm/im-custom.scm:553
+#: scm/im-custom.scm:551
 msgid "handwriting-input pad"
 msgstr "ხელნაწერის შეყვანის ბალიში"
 
-#: scm/im-custom.scm:559
+#: scm/im-custom.scm:557
 msgid "help"
 msgstr "დახმარება"
 
-#: scm/im-custom.scm:566
+#: scm/im-custom.scm:564
 msgid "System"
 msgstr "სისტემა"
 
-#: scm/im-custom.scm:569
+#: scm/im-custom.scm:567
 msgid "Manual"
 msgstr "ხელით"
 
-#: scm/im-custom.scm:571
+#: scm/im-custom.scm:569
 msgid "Document browser"
 msgstr "დოკუმენტის ბრაუზერი"
 
-#: scm/im-custom.scm:577
+#: scm/im-custom.scm:575
 msgid "Browser name"
 msgstr "ბრაუზერის სახელი"
 
-#: scm/im-custom.scm:588
+#: scm/im-custom.scm:586
 msgid "Use icon for dark background"
 msgstr "ხატულას გამოყენება მუქი ფონისთვის"
 
-#: scm/im-custom.scm:594
+#: scm/im-custom.scm:592
 msgid "Show input mode nearby cursor"
 msgstr "შეყვანის რეჟიმის ჩვენება კურსორთან ახლოს"
 
-#: scm/im-custom.scm:601
+#: scm/im-custom.scm:599
 msgid "With mode"
 msgstr "რეჟიმით"
 
-#: scm/im-custom.scm:604
+#: scm/im-custom.scm:602
 msgid "With time"
 msgstr "დროით"
 
-#: scm/im-custom.scm:606
+#: scm/im-custom.scm:604
 msgid "Show input mode"
 msgstr "შეყვანის რეჟიმის ჩვენება"
 
-#: scm/im-custom.scm:617
+#: scm/im-custom.scm:615
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "კურსორთან ახლოს შეყვანის რეჟიმის ჩვენების ხანგრძლივობა"
 
-#: scm/im-custom.scm:618
+#: scm/im-custom.scm:616
 msgid "Set 0 to show indicator always."
 msgstr "დააყენეთ 0 მაჩვენებლის ყოველთვის საჩვენებლად."
 
-#: scm/im-custom.scm:634
+#: scm/im-custom.scm:632
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 "მოგლუვებული ფონტების გამოყენება Over-the-Spot/Root-Window წინასწარი "
 "ჩასწორებისთვის"
 
-#: scm/im-custom.scm:640
+#: scm/im-custom.scm:638
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "ფონტის სახელი წინასწარი ჩასწორების არესთვის (მოგლუვებული)"
 
-#: scm/im-custom.scm:656
+#: scm/im-custom.scm:654
 msgid "Fontset for preedit area (ja)"
 msgstr "ფონტების ნაკრები წინასწარი ჩასწორების არესთვის (ja)"
 
-#: scm/im-custom.scm:666
+#: scm/im-custom.scm:664
 msgid "Fontset for preedit area (ko)"
 msgstr "ფონტების ნაკრები წინასწარი ჩასწორების არესთვის (ko)"
 
-#: scm/im-custom.scm:676
+#: scm/im-custom.scm:674
 msgid "Fontset for preedit area (zh_CN)"
 msgstr "ფონტების ნაკრები წინასწარი ჩასწორების არესთვის (zh_CN)"
 
-#: scm/im-custom.scm:686
+#: scm/im-custom.scm:684
 msgid "Fontset for preedit area (zh_TW)"
 msgstr "ფონტების ნაკრები წინასწარი ჩასწორების არესთვის (zh_TW)"
 
-#: scm/im-custom.scm:696
+#: scm/im-custom.scm:694
 msgid "Save keyboard map to load in Xkb-less environments"
 msgstr "კლავიატურის რუკის შენახვა უ-Xkb-ო გარემოში ჩასატვირთად"
 
-#: scm/im-custom.scm:719
+#: scm/im-custom.scm:717
 msgid "Location of keyboard map file"
 msgstr "კლავიატურის რუკის ფაილის მდებარეობა"
 
-#: scm/im-custom.scm:735
+#: scm/im-custom.scm:733
 msgid "Notify agent name"
 msgstr "გაფრთხილების აგენტის სახელი"
 
-#: scm/im-custom.scm:753
+#: scm/im-custom.scm:751
 msgid "Direct connection"
 msgstr "პირდაპირი გავშირი"
 
-#: scm/im-custom.scm:754
+#: scm/im-custom.scm:752
 msgid "Direct connection, no proxy."
 msgstr "პირდაპირი კავშირი პროქსის გარეშე."
 
-#: scm/im-custom.scm:756
+#: scm/im-custom.scm:754
 msgid "User"
 msgstr "მომხმარებელი"
 
-#: scm/im-custom.scm:757
+#: scm/im-custom.scm:755
 msgid "Use proxy."
 msgstr "პროქსის გამოყენება."
 
-#: scm/im-custom.scm:762
+#: scm/im-custom.scm:760
 msgid "Proxy setting"
 msgstr "პროქსის დაყენება"
 
-#: scm/im-custom.scm:768
+#: scm/im-custom.scm:766
 msgid "Http proxy hostname"
 msgstr "Http პროქსის მომხმარებლის სახელი"
 
-#: scm/im-custom.scm:780
+#: scm/im-custom.scm:778
 msgid "Http proxy port"
 msgstr "Http პროქსის პორტი"
 
-#: scm/im-custom.scm:792
+#: scm/im-custom.scm:790
 msgid "Timeout (msec)"
 msgstr "მოლოდი&ნის დრო (მწმ)"
 
-#: scm/im-custom.scm:793
+#: scm/im-custom.scm:791
 msgid "Timeout of http connection (msec)."
 msgstr "მოლოდინის დრო http კავშირისთვის (მილიწმ)."
 
@@ -5508,6 +5362,210 @@ msgstr "იორუბული"
 msgid "Zulu"
 msgstr "ზულუ"
 
+#: scm/japanese-custom.scm:460
+msgid "Japanese Romaji-Kana"
+msgstr "იაპონური რომაჯი-კანა"
+
+#: scm/japanese-custom.scm:464
+msgid "Composing rule"
+msgstr "შედგენის წესი"
+
+#: scm/japanese-custom.scm:471
+msgid "Custom"
+msgstr "ხელით"
+
+#: scm/japanese-custom.scm:472
+msgid "Composing rule type"
+msgstr "შედგენის წესის ტიპი"
+
+#: scm/japanese-custom.scm:479
+msgid "Input"
+msgstr "შეყვანა"
+
+#: scm/japanese-custom.scm:480
+msgid "Next input"
+msgstr "შემდეგი შეყვანა"
+
+#: scm/japanese-custom.scm:481
+msgid "Output"
+msgstr "გამოტანა"
+
+#: scm/japanese-custom.scm:482
+msgid "Custom composing rule"
+msgstr "მორგებული შედგენის წესი"
+
+#: scm/japanese-custom.scm:488
+msgid "Keep consonant Romaji not convertible to Kana"
+msgstr "კანაში გადაუყვანადი თანხმოვანი რომაჯის შენარჩუნება"
+
+#: scm/karukan-custom.scm:33
+msgid "Karukan"
+msgstr "Karukan"
+
+#: scm/karukan-custom.scm:34
+msgid "Japanese input method with neural kana-kanji conversion"
+msgstr "იაპონური შეყვანის მეთოდი ნეირონული კანა-კანძის გადაყვანით"
+
+#: scm/karukan-custom.scm:41
+msgid "Karukan server"
+msgstr "Karukan-ის სერვერი"
+
+#: scm/karukan-custom.scm:47
+msgid "karukan-imserver command"
+msgstr "karukan-imserver-ის ბრძანება"
+
+#: scm/karukan-custom.scm:48
+msgid "Command name or path of karukan-imserver that converts"
+msgstr "გადამყვანი karukan-imserver-ის ბრძანების სახელი ან ბილიკი"
+
+#: scm/karukan-custom.scm:53
+msgid "Use the text before the cursor for conversion"
+msgstr "კურსორამდე არსებული ტექსტის გამოყენება გადაყვანისთვის"
+
+#: scm/karukan-key-custom.scm:34
+msgid "Karukan key bindings"
+msgstr "Karukan-ის ღილაკების ასახვა"
+
+#: scm/karukan-key-custom.scm:40
+msgid "[Karukan] on"
+msgstr "[Karukan] ჩართ"
+
+#: scm/karukan-key-custom.scm:46
+msgid "[Karukan] off"
+msgstr "[Karukan] გამორთ"
+
+#: scm/karukan-key-custom.scm:57
+msgid "[Karukan] commit"
+msgstr "[Karukan] გადაცემა"
+
+#: scm/karukan-key-custom.scm:63
+msgid "[Karukan] cancel"
+msgstr "[Karukan] გაუქმება"
+
+#: scm/karukan-key-custom.scm:69
+msgid "[Karukan] backspace"
+msgstr "[Karukan] სიმბოლოს წაშლა კურსორამდე"
+
+#: scm/karukan-key-custom.scm:75
+msgid "[Karukan] delete"
+msgstr "[Karukan] წაშლა"
+
+#: scm/karukan-key-custom.scm:83
+msgid "[Karukan] next candidate"
+msgstr "[Karukan] შემდეგი კანდიდატი"
+
+#: scm/karukan-key-custom.scm:89
+msgid "[Karukan] previous candidate"
+msgstr "[Karukan] წინა კანდიდატი"
+
+#: scm/karukan-key-custom.scm:95
+msgid "[Karukan] next page of candidate window"
+msgstr "[Karukan] კანდიდატის ფანჯრის შემდეგი გვერდი"
+
+#: scm/karukan-key-custom.scm:101
+msgid "[Karukan] previous page of candidate window"
+msgstr "[Karukan] კანდიდატის ფანჯრის წინა გვერდი"
+
+#: scm/karukan-key-custom.scm:108
+msgid "[Karukan] beginning of preedit"
+msgstr "[Karukan] წინასწარი ჩასწორების დასაწყისი"
+
+#: scm/karukan-key-custom.scm:114
+msgid "[Karukan] end of preedit"
+msgstr "[Karukan] წინასწარი ჩასწორების დასასრული"
+
+#: scm/karukan-key-custom.scm:120
+msgid "[Karukan] go left"
+msgstr "[Karukan] მარცხნივ გადასვლა"
+
+#: scm/karukan-key-custom.scm:126
+msgid "[Karukan] go right"
+msgstr "[Karukan] მარჯვნივ გადასვლა"
+
+#: scm/karukan.scm:104
+msgid "uim-karukan: karukan-imserver is gone"
+msgstr "uim-karukan: karukan-imserver აღარ მუშაობს"
+
+#: scm/karukan.scm:172
+#, scheme-format
+msgid "uim-karukan: unsupported protocol version ~a of ~a"
+msgstr "uim-karukan: პროტოკოლის მხარდაუჭერელი ვერსია ~a (~a)"
+
+#: scm/karukan.scm:190
+#, scheme-format
+msgid "uim-karukan: cannot start ~a"
+msgstr "uim-karukan: ~a-ის გაშვება შეუძლებელია"
+
+#: scm/rime-custom.scm:34
+msgid "Rime"
+msgstr "Rime"
+
+#: scm/rime-custom.scm:35
+msgid "Chinese input methods of Rime"
+msgstr "Rime-ის ჩინური შეყვანის მეთოდები"
+
+#: scm/rime-custom.scm:42
+msgid "Rime data"
+msgstr "Rime-ის მონაცემები"
+
+#: scm/rime-custom.scm:53
+msgid "Shared data directory"
+msgstr "გაზიარებული მონაცემების საქაღალდე"
+
+#: scm/rime-custom.scm:54
+msgid "The directory that has the schemas of Rime"
+msgstr "საქაღალდე, რომელიც Rime-ის სქემებს შეიცავს"
+
+#: scm/rime-custom.scm:61
+msgid "User data directory"
+msgstr "მომხმარებლის მონაცემების საქაღალდე"
+
+#: scm/rime-custom.scm:62
+msgid "The directory for the user settings and the learned data of Rime"
+msgstr ""
+"საქაღალდე Rime-ის მომხმარებლის პარამეტრებისა და ნასწავლი მონაცემებისთვის"
+
+#: scm/rime-custom.scm:67 scm/rime-custom.scm:105 scm/rime-custom.scm:106
+#: scm/rime.scm:420
+msgid "Schema"
+msgstr "სქემა"
+
+#: scm/rime-custom.scm:68
+msgid ""
+"The ID of the schema to use such as luna_pinyin. The default one of Rime is "
+"used if this is empty."
+msgstr ""
+"გამოსაყენებელი სქემის ID, მაგალითად, luna_pinyin. თუ ცარიელია, გამოიყენება "
+"Rime-ის ნაგულისხმევი სქემა."
+
+#: scm/rime-custom.scm:91 scm/rime.scm:329
+msgid "Rime Input Mode"
+msgstr "Rime-ის შეყვანის რეჟიმი"
+
+#: scm/rime-custom.scm:95 scm/rime.scm:341
+msgid "ASCII"
+msgstr "ASCII"
+
+#: scm/rime-custom.scm:96 scm/rime.scm:342
+msgid "Rime ASCII Mode"
+msgstr "Rime-ის ASCII რეჟიმი"
+
+#: scm/rime-key-custom.scm:35
+msgid "Rime key bindings"
+msgstr "Rime-ის ღილაკების ასახვა"
+
+#: scm/rime-key-custom.scm:44
+msgid "[Rime] on"
+msgstr "[Rime] ჩართ"
+
+#: scm/rime-key-custom.scm:50
+msgid "[Rime] off"
+msgstr "[Rime] გამორთ"
+
+#: scm/rime.scm:421
+msgid "The schemas of Rime are shown after Rime is turned on"
+msgstr "Rime-ის სქემები Rime-ის ჩართვის შემდეგ გამოჩნდება"
+
 #: scm/latin.scm:1562
 msgid "Latin compose"
 msgstr "ლათინურად შედგენა"
@@ -5801,11 +5859,11 @@ msgstr "uim-mozc: ~a-ის გაშვება შეუძლებელი
 msgid "uim-mozc: uim-mozc-helper is gone"
 msgstr "uim-mozc: uim-mozc-helper აღარ მუშაობს"
 
-#: scm/mozc.scm:774 scm/mozc.scm:780 scm/process.scm:62 scm/process.scm:117
+#: scm/mozc.scm:777 scm/mozc.scm:783 scm/process.scm:62 scm/process.scm:117
 msgid "cannot fork"
 msgstr "ფორკის შეცდომა"
 
-#: scm/mozc.scm:786 scm/process.scm:93 scm/process.scm:122
+#: scm/mozc.scm:789 scm/process.scm:93 scm/process.scm:122
 #, scheme-format
 msgid "cannot execute ~a"
 msgstr "~a -ის გაშვების შეცდომა"
@@ -6146,26 +6204,42 @@ msgid "Enable dynamic completion"
 msgstr "დინამიკური დასრულების ჩართვა"
 
 #: scm/skk-custom.scm:539
+msgid "Use pending romaji for completion"
+msgstr "რიგში მყოფი რომაჯის გამოყენება დასრულებისთვის"
+
+#: scm/skk-custom.scm:540
+msgid ""
+"When on, completion and dynamic completion also use the kana that the "
+"pending romaji may become. When off, completion uses the confirmed head and "
+"the kana of a pending \"n\" but no other pending romaji. Dynamic completion "
+"isn't offered while romaji is pending."
+msgstr ""
+"ჩართვისას დასრულება და დინამიკური დასრულება იყენებს იმ კანასაც, რომელიც "
+"შეიძლება რიგში მყოფი რომაჯისგან მიიღოს. გამორთვისას დასრულება იყენებს "
+"დადასტურებულ დასაწყისს და რიგში მყოფი \"n\"-ის კანას, მაგრამ არა სხვა რიგში "
+"მყოფ რომაჯის. სანამ რომაჯი რიგშია, დინამიკური დასრულება არ შემოთავაზდება."
+
+#: scm/skk-custom.scm:545
 msgid "Use UNIX look command for completion"
 msgstr "Unix-ის look ბრძანების გამოყენება დასრულებისთვის"
 
-#: scm/skk-custom.scm:551
+#: scm/skk-custom.scm:557
 msgid "Use UNIX look dictionary file"
 msgstr "Unix look-ის ლექსიკონის ფაილის გამოყენება"
 
-#: scm/skk-custom.scm:566
+#: scm/skk-custom.scm:572
 msgid "Show annotation of candidate word"
 msgstr "კანდიდატის სიტყვის ანოტაციის ჩვენება"
 
-#: scm/skk-custom.scm:572
+#: scm/skk-custom.scm:578
 msgid "Show annotation also in preedit area"
 msgstr "ანოტაცია ასევე ნაჩვენები იქნება წინასწარი ჩასწორების არეში"
 
-#: scm/skk-custom.scm:599
+#: scm/skk-custom.scm:605
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enter ღილაკის გამოყენება მხოლოდ გადასაცემად (egg-ის მსგავსი ქცევა)"
 
-#: scm/skk-custom.scm:606
+#: scm/skk-custom.scm:612
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 "ახალი ხაზის გადაცემა ASCII სტრიქონის სახით, ღილაკის მშობლიური მოვლენის მაგიერ"
@@ -6322,6 +6396,14 @@ msgstr "[SKK] მარცხნივ გადასვლა"
 #: scm/skk-key-custom.scm:294
 msgid "[SKK] go right"
 msgstr "[SKK] მარჯვნივ გადასვლა"
+
+#: scm/skk.scm:78
+msgid ""
+"skk: skk-ja-rk-rule is ignored. Use ja-rk-rule-basic or ja-rk-rule-"
+"additional instead."
+msgstr ""
+"skk: skk-ja-rk-rule იგნორირებულია. გამოიყენეთ ja-rk-rule-basic ან ja-rk-rule-"
+"additional."
 
 #: scm/tcode.scm:1645
 msgid "T-Code"
@@ -7278,17 +7360,17 @@ msgstr "uim-openssl: სერტიფიკატის გადამოწ�
 msgid "uim-openssl: SSL_connect to %s: %s"
 msgstr "uim-openssl: SSL_connect to %s: %s"
 
-#: uim/skk.c:372
+#: uim/skk.c:374
 #, c-format
 msgid "unknown encoding for %s: %s"
 msgstr "%s-სთვის უცნობი კოდირება: %s"
 
-#: uim/skk.c:459
+#: uim/skk.c:461
 #, c-format
 msgid "uim-skk: failed to convert skkserv data from %s to %s"
 msgstr "uim-skk: skkserv-ის მონაცემების %s-დან %s-ში გადაყვანა შეუძლებელია"
 
-#: uim/skk.c:524
+#: uim/skk.c:526
 #, c-format
 msgid ""
 "uim-tutcode: mazegaki dictionary %s (encoding: %s): no usable entries after "
@@ -7298,7 +7380,7 @@ msgstr ""
 "გამოტოვების შემდეგ გამოსადეგი ჩანაწერი აღარ დარჩა (პირველი — %lu-ე ხაზზე). "
 "შეამოწმეთ კოდირება"
 
-#: uim/skk.c:531
+#: uim/skk.c:533
 #, c-format
 msgid ""
 "uim-tutcode: mazegaki dictionary %s (encoding: %s): skipped %lu invalid "
@@ -7307,40 +7389,40 @@ msgstr ""
 "uim-tutcode: მაძეგაკის ლექსიკონი %s (კოდირება: %s): გამოტოვებულია %lu "
 "არასწორი ხაზი (პირველი — %lu-ე ხაზზე)"
 
-#: uim/skk.c:692
+#: uim/skk.c:694
 #, c-format
 msgid "failed to build a Unicode-sorted index for system dictionary: %s"
 msgstr ""
 "სისტემური ლექსიკონისთვის უნიკოდით დალაგებული ინდექსის აგება ჩავარდა: %s"
 
-#: uim/skk.c:1500
+#: uim/skk.c:1502
 #, c-format
 msgid "failed to convert system dictionary data from %s to %s"
 msgstr "სისტემური ლექსიკონის მონაცემების %s-დან %s-ში გადაყვანა ჩავარდა"
 
-#: uim/skk.c:1664
+#: uim/skk.c:1666
 msgid "error in expand_str"
 msgstr "შეცდომა expand_str-ში"
 
-#: uim/skk.c:1679
+#: uim/skk.c:1681
 msgid "too long word"
 msgstr "მეტისმეტად გრძელი სიტყვა"
 
-#: uim/skk.c:2591
+#: uim/skk.c:2636
 msgid "SKK server without completion capability\n"
 msgstr "SKK სერვერი დასრულების შესაძლებლობის გარეშე\n"
 
-#: uim/skk.c:3826
+#: uim/skk.c:3910
 #, c-format
 msgid "invalid %s dictionary: %s"
 msgstr "არასწორი %s ლექსიკონი: %s"
 
-#: uim/skk.c:4148
+#: uim/skk.c:4232
 #, c-format
 msgid "cannot encode personal dictionary as %s"
 msgstr "პირადი ლექსიკონის %s-ში კოდირება შეუძლებელია"
 
-#: uim/skk.c:4533
+#: uim/skk.c:4583
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: სერვერთან %s პორტზე %s დაკავშირება ჩავარდა"
@@ -7403,11 +7485,11 @@ msgstr "uim-tutcode: ბუშუს ლექსიკონის უცნო
 msgid "uim-tutcode: invalid UTF-8 bushu lookup key"
 msgstr "uim-tutcode: ბუშუს ძებნის არასწორი UTF-8 გასაღები"
 
-#: uim/uim.c:776
+#: uim/uim.c:825
 msgid "builtin"
 msgstr "ჩაშენებული"
 
-#: uim/uim.c:776
+#: uim/uim.c:825
 msgid "libuim builtin"
 msgstr "libuim ჩაშენებული"
 
@@ -7439,104 +7521,3 @@ msgstr "eb_read_text : აღმოჩენილია შეცდომა"
 #: uim/uim-error.c:58
 msgid "All functionality has been disabled to save user application data."
 msgstr "მომხმარებლის აპლიკაციის მონაცემების შესანახად ყველა ფუნქცია გაითიშა."
-
-#: scm/baidu-olime-jp-custom.scm:35
-msgid "Baidu-OnlineIME-Jp"
-msgstr "Baidu-OnlineIME-Jp"
-
-#: scm/baidu-olime-jp-custom.scm:43
-msgid "Baidu-OnlineIME-Jp server"
-msgstr "Baidu-OnlineIME-Jp სერვერი"
-
-#: scm/baidu-olime-jp-custom.scm:47
-msgid "Baidu-OnlineIME-Jp (advanced)"
-msgstr "Baidu-OnlineIME-Jp (დამატებით)"
-
-#: scm/baidu-olime-jp-custom.scm:321
-msgid "Baidu-OnlineIME-Jp server address"
-msgstr "Baidu-OnlineIME-Jp სერვერის მისამართი"
-
-#: scm/baidu-olime-jp-custom.scm:327 scm/google-cgiapi-jp-custom.scm:327
-msgid "Use SSL"
-msgstr "SSL-ის გამოყენება"
-
-#: scm/baidu-olime-jp-custom.scm:388 scm/canna-custom.scm:438
-#: scm/google-cgiapi-jp-custom.scm:386
-msgid "Number of cache of prediction candidates"
-msgstr "პროგნოზი კანდიდატების კეში რაოდენობა"
-
-#: scm/canna-custom.scm:35
-msgid "Canna"
-msgstr "კანა"
-
-#: scm/canna-custom.scm:43
-msgid "Canna server"
-msgstr "კანას სერვერი"
-
-#: scm/canna-custom.scm:47
-msgid "Canna (advanced)"
-msgstr "კანა (დამატებით)"
-
-#: scm/canna-custom.scm:327
-msgid "Specify Canna server"
-msgstr "მიუთითეთ კანას სერვერი"
-
-#: scm/canna-custom.scm:333
-msgid "Canna server name"
-msgstr "კანას სერვერის სახელი"
-
-#: scm/canna-custom.scm:339
-msgid "Canna user name"
-msgstr "კანას მომხმარებლის სახელი"
-
-#: scm/google-cgiapi-jp-custom.scm:35
-msgid "Google-CGIAPI-Jp"
-msgstr "Google-CGIAPI-Jp"
-
-#: scm/google-cgiapi-jp-custom.scm:43
-msgid "Google-CGIAPI-Jp server"
-msgstr "Google-CGIAPI-Jp სერვერი"
-
-#: scm/google-cgiapi-jp-custom.scm:47
-msgid "Google-CGIAPI-Jp (advanced)"
-msgstr "Google-CGIAPI-Jp (დამატებით)"
-
-#: scm/google-cgiapi-jp-custom.scm:321
-msgid "Google-CGIAPI-Jp server address"
-msgstr "Google-CGIAPI-Jp სერვერის მისამართი"
-
-#: scm/japanese-custom.scm:466
-msgid "Japanese Romaji-Kana"
-msgstr "იაპონური რომაჯი-კანა"
-
-#: scm/japanese-custom.scm:470
-msgid "Composing rule"
-msgstr "შედგენის წესი"
-
-#: scm/japanese-custom.scm:477
-msgid "Custom"
-msgstr "ხელით"
-
-#: scm/japanese-custom.scm:478
-msgid "Composing rule type"
-msgstr "შედგენის წესის ტიპი"
-
-#: scm/japanese-custom.scm:485
-msgid "Input"
-msgstr "შეყვანა"
-
-#: scm/japanese-custom.scm:486
-msgid "Next input"
-msgstr "შემდეგი შეყვანა"
-
-#: scm/japanese-custom.scm:487
-msgid "Output"
-msgstr "გამოტანა"
-
-#: scm/japanese-custom.scm:488
-msgid "Custom composing rule"
-msgstr "მორგებული შედგენის წესი"
-
-#: scm/japanese-custom.scm:494
-msgid "Keep consonant Romaji not convertible to Kana"
-msgstr "კანაში გადაუყვანადი თანხმოვანი რომაჯის შენარჩუნება"
