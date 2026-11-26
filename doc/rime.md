@@ -12,7 +12,7 @@ settings of Rime, not in uim-pref.
 ## Build
 
 `rime` is built when librime is found. Pass `-Drime=disabled` to
-`meson setup` to disable it. Autotools doesn't build it.
+`meson setup`, or `--without-rime` to `configure`, to disable it.
 
 The schemas aren't included in librime. Install the ones to use. For
 example, on Debian:

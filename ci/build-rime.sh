@@ -31,7 +31,32 @@
 
 set -eu
 
-# Autotools doesn't build the Rime support.
+# Builds the Rime support with both build systems. Only Meson runs its
+# tests.
+
+echo "::group::Autotools: configure"
+set -x
+mkdir -p autotools
+cd autotools
+/source/configure \
+  --enable-maintainer-mode \
+  --prefix=/tmp/autotools \
+  --with-rime
+set +x
+echo "::endgroup::"
+
+echo "::group::Autotools: make"
+set -x
+make > /dev/null
+set +x
+echo "::endgroup::"
+
+echo "::group::Autotools: install"
+set -x
+sudo make install
+set +x
+echo "::endgroup::"
+cd -
 
 /source/ci/build-meson.sh \
   -Drime=enabled \

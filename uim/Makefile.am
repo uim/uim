@@ -12,7 +12,6 @@ DEFS += $(SSCM_DEFS)
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = encoding-table.c test-gc.c version.h.in \
-	rime.c \
 	config.h.meson meson.build
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
@@ -176,6 +175,14 @@ libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
 libuim_skk_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = $(AM_CPPFLAGS)
+endif
+
+if RIME
+uimplugin_LTLIBRARIES += libuim-rime.la
+libuim_rime_la_SOURCES = rime.c
+libuim_rime_la_LIBADD = @RIME_LIBS@ libuim-scm.la libuim.la
+libuim_rime_la_LDFLAGS = -rpath $(uimplugindir) -avoid-version -module
+libuim_rime_la_CPPFLAGS = $(AM_CPPFLAGS) @RIME_CFLAGS@
 endif
 
 uimplugin_LTLIBRARIES += libuim-look.la
