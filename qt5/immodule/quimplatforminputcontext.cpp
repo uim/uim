@@ -210,11 +210,19 @@ void QUimPlatformInputContext::unsetFocus()
     uim_helper_client_focus_out(m_uc);
 }
 
+// Qt calls this before the focus leaves a widget. uim has no API to
+// commit what's composed, but an input method such as rime commits it
+// when it loses the focus. setFocusObject() is too late for this.
 void QUimPlatformInputContext::commit()
 {
 #ifdef ENABLE_DEBUG
     qDebug("commit()");
 #endif
+    if (preeditSegments.isEmpty())
+        return;
+
+    uim_focus_out_context(m_uc);
+    uim_focus_in_context(m_uc);
 }
 
 // Qt::Key_Shift and so on don't tell the side of a modifier key, so
