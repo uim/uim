@@ -48,8 +48,11 @@
    context-rec-spec
    (list
     (list 'on          #f)
+    ;; librime has a session only while it's needed. See
+    ;; rime-release-idle-session.
     (list 'session     #f)
     (list 'schema-id   #f)   ; the last schema that is known
+    (list 'ascii-mode  'unknown) ; the last ASCII mode that is known
     (list 'preedit     '())  ; segments of the preedit shown now
     ;; ((text comment label) ...) of the page shown now, or ()
     (list 'candidates  '())
@@ -69,14 +72,23 @@
       (begin
         (set! rime-initialized?
               (rime-lib-init rime-shared-data-dir rime-user-data-dir))
-        (if rime-initialized?
-            (begin
-              (set! rime-schemas (rime-lib-get-schema-list))
-              (rime-refresh-schema-widget)))))
+        (set! rime-applied-schema rime-schema)))
   rime-initialized?)
 
-;; Returns the session of RC, or #f. It's created when it's needed
-;; because starting librime may take time.
+;; Makes the new session of RC as the last one was.
+(define (rime-restore-session rc session)
+  (let ((schema-id (or (rime-context-schema-id rc)
+                       (and (not (string=? rime-schema ""))
+                            rime-schema)))
+        (ascii-mode (rime-context-ascii-mode rc)))
+    (if schema-id
+        (rime-lib-select-schema session schema-id))
+    (if (not (eq? ascii-mode 'unknown))
+        (rime-lib-set-option session "ascii_mode" ascii-mode))))
+
+;; Returns the session of RC, or #f. It's #f while another process
+;; composes. The schemas are known after the first one is created
+;; because they're deployed then.
 (define (rime-session rc)
   (or (rime-context-session rc)
       (and (rime-ensure-initialized)
@@ -84,10 +96,31 @@
              (if session
                  (begin
                    (rime-context-set-session! rc session)
-                   (set! rime-applied-schema rime-schema)
-                   (if (not (string=? rime-schema ""))
-                       (rime-lib-select-schema session rime-schema))))
+                   (rime-restore-session rc session)
+                   (if (null? rime-schemas)
+                       (begin
+                         (set! rime-schemas (rime-lib-get-schema-list))
+                         (rime-refresh-schema-widget)))))
              session))))
+
+;; librime breaks the user dictionaries that another process has opened,
+;; so a session is kept only while it's needed: while RC composes and
+;; while a modifier key, which may switch the ASCII mode, is pressed.
+;; rime-lib-create-session returns #f while another process has a
+;; session.
+(define (rime-release-session rc)
+  (let ((session (rime-context-session rc)))
+    (if session
+        (begin
+          ;; They're kept for the next session.
+          (rime-current-schema-id rc)
+          (rime-ascii-mode? rc)
+          (rime-lib-destroy-session session)
+          (rime-context-set-session! rc #f)))))
+
+(define (rime-release-idle-session rc)
+  (if (not (rime-context-composing? rc))
+      (rime-release-session rc)))
 
 ;;; ------------------------------------------------------------------
 ;;; what librime has
@@ -284,8 +317,9 @@
 
 (define (rime-set-on rc)
   (rime-context-set-on! rc #t)
-  ;; librime starts now.
-  (rime-session rc))
+  ;; librime starts now and the schemas are known.
+  (rime-session rc)
+  (rime-release-idle-session rc))
 
 (define (rime-set-off rc)
   (rime-flush rc)
@@ -304,16 +338,19 @@
                    (rime-set-off rc)))
 
 ;; Whether librime is in its ASCII mode. Shift switches it by default.
+;; The last one is kept while RC doesn't have a session.
 (define (rime-ascii-mode? rc)
   (let* ((session (rime-context-session rc))
          (status (and session
                       (rime-lib-get-status session))))
-    (and status
-         (list-ref status 2))))
+    (if status
+        (rime-context-set-ascii-mode! rc (list-ref status 2)))
+    (eq? (rime-context-ascii-mode rc) #t)))
 
 ;; Turns RC on in the ASCII mode or the mode of the schema.
 (define (rime-set-ascii-mode rc ascii-mode?)
   (rime-set-on rc)
+  (rime-context-set-ascii-mode! rc ascii-mode?)
   (let ((session (rime-context-session rc)))
     (if session
         (begin
@@ -362,17 +399,20 @@
         (rime-context-set-schema-id! rc id))
     (rime-context-schema-id rc)))
 
-;; Switches the session of RC to the schema. What is composed is
-;; committed as it's converted, as turning RC off does: librime
-;; discards it.
+;; Switches RC to the schema. What is composed is committed as it's
+;; converted, as turning RC off does: librime discards it.
 (define (rime-switch-schema rc schema-id)
-  (let ((session (rime-context-session rc)))
-    (if (and session
-             (not (equal? (rime-current-schema-id rc) schema-id)))
-        (begin
-          (rime-flush rc)
-          (rime-lib-select-schema session schema-id)
-          (rime-update rc)))))
+  (if (not (equal? (rime-current-schema-id rc) schema-id))
+      (let ((session (rime-context-session rc)))
+        (rime-context-set-schema-id! rc schema-id)
+        (if session
+            (begin
+              (rime-flush rc)
+              (rime-lib-select-schema session schema-id)
+              (rime-update rc))
+            ;; librime uses the ASCII mode of the schema when it's
+            ;; selected.
+            (rime-context-set-ascii-mode! rc 'unknown)))))
 
 ;; Turns RC on with the schema.
 (define (rime-select-schema rc schema-id)
@@ -396,6 +436,7 @@
                (if (eq? (im-name (context-im context)) 'rime)
                    (begin
                      (rime-switch-schema context rime-schema)
+                     (rime-release-idle-session context)
                      (context-update-widgets context))))
              context-list)))))
 
@@ -489,11 +530,7 @@
     rc))
 
 (define (rime-release-handler rc)
-  (let ((session (rime-context-session rc)))
-    (if session
-        (begin
-          (rime-lib-destroy-session session)
-          (rime-context-set-session! rc #f))))
+  (rime-release-session rc)
   #f)
 
 (define (rime-press-key-handler rc key key-state)
@@ -506,21 +543,35 @@
          (not (rime-context-composing? rc)))
     (rime-set-off rc))
    ((not (rime-send-key rc key key-state #f))
-    (im-commit-raw rc))))
+    (im-commit-raw rc)))
+  ;; librime needs the session until the modifier key is released.
+  (if (not (modifier-key? key key-state))
+      (rime-release-idle-session rc)))
 
+;; A session isn't created for a release: librime uses one only while
+;; it composes or a modifier key is pressed, and then RC has a session.
 (define (rime-release-key-handler rc key key-state)
   (if (not (and (rime-context-on rc)
+                (rime-context-session rc)
                 (rime-send-key rc key key-state #t)))
-      (im-commit-raw rc)))
+      (im-commit-raw rc))
+  (rime-release-idle-session rc))
 
 (define (rime-reset-handler rc)
-  (rime-reset rc))
+  (rime-reset rc)
+  (rime-release-idle-session rc))
 
 (define (rime-focus-out-handler rc)
-  (rime-flush rc))
+  (rime-flush rc)
+  (rime-release-idle-session rc))
 
 (define (rime-displace-handler rc)
-  (rime-flush rc))
+  (rime-flush rc)
+  (rime-release-idle-session rc))
+
+(define (rime-prop-activate-handler rc message)
+  (context-prop-activate-handler rc message)
+  (rime-release-idle-session rc))
 
 (define (rime-get-candidate-handler rc idx accel-enum-hint)
   (let ((candidates (rime-context-candidates rc)))
@@ -541,7 +592,8 @@
              (not (= idx (rime-context-cand-cursor rc))))
         (begin
           (rime-lib-select-candidate session idx)
-          (rime-update rc)))))
+          (rime-update rc)
+          (rime-release-idle-session rc)))))
 
 (rime-configure-widgets)
 
@@ -562,7 +614,7 @@
  rime-reset-handler
  rime-get-candidate-handler
  rime-set-candidate-index-handler
- context-prop-activate-handler
+ rime-prop-activate-handler
  #f
  #f
  rime-focus-out-handler

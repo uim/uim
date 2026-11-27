@@ -96,3 +96,7 @@ Put the user settings of Rime such as `default.custom.yaml` into
   shows now.
 - What is composed is committed as Rime converts it now when the focus
   is lost.
+- Only one application composes at a time. Each application runs Rime,
+  and Rime breaks the learned data that another application uses. So
+  an application uses Rime only while it composes, and the keys of
+  another application aren't converted then.

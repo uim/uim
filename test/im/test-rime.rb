@@ -41,12 +41,8 @@ class RimeTest < Test::Unit::TestCase
     schema_file = File.join(shared_data_dir, "#{schema}.schema.yaml")
     omit("#{schema} isn't installed") unless File.exist?(schema_file)
     Dir.mktmpdir do |dir|
-      @driver = IMDriver.new("rime", <<~SCHEME)
-        (require-module "rime")
-        (set! rime-shared-data-dir "#{shared_data_dir}")
-        (set! rime-user-data-dir "#{dir}")
-        (set! rime-schema "#{schema}")
-      SCHEME
+      @user_data_dir = dir
+      @driver = new_driver
       begin
         @driver.start
         # Turn it on.
@@ -56,6 +52,16 @@ class RimeTest < Test::Unit::TestCase
         @driver.stop
       end
     end
+  end
+
+  # Another process that uses the same user data directory.
+  def new_driver
+    IMDriver.new("rime", <<~SCHEME)
+      (require-module "rime")
+      (set! rime-shared-data-dir "#{ENV["RIME_SHARED_DATA_DIR"]}")
+      (set! rime-user-data-dir "#{@user_data_dir}")
+      (set! rime-schema "#{schema}")
+    SCHEME
   end
 
   def schema
@@ -227,6 +233,14 @@ class RimeTest < Test::Unit::TestCase
   end
 
   # It also turns Rime on.
+  # The ASCII mode of the schema is used as librime does.
+  def test_action_schema_ascii_mode
+    omit_unless_installed("terra_pinyin")
+    @driver.activate("action_rime_ascii")
+    @driver.activate("action_rime_schema_terra_pinyin")
+    assert_equal("on", input_mode)
+  end
+
   def test_action_schema_off
     @driver.activate("action_rime_off")
     @driver.activate("action_rime_schema_luna_pinyin")
@@ -368,6 +382,64 @@ class RimeTest < Test::Unit::TestCase
     @driver.type("pi\\")
     assert_equal([["你"], [[REVERSE, "pì"], [CURSOR, ""]]],
                  [@driver.commits, @driver.preedit])
+  end
+
+  def run_other_process
+    driver = new_driver
+    begin
+      driver.start
+      driver.press("S-space")
+      yield(driver)
+    ensure
+      driver.stop
+    end
+  end
+
+  # What a process learned is used by another process.
+  def test_other_process_learned
+    @driver.type("ni4")
+    run_other_process do |driver|
+      driver.type("ni")
+      assert_equal(@driver.commits[0], driver.candidates[0])
+    end
+  end
+
+  # A process can't compose while another process composes because
+  # librime breaks the user dictionaries that another process uses.
+  def test_other_process_composing
+    @driver.type("ni")
+    run_other_process do |driver|
+      driver.type("n")
+      assert_equal([], driver.preedit)
+    end
+  end
+
+  def test_other_process_action
+    @driver.type("ni")
+    @driver.activate("action_rime_off")
+    run_other_process do |driver|
+      driver.type("n")
+      assert_equal([[REVERSE, "n"], [CURSOR, ""]], driver.preedit)
+    end
+  end
+
+  def test_other_process_custom
+    omit_unless_installed("terra_pinyin")
+    @driver.type("ni")
+    @driver.set_custom("rime-schema", "\"terra_pinyin\"")
+    run_other_process do |driver|
+      driver.type("n")
+      assert_equal([[REVERSE, "n"], [CURSOR, ""]], driver.preedit)
+    end
+  end
+
+  def test_other_process_composed
+    @driver.type("ni")
+    @driver.press("space")
+    run_other_process do |driver|
+      driver.type("n")
+      assert_equal([[REVERSE, "n"], [CURSOR, ""]], driver.preedit)
+    end
   end
 
   class TerraPinyinTest < self
