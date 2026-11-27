@@ -1,7 +1,7 @@
 /*
   uim-module-manager.c: source file for uim-module-manager.
 
-  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
+  Copyright (c) 2005-2026 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -46,9 +46,8 @@
 #include "uim-scm-abbrev.h"
 #include "uim-internal.h"
 
-#define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
-#define LOADER_SCM_FILENAME  UIM_DATADIR"/loader.scm"
-#define INSTALLED_MODULES_SCM_FILENAME  UIM_DATADIR"/installed-modules.scm"
+#define LOADER_SCM_FILENAME  UIM_MODULE_REGISTRY_DIR"/loader.scm"
+#define INSTALLED_MODULES_SCM_FILENAME  UIM_MODULE_REGISTRY_DIR"/installed-modules.scm"
 
 static char *path;
 
@@ -103,6 +102,7 @@ print_usage(void)
   printf("  --unregister <modules> Unregister the modules\n");
   printf("  --path <path>          Target path where installed-modules.scm\n");
   printf("                         and loader.scm to be installed\n");
+  printf("                         (default: " UIM_MODULE_REGISTRY_DIR ")\n");
   printf("  --unregister-all       Unregister all modules\n\n");
   printf("Example:\n");
   printf("  uim-module-manager --register anthy skk\n");

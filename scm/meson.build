@@ -185,5 +185,5 @@ custom_target('installed-modules.scm',
               },
               input: scm_files,
               install: true,
-              install_dir: pkgdatadir,
+              install_dir: prefix / module_registry_dir,
               output: ['installed-modules.scm', 'loader.scm'])

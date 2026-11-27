@@ -40,6 +40,15 @@ libdir = get_option('libdir')
 libexecdir = get_option('libexecdir')
 localedir = get_option('localedir')
 pkgdatadir = datadir / meson.project_name()
+# installed-modules.scm and loader.scm are placed here.
+# uim-module-manager updates them after the installation, so they
+# aren't in datadir by default.
+module_registry_dir = get_option('module_registry_dir')
+if module_registry_dir == ''
+  module_registry_dir = (get_option('localstatedir') /
+                         'lib' /
+                         meson.project_name())
+endif
 pkglibdir = libdir / meson.project_name()
 uimplugindir = pkglibdir / 'plugin'
 uim_pixmapsdir = pkgdatadir / 'pixmaps'

@@ -16,6 +16,11 @@ libuim accepts some enviroment variables mainly for debugging purpose.
   variable is defined, uim add the values to the search path of .scm
   files.
 
+  The directories are used instead of the default ones. So they must
+  include the directory that has installed-modules.scm and loader.scm
+  when it differs from the directory of the other .scm files. See also
+  doc/PACKAGING.
+
 - LIBUIM_SYSTEM_SCM_FILES
 
   This variable takes a directory path as a value. If this variable is

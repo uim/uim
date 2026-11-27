@@ -14,7 +14,13 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = encoding-table.c test-gc.c version.h.in \
 	config.h.meson meson.build
 
+# installed-modules.scm and loader.scm are loaded from
+# $(MODULE_REGISTRY_DIR).
+if MODULE_REGISTRY_DIR
+uim_defs = -DSCM_FILES=\"$(MODULE_REGISTRY_DIR):$(datadir)/uim\"
+else
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
+endif
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
 CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
 CXXFLAGS = @CXXFLAGS@
@@ -322,7 +328,7 @@ if LIBEDIT
 endif
 
 uim_module_manager_LIBS =
-uim_module_manager_CPPFLAGS = $(uim_defs) $(AM_CPPFLAGS) -DUIM_DATADIR=\""$(datadir)/uim"\"
+uim_module_manager_CPPFLAGS = $(uim_defs) $(AM_CPPFLAGS) -DUIM_MODULE_REGISTRY_DIR=\""$(MODULE_REGISTRY_DIR)"\"
 uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim-scm.la libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
