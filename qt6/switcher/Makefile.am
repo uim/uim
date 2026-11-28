@@ -16,4 +16,6 @@ endif
 
 FORCE:
 
-EXTRA_DIST =  uim-im-switcher-qt6.pro.in
+EXTRA_DIST =					\
+	meson.build				\
+	uim-im-switcher-qt6.pro.in

@@ -16,3 +16,4 @@ qt6_override_options = ['cpp_std=c++17']
 
 subdir('candwin')
 subdir('immodule')
+subdir('switcher')
